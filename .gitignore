@@ -1,0 +1,20 @@
+# tmp and build
+__pycache__/
+tmp/
+*~
+\#*\#
+
+# dependencies
+node_modules/
+.venv/
+
+# testing
+coverage/
+.tox/
+.coverage
+
+# production
+build/
+
+# misc
+.DS_Store
