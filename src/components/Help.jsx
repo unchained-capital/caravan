@@ -15,7 +15,7 @@ const Help = () => (
     <Box mt={4} mb={2}>
       <Typography variant="h2">Welcome to Caravan!</Typography>
     </Box>
-    
+
     <Grid container spacing={3}>
 
       <Grid container item md={8} spacing={2} direction="column">
@@ -36,7 +36,7 @@ const Help = () => (
               </p>
 
               <p>Caravan is also <strong>stateless</strong>.  It does not itself store any data.  You must safekeep the addresses (and redeem scripts & BIP32 paths) you create.</p>
-              
+
             </CardContent>
           </Card>
         </Grid>
@@ -56,7 +56,7 @@ const Help = () => (
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item>
           <Card>
             <CardHeader title="Consensus"/>
@@ -108,7 +108,7 @@ const Help = () => (
                     <GitHub />
                   </ListItemIcon>
                   <ListItemText>
-                    {externalLink("https://github.com/unchained-capital/bitcoin-multisig", "Source Code")}
+                    {externalLink("https://github.com/unchained-capital/caravan", "Source Code")}
                   </ListItemText>
                 </ListItem>
 
@@ -135,8 +135,8 @@ const Help = () => (
               Seeing a bug or need a feature?
             </CardContent>
             <CardActions>
-              
-              <Button href="https://github.com/unchained-capital/bitcoin-multisig/issues"><BugReport /> &nbsp; Report Issue</Button>
+
+              <Button href="https://github.com/unchained-capital/caravan/issues"><BugReport /> &nbsp; Report Issue</Button>
 
             </CardActions>
           </Card>
@@ -150,7 +150,7 @@ const Help = () => (
     <Box mt={2}>
       <Disclaimer />
     </Box>
-    
+
   </div>
 );
 

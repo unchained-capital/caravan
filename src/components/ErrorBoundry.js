@@ -1,7 +1,7 @@
 import {Box, Typography} from '@material-ui/core';
 import React from 'react';
 
-const reportingURL = 'https://github.com/unchained-capital/bitcoin-multisig/issues'
+const reportingURL = 'https://github.com/unchained-capital/caravan/issues'
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
