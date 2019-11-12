@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "1184600200fb86c02aae",
+    "revision": "eb31b62d47ded89a1d2e",
     "url": "/caravan/static/css/main.13d062d0.chunk.css"
   },
   {
-    "revision": "1184600200fb86c02aae",
-    "url": "/caravan/static/js/main.c9f43ee4.chunk.js"
+    "revision": "eb31b62d47ded89a1d2e",
+    "url": "/caravan/static/js/main.32600d53.chunk.js"
   },
   {
     "revision": "792d9c5b5a485ad633ca",
@@ -24,7 +24,7 @@ self.__precacheManifest = [
     "url": "/caravan/static/media/logo.66481e66.png"
   },
   {
-    "revision": "80bc04efd2e1654f18514c87d9441ead",
+    "revision": "68e0b571904899ceae1b330ddeb86aa1",
     "url": "/caravan/index.html"
   }
 ];
