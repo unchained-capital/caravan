@@ -2,6 +2,17 @@ language: node_js
 node_js:
   - 8
 
+
+script:
+  - echo "skipping tests"
+
+deploy:
+  provider: script
+  script: "npm run deploy"
+  skip_cleanup: true
+  on:
+    tags: true
+
 notifications:
   email:
     recipients:
