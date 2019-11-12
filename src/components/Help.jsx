@@ -64,7 +64,7 @@ const Help = () => (
 
               <p>In order to look up address balances and broadcast transactions, Caravan requires knowledge of the constantly changing bitcoin network.</p>
 
-              <p>Running a full bitcoin node is the best way to determine the current state of the bitcoin network.  Caravan can be directly to use your own bitcoin node for consensus information and broadcasting transactions.</p>
+              <p>Running a full bitcoin node is the best way to determine the current state of the bitcoin network.  Caravan can be easily configured to use your own bitcoin node for consensus information and broadcasting transactions.</p>
 
               <p>If you don't want to or cannot run your own full node, Caravan defaults to using the freely available API at <code>blockstream.info</code>.</p>
 
