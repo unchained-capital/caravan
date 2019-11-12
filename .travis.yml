@@ -4,7 +4,7 @@ node_js:
 
 
 script:
-  - echo "skipping tests"
+  - CI=true npm run build
 
 deploy:
   provider: script
