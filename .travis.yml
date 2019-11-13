@@ -10,8 +10,6 @@ deploy:
   provider: script
   script: "npm run deploy"
   skip_cleanup: true
-  on:
-    tags: true
 
 before_deploy:
 - git remote set-url origin https://${GH_TOKEN}@github.com/howech/blasteroids.git
