@@ -15,7 +15,7 @@ import {
 import {wrapText,} from "../../utils";
 
 // Components
-import { 
+import {
   Card,
   CardHeader,
   CardContent,
@@ -25,7 +25,7 @@ import {
   Button,
   Grid,
   Box,
-  FormControl, 
+  FormControl,
 } from '@material-ui/core';
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
@@ -63,6 +63,7 @@ class SignatureImporter extends React.Component {
     addressType: PropTypes.string.isRequired,
     network: PropTypes.string.isRequired,
     fee: PropTypes.string.isRequired,
+    txid: PropTypes.string.isRequired,
     setName: PropTypes.func.isRequired,
     setMethod: PropTypes.func.isRequired,
     setBIP32Path: PropTypes.func.isRequired,
@@ -133,7 +134,7 @@ class SignatureImporter extends React.Component {
         </p>
       );
     }
-    
+
     return (
       <form>
 
@@ -169,7 +170,7 @@ class SignatureImporter extends React.Component {
                                validateAndSetSignature={this.validateAndSetSignature} />;
     }
     if (signatureImporter.method === HERMIT) {
-      return <HermitSignatureImporter 
+      return <HermitSignatureImporter
                network={network}
                signatureImporter={signatureImporter}
                inputs={inputs}
@@ -182,7 +183,7 @@ class SignatureImporter extends React.Component {
                disableChangeMethod={this.disableChangeMethod} />;
     }
     if (signatureImporter.method === TREZOR || signatureImporter.method === LEDGER) {
-      return <HardwareWalletSignatureImporter 
+      return <HardwareWalletSignatureImporter
                network={network}
                signatureImporter={signatureImporter}
                signatureImporters={signatureImporters}
@@ -220,7 +221,7 @@ class SignatureImporter extends React.Component {
 
   //
   // Unsigned Transaction
-  // 
+  //
 
   renderUnsignedTransaction = () => {
     const {showUnsignedTransaction} = this.state;
@@ -234,9 +235,9 @@ class SignatureImporter extends React.Component {
             <Button size="small" onClick={this.handleHideUnsignedTransaction}>
               Hide Unsigned Transaction
             </Button>
-          </small>  
+          </small>
         </div>
-        
+
       );
     } else {
       return (
@@ -260,7 +261,7 @@ class SignatureImporter extends React.Component {
 
   //
   // State
-  // 
+  //
 
   reset = () => {
     const { number, setSignature, setPublicKeys, setFinalized } = this.props;
@@ -271,7 +272,7 @@ class SignatureImporter extends React.Component {
 
   //
   // BIP32 Path
-  // 
+  //
 
   defaultBIP32Path = () => {
     const {addressType, network} = this.props;
@@ -301,7 +302,7 @@ class SignatureImporter extends React.Component {
   //
 
   renderSignature = () => {
-    const { signatureImporter } = this.props;
+    const { signatureImporter, txid  } = this.props;
     const signatureJSON =  JSON.stringify(signatureImporter.signature);
     return (
       <div>
@@ -315,13 +316,14 @@ class SignatureImporter extends React.Component {
           <Button
             variant="contained"
             color="secondary"
+            disabled={txid !== ""}
             size="small"
             onClick={this.reset}
           >
             Remove Signature
           </Button>
         </Box>
-        
+
       </div>
     );
   }
@@ -389,6 +391,7 @@ function mapStateToProps(state, ownProps) {
       signatureImporters: state.spend.signatureImporters,
       signatureImporter: state.spend.signatureImporters[ownProps.number],
       fee: state.spend.transaction.fee,
+      txid: state.spend.transaction.txid,
     },
     ...state.spend.transaction,
   };

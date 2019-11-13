@@ -20,6 +20,7 @@ import {
 import {OpenInNew} from "@material-ui/icons";
 import Copyable from "../Copyable";
 import {externalLink} from "../../utils";
+import {setTXID} from '../../actions/transactionActions';
 
 class Transaction extends React.Component {
 
@@ -105,7 +106,7 @@ class Transaction extends React.Component {
   }
 
   handleBroadcast = async () => {
-    const {client, network} = this.props;
+    const {client, network, setTxid} = this.props;
     const signedTransaction = this.buildSignedTransaction();
     let error = '';
     let txid = '';
@@ -117,6 +118,7 @@ class Transaction extends React.Component {
       error = `There was an error broadcasting the transaction.: ${e}`;
     } finally {
       this.setState({txid, error, broadcasting: false});
+      setTxid(txid);
     }
   }
 
@@ -139,6 +141,8 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setTxid: setTXID
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);
