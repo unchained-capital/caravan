@@ -12,6 +12,8 @@ addresses.
 Caravan is also stateless. It does not itself store any data. You must
 safekeep the addresses (and redeem scripts & BIP32 paths) you create.
 
+[Try Caravan now!](https://unchained-capital.github.io/caravan)
+
 ## Installation
 
 Caravan is a stateless pure HTML & JavaScript web application.  It can
@@ -69,8 +71,50 @@ $ npm run build
 
 ## Usage
 
-If you can access the Caravan web application in your browser, you are
-ready to use Caravan.
+If you can access the [Caravan web
+application](https://unchained-capital.github.io/caravan) in your
+browser, you are ready to start using Caravan.
 
-See our [YouTube playlist](https://www.youtube.com/playlist?list=PLUM8mrUjWoPRsVGEZ1gTntqPd4xrQZoiH) for some tutorial videos.
+Click the *Create* or *Interact* links in the navbar to get started.
 
+See our [YouTube
+playlist](https://www.youtube.com/playlist?list=PLUM8mrUjWoPRsVGEZ1gTntqPd4xrQZoiH)
+for some tutorial videos.
+
+### Keys
+
+Caravan can connect to several different hardware wallets and key
+management software.
+
+* [Trezor One](https://shop.trezor.io/product/trezor-one-white) (installing the Trezor Bridge is required to interact with a Trezor device)
+
+* [Ledger Nano S](https://www.ledger.com/products/ledger-nano-s)
+
+* [Hermit](https://github.com/unchained-capital/hermit)
+
+Caravan also accepts public keys and signatures as text so any wallet
+which can export these data can be made to work with Caravan.
+
+### Consensus
+
+By default, Caravan uses a free API provided by
+[blockstream.info](https://blockstream.info) whenever it needs
+information about the bitcoin blockchain or to broadcast transactions.
+
+You can ask Caravan to use your own private [bitcoind full
+node](https://bitcoin.org/en/full-node).
+
+#### Adding CORS Headers
+
+When asking Caravan to use a private bitcoind node you may run into
+[CORS issues](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+To correct this problem, you must add appropriate access control
+headers to your node's HTTP responses.  When running Caravan on your
+local machine, for example, you may need to set
+`Access-Control-Allow-Origin: https://localhost:3000`.
+
+This can be done using a webserver such as
+[nginx](https://www.nginx.com) or [Apache](https://httpd.apache.org),
+a proxy tool such as [mitmproxy](https://mitmproxy.org), or even just
+a script.
