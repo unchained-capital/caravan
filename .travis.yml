@@ -12,7 +12,7 @@ deploy:
   skip_cleanup: true
 
 before_deploy:
-- git remote set-url origin https://${GH_TOKEEN}@github.com/howech/blasteroids.git
+- git remote set-url origin https://${GH_TOKEEN}@github.com/howech/caravan.git
 - git config --global user.email "Travis<chris+travis@howeville.com>"
 - git config --global user.name "howech (via travis)"
 
