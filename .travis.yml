@@ -13,9 +13,8 @@ deploy:
   on:
     tags: true
 
-notifications:
-  email:
-    recipients:
-    - chris@unchained-capital.com
-    on_success: change
-    on_failure: always
+before_deploy:
+- git remote set-url origin https://${GH_TOKEN}@github.com/howech/blasteroids.git
+- git config --global user.email "Travis<chris+travis@howeville.com>"
+- git config --global user.name "howech (via travis)"
+
