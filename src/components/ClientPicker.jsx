@@ -50,7 +50,7 @@ class ClientPicker extends React.Component {
     const { setType, network, setUrl } = this.props;
     const type = event.target.checked ? 'private' : 'public';
     if (type === 'private' && !this.state.url_edited) {
-      setUrl(`http://localhost:${network === 'mainnet' ? 8332 : 18332}`)
+      setUrl(`https://localhost:${network === 'mainnet' ? 8332 : 18332}`)
     }
     setType(type);
   }
@@ -81,7 +81,7 @@ class ClientPicker extends React.Component {
   };
 
   validateUrl(host) {
-    const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
+    const validhost = /^https:\/\/[^\s]+$/.exec(host);
     if (!validhost) return 'Must be a valid URL.'
     return '';
   }
