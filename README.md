@@ -22,13 +22,13 @@ be run in any web browser from a local or remote installation.
 The simplest way to use Caravan is to visit
 [https://unchained-capital.github.io/caravan](https://unchained-capital.github.io/caravan),
 a copy of Caravan hosted on GitHub by
-[https://www.unchained-capital.com](Unchained Capital).
+[Unchained Capital](https://www.unchained-capital.com).
 
 ### Your Own GitHub
 
 If you would prefer to host your own copy of Caravan on GitHub, you
 can do so by first forking the
-[https://github.com/unchained-capital/caravan](Caravan repository)
+[Caravan repository](https://github.com/unchained-capital/caravan)
 into your own GitHub organization.  You should see a copy of the
 Caravan web application at
 `https://YOUR_GITHUB_USERNAME.github.io/caravan`.
