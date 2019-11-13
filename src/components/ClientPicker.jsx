@@ -141,8 +141,7 @@ class ClientPicker extends React.Component {
                <p>
                  <small>
                    {'Due to CORS requirements, you must use a proxy around the node. Instructions are available '}
-                   {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                   {externalLink("", "here")}
+                   {externalLink("https://github.com/unchained-capital/caravan#adding-cors-headers", "here")}
                    {'.'}
                  </small>
                </p>
