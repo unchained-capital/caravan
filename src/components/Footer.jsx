@@ -1,5 +1,6 @@
 import React from 'react';
 import {externalLink} from "../utils";
+import {version} from "../../package.json";
 
 // Components
 import { Grid, Box } from '@material-ui/core';
@@ -27,6 +28,9 @@ const Footer = () => (
         <p>Copyright 2019 by Unchained Capital and released under an MIT license.</p>
       </Grid>
 
+      <Grid item sm={1}>
+        <p> v{version} </p>
+      </Grid>
     </Grid>
 
   </Box>
