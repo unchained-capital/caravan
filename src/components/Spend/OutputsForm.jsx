@@ -122,7 +122,7 @@ class OutputsForm extends React.Component {
                       endAdornment: <InputAdornment position="end">
                                       <Tooltip placement='top' title='Estimate best rate'>
                                         <small>
-                                          <IconButton onClick={this.getFeeEstimate} >
+                                          <IconButton onClick={this.getFeeEstimate}  disabled={finalizedOutputs}>
                                             <Speed />
                                           </IconButton>
                                         </small>
