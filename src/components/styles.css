@@ -1,3 +1,7 @@
 .no-events {
     pointer-events: none;
 }
+
+.copyable code {
+    overflow-wrap: break-word;
+}

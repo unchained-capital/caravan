@@ -12,10 +12,9 @@ import {
   LEDGER,
   HERMIT,
 } from "unchained-wallets";
-import {wrapText,} from "../../utils";
 
 // Components
-import { 
+import {
   Card,
   CardHeader,
   CardContent,
@@ -23,9 +22,8 @@ import {
   MenuItem,
   InputLabel,
   Button,
-  Grid,
   Box,
-  FormControl, 
+  FormControl,
 } from '@material-ui/core';
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
@@ -133,7 +131,7 @@ class SignatureImporter extends React.Component {
         </p>
       );
     }
-    
+
     return (
       <form>
 
@@ -169,7 +167,7 @@ class SignatureImporter extends React.Component {
                                validateAndSetSignature={this.validateAndSetSignature} />;
     }
     if (signatureImporter.method === HERMIT) {
-      return <HermitSignatureImporter 
+      return <HermitSignatureImporter
                network={network}
                signatureImporter={signatureImporter}
                inputs={inputs}
@@ -182,7 +180,7 @@ class SignatureImporter extends React.Component {
                disableChangeMethod={this.disableChangeMethod} />;
     }
     if (signatureImporter.method === TREZOR || signatureImporter.method === LEDGER) {
-      return <HardwareWalletSignatureImporter 
+      return <HardwareWalletSignatureImporter
                network={network}
                signatureImporter={signatureImporter}
                signatureImporters={signatureImporters}
@@ -220,7 +218,7 @@ class SignatureImporter extends React.Component {
 
   //
   // Unsigned Transaction
-  // 
+  //
 
   renderUnsignedTransaction = () => {
     const {showUnsignedTransaction} = this.state;
@@ -229,14 +227,14 @@ class SignatureImporter extends React.Component {
       const hex = unsignedTransaction.toHex();
       return (
         <div>
-          <p><Copyable text={hex}><code>{wrapText(hex)}</code></Copyable></p>
+          <p><Copyable text={hex}><code>{hex}</code></Copyable></p>
           <small>
             <Button size="small" onClick={this.handleHideUnsignedTransaction}>
               Hide Unsigned Transaction
             </Button>
-          </small>  
+          </small>
         </div>
-        
+
       );
     } else {
       return (
@@ -260,7 +258,7 @@ class SignatureImporter extends React.Component {
 
   //
   // State
-  // 
+  //
 
   reset = () => {
     const { number, setSignature, setPublicKeys, setFinalized } = this.props;
@@ -271,7 +269,7 @@ class SignatureImporter extends React.Component {
 
   //
   // BIP32 Path
-  // 
+  //
 
   defaultBIP32Path = () => {
     const {addressType, network} = this.props;
@@ -306,11 +304,11 @@ class SignatureImporter extends React.Component {
     return (
       <div>
         <p>The following signature was imported:</p>
-        <Grid container justify="center">
+        <Box>
           <Copyable text={signatureJSON}>
-            <small><code>{wrapText(signatureJSON, 128)}</code></small>
+            <small><code>{signatureJSON}</code></small>
           </Copyable>
-        </Grid>
+        </Box>
         <Box mt={2}>
           <Button
             variant="contained"
@@ -321,7 +319,7 @@ class SignatureImporter extends React.Component {
             Remove Signature
           </Button>
         </Box>
-        
+
       </div>
     );
   }

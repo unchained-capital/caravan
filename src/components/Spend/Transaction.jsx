@@ -6,7 +6,6 @@ import {
   blockExplorerTransactionURL,
 } from "unchained-bitcoin";
 import { broadcastTransaction } from '../../blockchain';
-import { wrapText } from "../../utils";
 
 import {
   Typography,
@@ -50,7 +49,7 @@ class Transaction extends React.Component {
              <Box mt={4}>
                <Typography variant="h6">Signed Transaction</Typography>
                <Copyable text={signedTransactionHex}>
-                 <small><code>{wrapText(signedTransactionHex, 128)}</code></small>
+                 <small><code>{signedTransactionHex}</code></small>
                </Copyable>
              </Box>}
 

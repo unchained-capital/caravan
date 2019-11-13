@@ -9,6 +9,7 @@ import QuorumPicker from '../QuorumPicker';
 import AddressTypePicker from '../AddressTypePicker';
 import AddressGenerator from './AddressGenerator';
 import PublicKeyImporter from './PublicKeyImporter';
+import '../styles.css';
 
 class CreateAddress extends React.Component {
 

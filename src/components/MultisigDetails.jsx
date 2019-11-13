@@ -13,7 +13,6 @@ import {
   blockExplorerAddressURL,
 } from 'unchained-bitcoin';
 import {
-  wrapText,
   externalLink,
 } from "../utils";
 
@@ -87,12 +86,12 @@ class MultisigDetails extends React.Component {
     return (
       <Box mt={2}>
         <Typography variant="h6">{name}</Typography>
-        <Grid container>
+        <Grid container spacing={2}>
           <Grid item sm={6}>
-            <Copyable text={hex}><code>{wrapText(hex, 48)}</code></Copyable>
+            <Copyable text={hex}><code>{hex}</code></Copyable>
           </Grid>
           <Grid item sm={6}>
-            <Copyable text={ops}><code>{wrapText(ops, 48)}</code></Copyable>
+            <Copyable text={ops}><code>{ops}</code></Copyable>
           </Grid>
         </Grid>
       </Box>
