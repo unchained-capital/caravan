@@ -12,7 +12,6 @@ import {
   LEDGER,
   HERMIT,
 } from "unchained-wallets";
-import {wrapText,} from "../../utils";
 
 // Components
 import {
@@ -23,7 +22,6 @@ import {
   MenuItem,
   InputLabel,
   Button,
-  Grid,
   Box,
   FormControl,
 } from '@material-ui/core';
@@ -230,7 +228,7 @@ class SignatureImporter extends React.Component {
       const hex = unsignedTransaction.toHex();
       return (
         <div>
-          <p><Copyable text={hex}><code>{wrapText(hex)}</code></Copyable></p>
+          <p><Copyable text={hex}><code>{hex}</code></Copyable></p>
           <small>
             <Button size="small" onClick={this.handleHideUnsignedTransaction}>
               Hide Unsigned Transaction
@@ -307,11 +305,11 @@ class SignatureImporter extends React.Component {
     return (
       <div>
         <p>The following signature was imported:</p>
-        <Grid container justify="center">
+        <Box>
           <Copyable text={signatureJSON}>
-            <small><code>{wrapText(signatureJSON, 128)}</code></small>
+            <small><code>{signatureJSON}</code></small>
           </Copyable>
-        </Grid>
+        </Box>
         <Box mt={2}>
           <Button
             variant="contained"
