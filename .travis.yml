@@ -20,7 +20,7 @@ notifications:
     on_failure: always
 
 before_deploy:
-- git remote set-url origin https://${GH_TOKEN}@github.com/unchained-capital/caravan.git
+- git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
 - git config --global user.email "Travis CI<ci@unchained-capital.com>"
 - git config --global user.name "TravisCI"
 
