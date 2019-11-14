@@ -1,15 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  PENDING, ACTIVE,
+  PENDING,
   HermitExportExtendedPublicKey,
 } from "unchained-wallets";
 
 // Components
-import {
-  FormGroup,
-  FormText,
-} from 'react-bootstrap';
+import { FormGroup, FormHelperText} from '@material-ui/core';
+
 import HermitReader from "../Hermit/HermitReader";
 
 class HermitExtendedPublicKeyImporter extends React.Component {
@@ -48,9 +46,9 @@ class HermitExtendedPublicKeyImporter extends React.Component {
           startText="Import Extended Public Key"
           interaction={this.interaction()}
           onStart={disableChangeMethod}
-          onSuccess={this.import} 
+          onSuccess={this.import}
           onClear={this.onClear} />
-        <FormText className="text-danger">{extendedPublicKeyError}</FormText>
+        <FormHelperText className="text-danger">{extendedPublicKeyError}</FormHelperText>
       </FormGroup>
     );
   }

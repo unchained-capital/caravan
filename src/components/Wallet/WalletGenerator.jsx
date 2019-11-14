@@ -12,14 +12,16 @@ import {
 } from "../../blockchain";
 
 // Components
-import Card from '../Card';
+import {
+  Button, Card, CardHeader,
+  CardContent,
+} from '@material-ui/core';
 import NodeSet from "./NodeSet";
-import {Button} from "react-bootstrap";
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
 import {
-  updateDepositNodeAction, 
+  updateDepositNodeAction,
   updateChangeNodeAction,
 } from "../../actions/walletActions";
 
@@ -31,7 +33,7 @@ class WalletGenerator extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
     addressType: PropTypes.string.isRequired,
-    clientType: PropTypes.string.isRequired,
+    client: PropTypes.object.isRequired,
     extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
     totalSigners: PropTypes.number.isRequired,
     requiredSigners: PropTypes.number.isRequired,
@@ -48,8 +50,11 @@ class WalletGenerator extends React.Component {
 
   render() {
     return (
-      <Card title={this.title()}>
+      <Card>
+        <CardHeader title={this.title()}/>
+        <CardContent>
         {this.body()}
+        </CardContent>
       </Card>
     );
   }
@@ -68,7 +73,7 @@ class WalletGenerator extends React.Component {
     const { extendedPublicKeyImporters } = this.props;
     return Object.values(extendedPublicKeyImporters).filter(extendedPublicKeyImporter => (extendedPublicKeyImporter.finalized)).length;
   }
-  
+
   body() {
     const {totalSigners} = this.props;
     const {generating} = this.state;
@@ -84,7 +89,7 @@ class WalletGenerator extends React.Component {
         return (
           <div>
             <p>You have imported all {totalSigners} extended public keys.</p>
-            <Button type="button" variant="primary" onClick={this.generate}>Generate Wallet</Button>
+            <Button type="button" variant="contained" color="primary" onClick={this.generate}>Generate Wallet</Button>
           </div>
         );
       }
@@ -151,10 +156,10 @@ class WalletGenerator extends React.Component {
   }
 
   fetchUTXOs = async (isChange, bip32Path, multisig, attemptToKeepGenerating) => {
-    const {network, clientType} = this.props;
+    const {network, client} = this.props;
     let utxos;
     try {
-      utxos = await fetchAddressUTXOs(multisig.address, network, clientType);
+      utxos = await fetchAddressUTXOs(multisig.address, network, client);
     } catch(e) {
       console.error(e);
       this.updateNode({bip32Path, fetchUTXOsError: e.toString()});
@@ -192,7 +197,7 @@ class WalletGenerator extends React.Component {
       return p1Index - p2Index;
     });
     const pathSegments = (allBIP32Paths[allBIP32Paths.length-1] || '').split('/'); // m, 0, 1
-    const maxIndex = parseInt(pathSegments[2]); 
+    const maxIndex = parseInt(pathSegments[2]);
     const nextBIP32Path = `m/${pathSegments[1]}/${maxIndex + 1}`;
     // Similar to above, we wrap the call to add the next node with
     // setTimeout with a timeout of zero to allow React time to
@@ -204,7 +209,7 @@ class WalletGenerator extends React.Component {
 function mapStateToProps(state) {
   return {
     ...state.settings,
-    ...{clientType: state.client.type},
+    ...{client: state.client},
     ...state.quorum,
     ...state.wallet,
   };

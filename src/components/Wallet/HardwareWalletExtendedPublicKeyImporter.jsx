@@ -4,19 +4,13 @@ import {
   UNSUPPORTED, PENDING, ACTIVE, ERROR,
   ExportExtendedPublicKey,
 } from "unchained-wallets";
-import {  multisigBIP32Root } from "unchained-bitcoin";
 
 // Components
 import {
-  Row,
-  Col,
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormText,
-  Button,
-} from 'react-bootstrap';
-import InteractionMessages from '../InteractionMessages';
+  Button, TextField, FormHelperText,
+  Box, Grid
+} from '@material-ui/core';
+// import WalletFeedback from '../WalletFeedback';
 
 class HardwareWalletExtendedPublicKeyImporter extends React.Component {
 
@@ -55,32 +49,39 @@ class HardwareWalletExtendedPublicKeyImporter extends React.Component {
     const {status, extendedPublicKeyError} = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
-      return <FormText className="text-danger">{interaction.messageTextFor({state: status})}</FormText>;
+      return <FormHelperText className="text-danger">{interaction.messageTextFor({status})}</FormHelperText>;
     }
     return (
-      <FormGroup>
-        <FormLabel>BIP32 Path</FormLabel>
-        <Row>
-          <Col md={10}>
-            <FormControl
-              name="bip32Path"
-              type="text"
+      <Box mt={2}>
+       <Grid container>
+        <Grid item md={6}>
+            <TextField
+              fullWidth
+              label="BIP32 Path"
               value={extendedPublicKeyImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
               disabled={status !== PENDING}
-              isInvalid={this.hasBIP32PathError()}
+              error={this.hasBIP32PathError()}
+              helperText={this.bip32PathError()}
             />
-            <FormText className="text-danger">{this.bip32PathError()}</FormText>
-            <FormText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormText>
-          </Col>
-          <Col md={2}>
-            {!this.bip32PathIsDefault() && <Button type="button" variant="secondary" size="sm" onClick={this.resetBIP32Path}  disabled={status !== PENDING}>Default</Button>}
-          </Col>
-        </Row>
-        <Button className="mt-2" type="submit" variant="primary" size="lg" onClick={this.import} disabled={this.hasBIP32PathError()}>Import Extended Public Key</Button>
-        <InteractionMessages messages={interaction.messagesFor({state: status})} excludeCodes={["bip32"]}/>
-        <FormText className="text-danger">{extendedPublicKeyError}</FormText>
-      </FormGroup>
+        </Grid>
+        <Grid item md={6}>
+          {!this.bip32PathIsDefault() && <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path}  disabled={status !== PENDING}>Default</Button>}
+        </Grid>
+       </Grid>
+        <FormHelperText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormHelperText>
+        <Box mt={2}>
+          <Button
+            type="button"
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={this.import}
+            disabled={this.hasBIP32PathError() || status === ACTIVE}>Import Extended Public Key</Button>
+        </Box>
+        {/* <WalletFeedback messages={interaction.messagesFor({status})} excludeCodes={["bip32"]}/> */}
+        <FormHelperText className="text-danger">{extendedPublicKeyError}</FormHelperText>
+      </Box>
     );
   }
 
@@ -116,7 +117,7 @@ class HardwareWalletExtendedPublicKeyImporter extends React.Component {
   }
 
   handleBIP32PathChange = (event) => {
-    const { network, validateAndSetBIP32Path, extendedPublicKeyImporter } = this.props;
+    const { validateAndSetBIP32Path } = this.props;
     const bip32Path = event.target.value;
     validateAndSetBIP32Path(bip32Path, () => {}, this.setBIP32PathError);
   };
@@ -127,8 +128,7 @@ class HardwareWalletExtendedPublicKeyImporter extends React.Component {
   }
 
   resetBIP32Path = () => {
-    const {resetBIP32Path, network, extendedPublicKeyImporter, addressType} = this.props;
-    const bip32Path = multisigBIP32Root(addressType, network);
+    const {resetBIP32Path} = this.props;
     this.setBIP32PathError('');
     resetBIP32Path();
   }

@@ -6,15 +6,7 @@ import {
 } from "unchained-bitcoin";
 
 // Components
-import {
-  Row,
-  Col,
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormText,
-  Button,
-} from 'react-bootstrap';
+import {  Button, TextField, FormHelperText, Box, Grid } from '@material-ui/core';
 
 const DEFAULT_BIP32_PATH = "m/0";
 
@@ -43,43 +35,43 @@ class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
     const {error, extendedPublicKey, extendedPublicKeyError, bip32PathError} = this.state;
     return (
       <div>
-        <FormGroup>
-          <FormLabel>Extended Public Key</FormLabel>
-          <FormControl
+        <Box mt={2}>
+          <TextField
+            fullWidth
             name="extendedPublicKey"
-            type="text"
+            label="Extended Public Key"
             value={extendedPublicKey}
             onChange={this.handleExtendedPublicKeyChange}
-            isInvalid={this.hasExtendedPublicKeyError()}
-            isValid={extendedPublicKey !== '' && !this.hasExtendedPublicKeyError()}
+            error={this.hasExtendedPublicKeyError()}
+            helperText={extendedPublicKeyError}
           />
-          <FormText className="text-danger">{extendedPublicKeyError}</FormText>
-        </FormGroup>
+        </Box>
 
-        <FormGroup>
-          <FormLabel>BIP32 Path (relative to xpub)</FormLabel>
-          <Row>
-            <Col md={10}>
-              <FormControl
-                name="bip32Path"
-                type="text"
-                value={extendedPublicKeyImporter.bip32Path}
-                onChange={this.handleBIP32PathChange}
-                isInvalid={this.hasBIP32PathError()}
-                isValid={!this.hasBIP32PathError()}
-              />
-              <FormText className="text-danger">{bip32PathError}</FormText>
-              <FormText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormText>
-            </Col>
-            <Col md={2}>
-              {! this.bip32PathIsDefault() && <Button type="button" variant="secondary" size="sm" onClick={this.resetBIP32Path}>Default</Button>}
-            </Col>
-          </Row>
-          <Button className="mt-2" type="submit" variant="primary" size="lg" onClick={this.import} disabled={this.hasError()}>Import Extended Public Key</Button>
-        </FormGroup>
-
-        <FormText className="text-danger">{error}</FormText>
-      </div>
+          <Box mt={2}>
+            <Grid container>
+              <Grid item md={10}>
+                  <TextField
+                    fullWidth
+                    name="bip32Path"
+                    label="BIP32 Path (relative to xpub)"
+                    type="text"
+                    value={extendedPublicKeyImporter.bip32Path}
+                    onChange={this.handleBIP32PathChange}
+                    error={this.hasBIP32PathError()}
+                    helperText={bip32PathError}
+                  />
+              <FormHelperText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormHelperText>
+            </Grid>
+            <Grid item md={2}>
+              {! this.bip32PathIsDefault() && <Button type="button" variant="contained" size="small"  onClick={this.resetBIP32Path}>Default</Button>}
+            </Grid>
+          </Grid>
+          <Box mt={2}>
+            <Button type="button" variant="contained" color="primary" size="large" onClick={this.import} disabled={extendedPublicKey === '' || this.hasError()}>Import Extended Public Key</Button>
+          </Box>
+        </Box>
+        <FormHelperText className="text-danger">{error}</FormHelperText>
+    </div>
     );
   }
 

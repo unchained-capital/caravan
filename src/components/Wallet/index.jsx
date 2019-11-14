@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col } from 'react-bootstrap';
 import {connect} from "react-redux";
-import {externalLink} from "../../utils";
 
 // Components
+import { Grid, Box } from '@material-ui/core';
 import NetworkPicker from '../NetworkPicker';
 import QuorumPicker from '../QuorumPicker';
 import AddressTypePicker from '../AddressTypePicker';
@@ -29,20 +28,23 @@ class CreateWallet extends React.Component {
       <div>
         <h1>Create Wallet</h1>
 
-        <Row>
-          <Col md={8}>
-            <WalletGenerator />
+        <Box mt={2}>
+        <Grid container spacing={3}>
+          <Grid item md={8}>
 
             {this.renderExtendedPublicKeyImporters()}
 
-          </Col>
-          <Col md={4}>
-            <QuorumPicker />
-            <AddressTypePicker />
-            <NetworkPicker />
-            <ClientPicker />
-          </Col>
-        </Row>
+            <Box mt={2}><WalletGenerator /></Box>
+
+          </Grid>
+          <Grid item md={4}>
+            <Box><QuorumPicker /></Box>
+            <Box mt={2}><AddressTypePicker /></Box>
+            <Box mt={2}><NetworkPicker /></Box>
+            <Box mt={2}><ClientPicker /></Box>
+          </Grid>
+        </Grid>
+      </Box>
       </div>
     );
   }
@@ -51,7 +53,11 @@ class CreateWallet extends React.Component {
     const {totalSigners} = this.props;
     const extendedPublicKeyImporters = [];
     for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum  <= totalSigners; extendedPublicKeyImporterNum++) {
-      extendedPublicKeyImporters.push(<ExtendedPublicKeyImporter key={extendedPublicKeyImporterNum} number={extendedPublicKeyImporterNum} />);
+      extendedPublicKeyImporters.push(
+        <Box key={extendedPublicKeyImporterNum} mt={extendedPublicKeyImporterNum===1 ? 0 : 2}>
+          <ExtendedPublicKeyImporter key={extendedPublicKeyImporterNum} number={extendedPublicKeyImporterNum} />
+        </Box>
+      );
     }
     return extendedPublicKeyImporters;
   }
@@ -63,7 +69,7 @@ function mapStateToProps(state) {
     ...{totalSigners: state.settings.totalSigners},
     ...state.quorum,
   };
-  
+
 }
 
 export default connect(mapStateToProps)(CreateWallet);

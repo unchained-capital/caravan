@@ -1,18 +1,14 @@
 import React from 'react';
-import BigNumber from "bignumber.js";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Components
-import Copyable from "../Copyable";
 import {
-  Row,
-  Col,
-  Table,
-  Form,
   Button,
-} from 'react-bootstrap';
-import ReactPaginate from "react-paginate";
+  Box, Grid,
+  Table, TableHead, TableBody,
+  TableRow, TableCell, TablePagination,
+} from '@material-ui/core';
 import Node from "./Node";
 
 class NodeSet extends React.Component {
@@ -24,75 +20,84 @@ class NodeSet extends React.Component {
   };
 
   state = {
-    page: 1,
+    page: 0,
     nodesPerPage: 10,
     change: false,
+    spend: false,
   };
 
   render() {
-    const {page, change} = this.state;
+    const {page, change, nodesPerPage} = this.state;
     return (
-      <Form>
-        <div className="text-center">
-          <Table hover size="sm">
-            <thead>
-              <tr>
-                <th>Spend?</th>
-                <th>BIP32 Path</th>
-                <th>Balance</th>
-                <th>Address</th>
-              </tr>
-            </thead>
-            <tbody>
+      <Box>
+      <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Spend?</TableCell>
+                <TableCell>BIP32 Path</TableCell>
+                <TableCell>Balance</TableCell>
+                <TableCell>Address</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {this.renderNodes()}
-            </tbody>
+            </TableBody>
           </Table>
-          <Row>
-            <Col md={6}>
-              <ReactPaginate
-                pageCount={this.pageCount()}
-                containerClassName="pagination"
-                pageClassName="page-item"
-                pageLinkClassName="page-link"
-                previousClassName="page-item"
-                previousLinkClassName="page-link"
-                nextClassName="page-item"
-                nextLinkClassName="page-link"
-                activeClassName="active"
-                onPageChange={this.handlePageChange}
-                forcePage={page - 1}
+          <Grid container>
+            <Grid item md={6}>
+              <TablePagination
+                component="div"
+                count={this.rowCount()}
+                rowsPerPage={nodesPerPage}
+                page={page}
+                backIconButtonProps={{
+                  'aria-label': 'previous page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'next page',
+                }}
+                onChangePage={this.handlePageChange}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
               />
-            </Col>
-            <Col md={2}>
-              {page === this.pageCount() && <Button type="button" variant="secondary" onClick={this.generateAnotherPage}>More</Button>}
-            </Col>
-            <Col md={4}>
-              <Button type="button" variant="primary" onClick={this.toggleChange}>{change ? "View Deposits" : "View Change"}</Button>
-            </Col>
-          </Row>
-          
-        </div>
-      </Form>
+            </Grid>
+            <Grid item md={2}>
+              {page === this.pageCount() - 1 && <Button type="button" variant="contained" color="secondary" onClick={this.generateAnotherPage}>More</Button>}
+            </Grid>
+            <Grid item md={4}>
+              <Button type="button" variant="contained" color="primary" onClick={this.toggleChange}>{change ? "View Deposits" : "View Change"}</Button>
+            </Grid>
+          </Grid>
+
+        </Box>
     );
   }
 
   renderNodes = () => {
-    const {page, nodesPerPage, change} = this.state;
+    const {page, nodesPerPage, change, spend} = this.state;
     const {addNode} = this.props;
-    const startingIndex = (page - 1) * nodesPerPage;
+    const startingIndex = (page) * nodesPerPage;
     const nodesRows = [];
     for (let index=0; index < nodesPerPage; index++) {
       const bip32Path = this.bip32Path(startingIndex + index);
-      const nodeRow = <Node key={bip32Path} bip32Path={bip32Path} addNode={addNode} />;
+      const nodeRow = <Node
+        key={bip32Path}
+        bip32Path={bip32Path}
+        addNode={addNode}
+        change={change}
+        spend={spend}
+        />;
       nodesRows.push(nodeRow);
     }
     return nodesRows;
   }
 
-  handlePageChange = (data) => {
-    const {selected} = data;
-    const page = selected + 1;
+  handlePageChange = (e, selected) => {
+    const page = selected // + 1;
     this.setState({page});
+  }
+
+  handleChangeRowsPerPage = (e) => {
+    console.log('rows per page change', e)
   }
 
   bip32Path = (index) => {
@@ -102,9 +107,14 @@ class NodeSet extends React.Component {
   }
 
   pageCount = () => {
+    const {nodesPerPage} = this.state;
+    return Math.ceil(this.rowCount() / nodesPerPage);
+  }
+
+  rowCount = () => {
     const {changeNodes, depositNodes} = this.props;
-    const {nodesPerPage, change} = this.state;
-    return Math.ceil(Object.keys(change ? changeNodes : depositNodes).length / nodesPerPage);
+    const {change} = this.state;
+    return Object.keys(change ? changeNodes : depositNodes).length;
   }
 
   generateAnotherPage = () => {
@@ -120,7 +130,7 @@ class NodeSet extends React.Component {
 
   toggleChange = () => {
     const {change} = this.state;
-    this.setState({change: (!change), page: 1});
+    this.setState({change: (!change), page: 0});
   }
 
 }

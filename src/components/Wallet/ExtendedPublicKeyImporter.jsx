@@ -13,12 +13,10 @@ import {
 
 // Components
 import {
-  Form,
-  FormGroup,
-  FormControl,
-  Button,
-} from 'react-bootstrap';
-import Card from '../Card';
+  Card, CardHeader, CardContent,
+  FormControl, Select, MenuItem,
+  InputLabel, Button,
+} from '@material-ui/core';
 import Copyable from "../Copyable";
 import ExtendedPublicKeyExtendedPublicKeyImporter from "./ExtendedPublicKeyExtendedPublicKeyImporter";
 import TextExtendedPublicKeyImporter from "./TextExtendedPublicKeyImporter";
@@ -64,8 +62,11 @@ class ExtendedPublicKeyImporter extends React.Component {
   render() {
     const { extendedPublicKeyImporter } = this.props;
     return (
-      <Card title={this.title()}>
+      <Card>
+        <CardHeader title={this.title()}/>
+        <CardContent>
         {extendedPublicKeyImporter.finalized ? this.renderExtendedPublicKey() : this.renderImport()}
+        </CardContent>
       </Card>
     );
   }
@@ -76,42 +77,42 @@ class ExtendedPublicKeyImporter extends React.Component {
   }
 
   renderImport = () => {
-    const { extendedPublicKeyImporter } = this.props;
+    const { extendedPublicKeyImporter, number } = this.props;
     const { disableChangeMethod } = this.state;
+    const labelId = `xpub-${number}-importer-select-label`;
     return (
-      <Form noValidate>
-        <p>
-          How will you import this extended public key?
-        </p>
+      <div>
+        <FormControl fullWidth>
+          <InputLabel id={labelId}>Select Method</InputLabel>
 
-        <FormGroup>
-          <FormControl
-            as="select"
-            className="mb-2"
-            onChange={e => this.handleMethodChange(e)}
+          <Select
+            labelId={labelId}
+            id={`public-key-${number}-importer-select`}
             disabled={disableChangeMethod}
             value={extendedPublicKeyImporter.method}
+            onChange={this.handleMethodChange}
           >
-            <option value="">{'< Select method >'}</option>
-            <option value={TREZOR}>Trezor</option>
-            <option value={LEDGER}>Ledger</option>
-            <option value={HERMIT}>Hermit</option>
-            <option value={XPUB}>Derive from another extended public key</option>
-            <option value={TEXT}>Enter as text</option>
-          </FormControl>
-        </FormGroup>
+            <MenuItem value="">{'< Select method >'}</MenuItem>
+            <MenuItem value={TREZOR}>Trezor</MenuItem>
+            <MenuItem value={LEDGER}>Ledger</MenuItem>
+            <MenuItem value={HERMIT}>Hermit</MenuItem>
+            <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
+            <MenuItem value={TEXT}>Enter as text</MenuItem>
+          </Select>
+
+        </FormControl>
 
         {this.renderImportByMethod()}
 
-      </Form>
+      </div>
     );
   }
 
   renderImportByMethod = () => {
     const {extendedPublicKeyImporters, extendedPublicKeyImporter, network, addressType, defaultBIP32Path} = this.props;
     if (extendedPublicKeyImporter.method === TREZOR || extendedPublicKeyImporter.method === LEDGER) {
-      return <HardwareWalletExtendedPublicKeyImporter 
-               extendedPublicKeyImporter={extendedPublicKeyImporter} 
+      return <HardwareWalletExtendedPublicKeyImporter
+               extendedPublicKeyImporter={extendedPublicKeyImporter}
                validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
                validateAndSetBIP32Path={this.validateAndSetBIP32Path}
                resetBIP32Path={this.resetBIP32Path}
@@ -122,9 +123,9 @@ class ExtendedPublicKeyImporter extends React.Component {
                network={network} />;
     }
     if (extendedPublicKeyImporter.method === HERMIT) {
-      return <HermitExtendedPublicKeyImporter 
-               extendedPublicKeyImporter={extendedPublicKeyImporter} 
-               validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey} 
+      return <HermitExtendedPublicKeyImporter
+               extendedPublicKeyImporter={extendedPublicKeyImporter}
+               validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
                validateAndSetBIP32Path={this.validateAndSetBIP32Path}
                enableChangeMethod={this.enableChangeMethod}
                disableChangeMethod={this.disableChangeMethod}
@@ -132,16 +133,16 @@ class ExtendedPublicKeyImporter extends React.Component {
                reset={this.reset} />;
     }
     if (extendedPublicKeyImporter.method === XPUB) {
-      return <ExtendedPublicKeyExtendedPublicKeyImporter 
-               extendedPublicKeyImporter={extendedPublicKeyImporter} 
+      return <ExtendedPublicKeyExtendedPublicKeyImporter
+               extendedPublicKeyImporter={extendedPublicKeyImporter}
                extendedPublicKeyImporters={extendedPublicKeyImporters}
                validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
                network={network}
                validateAndSetBIP32Path={this.validateAndSetBIP32Path} />;
     }
     if (extendedPublicKeyImporter.method === TEXT) {
-      return <TextExtendedPublicKeyImporter 
-               extendedPublicKeyImporter={extendedPublicKeyImporter} 
+      return <TextExtendedPublicKeyImporter
+               extendedPublicKeyImporter={extendedPublicKeyImporter}
                validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey} />;
     }
     return null;
@@ -167,7 +168,7 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   //
   // State
-  // 
+  //
 
   finalize = () => {
     const { number, setFinalized } = this.props;
@@ -175,7 +176,7 @@ class ExtendedPublicKeyImporter extends React.Component {
   }
 
   reset = (resetBIP32Path) => {
-    const { number, setBIP32Path, setExtendedPublicKey, setFinalized } = this.props;
+    const { number, setExtendedPublicKey, setFinalized } = this.props;
     setExtendedPublicKey(number, '');
     setFinalized(number, false);
     if (resetBIP32Path) {this.resetBIP32Path();}
@@ -183,7 +184,7 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   //
   // Position
-  // 
+  //
 
   moveUp = (event) => {
     const {moveUp, number} = this.props;
@@ -258,9 +259,9 @@ class ExtendedPublicKeyImporter extends React.Component {
         </div>
         {this.renderBIP32Path()}
         <Button
-          variant="danger"
-          className="mt-2"
-          size="sm"
+          variant="contained"
+          color="secondary"
+          size="small"
           onClick={() => {this.reset(extendedPublicKeyImporter.method === HERMIT);}}
         >
           Remove Extended Public Key

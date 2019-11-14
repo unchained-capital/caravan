@@ -2,12 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import {
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormText,
-} from 'react-bootstrap';
+import { TextField, Box } from '@material-ui/core';
+
 
 class TextExtendedPublicKeyImporter extends React.Component {
 
@@ -24,20 +20,17 @@ class TextExtendedPublicKeyImporter extends React.Component {
     const { extendedPublicKeyImporter } = this.props;
     const { error } = this.state;
     return (
-      <FormGroup>
-        <FormGroup>
-          <FormLabel>Extended Public Key</FormLabel>
-          <FormControl
-            name="publicKey"
-            type="text"
+      <Box mt={2}>
+        <TextField
+          fullWidth
+          name="publicKey"
+          label="Extended Public Key"
             value={extendedPublicKeyImporter.extendedPublicKey}
             onChange={this.handleChange}
-            isValid={extendedPublicKeyImporter.extendedPublicKey && !this.hasError()}
-          />
-          <FormText className="text-danger">{error}</FormText>
-        </FormGroup>
-
-      </FormGroup>
+            error={this.hasError()}
+            helperText={error}
+        />
+      </Box>
     );
   }
 

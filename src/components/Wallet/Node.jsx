@@ -11,12 +11,10 @@ import {
 
 // Components
 import {
-  Form,
-  FormText,
-} from "react-bootstrap";
+  TableRow, TableCell, Checkbox, FormHelperText
+} from '@material-ui/core';
 import Copyable from "../Copyable";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import LaunchIcon from '@material-ui/icons/Launch';
 
 class Node extends React.Component {
 
@@ -28,9 +26,9 @@ class Node extends React.Component {
     bip32Path: PropTypes.string.isRequired,
     multisig: PropTypes.object,
     spend: PropTypes.bool.isRequired,
-    balanceSats: PropTypes.object.isRequired,
-    fetchedUTXOs: PropTypes.bool.isRequired,
-    fetchUTXOsError: PropTypes.string.isRequired,
+    // balanceSats: PropTypes.object.isRequired,
+    // fetchedUTXOs: PropTypes.bool.isRequired,
+    // fetchUTXOsError: PropTypes.string.isRequired,
     change: PropTypes.bool.isRequired,
   };
 
@@ -41,34 +39,33 @@ class Node extends React.Component {
   render = () => {
     const {network, bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError, multisig} = this.props;
     return (
-      <tr key={bip32Path}>
-        <td>
-          <Form.Check
+      <TableRow key={bip32Path}>
+        <TableCell>
+          <Checkbox
             id={bip32Path}
-            type="checkbox"
             name="spend"
             onChange={this.handleSpend}
             checked={spend}
             disabled={!fetchedUTXOs || balanceSats.isEqualTo(0)}
           />
-        </td>
-        <td>
+        </TableCell>
+        <TableCell>
           <code>{bip32Path}</code>
-        </td>
-        <td>
+        </TableCell>
+        <TableCell>
           {fetchedUTXOs ? satoshisToBitcoins(balanceSats).toFixed() : ''}
-          {fetchUTXOsError !== '' && <FormText className="danger">{fetchUTXOsError}</FormText>}
-        </td>
-        <td>
-          {multisig ? 
+          {fetchUTXOsError !== '' && <FormHelperText className="danger">{fetchUTXOsError}</FormHelperText>}
+        </TableCell>
+        <TableCell>
+          {multisig ?
            <span>
              <Copyable text={multisig.address}><code>{multisig.address}</code></Copyable>
              &nbsp;
-             {externalLink(blockExplorerAddressURL(multisig.address, network), <FontAwesomeIcon icon={faExternalLinkAlt} />)}
+             {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon />)}
            </span>
            : '...'}
-        </td>
-      </tr>
+        </TableCell>
+      </TableRow>
       );
   }
 
