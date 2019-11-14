@@ -118,3 +118,11 @@ This can be done using a webserver such as
 [nginx](https://www.nginx.com) or [Apache](https://httpd.apache.org),
 a proxy tool such as [mitmproxy](https://mitmproxy.org), or even just
 a script.
+
+A particularly simple way to proxy requests to a private bitcoind node
+is to make use of the [`corsproxy`](https://www.npmjs.com/package/corsproxy)
+npm module. Instructions to install and run the module are on its
+[home page](https://www.npmjs.com/package/corsproxy).
+If you are running a local bitcoind node on your local machine on port 8332,
+and you run `corsproxy` with the default settings, you should be able to
+point caravan at 'http://localhost:1337/localhost:8332'.
