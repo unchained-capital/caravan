@@ -82,7 +82,7 @@ class WalletGenerator extends React.Component {
         return (
           <div>
             <h6>Balance: {this.totalBalance()}</h6>
-            <NodeSet addNode={this.addNode} />
+            <NodeSet addNode={this.addNode} updateNode={this.updateNode} />
           </div>
         );
       } else {

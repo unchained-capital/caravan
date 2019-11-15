@@ -17,6 +17,7 @@ class NodeSet extends React.Component {
     depositNodes: PropTypes.object.isRequired,
     changeNodes: PropTypes.object.isRequired,
     addNode: PropTypes.func.isRequired,
+    updateNode: PropTypes.func.isRequired,
   };
 
   state = {
@@ -74,7 +75,7 @@ class NodeSet extends React.Component {
 
   renderNodes = () => {
     const {page, nodesPerPage, change, spend} = this.state;
-    const {addNode} = this.props;
+    const {addNode, updateNode} = this.props;
     const startingIndex = (page) * nodesPerPage;
     const nodesRows = [];
     for (let index=0; index < nodesPerPage; index++) {
@@ -83,6 +84,7 @@ class NodeSet extends React.Component {
         key={bip32Path}
         bip32Path={bip32Path}
         addNode={addNode}
+        updateNode={updateNode}
         change={change}
         spend={spend}
         />;

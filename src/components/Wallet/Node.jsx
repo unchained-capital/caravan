@@ -22,6 +22,7 @@ class Node extends React.Component {
     network: PropTypes.string.isRequired,
     addressType: PropTypes.string.isRequired,
     addNode: PropTypes.func.isRequired,
+    updateNode: PropTypes.func.isRequired,
     present: PropTypes.bool,
     bip32Path: PropTypes.string.isRequired,
     multisig: PropTypes.object,
@@ -76,7 +77,9 @@ class Node extends React.Component {
     }
   }
 
-  handleSpend = () => {
+  handleSpend = (e) => {
+    const {change, bip32Path, updateNode} = this.props;
+    updateNode(change, {spend: e.target.checked, bip32Path})
   }
 
 }
