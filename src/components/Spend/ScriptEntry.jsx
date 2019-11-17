@@ -25,6 +25,7 @@ import {
   FormHelperText,
 } from '@material-ui/core';
 import MultisigDetails from "../MultisigDetails";
+import BitcoindAddressImporter from "../BitcoindAddressImporter";
 
 // Actions
 import {
@@ -180,7 +181,7 @@ class ScriptEntry extends React.Component {
 
   renderDetails = () => {
     const { fetchUTXOsError } = this.state;
-    const { chosePerformSpend, choseConfirmOwnership } = this.props;
+    const { chosePerformSpend, choseConfirmOwnership, client } = this.props;
     const multisig = this.generateMultisig();
     const buttonsDisabled = (chosePerformSpend || choseConfirmOwnership);
     return (
@@ -204,6 +205,12 @@ class ScriptEntry extends React.Component {
           <FormHelperText error>{fetchUTXOsError}</FormHelperText>
 
         </Box>
+        {
+          client.type === "private" &&
+          <Box mt={2}>
+            <BitcoindAddressImporter addresses={[multisig.address]} rescan={false}/>
+          </Box>
+        }
       </div>
     );
   }

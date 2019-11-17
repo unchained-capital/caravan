@@ -12,7 +12,7 @@ import {
 export const BLOCK_EXPLORER = 'public';
 export const BITCOIND = 'private';
 
-function bitcoindParams(client) {
+export function bitcoindParams(client) {
   const {url, username, password} = client;
   const auth = { username, password };
   return {url, auth};

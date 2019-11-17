@@ -2,7 +2,7 @@ import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import {bitcoinsToSatoshis} from "unchained-bitcoin";
 
-async function callBitcoind(url, auth, method, params = []) {
+function callBitcoind(url, auth, method, params = []) {
   return new Promise(async (resolve, reject) => {
     axios(url, {
       method: 'post',
@@ -71,4 +71,22 @@ export async function bitcoindSendRawTransaction({url, auth, hex}) {
       throw((e.response && e.response.data.error.message) || e);
   }
 
+}
+
+export function bitcoindImportMulti({url, auth, addresses, label, rescan}) {
+  const imports = addresses.map(address => {
+    return {
+      scriptPubKey: {
+        address: address
+      },
+      label: label,
+      timestamp: 0 // TODO: better option to ensure address history is picked up?
+    }
+  });
+  if (rescan) {
+    callBitcoind(url, auth, 'importmulti', [imports, {rescan: rescan}]); // TODO: what to do on catch?
+    return new Promise(resolve => resolve({result:[]}));
+  } else {
+    return callBitcoind(url, auth, 'importmulti', [imports, {rescan: rescan}]);
+  }
 }
