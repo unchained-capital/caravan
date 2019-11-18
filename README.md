@@ -1,4 +1,4 @@
-# Caravan - Stateless Multisig Coordinator HOWECH RULEZ!!!
+# Caravan - Stateless Multisig Coordinator
 
 [![Build Status](https://travis-ci.com/unchained-capital/caravan.svg?branch=master)](https://travis-ci.com/unchained-capital/caravan)
 
