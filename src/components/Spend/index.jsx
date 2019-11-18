@@ -13,6 +13,7 @@ import SignatureImporter from './SignatureImporter';
 import Transaction from './Transaction';
 import {Grid, Box} from "@material-ui/core";
 import ConfirmOwnership from './ConfirmOwnership';
+import '../styles.css';
 
 class Spend extends React.Component {
 
@@ -55,13 +56,13 @@ class Spend extends React.Component {
       }
 
       {
-        transaction.finalizedOutputs && 
+        transaction.finalizedOutputs &&
         <Box>
           {this.renderSignatureImporters()}
         </Box>
 
       }
-      
+
       {
         this.signaturesFinalized() &&
         <Box mt={2}>

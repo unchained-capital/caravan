@@ -6,7 +6,6 @@ import {
   blockExplorerTransactionURL,
 } from "unchained-bitcoin";
 import { broadcastTransaction } from '../../blockchain';
-import { wrapText } from "../../utils";
 
 import {
   Typography,
@@ -20,6 +19,7 @@ import {
 import {OpenInNew} from "@material-ui/icons";
 import Copyable from "../Copyable";
 import {externalLink} from "../../utils";
+import {setTXID} from '../../actions/transactionActions';
 
 class Transaction extends React.Component {
 
@@ -50,7 +50,7 @@ class Transaction extends React.Component {
              <Box mt={4}>
                <Typography variant="h6">Signed Transaction</Typography>
                <Copyable text={signedTransactionHex}>
-                 <small><code>{wrapText(signedTransactionHex, 128)}</code></small>
+                 <small><code>{signedTransactionHex}</code></small>
                </Copyable>
              </Box>}
 
@@ -105,7 +105,7 @@ class Transaction extends React.Component {
   }
 
   handleBroadcast = async () => {
-    const {client, network} = this.props;
+    const {client, network, setTxid} = this.props;
     const signedTransaction = this.buildSignedTransaction();
     let error = '';
     let txid = '';
@@ -117,6 +117,7 @@ class Transaction extends React.Component {
       error = `There was an error broadcasting the transaction.: ${e}`;
     } finally {
       this.setState({txid, error, broadcasting: false});
+      setTxid(txid);
     }
   }
 
@@ -139,6 +140,8 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setTxid: setTXID
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

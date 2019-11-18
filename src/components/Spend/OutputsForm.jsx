@@ -40,6 +40,7 @@ class OutputsForm extends React.Component {
     fee: PropTypes.string.isRequired,
     feeRate: PropTypes.string.isRequired,
     finalizedOutputs: PropTypes.bool.isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
     setFeeRate: PropTypes.func.isRequired,
     setFee: PropTypes.func.isRequired,
     addOutput: PropTypes.func.isRequired,
@@ -65,7 +66,9 @@ class OutputsForm extends React.Component {
   }
 
   scrollToTitle = () => {
-    this.titleRef.current.scrollIntoView({ behavior: 'smooth' });
+    const { signatureImporters } = this.props;
+    const finalizedCount = Object.keys(signatureImporters).reduce((o, k) => o + (signatureImporters[k].finalized), 0);
+    if(finalizedCount === 0) this.titleRef.current.scrollIntoView({ behavior: 'smooth' });
   }
 
   async initialOutputState() {
@@ -119,7 +122,7 @@ class OutputsForm extends React.Component {
                       endAdornment: <InputAdornment position="end">
                                       <Tooltip placement='top' title='Estimate best rate'>
                                         <small>
-                                          <IconButton onClick={this.getFeeEstimate} >
+                                          <IconButton onClick={this.getFeeEstimate}  disabled={finalizedOutputs}>
                                             <Speed />
                                           </IconButton>
                                         </small>
@@ -338,7 +341,8 @@ function mapStateToProps(state) {
       client: state.client,
       },
     ...state.spend.transaction,
-    ...state.client
+    ...state.client,
+    signatureImporters: state.spend.signatureImporters,
   };
 }
 

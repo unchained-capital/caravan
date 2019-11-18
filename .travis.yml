@@ -2,7 +2,6 @@ language: node_js
 node_js:
   - 8
 
-
 script:
   - CI=true npm run build
 
@@ -11,8 +10,15 @@ deploy:
   script: "npm run deploy"
   skip_cleanup: true
 
+notifications:
+  email:
+    recipients:
+    - chris@unchained-capital.com
+    on_success: change
+    on_failure: always
+
 before_deploy:
-- git remote set-url origin https://${GH_TOKEEN}@github.com/howech/caravan.git
-- git config --global user.email "Travis<chris+travis@howeville.com>"
-- git config --global user.name "howech (via travis)"
+- git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+- git config --global user.email "Travis CI<ci@unchained-capital.com>"
+- git config --global user.name "TravisCI"
 
