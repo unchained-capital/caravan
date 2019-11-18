@@ -22,6 +22,7 @@ import {ArrowUpward, ArrowDownward} from '@material-ui/icons';
 
 import Copyable from "../Copyable";
 import TextPublicKeyImporter from "./TextPublicKeyImporter";
+import MessageSignaturePublicKeyImporter from "./MessageSignaturePublicKeyImporter";
 import ExtendedPublicKeyPublicKeyImporter from "./ExtendedPublicKeyPublicKeyImporter";
 import HermitPublicKeyImporter from "./HermitPublicKeyImporter";
 import HardwareWalletPublicKeyImporter from "./HardwareWalletPublicKeyImporter";
@@ -42,6 +43,7 @@ import {
 
 const XPUB = "xpub";
 const TEXT = "text";
+const SIGNATURE = "signature";
 
 class PublicKeyImporter extends React.Component {
 
@@ -120,6 +122,7 @@ class PublicKeyImporter extends React.Component {
             <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
+            <MenuItem value={SIGNATURE}>Import from message signature</MenuItem>
           </Select>
 
         </FormControl>
@@ -165,6 +168,13 @@ class PublicKeyImporter extends React.Component {
                                                  publicKeyImporter={publicKeyImporter}
                                                  validateAndSetPublicKey={this.validateAndSetPublicKey} />;
     }
+    if (publicKeyImporter.method === SIGNATURE) {
+      return <MessageSignaturePublicKeyImporter
+                                                 network={network}
+                                                 publicKeyImporter={publicKeyImporter}
+                                                 validateAndSetPublicKey={this.validateAndSetPublicKey} />;
+    }
+    
     return null;
   }
 
@@ -224,7 +234,7 @@ class PublicKeyImporter extends React.Component {
 
   renderBIP32Path = () => {
     const { publicKeyImporter } = this.props;
-    if (publicKeyImporter.method !== TEXT) {
+    if (publicKeyImporter.method !== TEXT && publicKeyImporter.method !== SIGNATURE) {
       return (
         <Box mt={4}>
           <p>The BIP32 path for this public key is:</p>

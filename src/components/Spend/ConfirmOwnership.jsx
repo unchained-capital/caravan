@@ -10,7 +10,6 @@ import {
   LEDGER,
   HERMIT,
 } from "unchained-wallets";
-
 // Components
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -32,6 +31,7 @@ import {
 } from '@material-ui/core';
 import HardwareWalletPublicKeyImporter from "../CreateAddress/HardwareWalletPublicKeyImporter";
 import HermitPublicKeyImporter from "../CreateAddress/HermitPublicKeyImporter";
+import MessageSignaturePublicKeyImporter from "../CreateAddress/MessageSignaturePublicKeyImporter";
 
 // Actions
 import {
@@ -43,6 +43,7 @@ import {
 } from "../../actions/ownershipActions";
 
 import 'react-table/react-table.css';
+const SIGNATURE='signature';
 
 class ConfirmOwnership extends React.Component {
 
@@ -106,6 +107,7 @@ class ConfirmOwnership extends React.Component {
                 <MenuItem value={TREZOR}>Trezor</MenuItem>
                 <MenuItem value={LEDGER}>Ledger</MenuItem>
                 <MenuItem value={HERMIT}>Hermit</MenuItem>
+                <MenuItem value={SIGNATURE}>Signature</MenuItem>
               </Select>
 
             </FormControl>
@@ -148,6 +150,13 @@ class ConfirmOwnership extends React.Component {
                enableChangeMethod={this.enableChangeMethod}
                disableChangeMethod={this.disableChangeMethod} />;
     }
+    if (publicKeyImporter.method === SIGNATURE) {
+      return <MessageSignaturePublicKeyImporter
+               publicKeyImporter={publicKeyImporter}
+               validateAndSetPublicKey={this.validateAndSetPublicKey}
+               />;
+    }
+
     return null;
   }
 
