@@ -1,11 +1,11 @@
 import React from 'react';
 // Components
-import { 
+import {
     List, ListItem, ListItemIcon, ListItemText, Typography
   } from '@material-ui/core';
 import {Warning} from '@material-ui/icons';
-  
-const Conflict = () => {
+
+const Conflict = (props) => {
     return (
         <small>
           <List>
@@ -15,7 +15,7 @@ const Conflict = () => {
             </ListItemIcon>
             <ListItemText>
               <Typography color="error">
-                Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!
+                {props.message}
               </Typography>
             </ListItemText>
           </ListItem>
@@ -23,6 +23,5 @@ const Conflict = () => {
       </small>
     );
   }
-  
+
   export default Conflict;
-  

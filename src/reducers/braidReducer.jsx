@@ -37,9 +37,12 @@ function updateNode(state, action) {
         ...state.nodes,
         ...newNodes,
       },
-      balanceSats: state.balanceSats.plus(node.balanceSats),
+      // balanceSats: state.balanceSats.plus(node.balanceSats),
     },
   };
+  if (action.value.balanceSats) {
+    updatedState.balanceSats = state.balanceSats.plus(node.balanceSats)
+  }
 
   let trailingEmptyNodes = 0;
   let fetchUTXOsErrors = 0;

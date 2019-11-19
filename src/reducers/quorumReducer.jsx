@@ -20,6 +20,8 @@ import {
   SET_ADDRESS_TYPE,
 } from '../actions/settingsActions';
 
+const TEXT = "text";
+
 function fingerprint(state) {
   const timestamp = new Date().getTime().toString();
   const extendedPublicKeys = Object.values(state.extendedPublicKeyImporters).map((extendedPublicKeyImporter) => (extendedPublicKeyImporter.extendedPublicKey)).join('');
@@ -33,6 +35,7 @@ const initialExtendedPublicKeyImporterState = {
   method: '',
   extendedPublicKey: '',
   finalized: false,
+  confliect: false,
 };
 
 const initialState = {
@@ -45,6 +48,8 @@ const initialState = {
   network: MAINNET,
   addressType: P2SH,
   fingerprint: '',
+  finalizedNetwork: '',
+  finalizedAddressType: '',
 };
 
 function updateExtendedPublicKeyImporterState(state, action, field) {
@@ -55,6 +60,7 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
     ...{nodes: {}},
   };
   newState.extendedPublicKeyImporters[action.number] = updateState(state.extendedPublicKeyImporters[action.number], extendedPublicKeyImporterChange);
+  setConflict(newState.extendedPublicKeyImporters[action.number] ,state);
   return updateState(newState, {fingerprint: fingerprint(newState)});
 }
 
@@ -76,17 +82,29 @@ function updateTotalSigners(state, action) {
   };
 }
 
+function setConflict(extendedPublicKeyImporter ,state) {
+  console.log('quorumReducer setConflict', extendedPublicKeyImporter ,state)
+  if (state.finalizedNetwork) {
+    extendedPublicKeyImporter.conflict = state.finalizedNetwork !== state.network || state.finalizedAddressType !== state.addressType;
+  }
+}
+
+function updateImporterPaths(state, newState, bip32Path) {
+  for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= Object.values(state.extendedPublicKeyImporters).length; extendedPublicKeyImporterNum++) {
+    const extendedPublicKeyImporter = newState.extendedPublicKeyImporters[extendedPublicKeyImporterNum];
+    if (! extendedPublicKeyImporter.bip32PathModified) {
+      if (!extendedPublicKeyImporter.finalized) extendedPublicKeyImporter.bip32Path = bip32Path;
+    }
+    setConflict(extendedPublicKeyImporter, newState);
+  }
+}
+
 function updateNetwork(state, action) {
   const addressType = state.addressType;
   const network = action.value;
   const bip32Path = multisigBIP32Root(addressType, network);
   const newState = {...state, ...{network, defaultBIP32Path: bip32Path}};
-  for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= Object.values(state.extendedPublicKeyImporters).length; extendedPublicKeyImporterNum++) {
-    const extendedPublicKeyImporter = newState.extendedPublicKeyImporters[extendedPublicKeyImporterNum];
-    if (! extendedPublicKeyImporter.bip32PathModified) {
-      extendedPublicKeyImporter.bip32Path = bip32Path;
-    }
-  }
+  updateImporterPaths(state, newState, bip32Path);
   return newState;
 }
 
@@ -95,10 +113,23 @@ function updateAddressType(state, action) {
   const network = state.network;
   const bip32Path = multisigBIP32Root(addressType, network);
   const newState = {...state, ...{addressType, defaultBIP32Path: bip32Path}};
-  for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= Object.values(state.extendedPublicKeyImporters).length; extendedPublicKeyImporterNum++) {
-    const extendedPublicKeyImporter = newState.extendedPublicKeyImporters[extendedPublicKeyImporterNum];
-    if (! extendedPublicKeyImporter.bip32PathModified) {
-      extendedPublicKeyImporter.bip32Path = bip32Path;
+  updateImporterPaths(state, newState, bip32Path);
+  return newState;
+}
+
+function updateFinalizedSettings(state, action) {
+  const newState = {...state}
+  if (action.value === true && state.finalizedNetwork === '' && newState.extendedPublicKeyImporters[action.number].method !== TEXT) {
+    newState.finalizedNetwork = state.network;
+    newState.finalizedAddressType = state.addressType;
+  } else if (action.value === false && state.finalizedNetwork !== '') {
+    const finalizedCount = Object.values(state.extendedPublicKeyImporters).reduce((count, importer) => {
+      if (importer.finalized === true && importer.method !== TEXT) return count+1; else return count
+    }, 0);
+    if (finalizedCount === 1) { // last one to be removed
+      newState.finalizedNetwork = '';
+      newState.finalizedAddressType = '';
+      Object.values(newState.extendedPublicKeyImporters).forEach(importer => importer.conflict = false);
     }
   }
   return newState;
@@ -129,7 +160,7 @@ export default (state = initialState, action) => {
   case SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY:
     return updateExtendedPublicKeyImporterState(state, action, 'extendedPublicKey');
   case SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED:
-    return updateExtendedPublicKeyImporterState(state, action, 'finalized');
+    return updateExtendedPublicKeyImporterState(updateFinalizedSettings(state, action), action, 'finalized');
   default:
     return state;
   }

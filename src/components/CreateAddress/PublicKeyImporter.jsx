@@ -72,7 +72,8 @@ class PublicKeyImporter extends React.Component {
       <Card>
         <CardHeader title={this.title()}/>
         <CardContent>
-          {publicKeyImporter.method && publicKeyImporter.method !== TEXT && publicKeyImporter.conflict && <Conflict/>}
+          {publicKeyImporter.method && publicKeyImporter.method !== TEXT && publicKeyImporter.conflict &&
+          <Conflict message="Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!" />}
           {publicKeyImporter.finalized ? this.renderPublicKey() : this.renderImport()}
         </CardContent>
       </Card>

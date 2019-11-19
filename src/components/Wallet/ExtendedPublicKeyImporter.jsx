@@ -23,6 +23,7 @@ import TextExtendedPublicKeyImporter from "./TextExtendedPublicKeyImporter";
 import HermitExtendedPublicKeyImporter from "./HermitExtendedPublicKeyImporter";
 import HardwareWalletExtendedPublicKeyImporter from "./HardwareWalletExtendedPublicKeyImporter";
 import EditableName from "../EditableName";
+import Conflict from "../CreateAddress/Conflict";
 
 // Actions
 import {
@@ -60,12 +61,23 @@ class ExtendedPublicKeyImporter extends React.Component {
   };
 
   render() {
-    const { extendedPublicKeyImporter } = this.props;
+    const { extendedPublicKeyImporter, finalizedNetwork, finalizedAddressType, network, addressType } = this.props;
+    const hasConflict = extendedPublicKeyImporter.method && extendedPublicKeyImporter.method !== TEXT && extendedPublicKeyImporter.conflict
+    let conflictMessage = "";
+    if (hasConflict) {
+      if (finalizedNetwork !== network) {
+        conflictMessage = "Warning, you can not mix xpub and tpub.  Do not proceed without resolving by either removing conflicting imported keys or returning network type to original state!"
+      } else {
+        conflictMessage = "Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!"
+      }
+    }
     return (
       <Card>
         <CardHeader title={this.title()}/>
         <CardContent>
-        {extendedPublicKeyImporter.finalized ? this.renderExtendedPublicKey() : this.renderImport()}
+          {hasConflict &&
+            <Conflict message={conflictMessage} />}
+          {extendedPublicKeyImporter.finalized ? this.renderExtendedPublicKey() : this.renderImport()}
         </CardContent>
       </Card>
     );
