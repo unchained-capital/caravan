@@ -13,11 +13,12 @@ import {
 // Components
 import {
   Button, Card, CardHeader,
-  CardContent
+  CardContent, Box
 } from '@material-ui/core';
-import NodeSet from "./NodeSet";
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
+import WalletDeposit from './WalletDeposit';
+import WalletSpend from './WalletSpend';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -54,12 +55,17 @@ class WalletGenerator extends React.Component {
 
   render() {
     return (
-      <Card>
-        <CardHeader title={this.title()}/>
-        <CardContent>
-        {this.body()}
-        </CardContent>
-      </Card>
+      <div>
+        <Card>
+          <CardHeader title={this.title()}/>
+          <CardContent>
+          {this.body()}
+          </CardContent>
+        </Card>
+        <Box mt={2}>
+          {this.renderModeComponent()}
+        </Box>
+      </div>
     );
   }
 
@@ -78,6 +84,13 @@ class WalletGenerator extends React.Component {
     return Object.values(extendedPublicKeyImporters).filter(extendedPublicKeyImporter => (extendedPublicKeyImporter.finalized)).length;
   }
 
+  renderModeComponent = () => {
+    const {mode} = this.props;
+    if (mode.depositing) return <WalletDeposit/>
+    if (mode.spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
+    return "";
+  }
+
   body() {
     const {totalSigners, visible} = this.props;
     const {generating} = this.state;
@@ -86,7 +99,6 @@ class WalletGenerator extends React.Component {
         return (
           <div>
             {<WalletControl/>}
-            {/* <NodeSet addNode={this.addNode} updateNode={this.updateNode} /> */}
           </div>
         );
       } else {

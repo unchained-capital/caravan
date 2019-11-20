@@ -5,6 +5,8 @@ import clientReducer from './clientReducer';
 import braidReducer from './braidReducer';
 import quorumReducer from './quorumReducer';
 import addressReducer from './addressReducer';
+import walletReducer from './walletReducer';
+
 import ownershipReducer from './ownershipReducer';
 import signatureImportersReducer from './signatureImportersReducer';
 import transactionReducer from './transactionReducer';
@@ -26,6 +28,7 @@ const spendReducers = combineReducers({
 const walletReducers = combineReducers({
   deposits: braidReducer(UPDATE_DEPOSIT_NODE),
   change: braidReducer(UPDATE_CHANGE_NODE),
+  mode: walletReducer,
 });
 
 const rootReducers = combineReducers({
