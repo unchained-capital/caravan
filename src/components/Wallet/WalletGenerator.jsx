@@ -3,7 +3,6 @@ import BigNumber from "bignumber.js";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-  satoshisToBitcoins,
   deriveChildPublicKey,
   generateMultisigFromPublicKeys,
 } from 'unchained-bitcoin';
@@ -18,6 +17,7 @@ import {
 } from '@material-ui/core';
 import NodeSet from "./NodeSet";
 import ConfirmWallet from './ConfirmWallet';
+import WalletControl from './WalletControl';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -26,7 +26,8 @@ import {
   updateChangeNodeAction,
   updateAutoSpendAction,
 } from "../../actions/walletActions";
-import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions"
+import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
+import {downloadFile} from "../../utils"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 5;
@@ -84,8 +85,8 @@ class WalletGenerator extends React.Component {
       if (generating) {
         return (
           <div>
-            <h6>Balance: {this.totalBalance()}</h6>
-            <NodeSet addNode={this.addNode} updateNode={this.updateNode} />
+            {<WalletControl/>}
+            {/* <NodeSet addNode={this.addNode} updateNode={this.updateNode} /> */}
           </div>
         );
       } else {
@@ -95,10 +96,12 @@ class WalletGenerator extends React.Component {
         return (
           <div>
             <Button type="button" variant="contained" color="secondary" onClick={this.toggleImporters}>
-              {visible ? 'Hide Importers' : 'Show Importers'}
+              {visible ? 'Hide Key Selection' : 'Edit Details'}
             </Button>
             <ConfirmWallet/>
-            <p>You have imported all {totalSigners} extended public keys.</p>
+            <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
+            <Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Download Wallet Details</Button>
+            <p>Please confimr that the above information is correct and you wish to generate your wallet.</p>
             <Button type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
           </div>
         );
@@ -112,14 +115,55 @@ class WalletGenerator extends React.Component {
     );
   }
 
+  downloadWalletDetails = (event) => {
+    event.preventDefault();
+    const body = this.walletDetailsText();
+    const filename = this.walletDetailsFilename();
+    downloadFile(body, filename)
+  }
+
+  walletDetailsText = () => {
+    const {addressType, network, totalSigners, requiredSigners} = this.props;
+    return `Wallet: WALLET NAME HERE
+
+Type: ${addressType}
+
+Network: ${network}
+
+Quorum: ${requiredSigners}-of-${totalSigners}
+
+BIP32 Paths:
+${this.extendedPublicKeyImporterBIP32Paths()}
+`
+
+  }
+
+  extendedPublicKeyImporterBIP32Paths = () => {
+    const {totalSigners} = this.props;
+    let extendedPublicKeyImporterBIP32Paths = [];
+    for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= totalSigners; extendedPublicKeyImporterNum++) {
+      extendedPublicKeyImporterBIP32Paths.push(this.extendedPublicKeyImporterBIP32Path(extendedPublicKeyImporterNum));
+    }
+    return extendedPublicKeyImporterBIP32Paths.join("\n");
+  }
+
+  extendedPublicKeyImporterBIP32Path = (number) => {
+    const {extendedPublicKeyImporters} =  this.props;
+    const extendedPublicKeyImporter = extendedPublicKeyImporters[number];
+    const bip32Path = (extendedPublicKeyImporter.method === 'text' ? 'Unknown (make sure you have written this down previously!)' : extendedPublicKeyImporter.bip32Path);
+    return `  * ${extendedPublicKeyImporter.name}: ${bip32Path}`;
+  }
+
+  walletDetailsFilename = () => {
+    const {totalSigners, requiredSigners, addressType} = this.props;
+    return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-I-THINK-WE-NEED-A-WALLET-NAME.txt`;
+
+  }
+
+
   toggleImporters = () => {
     const { setImportersVisible, visible } = this.props;
     setImportersVisible(!visible);
-  }
-
-  totalBalance = () => {
-    const {deposits, change} = this.props;
-    return satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
   }
 
   generate = () => {

@@ -19,6 +19,7 @@ import {
 } from '@material-ui/core';
 import MultisigDetails from "../MultisigDetails";
 import Conflict from './Conflict';
+import {downloadFile} from "../../utils"
 
 class AddressGenerator extends React.Component {
 
@@ -132,17 +133,7 @@ class AddressGenerator extends React.Component {
     const body = this.addressDetailsText(multisig);
     const filename = this.addressDetailsFilename(multisig);
     const blob = new Blob([body], {type: 'text/plain'});
-    if(window.navigator.msSaveOrOpenBlob) {
-      window.navigator.msSaveBlob(blob, filename);
-    }
-    else{
-        var elem = window.document.createElement('a');
-        elem.href = window.URL.createObjectURL(blob);
-        elem.download = filename;
-        document.body.appendChild(elem);
-        elem.click();
-        document.body.removeChild(elem);
-    }
+    downloadFile(body, filename);
   }
 
   addressDetailsFilename = (multisig) => {

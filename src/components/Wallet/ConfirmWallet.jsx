@@ -35,8 +35,8 @@ import {
 
       renderConfirmationInfo = () => {
         const { extendedPublicKeyImporters } = this.props;
-        return Object.values(extendedPublicKeyImporters).map(importer => (
-          <TableRow>
+        return Object.values(extendedPublicKeyImporters).map((importer, i) => (
+          <TableRow key={i}>
             <TableCell>{importer.name}</TableCell>
             <TableCell>{importer.bip32Path}</TableCell>
             <TableCell>{importer.extendedPublicKey}</TableCell>
