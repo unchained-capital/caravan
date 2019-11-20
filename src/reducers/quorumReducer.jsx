@@ -14,6 +14,7 @@ import {
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_METHOD,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED,
+  SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE,
 } from '../actions/extendedPublicKeyImporterActions';
 import {
   SET_NETWORK,
@@ -50,6 +51,7 @@ const initialState = {
   fingerprint: '',
   finalizedNetwork: '',
   finalizedAddressType: '',
+  visible: true,
 };
 
 function updateExtendedPublicKeyImporterState(state, action, field) {
@@ -60,6 +62,13 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
     ...{nodes: {}},
   };
   newState.extendedPublicKeyImporters[action.number] = updateState(state.extendedPublicKeyImporters[action.number], extendedPublicKeyImporterChange);
+  const importCount = Object.values(newState.extendedPublicKeyImporters)
+  .reduce((sum, current) => {
+    return sum + (current.extendedPublicKey !== "")
+  }, 0)
+  if (importCount === Object.keys(newState.extendedPublicKeyImporters).length) {
+    newState.visible = false;
+  }
   setConflict(newState.extendedPublicKeyImporters[action.number] ,state);
   return updateState(newState, {fingerprint: fingerprint(newState)});
 }
@@ -83,7 +92,6 @@ function updateTotalSigners(state, action) {
 }
 
 function setConflict(extendedPublicKeyImporter ,state) {
-  console.log('quorumReducer setConflict', extendedPublicKeyImporter ,state)
   if (state.finalizedNetwork) {
     extendedPublicKeyImporter.conflict = state.finalizedNetwork !== state.network || state.finalizedAddressType !== state.addressType;
   }
@@ -161,6 +169,8 @@ export default (state = initialState, action) => {
     return updateExtendedPublicKeyImporterState(state, action, 'extendedPublicKey');
   case SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED:
     return updateExtendedPublicKeyImporterState(updateFinalizedSettings(state, action), action, 'finalized');
+  case SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE:
+    return {...state, ...{visible: action.value}};
   default:
     return state;
   }

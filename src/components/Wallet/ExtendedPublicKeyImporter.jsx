@@ -61,7 +61,7 @@ class ExtendedPublicKeyImporter extends React.Component {
   };
 
   render() {
-    const { extendedPublicKeyImporter, finalizedNetwork, finalizedAddressType, network, addressType } = this.props;
+    const { extendedPublicKeyImporter, finalizedNetwork, network } = this.props;
     const hasConflict = extendedPublicKeyImporter.method && extendedPublicKeyImporter.method !== TEXT && extendedPublicKeyImporter.conflict
     let conflictMessage = "";
     if (hasConflict) {

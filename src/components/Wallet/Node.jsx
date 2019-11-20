@@ -11,10 +11,13 @@ import {
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText
+  TableRow, TableCell, Checkbox, FormHelperText, Paper,
+  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
 } from '@material-ui/core';
 import Copyable from "../Copyable";
+import UTXOSet from "../Spend/UTXOSet";
 import LaunchIcon from '@material-ui/icons/Launch';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 class Node extends React.Component {
 
@@ -27,9 +30,6 @@ class Node extends React.Component {
     bip32Path: PropTypes.string.isRequired,
     multisig: PropTypes.object,
     spend: PropTypes.bool.isRequired,
-    // balanceSats: PropTypes.object.isRequired,
-    // fetchedUTXOs: PropTypes.bool.isRequired,
-    // fetchUTXOsError: PropTypes.string.isRequired,
     change: PropTypes.bool.isRequired,
   };
 
@@ -38,7 +38,7 @@ class Node extends React.Component {
   }
 
   render = () => {
-    const {network, bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError, multisig} = this.props;
+    const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError, multisig} = this.props;
     return (
       <TableRow key={bip32Path}>
         <TableCell>
@@ -58,16 +58,48 @@ class Node extends React.Component {
           {fetchUTXOsError !== '' && <FormHelperText className="danger">{fetchUTXOsError}</FormHelperText>}
         </TableCell>
         <TableCell>
-          {multisig ?
-           <span>
-             <Copyable text={multisig.address}><code>{multisig.address}</code></Copyable>
-             &nbsp;
-             {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon />)}
-           </span>
+          {multisig ? this.renderAddress()
            : '...'}
         </TableCell>
       </TableRow>
       );
+  }
+
+  addressContent = () => {
+    const {multisig, network} = this.props;
+    return (
+      <div>
+        <Copyable text={multisig.address}><code>{multisig.address}</code></Copyable>
+        &nbsp;
+        {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon />)}
+      </div>
+    )
+  }
+
+  renderAddress = () => {
+    const {bip32Path, utxos, fetchedUTXOs, balanceSats} = this.props;
+    if (!fetchedUTXOs || balanceSats.isEqualTo(0)) {
+      return <Paper>{this.addressContent()}</Paper>
+    }
+    return (
+      <ExpansionPanel>
+      <ExpansionPanelSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id={'address-header'+bip32Path}
+      >
+        {this.addressContent()}
+     </ExpansionPanelSummary>
+     <ExpansionPanelDetails>
+      <UTXOSet
+        inputs={utxos}
+        inputsTotalSats={balanceSats}
+      />
+     </ExpansionPanelDetails>
+
+   </ExpansionPanel>
+  )
+
   }
 
   generate = () => {

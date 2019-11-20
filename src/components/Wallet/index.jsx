@@ -24,15 +24,16 @@ class CreateWallet extends React.Component {
   }
 
   render = () => {
+    const {visible} = this.props;
     return (
       <div>
-        <h1>Create Wallet</h1>
+        <h1>{visible ? 'Create' : 'Confirm'} Wallet</h1>
 
         <Box mt={2}>
         <Grid container spacing={3}>
           <Grid item md={8}>
 
-            {this.renderExtendedPublicKeyImporters()}
+            {visible && this.renderExtendedPublicKeyImporters()}
 
             <Box mt={2}><WalletGenerator /></Box>
 

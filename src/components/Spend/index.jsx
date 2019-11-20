@@ -50,7 +50,12 @@ class Spend extends React.Component {
       {
         this.spendable() &&
         <Box>
-          <Box mt={2}><UTXOSet/></Box>
+          <Box mt={2}>
+            <UTXOSet
+              inputs={transaction.inputs}
+              inputsTotalSats={transaction.inputsTotalSats}
+            />
+          </Box>
           <Box mt={2}><OutputsForm/></Box>
         </Box>
       }

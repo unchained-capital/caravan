@@ -9,7 +9,7 @@ import {externalLink} from "../../utils";
 import Copyable from "../Copyable";
 
 // Components
-import { 
+import {
   Card, CardHeader, CardContent,
   Table, TableHead, TableBody, TableFooter,
   TableRow, TableCell,
@@ -99,7 +99,6 @@ class UTXOSet extends React.Component {
 function mapStateToProps(state) {
   return {
     ...state.settings,
-    ...state.spend.transaction,
   };
 }
 

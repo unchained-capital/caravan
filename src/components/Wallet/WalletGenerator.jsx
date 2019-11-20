@@ -14,16 +14,19 @@ import {
 // Components
 import {
   Button, Card, CardHeader,
-  CardContent,
+  CardContent
 } from '@material-ui/core';
 import NodeSet from "./NodeSet";
+import ConfirmWallet from './ConfirmWallet';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
 import {
   updateDepositNodeAction,
   updateChangeNodeAction,
+  updateAutoSpendAction,
 } from "../../actions/walletActions";
+import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 5;
@@ -75,7 +78,7 @@ class WalletGenerator extends React.Component {
   }
 
   body() {
-    const {totalSigners} = this.props;
+    const {totalSigners, visible} = this.props;
     const {generating} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating) {
@@ -86,10 +89,17 @@ class WalletGenerator extends React.Component {
           </div>
         );
       } else {
+
+        // add download details button.
+
         return (
           <div>
+            <Button type="button" variant="contained" color="secondary" onClick={this.toggleImporters}>
+              {visible ? 'Hide Importers' : 'Show Importers'}
+            </Button>
+            <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.</p>
-            <Button type="button" variant="contained" color="primary" onClick={this.generate}>Generate Wallet</Button>
+            <Button type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
           </div>
         );
       }
@@ -100,6 +110,11 @@ class WalletGenerator extends React.Component {
         {'your wallet will be generated here.'}
       </p>
     );
+  }
+
+  toggleImporters = () => {
+    const { setImportersVisible, visible } = this.props;
+    setImportersVisible(!visible);
   }
 
   totalBalance = () => {
@@ -219,6 +234,8 @@ const mapDispatchToProps = {
   freeze: setFrozen,
   updateDepositNode: updateDepositNodeAction,
   updateChangeNode: updateChangeNodeAction,
+  updateAutoSpned: updateAutoSpendAction,
+  setImportersVisible: setExtendedPublicKeyImporterVisible,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);

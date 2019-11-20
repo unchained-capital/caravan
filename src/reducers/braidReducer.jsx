@@ -19,6 +19,7 @@ const initialState = {
   trailingEmptyNodes: 0,
   fetchUTXOsErrors: 0,
   balanceSats: new BigNumber(0),
+  autoSpend: false,
 };
 
 function updateNode(state, action) {
