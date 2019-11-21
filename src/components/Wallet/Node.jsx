@@ -18,6 +18,9 @@ import Copyable from "../Copyable";
 import UTXOSet from "../Spend/UTXOSet";
 import LaunchIcon from '@material-ui/icons/Launch';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {
+  setInputs,
+} from '../../actions/transactionActions';
 
 class Node extends React.Component {
 
@@ -31,6 +34,7 @@ class Node extends React.Component {
     multisig: PropTypes.object,
     spend: PropTypes.bool.isRequired,
     change: PropTypes.bool.isRequired,
+    setInputs: PropTypes.func.isRequired,
   };
 
   componentDidMount = () => {
@@ -110,7 +114,19 @@ class Node extends React.Component {
   }
 
   handleSpend = (e) => {
-    const {change, bip32Path, updateNode} = this.props;
+    const {change, bip32Path, updateNode, inputs, utxos, multisig, setInputs} = this.props;
+    let newInputs;
+    if (e.target.checked) {
+      newInputs = inputs.concat(utxos.map(utxo => ({...utxo, multisig})))
+    } else {
+      newInputs = inputs.filter(input => {
+        const newUtxos = utxos.filter(utxo => {
+          return utxo.txid === input.txid && utxo.index === input.index;
+        })
+        return newUtxos.length === 0;
+      })
+    }
+    setInputs(newInputs);
     updateNode(change, {spend: e.target.checked, bip32Path})
   }
 
@@ -123,10 +139,12 @@ function mapStateToProps(state, ownProps) {
     ...state.settings,
     ...{change},
     ...braid.nodes[ownProps.bip32Path],
+    ...state.spend.transaction
   };
 }
 
 const mapDispatchToProps = {
+  setInputs,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Node);

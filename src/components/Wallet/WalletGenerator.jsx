@@ -74,7 +74,7 @@ class WalletGenerator extends React.Component {
     return (
       <span className="justify-content-between d-flex">
         Your {requiredSigners}-of-{totalSigners} P2SH Multisig Wallet
-        <small className="text-muted">{`Extended Public Keys: ${this.extendedPublicKeyCount()}/${totalSigners}`}</small>
+        <small className="text-muted">{` Extended Public Keys: ${this.extendedPublicKeyCount()}/${totalSigners}`}</small>
       </span>
     );
   }
@@ -85,14 +85,14 @@ class WalletGenerator extends React.Component {
   }
 
   renderModeComponent = () => {
-    const {mode} = this.props;
-    if (mode.depositing) return <WalletDeposit/>
-    if (mode.spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
+    const {depositing, spending} = this.props;
+    if (depositing) return <WalletDeposit/>
+    if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
     return "";
   }
 
   body() {
-    const {totalSigners, visible} = this.props;
+    const {totalSigners, configuring} = this.props;
     const {generating} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating) {
@@ -108,12 +108,12 @@ class WalletGenerator extends React.Component {
         return (
           <div>
             <Button type="button" variant="contained" color="secondary" onClick={this.toggleImporters}>
-              {visible ? 'Hide Key Selection' : 'Edit Details'}
+              {configuring ? 'Hide Key Selection' : 'Edit Details'}
             </Button>
             <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
             <Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Download Wallet Details</Button>
-            <p>Please confimr that the above information is correct and you wish to generate your wallet.</p>
+            <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
             <Button type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
           </div>
         );
@@ -135,8 +135,8 @@ class WalletGenerator extends React.Component {
   }
 
   walletDetailsText = () => {
-    const {addressType, network, totalSigners, requiredSigners} = this.props;
-    return `Wallet: WALLET NAME HERE
+    const {addressType, network, totalSigners, requiredSigners, walletName} = this.props;
+    return `Wallet: ${walletName}
 
 Type: ${addressType}
 
@@ -167,15 +167,15 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
   }
 
   walletDetailsFilename = () => {
-    const {totalSigners, requiredSigners, addressType} = this.props;
-    return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-I-THINK-WE-NEED-A-WALLET-NAME.txt`;
+    const {totalSigners, requiredSigners, addressType, walletName} = this.props;
+    return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${walletName}.txt`;
 
   }
 
 
   toggleImporters = () => {
-    const { setImportersVisible, visible } = this.props;
-    setImportersVisible(!visible);
+    const { setImportersVisible, configuring } = this.props;
+    setImportersVisible(!configuring);
   }
 
   generate = () => {
@@ -283,6 +283,7 @@ function mapStateToProps(state) {
     ...{client: state.client},
     ...state.quorum,
     ...state.wallet,
+    ...state.wallet.info,
   };
 }
 

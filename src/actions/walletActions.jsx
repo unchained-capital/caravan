@@ -4,6 +4,7 @@ export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const UPDATE_VIEW_ADDRESSES = "UPDATE_VIEW_ADDRESSES";
 export const UPDATE_DEPOSITING = "UPDATE_DEPOSITING";
 export const UPDATE_SPENDING = "UPDATE_SPENDING";
+export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
 
 export function updateDepositNodeAction(value) {
   return {
@@ -49,6 +50,13 @@ export function updateDepositingAction(value) {
 export function updateSpendingAction(value) {
   return {
     type: UPDATE_SPENDING,
+    value: value
+  };
+}
+
+export function updateWalletNameAction(number, value) {
+  return {
+    type: UPDATE_WALLET_NAME,
     value: value
   };
 }

@@ -14,6 +14,11 @@ class WalletDeposit extends React.Component {
   state = {
     address: ""
   }
+
+  static propTypes = {
+    deposits: PropTypes.object.isRequired
+  }
+
   componentDidMount() {
     const { deposits } = this.props;
     const nodes = Object.values(deposits.nodes)

@@ -10,22 +10,28 @@ import {
 } from '@material-ui/core';
 
 class WalletControl extends React.Component {
+  scrollRef = React.createRef();
 
   static propTypes = {
     extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
   };
 
+  componentDidMount = () => {
+    this.scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
+
+
   render = () => {
     return (
-      <Grid container justify="center">
+      <Grid container justify="center"  ref={this.scrollRef}>
         <Grid item md={8}>
           <h3>Balance: {this.totalBalance()}</h3>
         </Grid>
         <Grid item md={4}>
-          <Box>
+          <Box component="span">
             <Button variant="contained" color="secondary" onClick={this.setDeposit}>Deposit</Button>
           </Box>
-          <Box mt={2}>
+          <Box component="span" ml={2}>
             <Button variant="contained" color="primary" onClick={this.setSpend}>Spend</Button>
           </Box>
         </Grid>

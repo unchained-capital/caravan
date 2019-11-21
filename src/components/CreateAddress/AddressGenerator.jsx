@@ -132,7 +132,6 @@ class AddressGenerator extends React.Component {
     const multisig = this.generateMultisig();
     const body = this.addressDetailsText(multisig);
     const filename = this.addressDetailsFilename(multisig);
-    const blob = new Blob([body], {type: 'text/plain'});
     downloadFile(body, filename);
   }
 

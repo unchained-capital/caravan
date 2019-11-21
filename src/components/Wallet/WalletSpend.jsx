@@ -5,9 +5,12 @@ import { connect } from 'react-redux';
 // Components
 import NodeSet from "./NodeSet";
 import {
-    Button, Card, CardHeader,
-    CardContent
+    Box, Card, CardHeader,
+    CardContent, Grid
   } from '@material-ui/core';
+
+  import OutputsForm from '../Spend/OutputsForm';
+
 
 class WalletSpend extends React.Component {
 
@@ -17,19 +20,30 @@ class WalletSpend extends React.Component {
   };
 
   render() {
+    const { addNode, updateNode } = this.props;
     return (
-        <Card>
-          <CardHeader title="Spend"/>
-          <CardContent>
-            <NodeSet addNode={this.addNode} updateNode={this.updateNode} />
-          </CardContent>
-        </Card>
+      <Box>
+        <Grid container>
+          <Grid item md={6}>
+            <Card>
+              <CardHeader title="Spend"/>
+              <CardContent>
+                <NodeSet addNode={addNode} updateNode={updateNode} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item md={6}>
+            <OutputsForm/>
+          </Grid>
+        </Grid>
+      </Box>
+
       )
     }
 }
 
 function mapStateToProps(state) {
-  return { ...state.wallet, };
+  return { ...state.wallet, ...state.spend};
 }
 
 const mapDispatchToProps = {

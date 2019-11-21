@@ -51,7 +51,7 @@ const initialState = {
   fingerprint: '',
   finalizedNetwork: '',
   finalizedAddressType: '',
-  visible: true,
+  configuring: true,
 };
 
 function updateExtendedPublicKeyImporterState(state, action, field) {
@@ -67,7 +67,7 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
     return sum + (current.extendedPublicKey !== "")
   }, 0)
   if (importCount === Object.keys(newState.extendedPublicKeyImporters).length) {
-    newState.visible = false;
+    newState.configuring = false;
   }
   setConflict(newState.extendedPublicKeyImporters[action.number] ,state);
   return updateState(newState, {fingerprint: fingerprint(newState)});
@@ -170,7 +170,7 @@ export default (state = initialState, action) => {
   case SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED:
     return updateExtendedPublicKeyImporterState(updateFinalizedSettings(state, action), action, 'finalized');
   case SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE:
-    return {...state, ...{visible: action.value}};
+    return {...state, ...{configuring: action.value}};
   default:
     return state;
   }

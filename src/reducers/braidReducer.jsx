@@ -19,6 +19,7 @@ const initialState = {
   trailingEmptyNodes: 0,
   fetchUTXOsErrors: 0,
   balanceSats: new BigNumber(0),
+  spendingSats: new BigNumber(0),
   autoSpend: false,
 };
 
@@ -41,6 +42,13 @@ function updateNode(state, action) {
       // balanceSats: state.balanceSats.plus(node.balanceSats),
     },
   };
+
+  if (typeof action.value.spend !== 'undefined') {
+    updatedState.spendingSats = action.value.spend ?
+      state.spendingSats.plus(node.balanceSats) :
+      state.spendingSats.minus(node.balanceSats);
+  }
+
   if (action.value.balanceSats) {
     updatedState.balanceSats = state.balanceSats.plus(node.balanceSats)
   }

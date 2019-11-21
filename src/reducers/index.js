@@ -28,7 +28,7 @@ const spendReducers = combineReducers({
 const walletReducers = combineReducers({
   deposits: braidReducer(UPDATE_DEPOSIT_NODE),
   change: braidReducer(UPDATE_CHANGE_NODE),
-  mode: walletReducer,
+  info: walletReducer
 });
 
 const rootReducers = combineReducers({
