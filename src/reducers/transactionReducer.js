@@ -100,6 +100,7 @@ function validateTransaction(state) {
     state.outputs.find((output) => (output.addressError !== '' || output.amountError  !== ''))
       || state.feeError !== ''
       || state.feeRateError !== ''
+      || state.inputs.length === 0
   ) {
     return {
       ...state,
@@ -230,7 +231,7 @@ function updateOutputAmount(state, action) {
   const newOutputs = [...state.outputs];
   const amount = action.value;
   const amountSats = bitcoinsToSatoshis(BigNumber(amount));
-  let error = validateOutputAmount(amountSats, state.inputsTotalSats);
+  let error = state.inputs.length ? validateOutputAmount(amount, state.inputsTotalSats) : "";
   newOutputs[action.number - 1].amount = amount;
   newOutputs[action.number - 1].amountError = error;
   newOutputs[action.number - 1].amountSats = (error ? '' : amountSats);

@@ -72,11 +72,12 @@ class OutputsForm extends React.Component {
   }
 
   async initialOutputState() {
+    const { inputs } = this.props;
     await this.getFeeEstimate();
     const {inputsTotalSats, fee, setOutputAmount} = this.props;
     const feeSats = bitcoinsToSatoshis(new BigNumber(fee));
     const outputAmount = satoshisToBitcoins(inputsTotalSats.minus(feeSats));
-    setOutputAmount(1, outputAmount.toFixed(8));
+    if (inputs.length) setOutputAmount(1, outputAmount.toFixed(8));
   }
 
   render() {
@@ -241,7 +242,8 @@ class OutputsForm extends React.Component {
   }
 
   outputsAndFeeTotal = () => {
-    const {outputs, fee} = this.props;
+    const {outputs, fee, inputs} = this.props;
+    if (!inputs.length) return '';
     return outputs
       .map((output) => new BigNumber(output.amount || 0))
       .reduce(
@@ -285,8 +287,8 @@ class OutputsForm extends React.Component {
   };
 
   handleFeeRateChange = (event) => {
-    const {setFeeRate} = this.props;
-    setFeeRate(event.target.value);
+    const {setFeeRate, inputs} = this.props;
+    if (inputs.length) setFeeRate(event.target.value);
   }
 
   handleFeeChange = (event) => {

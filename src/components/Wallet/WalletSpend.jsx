@@ -24,16 +24,16 @@ class WalletSpend extends React.Component {
     return (
       <Box>
         <Grid container>
-          <Grid item md={6}>
+          <Grid item md={12}>
+            <OutputsForm/>
+          </Grid>
+          <Grid item md={12}>
             <Card>
               <CardHeader title="Spend"/>
               <CardContent>
                 <NodeSet addNode={addNode} updateNode={updateNode} />
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item md={6}>
-            {inputs.length > 0 && <OutputsForm/>}
           </Grid>
         </Grid>
       </Box>

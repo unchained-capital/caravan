@@ -85,36 +85,27 @@ class Node extends React.Component {
 
   renderAddress = () => {
     const {bip32Path, utxos, fetchedUTXOs, balanceSats} = this.props;
-    // if (!fetchedUTXOs || balanceSats.isEqualTo(0)) {
+    if (!fetchedUTXOs || balanceSats.isEqualTo(0)) {
       return <Paper>{this.addressContent()}</Paper>
-  //   }
-  //   return (
-  //     <ExpansionPanel>
-  //     <ExpansionPanelSummary
-  //       expandIcon={<ExpandMoreIcon />}
-  //       aria-controls="panel1a-content"
-  //       id={'address-header'+bip32Path}
-  //     >
-  //       {this.addressContent()}
-  //    </ExpansionPanelSummary>
-  //    <ExpansionPanelDetails>
-  //      {
-  //        utxos.map(utxo =>
-  //          <Box mt={2} key={utxo.txid}>
-  //            <div>{utxo.txid}</div>
-  //            <div>{utxo.index}</div>
-  //            <div>{satoshisToBitcoins(utxo.amountSats).toString()}</div>
-  //          </Box>
-  //       )
-  //      }
-  //     {/* <UTXOSet
-  //       inputs={utxos}
-  //       inputsTotalSats={balanceSats}
-  //     /> */}
-  //    </ExpansionPanelDetails>
+    }
+    return (
+      <ExpansionPanel>
+      <ExpansionPanelSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id={'address-header'+bip32Path}
+      >
+        {this.addressContent()}
+     </ExpansionPanelSummary>
+     <ExpansionPanelDetails>
+      <UTXOSet
+        inputs={utxos}
+        inputsTotalSats={balanceSats}
+      />
+     </ExpansionPanelDetails>
 
-  //  </ExpansionPanel>
-  // )
+   </ExpansionPanel>
+  )
 
   }
 
