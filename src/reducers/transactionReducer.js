@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { updateState } from './utils';
-import { 
+import {
   MAINNET,
   P2SH,
   estimateMultisigTransactionFee,
@@ -8,8 +8,8 @@ import {
   validateFeeRate,
   validateFee,
   validateOutputAmount,
-  satoshisToBitcoins, 
-  bitcoinsToSatoshis, 
+  satoshisToBitcoins,
+  bitcoinsToSatoshis,
   validateAddress,
   unsignedMultisigTransaction,
 } from "unchained-bitcoin";
@@ -46,7 +46,7 @@ function sortInputs(a, b) {
   if (x < y) {return -1;}
   if (x > y) {return 1;}
   if (a.n < b.n) {return -1;}
-  if (a.n > b.n) {return 1;}    
+  if (a.n > b.n) {return 1;}
   return 0;
 };
 
@@ -97,8 +97,8 @@ function updateInputs(state, action) {
 
 function validateTransaction(state) {
   if (
-    state.outputs.find((output) => (output.addressError !== '' || output.amountError  !== '')) 
-      || state.feeError !== '' 
+    state.outputs.find((output) => (output.addressError !== '' || output.amountError  !== ''))
+      || state.feeError !== ''
       || state.feeRateError !== ''
   ) {
     return {
@@ -120,7 +120,7 @@ function validateTransaction(state) {
     } else{
       const action = diff.isLessThan(0) ? 'Increase' : 'Decrease';
       balanceError =`${action} by ${satoshisToBitcoins(diff.absoluteValue()).toFixed(8)}.`;
-    } 
+    }
     return {
       ...state,
       ...{balanceError},
@@ -149,10 +149,10 @@ function updateFeeRate(state, action) {
   const feeRateString = action.value;
   const feeRateError = validateFeeRate(feeRateString);
   const fee = (
-    feeRateError === '' ? 
+    feeRateError === '' ?
       setFeeForRate(state, feeRateString, state.outputs.length) :
       '');
-    
+
   return updateState(state, {
     feeRate: feeRateString,
     feeRateError,
@@ -166,7 +166,7 @@ function updateFee(state, action) {
   const feeSats = bitcoinsToSatoshis(feeString);
   const feeError = validateFee(feeSats, state.inputsTotalSats);
   const feeRate = (
-    feeError === '' ? 
+    feeError === '' ?
       estimateMultisigTransactionFeeRate(
         {
           addressType: state.addressType,
@@ -175,10 +175,10 @@ function updateFee(state, action) {
           m: state.requiredSigners,
           n: state.totalSigners,
           feesInSatoshis: feeSats,
-        }).toFixed(0) 
+        }).toFixed(0)
       :
       '');
-    
+
   return updateState(state, {
     fee: feeString,
     feeError,
@@ -254,7 +254,7 @@ function deleteOutput(state, action) {
 }
 
 function finalizeOutputs(state) {
-  const unsignedTransaction = unsignedMultisigTransaction(state.network, state.inputs, state.outputs); 
+  const unsignedTransaction = unsignedMultisigTransaction(state.network, state.inputs, state.outputs);
   return {
     ...state,
     ...{finalizedOutputs: true, unsignedTransaction},
@@ -274,7 +274,7 @@ export default (state = initialState, action) => {
   case SET_TOTAL_SIGNERS:
     return updateState(state, { totalSigners: action.value });
   case SET_INPUTS:
-    return updateInputs(state, action);
+    return validateTransaction(updateInputs(state, action));
   case ADD_OUTPUT:
     return validateTransaction(addOutput(state, action));
   case SET_OUTPUT_ADDRESS:
@@ -291,11 +291,11 @@ export default (state = initialState, action) => {
     return finalizeOutputs(state);
   case RESET_OUTPUTS:
     return updateState(state, {
-      outputs: initialOutputsState, 
+      outputs: initialOutputsState,
       fee: '',
       balanceError: '',
       // FIXME what about feeRate ?
-    }); 
+    });
   case SET_TXID:
     return updateState(state, { txid: action.value });
   default:

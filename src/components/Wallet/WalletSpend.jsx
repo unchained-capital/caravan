@@ -20,7 +20,7 @@ class WalletSpend extends React.Component {
   };
 
   render() {
-    const { addNode, updateNode } = this.props;
+    const { addNode, updateNode, inputs } = this.props;
     return (
       <Box>
         <Grid container>
@@ -33,7 +33,7 @@ class WalletSpend extends React.Component {
             </Card>
           </Grid>
           <Grid item md={6}>
-            <OutputsForm/>
+            {inputs.length > 0 && <OutputsForm/>}
           </Grid>
         </Grid>
       </Box>
@@ -43,7 +43,7 @@ class WalletSpend extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return { ...state.wallet, ...state.spend};
+  return { ...state.spend.transaction};
 }
 
 const mapDispatchToProps = {

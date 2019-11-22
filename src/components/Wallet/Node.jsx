@@ -11,7 +11,7 @@ import {
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText, Paper,
+  TableRow, TableCell, Checkbox, FormHelperText, Paper, Box,
   ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
 } from '@material-ui/core';
 import Copyable from "../Copyable";
@@ -42,7 +42,7 @@ class Node extends React.Component {
   }
 
   render = () => {
-    const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError, multisig} = this.props;
+    const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError, multisig, utxos} = this.props;
     return (
       <TableRow key={bip32Path}>
         <TableCell>
@@ -56,6 +56,9 @@ class Node extends React.Component {
         </TableCell>
         <TableCell>
           <code>{bip32Path}</code>
+        </TableCell>
+        <TableCell>
+          {utxos.length}
         </TableCell>
         <TableCell>
           {fetchedUTXOs ? satoshisToBitcoins(balanceSats).toFixed() : ''}
@@ -82,27 +85,36 @@ class Node extends React.Component {
 
   renderAddress = () => {
     const {bip32Path, utxos, fetchedUTXOs, balanceSats} = this.props;
-    if (!fetchedUTXOs || balanceSats.isEqualTo(0)) {
+    // if (!fetchedUTXOs || balanceSats.isEqualTo(0)) {
       return <Paper>{this.addressContent()}</Paper>
-    }
-    return (
-      <ExpansionPanel>
-      <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id={'address-header'+bip32Path}
-      >
-        {this.addressContent()}
-     </ExpansionPanelSummary>
-     <ExpansionPanelDetails>
-      <UTXOSet
-        inputs={utxos}
-        inputsTotalSats={balanceSats}
-      />
-     </ExpansionPanelDetails>
+  //   }
+  //   return (
+  //     <ExpansionPanel>
+  //     <ExpansionPanelSummary
+  //       expandIcon={<ExpandMoreIcon />}
+  //       aria-controls="panel1a-content"
+  //       id={'address-header'+bip32Path}
+  //     >
+  //       {this.addressContent()}
+  //    </ExpansionPanelSummary>
+  //    <ExpansionPanelDetails>
+  //      {
+  //        utxos.map(utxo =>
+  //          <Box mt={2} key={utxo.txid}>
+  //            <div>{utxo.txid}</div>
+  //            <div>{utxo.index}</div>
+  //            <div>{satoshisToBitcoins(utxo.amountSats).toString()}</div>
+  //          </Box>
+  //       )
+  //      }
+  //     {/* <UTXOSet
+  //       inputs={utxos}
+  //       inputsTotalSats={balanceSats}
+  //     /> */}
+  //    </ExpansionPanelDetails>
 
-   </ExpansionPanel>
-  )
+  //  </ExpansionPanel>
+  // )
 
   }
 

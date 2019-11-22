@@ -164,7 +164,7 @@ class OutputsForm extends React.Component {
                     fullWidth
                     label="Inputs Total"
                     readOnly={true}
-                    defaultValue={this.inputsTotal().toString()}
+                    value={this.inputsTotal().toString()}
                     disabled={finalizedOutputs}
                     InputProps={{
                       readOnly: true,

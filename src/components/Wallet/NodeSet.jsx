@@ -36,6 +36,7 @@ class NodeSet extends React.Component {
               <TableRow>
                 <TableCell>Spend?</TableCell>
                 <TableCell>BIP32 Path</TableCell>
+                <TableCell>UTXOs</TableCell>
                 <TableCell>Balance</TableCell>
                 <TableCell>Address</TableCell>
               </TableRow>
@@ -75,11 +76,21 @@ class NodeSet extends React.Component {
 
   renderNodes = () => {
     const {page, nodesPerPage, change, spend} = this.state;
-    const {addNode, updateNode} = this.props;
+    const {addNode, updateNode, changeNodes, depositNodes, spending} = this.props;
     const startingIndex = (page) * nodesPerPage;
     const nodesRows = [];
+    const nodes = change ? changeNodes : depositNodes
+    const nodeSet = spending ? Object.values(nodes)
+      .filter(node => node.balanceSats.isGreaterThan(0))
+      .reduce((nodesObject, currentNode) => {
+        nodesObject[currentNode.bip32Path] = currentNode;
+        return nodesObject;
+      },{})
+      : nodes;
     for (let index=0; index < nodesPerPage; index++) {
-      const bip32Path = this.bip32Path(startingIndex + index);
+      const whichOne = startingIndex + index;
+      if(whichOne > Object.keys(nodeSet).length -1) break;
+      const bip32Path = Object.values(nodeSet)[whichOne].bip32Path;
       const nodeRow = <Node
         key={bip32Path}
         bip32Path={bip32Path}
@@ -141,6 +152,7 @@ function mapStateToProps(state) {
   return {
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
+    spending: state.wallet.info.spending,
   };
 }
 
