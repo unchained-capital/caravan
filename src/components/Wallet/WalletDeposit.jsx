@@ -7,12 +7,14 @@ import QRCode from "qrcode.react";
 import Copyable from "../Copyable";
 import {
   Card, CardHeader,
-  CardContent
+  CardContent, TextField,
 } from '@material-ui/core';
 
 class WalletDeposit extends React.Component {
   state = {
-    address: ""
+    address: "",
+    amount: 0,
+    amountError: "",
   }
 
   static propTypes = {
@@ -35,19 +37,51 @@ class WalletDeposit extends React.Component {
   }
 
   render() {
-    const { address } = this.state;
+    const { address, amount, amountError } = this.state;
     return (
       <Card>
         <CardHeader title="Deposit"/>
         <CardContent>
-          <Copyable text={address} newline={true}>
-            <QRCode size={300} value={address} level={'L'} />
+        <TextField
+            fullWidth
+            label="Amount"
+            name="depositAmount"
+            onChange={this.handleAmountChange}
+            value={amount}
+            error={amountError != ""}
+            helperText={amountError}
+          />
+          <Copyable text={this.qrString()} newline={true}>
+            <QRCode size={300} value={this.qrString()} level={'L'} />
             <p>Scan QR code or click to copy address to clipboard.</p>
           </Copyable>
         </CardContent>
       </Card>
     )
   }
+
+  handleAmountChange = (event)=> {
+    const amount = event.target.value;
+    let error = ""
+
+    if (amount.length && !amount.match(/^[0-9\.]+$/)) {
+      error = "Amount must be numeric";
+    }
+    const decimal = amount.split('.');
+    if (decimal.length > 2) {
+      error = "Amount must be numeric";
+    } else if (decimal.length === 2 && decimal[1].length > 8) {
+      error = "Amount must have maximum precision of 8 decimal places";
+    }
+
+    this.setState({amount: event.target.value, amountError: error})
+  }
+
+  qrString = () => {
+    const {address, amount} = this.state;
+    return `bitcoin:${address}${amount ? '?amount='+amount : ''}`
+  }
+
 }
 
 function mapStateToProps(state) {
