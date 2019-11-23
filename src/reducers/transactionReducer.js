@@ -38,6 +38,8 @@ import {
   RESET_OUTPUTS,
 
   SET_TXID,
+
+  SET_IS_WALLET
 } from '../actions/transactionActions';
 
 function sortInputs(a, b) {
@@ -79,6 +81,7 @@ const initialState = {
   requiredSigners: 2,
   totalSigners: 3,
   unsignedTransaction: {},
+  isWallet: false,
 };
 
 function updateInputs(state, action) {
@@ -232,6 +235,8 @@ function updateOutputAmount(state, action) {
   const amount = action.value;
   const amountSats = bitcoinsToSatoshis(BigNumber(amount));
   let error = state.inputs.length ? validateOutputAmount(amount, state.inputsTotalSats) : "";
+  if (state.isWallet && error === "Output amount is too large.") error = ""
+
   newOutputs[action.number - 1].amount = amount;
   newOutputs[action.number - 1].amountError = error;
   newOutputs[action.number - 1].amountSats = (error ? '' : amountSats);
@@ -299,6 +304,8 @@ export default (state = initialState, action) => {
     });
   case SET_TXID:
     return updateState(state, { txid: action.value });
+  case SET_IS_WALLET:
+    return updateState(state, { isWallet: true} );
   default:
     return state;
   }

@@ -17,6 +17,7 @@ export const FINALIZE_OUTPUTS = 'FINALIZE_OUTPUTS';
 export const RESET_OUTPUTS = 'RESET_OUTPUTS';
 
 export const SET_TXID = 'SET_TXID';
+export const SET_IS_WALLET = 'SET_IS_WALLET';
 
 export function choosePerformSpend() {
   return {
@@ -105,5 +106,11 @@ export function setTXID(txid) {
   return {
     type: SET_TXID,
     value: txid,
+  };
+}
+
+export function setIsWallet() {
+  return {
+    type: SET_IS_WALLET,
   };
 }

@@ -11,7 +11,7 @@ import {
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText, Paper, Box,
+  TableRow, TableCell, Checkbox, FormHelperText, Paper,
   ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
 } from '@material-ui/core';
 import Copyable from "../Copyable";
@@ -21,6 +21,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   setInputs,
 } from '../../actions/transactionActions';
+import { updateAutoSpendAction } from "../../actions/walletActions"
 
 class Node extends React.Component {
 
@@ -117,7 +118,7 @@ class Node extends React.Component {
   }
 
   handleSpend = (e) => {
-    const {change, bip32Path, updateNode, inputs, utxos, multisig, setInputs} = this.props;
+    const {change, bip32Path, updateNode, inputs, utxos, multisig, setInputs, updateAutoSpend} = this.props;
     let newInputs;
     if (e.target.checked) {
       newInputs = inputs.concat(utxos.map(utxo => ({...utxo, multisig})))
@@ -130,7 +131,9 @@ class Node extends React.Component {
       })
     }
     setInputs(newInputs);
-    updateNode(change, {spend: e.target.checked, bip32Path})
+    updateNode(change, {spend: e.target.checked, bip32Path});
+    updateAutoSpend(false);
+
   }
 
 }
@@ -148,6 +151,7 @@ function mapStateToProps(state, ownProps) {
 
 const mapDispatchToProps = {
   setInputs,
+  updateAutoSpend: updateAutoSpendAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Node);

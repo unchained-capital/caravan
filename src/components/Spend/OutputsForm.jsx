@@ -323,7 +323,8 @@ class OutputsForm extends React.Component {
   }
 
   gatherSignaturesDisabled = () => {
-    const {finalizedOutputs, outputs} = this.props;
+    const {finalizedOutputs, outputs, inputs} = this.props;
+    if (inputs.length === 0) return true;
     if (finalizedOutputs || this.hasError()) { return true; }
     for (var i=0; i < outputs.length; i++) {
       const output = outputs[i];

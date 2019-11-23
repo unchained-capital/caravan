@@ -28,6 +28,7 @@ import {
   updateAutoSpendAction,
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
+import { setIsWallet } from "../../actions/transactionActions";
 import {downloadFile} from "../../utils"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
@@ -47,6 +48,7 @@ class WalletGenerator extends React.Component {
     freeze: PropTypes.func.isRequired,
     updateDepositNode: PropTypes.func.isRequired,
     updateChangeNode: PropTypes.func.isRequired,
+    setIsWallet: PropTypes.func.isRequired,
   };
 
   state = {
@@ -67,6 +69,11 @@ class WalletGenerator extends React.Component {
         </Box>
       </div>
     );
+  }
+
+  componentDidMount() {
+    const { setIsWallet } = this.props
+    setIsWallet();
   }
 
   title = () => {
@@ -293,6 +300,7 @@ const mapDispatchToProps = {
   updateChangeNode: updateChangeNodeAction,
   updateAutoSpned: updateAutoSpendAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
+  setIsWallet,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);

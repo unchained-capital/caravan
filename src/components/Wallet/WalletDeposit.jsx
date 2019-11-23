@@ -37,7 +37,7 @@ class WalletDeposit extends React.Component {
   }
 
   render() {
-    const { address, amount, amountError } = this.state;
+    const { amount, amountError } = this.state;
     return (
       <Card>
         <CardHeader title="Deposit"/>
@@ -48,7 +48,7 @@ class WalletDeposit extends React.Component {
             name="depositAmount"
             onChange={this.handleAmountChange}
             value={amount}
-            error={amountError != ""}
+            error={amountError !== ""}
             helperText={amountError}
           />
           <Copyable text={this.qrString()} newline={true}>
@@ -64,7 +64,7 @@ class WalletDeposit extends React.Component {
     const amount = event.target.value;
     let error = ""
 
-    if (amount.length && !amount.match(/^[0-9\.]+$/)) {
+    if (amount.length && !amount.match(/^[0-9.]+$/)) {
       error = "Amount must be numeric";
     }
     const decimal = amount.split('.');
