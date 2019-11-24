@@ -18,8 +18,10 @@ import Copyable from "../Copyable";
 import UTXOSet from "../Spend/UTXOSet";
 import LaunchIcon from '@material-ui/icons/Launch';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+// Actions
 import {
-  setInputs,
+  setInputs, setFeeRate,
 } from '../../actions/transactionActions';
 import { updateAutoSpendAction } from "../../actions/walletActions"
 
@@ -36,6 +38,7 @@ class Node extends React.Component {
     spend: PropTypes.bool.isRequired,
     change: PropTypes.bool.isRequired,
     setInputs: PropTypes.func.isRequired,
+    setFeeRate: PropTypes.func.isRequired,
   };
 
   componentDidMount = () => {
@@ -118,7 +121,8 @@ class Node extends React.Component {
   }
 
   handleSpend = (e) => {
-    const {change, bip32Path, updateNode, inputs, utxos, multisig, setInputs, updateAutoSpend} = this.props;
+    const {change, bip32Path, updateNode, inputs, utxos, multisig, setInputs,
+      updateAutoSpend, setFeeRate, feeRate} = this.props;
     let newInputs;
     if (e.target.checked) {
       newInputs = inputs.concat(utxos.map(utxo => ({...utxo, multisig})))
@@ -133,7 +137,7 @@ class Node extends React.Component {
     setInputs(newInputs);
     updateNode(change, {spend: e.target.checked, bip32Path});
     updateAutoSpend(false);
-
+    setFeeRate(feeRate);
   }
 
 }
@@ -151,6 +155,7 @@ function mapStateToProps(state, ownProps) {
 
 const mapDispatchToProps = {
   setInputs,
+  setFeeRate,
   updateAutoSpend: updateAutoSpendAction,
 };
 

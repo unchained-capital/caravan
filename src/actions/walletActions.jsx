@@ -1,5 +1,6 @@
 export const UPDATE_DEPOSIT_NODE = "UPDATE_DEPOSIT_NODE";
 export const UPDATE_CHANGE_NODE = "UPDATE_CHANGE_NODE";
+export const RESET_NODES_SPEND = "RESET_NODES_SPEND";
 export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const UPDATE_VIEW_ADDRESSES = "UPDATE_VIEW_ADDRESSES";
 export const UPDATE_DEPOSITING = "UPDATE_DEPOSITING";
@@ -24,6 +25,12 @@ export function updateChangeNodeAction(value) {
       ...{change: true}
     },
   };
+}
+
+export function resetNodesSpend() {
+  return {
+    type: RESET_NODES_SPEND
+  }
 }
 
 export function updateAutoSpendAction(value) {

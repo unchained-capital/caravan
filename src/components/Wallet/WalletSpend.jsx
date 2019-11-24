@@ -1,10 +1,16 @@
 import React from 'react';
-import PropTypes, { node } from 'prop-types';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js'
 
-import { updateAutoSpendAction, updateDepositNodeAction, updateChangeNodeAction } from "../../actions/walletActions";
-import { setInputs } from "../../actions/transactionActions";
+// Actions
+import {
+  updateAutoSpendAction,
+  updateDepositNodeAction,
+  updateChangeNodeAction,
+  resetNodesSpend,
+} from "../../actions/walletActions";
+import { setInputs, setFeeRate } from "../../actions/transactionActions";
 
 // Components
 import NodeSet from "./NodeSet";
@@ -23,6 +29,7 @@ class WalletSpend extends React.Component {
   static propTypes = {
     addNode: PropTypes.func.isRequired,
     updateNode: PropTypes.func.isRequired,
+    setFeeRate: PropTypes.func.isRequired,
   };
 
   state = {
@@ -90,28 +97,34 @@ class WalletSpend extends React.Component {
     }
 
     selectCoins = () => {
-      const { outputs, setInputs, fee, depositNodes, changeNodes, updateChangeNode, updateDepositNode } = this.props;
+      const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate,
+        updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate } = this.props;
       const outputsAmount = outputs.reduce((sum, output) => sum.plus(output.amountSats), new BigNumber(0));
       if (outputsAmount.isNaN()) return;
       const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
       if (outputsAmount.isEqualTo(this.state.outputsAmount) && feeAmount.isEqualTo(this.state.feeAmount)) return;
       const outputTotal = outputsAmount.plus(feeAmount);
-      const spendableInputs = Object.values(depositNodes).concat(Object.values(changeNodes));
+      const spendableInputs = Object.values(depositNodes)
+        .concat(Object.values(changeNodes))
+        .filter(node => node.balanceSats.isGreaterThan(0));
+
       let selectedUtxos = [];
       let inputTotal = new BigNumber(0);
+      resetNodesSpend();
       for (let i=0; i < spendableInputs.length; i++) {
         const spendableInput = spendableInputs[i];
         spendableInput.utxos.forEach(utxo => {
           selectedUtxos.push({...utxo, multisig: spendableInput.multisig});
         })
         inputTotal = inputTotal.plus(spendableInput.balanceSats);
-        (node.change ? updateChangeNode : updateDepositNode)({bip32Path: spendableInput.bip32Path, spend: true})
+        (spendableInput.change ? updateChangeNode : updateDepositNode)({bip32Path: spendableInput.bip32Path, spend: true})
         if (inputTotal.isGreaterThanOrEqualTo(outputTotal)) {
           break;
         }
       }
       this.setState({ outputsAmount, feeAmount })
       setInputs(selectedUtxos);
+      setFeeRate(feeRate); // recalulate fee
     }
 }
 
@@ -128,7 +141,9 @@ const mapDispatchToProps = {
   updateAutoSpend: updateAutoSpendAction,
   setInputs,
   updateChangeNode: updateChangeNodeAction,
-  updateDepositNode: updateDepositNodeAction
+  updateDepositNode: updateDepositNodeAction,
+  resetNodesSpend,
+  setFeeRate,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);
