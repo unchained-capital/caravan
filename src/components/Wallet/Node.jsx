@@ -11,7 +11,7 @@ import {
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText, Paper,
+  TableRow, TableCell, Checkbox, FormHelperText,
   ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
 } from '@material-ui/core';
 import Copyable from "../Copyable";
@@ -46,18 +46,21 @@ class Node extends React.Component {
   }
 
   render = () => {
-    const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError, multisig, utxos} = this.props;
+    const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError,
+      multisig, utxos, spending} = this.props;
     return (
       <TableRow key={bip32Path}>
-        <TableCell>
-          <Checkbox
-            id={bip32Path}
-            name="spend"
-            onChange={this.handleSpend}
-            checked={spend}
-            disabled={!fetchedUTXOs || balanceSats.isEqualTo(0)}
-          />
-        </TableCell>
+        { spending &&
+          <TableCell>
+            <Checkbox
+              id={bip32Path}
+              name="spend"
+              onChange={this.handleSpend}
+              checked={spend}
+              disabled={!fetchedUTXOs || balanceSats.isEqualTo(0)}
+            />
+          </TableCell>
+        }
         <TableCell>
           <code>{bip32Path}</code>
         </TableCell>
@@ -88,24 +91,23 @@ class Node extends React.Component {
   }
 
   renderAddress = () => {
-    const {bip32Path, utxos, fetchedUTXOs, balanceSats} = this.props;
-    if (!fetchedUTXOs || balanceSats.isEqualTo(0)) {
-      return <Paper>{this.addressContent()}</Paper>
-    }
+    const {bip32Path, utxos,  balanceSats} = this.props;
     return (
       <ExpansionPanel>
       <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={balanceSats.isGreaterThan(0) ? <ExpandMoreIcon /> : null}
         aria-controls="panel1a-content"
         id={'address-header'+bip32Path}
       >
         {this.addressContent()}
      </ExpansionPanelSummary>
      <ExpansionPanelDetails>
-      <UTXOSet
-        inputs={utxos}
-        inputsTotalSats={balanceSats}
-      />
+       { balanceSats.isGreaterThan(0) &&
+         <UTXOSet
+           inputs={utxos}
+           inputsTotalSats={balanceSats}
+         />
+       }
      </ExpansionPanelDetails>
 
    </ExpansionPanel>
@@ -149,7 +151,9 @@ function mapStateToProps(state, ownProps) {
     ...state.settings,
     ...{change},
     ...braid.nodes[ownProps.bip32Path],
-    ...state.spend.transaction
+    ...state.spend.transaction,
+    spending: state.wallet.info.spending,
+
   };
 }
 

@@ -28,13 +28,13 @@ class NodeSet extends React.Component {
   };
 
   render() {
-    const {page, change, nodesPerPage} = this.state;
+    const {page, change, nodesPerPage, spending} = this.state;
     return (
       <Box>
       <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Spend?</TableCell>
+                {spending && <TableCell>Spend?</TableCell>}
                 <TableCell>BIP32 Path</TableCell>
                 <TableCell>UTXOs</TableCell>
                 <TableCell>Balance</TableCell>

@@ -14,12 +14,13 @@ import { setInputs, setFeeRate } from "../../actions/transactionActions";
 
 // Components
 import NodeSet from "./NodeSet";
+import OutputsForm from '../Spend/OutputsForm';
+import WalletSign from './WalletSign'
 import {
     Box, Card, CardHeader,
     CardContent, Grid, Switch,
   } from '@material-ui/core';
 
-import OutputsForm from '../Spend/OutputsForm';
 import { bitcoinsToSatoshis } from 'unchained-bitcoin/lib/utils';
 
 let coinSelectTimer;
@@ -38,7 +39,6 @@ class WalletSpend extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('new props', nextProps)
     if (nextProps.autoSpend) {
       if (coinSelectTimer) clearTimeout(coinSelectTimer)
       coinSelectTimer = setTimeout(this.selectCoins, 1000);
@@ -50,7 +50,7 @@ class WalletSpend extends React.Component {
   }
 
   render() {
-    const { addNode, updateNode, autoSpend } = this.props;
+    const { finalizedOutputs } = this.props;
     return (
       <Box>
         <Grid container>
@@ -58,30 +58,40 @@ class WalletSpend extends React.Component {
             <OutputsForm/>
           </Grid>
           <Grid item md={12}>
-            <Card>
-              <CardHeader title="Spend"/>
-              <CardContent>
-                <Grid item md={12}>
-                  <Grid component="label" container alignItems="center" spacing={1}>
-                    <Grid item>Manual</Grid>
-                    <Grid item>
-                      <Switch
-                        checked={autoSpend}
-                        onChange={this.handleSpendMode}
-                    />
-                    </Grid>
-                    <Grid item>Auto</Grid>
-                  </Grid>
-                </Grid>
-                <NodeSet addNode={addNode} updateNode={updateNode} />
-              </CardContent>
-            </Card>
+            <Box mt={2}>
+              { finalizedOutputs ?
+                <WalletSign /> :
+                this.renderSpend()
+              }
+            </Box>
           </Grid>
         </Grid>
       </Box>
+    )
+  }
 
-      )
-    }
+  renderSpend = () => {
+    const { addNode, updateNode, autoSpend } = this.props;
+    return (
+      <Card>
+        <CardHeader title="Spend"/>
+        <CardContent>
+          <Grid item md={12}>
+            <Grid component="label" container alignItems="center" spacing={1}>
+              <Grid item>Manual</Grid>
+              <Grid item>
+                <Switch
+                  checked={autoSpend}
+                  onChange={this.handleSpendMode}
+              />
+              </Grid>
+              <Grid item>Auto</Grid>
+            </Grid>
+          </Grid>
+          <NodeSet addNode={addNode} updateNode={updateNode} />
+        </CardContent>
+      </Card>)
+  }
 
     handleSpendMode = (event) => {
       const { updateAutoSpend } = this.props;

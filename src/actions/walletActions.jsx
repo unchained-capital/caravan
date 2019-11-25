@@ -40,24 +40,21 @@ export function updateAutoSpendAction(value) {
   };
 }
 
-export function updateViewAdderssesAction(value) {
+export function updateViewAdderssesAction() {
   return {
     type: UPDATE_VIEW_ADDRESSES,
-    value: value
   };
 }
 
-export function updateDepositingAction(value) {
+export function updateDepositingAction() {
   return {
     type: UPDATE_DEPOSITING,
-    value: value
   };
 }
 
-export function updateSpendingAction(value) {
+export function updateSpendingAction() {
   return {
     type: UPDATE_SPENDING,
-    value: value
   };
 }
 

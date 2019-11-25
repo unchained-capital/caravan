@@ -19,6 +19,7 @@ import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
 import WalletDeposit from './WalletDeposit';
 import WalletSpend from './WalletSpend';
+import WalletView from './WalletView';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -92,9 +93,10 @@ class WalletGenerator extends React.Component {
   }
 
   renderModeComponent = () => {
-    const {depositing, spending} = this.props;
+    const {depositing, spending, viewAddresses} = this.props;
     if (depositing) return <WalletDeposit/>
-    if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
+    else if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
+    else if (viewAddresses) return <WalletView />
     return "";
   }
 
@@ -219,7 +221,6 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     const publicKeys = [];
     for (let extendedPublicKeyImporterNumber=1; extendedPublicKeyImporterNumber <= totalSigners; extendedPublicKeyImporterNumber++) {
       const extendedPublicKeyImporter = extendedPublicKeyImporters[extendedPublicKeyImporterNumber];
-      console.log("XPUB:", extendedPublicKeyImporter.extendedPublicKey, "NETWORK: ", network);
       const publicKey = deriveChildPublicKey(extendedPublicKeyImporter.extendedPublicKey, bip32Path, network);
       publicKeys.push(publicKey);
     }

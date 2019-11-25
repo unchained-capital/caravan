@@ -15,16 +15,26 @@ const initialState = {
   walletName: "My Multisig Wallet",
 };
 
+function setUnique(state, key) {
+  const newState = updateState(state, {
+    spending: false,
+    depositing: false,
+    viewAddresses: false,
+  });
+  newState[key] = true;
+  return newState;
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_AUTO_SPEND:
       return updateState(state, { autoSpend: action.value });
     case UPDATE_DEPOSITING:
-      return updateState(state, { depositing: action.value, spending: !action.value });
+      return setUnique(state, 'depositing');
     case UPDATE_SPENDING:
-      return updateState(state, { spending: action.value, depositing: !action.value });
+      return setUnique(state, 'spending');
     case UPDATE_VIEW_ADDRESSES:
-      return updateState(state, { viewAddresses: action.value });
+      return setUnique(state, 'viewAddresses');
     case UPDATE_WALLET_NAME:
       return updateState(state, { walletName: action.value });
     default:
