@@ -74,11 +74,10 @@ class NodeSet extends React.Component {
     );
   }
 
-  renderNodes = () => {
-    const {page, nodesPerPage, change, spend} = this.state;
-    const {addNode, updateNode, changeNodes, depositNodes, spending} = this.props;
-    const startingIndex = (page) * nodesPerPage;
-    const nodesRows = [];
+  getNodeSet = () => {
+    const {spending, changeNodes, depositNodes} = this.props;
+    const {change} = this.state;
+
     const nodes = change ? changeNodes : depositNodes
     const nodeSet = spending ? Object.values(nodes)
       .filter(node => node.balanceSats.isGreaterThan(0))
@@ -87,6 +86,15 @@ class NodeSet extends React.Component {
         return nodesObject;
       },{})
       : nodes;
+    return nodeSet
+  }
+
+  renderNodes = () => {
+    const {page, nodesPerPage, change, spend} = this.state;
+    const {addNode, updateNode} = this.props;
+    const startingIndex = (page) * nodesPerPage;
+    const nodesRows = [];
+    const nodeSet = this.getNodeSet();
     for (let index=0; index < nodesPerPage; index++) {
       const whichOne = startingIndex + index;
       if(whichOne > Object.keys(nodeSet).length -1) break;
@@ -125,9 +133,8 @@ class NodeSet extends React.Component {
   }
 
   rowCount = () => {
-    const {changeNodes, depositNodes} = this.props;
-    const {change} = this.state;
-    return Object.keys(change ? changeNodes : depositNodes).length;
+    const nodeSet = this.getNodeSet();
+    return Object.keys(nodeSet).length;
   }
 
   generateAnotherPage = () => {

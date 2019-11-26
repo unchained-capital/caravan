@@ -127,7 +127,7 @@ class Node extends React.Component {
       updateAutoSpend, setFeeRate, feeRate} = this.props;
     let newInputs;
     if (e.target.checked) {
-      newInputs = inputs.concat(utxos.map(utxo => ({...utxo, multisig})))
+      newInputs = inputs.concat(utxos.map(utxo => ({...utxo, multisig, bip32Path: bip32Path})))
     } else {
       newInputs = inputs.filter(input => {
         const newUtxos = utxos.filter(utxo => {

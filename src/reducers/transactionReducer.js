@@ -259,11 +259,11 @@ function deleteOutput(state, action) {
   };
 }
 
-function finalizeOutputs(state) {
+function finalizeOutputs(state, action) {
   const unsignedTransaction = unsignedMultisigTransaction(state.network, state.inputs, state.outputs);
   return {
     ...state,
-    ...{finalizedOutputs: true, unsignedTransaction},
+    ...{finalizedOutputs: action.value, unsignedTransaction},
   };
 }
 
@@ -294,7 +294,7 @@ export default (state = initialState, action) => {
   case SET_FEE:
     return validateTransaction(updateFee(state, action));
   case FINALIZE_OUTPUTS:
-    return finalizeOutputs(state);
+    return finalizeOutputs(state, action);
   case RESET_OUTPUTS:
     return updateState(state, {
       outputs: initialOutputsState,

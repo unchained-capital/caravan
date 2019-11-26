@@ -5,6 +5,10 @@ import {
   multisigRequiredSigners,
   multisigPublicKeys,
   satoshisToBitcoins,
+
+  multisigRedeemScript,
+  toHexString,
+
 } from 'unchained-bitcoin';
 import {
   PENDING,
@@ -69,10 +73,17 @@ class HardwareWalletSignatureImporter extends React.Component {
       //
       // This will need to be changed if we are signing inputs across
       // addresses.
-      const bip32Paths = inputs.map((input) => (signatureImporter.bip32Path));
+      const bip32Paths = inputs.map((input) => {
+        if (typeof input.bip32Path === 'undefined') return signatureImporter.bip32Path; // pubkey path
+        return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}` // xpub/pubkey slice away the m, keep /
+      });
       return SignMultisigTransaction({network, keystore, inputs, outputs, bip32Paths});
     } else {
-      return ExportPublicKey({network, keystore, bip32Path: signatureImporter.bip32Path});
+      const input = inputs[0]; // we can verify one, if it is on the device and can sign, we assume we can sign all inputs
+      let bip32Path;
+      if (typeof input.bip32Path === 'undefined') bip32Path = signatureImporter.bip32Path; // pubkey path
+      else bip32Path = `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}` // xpub/pubkey slice away the m, keep /
+      return ExportPublicKey({network, walletType, bip32Path: bip32Path});
     }
   }
 

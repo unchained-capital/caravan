@@ -299,7 +299,7 @@ class OutputsForm extends React.Component {
 
   handleFinalize = () => {
     const { finalizeOutputs } = this.props;
-    finalizeOutputs();
+    finalizeOutputs(true);
   };
 
   handleReset = () => {

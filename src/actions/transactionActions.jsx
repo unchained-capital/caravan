@@ -89,9 +89,10 @@ export function setFee(valueString) {
   };
 }
 
-export function finalizeOutputs() {
+export function finalizeOutputs(finalized) {
   return {
     type: FINALIZE_OUTPUTS,
+    value: finalized
   };
 }
 

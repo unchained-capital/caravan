@@ -124,7 +124,7 @@ class WalletSpend extends React.Component {
       for (let i=0; i < spendableInputs.length; i++) {
         const spendableInput = spendableInputs[i];
         spendableInput.utxos.forEach(utxo => {
-          selectedUtxos.push({...utxo, multisig: spendableInput.multisig});
+          selectedUtxos.push({...utxo, multisig: spendableInput.multisig, bip32Path: spendableInput.bip32Path});
         })
         inputTotal = inputTotal.plus(spendableInput.balanceSats);
         (spendableInput.change ? updateChangeNode : updateDepositNode)({bip32Path: spendableInput.bip32Path, spend: true})
