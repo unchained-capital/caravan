@@ -2,6 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { fetchAddressUTXOs } from "../../blockchain"
+import {
+  updateDepositNodeAction,
+} from "../../actions/walletActions";
+import BigNumber from "bignumber.js";
+
 // Components
 import QRCode from "qrcode.react";
 import Copyable from "../Copyable";
@@ -10,30 +16,65 @@ import {
   CardContent, TextField,
 } from '@material-ui/core';
 
+let depositTimer;
+
 class WalletDeposit extends React.Component {
   state = {
     address: "",
+    bip32Path: "",
     amount: 0,
     amountError: "",
   }
 
   static propTypes = {
-    deposits: PropTypes.object.isRequired
+    deposits: PropTypes.object.isRequired,
+    client: PropTypes.object.isRequired,
+    updateDepositNode: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
-    const { deposits } = this.props;
+    const { deposits, network, client, updateDepositNode } = this.props;
     const nodes = Object.values(deposits.nodes)
     for(let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       if (node.balanceSats.isEqualTo(0)) {
-        this.setState({address: node.multisig.address});
+        this.setState({address: node.multisig.address, bip32Path: node.bip32Path});
         break;
       }
     }
     if (this.state.address === "") {
       // TODO: get more
     }
+
+    depositTimer = setInterval(async () => {
+      let utxos;
+      try {
+        utxos = await fetchAddressUTXOs(this.state.address, network, client);
+        if (utxos.length) {
+          clearInterval(depositTimer)
+          const balanceSats = utxos
+          .reduce(
+            (accumulator, currentValue) => accumulator.plus(currentValue.amountSats),
+            new BigNumber(0));
+
+          updateDepositNode({
+            change: false,
+            bip32Path: this.state.bip32Path,
+            utxos,
+            balanceSats,
+            fetchedUTXOs: true,
+            fetchUTXOsError: ''
+          })
+        }
+      } catch(e) {
+        console.error(e);
+      }
+
+    }, 2000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(depositTimer)
   }
 
   render() {
@@ -85,11 +126,14 @@ class WalletDeposit extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return { ...state.wallet, };
+  return { ...state.wallet,
+    ...state.settings,
+    client: state.client,
+  };
 }
 
 const mapDispatchToProps = {
-
+  updateDepositNode: updateDepositNodeAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletDeposit);

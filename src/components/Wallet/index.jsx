@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 
 // Components
-import { Grid, Box } from '@material-ui/core';
+import { Grid, Box, Drawer, IconButton } from '@material-ui/core';
+import { Settings } from '@material-ui/icons';
+
 import NetworkPicker from '../NetworkPicker';
 import QuorumPicker from '../QuorumPicker';
 import AddressTypePicker from '../AddressTypePicker';
@@ -26,6 +28,10 @@ class CreateWallet extends React.Component {
     bip32,
   }
 
+  state = {
+    showSettings: false,
+  }
+
   render = () => {
     const {configuring, walletName, setName} = this.props;
     return (
@@ -42,7 +48,7 @@ class CreateWallet extends React.Component {
             <Box mt={2}><WalletGenerator /></Box>
 
           </Grid>
-          {configuring && this.renderSettings()}
+          {this.renderSettings()}
         </Grid>
       </Box>
       </div>
@@ -50,15 +56,36 @@ class CreateWallet extends React.Component {
   }
 
   renderSettings = () => {
-    return (
-    <Grid item md={4}>
-      <Box><QuorumPicker /></Box>
-      <Box mt={2}><AddressTypePicker /></Box>
-      <Box mt={2}><NetworkPicker /></Box>
-      <Box mt={2}><ClientPicker /></Box>
-    </Grid>
+    const {configuring} = this.props;
+    if (configuring)
+      return (
+        <Grid item md={4}>
+          <Box><QuorumPicker /></Box>
+          <Box mt={2}><AddressTypePicker /></Box>
+          <Box mt={2}><NetworkPicker /></Box>
+          <Box mt={2}><ClientPicker /></Box>
+        </Grid>
+      )
+    else return (
+      <div>
+      <Box position="fixed" right={10}>
+        <IconButton onClick={this.toggleDrawer}>
+          <Settings/>
+        </IconButton>
+      </Box>
+      <Drawer md={4} anchor="right" open={this.state.showSettings} onClose={this.toggleDrawer}>
+        <Box  width={400}>
 
-    )
+          <Box mt={2}><ClientPicker /></Box>
+        </Box>
+      </Drawer>
+
+      </div>
+      )
+  }
+
+  toggleDrawer = () => {
+    this.setState({showSettings: !this.state.showSettings})
   }
 
   renderExtendedPublicKeyImporters = () => {

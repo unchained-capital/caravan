@@ -5,10 +5,6 @@ import {
   multisigRequiredSigners,
   multisigPublicKeys,
   satoshisToBitcoins,
-
-  multisigRedeemScript,
-  toHexString,
-
 } from 'unchained-bitcoin';
 import {
   PENDING,
