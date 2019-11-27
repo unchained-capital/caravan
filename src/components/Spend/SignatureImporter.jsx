@@ -5,6 +5,7 @@ import {
   validateHex,
   validateMultisigSignature,
   multisigBIP32Path,
+  multisigBIP32Root,
   validateBIP32Path,
 } from 'unchained-bitcoin';
 import {
@@ -273,8 +274,9 @@ class SignatureImporter extends React.Component {
   //
 
   defaultBIP32Path = () => {
-    const {addressType, network} = this.props;
-    return multisigBIP32Path(addressType, network);
+    const {addressType, network, isWallet} = this.props;
+    return isWallet ? multisigBIP32Root(addressType, network) :
+      multisigBIP32Path(addressType, network);
   }
 
   resetBIP32Path = () => {

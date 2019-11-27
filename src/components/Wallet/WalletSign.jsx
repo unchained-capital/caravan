@@ -1,15 +1,30 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Components
 import SignatureImporter from '../Spend/SignatureImporter';
+import Transaction from '../Spend/Transaction';
 import {Box, Button} from "@material-ui/core";
 
 // Actions
-import { finalizeOutputs, setRequiredSigners } from '../../actions/transactionActions';
-
+import { finalizeOutputs, setRequiredSigners, resetTransaction } from '../../actions/transactionActions';
+import { spendNodes, resetWalletView } from "../../actions/walletActions";
 
 class WalletSign extends React.Component {
+  static propTypes = {
+    transaction: PropTypes.object.isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
+    finalizeOutputs: PropTypes.func.isRequired,
+    setRequiredSigners: PropTypes.func.isRequired,
+    spendNodes: PropTypes.func.isRequired,
+    resetTransaction: PropTypes.func.isRequired,
+  };
+
+  state = {
+    spent: false
+  }
+
   render = () => {
     return (
       <Box>
@@ -19,7 +34,23 @@ class WalletSign extends React.Component {
           onClick={this.handleCancel}>Cancel</Button>
 
       {this.renderSignatureImporters()}
-    </Box>
+
+      {
+        this.signaturesFinalized() &&
+        <Box mt={2}>
+          <Transaction/>
+        </Box>
+      }
+
+      {
+        (this.transactionFinalized() || this.state.spent) &&
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.handleReturn}>Return</Button>
+      }
+  </Box>
+
     )
   }
 
@@ -34,6 +65,30 @@ class WalletSign extends React.Component {
       );
     }
     return signatureImporters;
+  }
+
+  signaturesFinalized = () => {
+    const {signatureImporters} = this.props;
+    return Object.values(signatureImporters).length > 0 && Object.values(signatureImporters).every((signatureImporter) => signatureImporter.finalized);
+  }
+
+  transactionFinalized = () => {
+    const { transaction, spendNodes } = this.props;
+
+    const txid = transaction.txid;
+    if (txid !== "" && !this.state.spent) {
+      this.setState({spent: true})
+      spendNodes();
+      return true;
+    }
+
+    return false;
+  }
+
+  handleReturn = () => {
+    const { resetTransaction, resetWalletView } = this.props;
+    resetTransaction();
+    resetWalletView();
   }
 
   handleCancel = () => {
@@ -53,6 +108,12 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = { finalizeOutputs, setRequiredSigners };
+const mapDispatchToProps = {
+  finalizeOutputs,
+  setRequiredSigners,
+  spendNodes,
+  resetTransaction,
+  resetWalletView,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSign);

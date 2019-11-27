@@ -38,6 +38,7 @@ import {
   RESET_OUTPUTS,
 
   SET_TXID,
+  RESET_TRANSACTION,
 
   SET_IS_WALLET
 } from '../actions/transactionActions';
@@ -306,6 +307,8 @@ export default (state = initialState, action) => {
     return updateState(state, { txid: action.value });
   case SET_IS_WALLET:
     return updateState(state, { isWallet: true} );
+  case RESET_TRANSACTION:
+    return updateState(state, initialState)
   default:
     return state;
   }

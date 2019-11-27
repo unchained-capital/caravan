@@ -17,6 +17,7 @@ export const FINALIZE_OUTPUTS = 'FINALIZE_OUTPUTS';
 export const RESET_OUTPUTS = 'RESET_OUTPUTS';
 
 export const SET_TXID = 'SET_TXID';
+export const RESET_TRANSACTION = 'RESET_TRANSACTION';
 export const SET_IS_WALLET = 'SET_IS_WALLET';
 
 export function choosePerformSpend() {
@@ -99,6 +100,12 @@ export function finalizeOutputs(finalized) {
 export function resetOutputs() {
   return {
     type: RESET_OUTPUTS,
+  };
+}
+
+export function resetTransaction() {
+  return {
+    type: RESET_TRANSACTION,
   };
 }
 

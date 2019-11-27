@@ -6,6 +6,8 @@ export const UPDATE_VIEW_ADDRESSES = "UPDATE_VIEW_ADDRESSES";
 export const UPDATE_DEPOSITING = "UPDATE_DEPOSITING";
 export const UPDATE_SPENDING = "UPDATE_SPENDING";
 export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
+export const RESET_WALLET_VIEW = "RESET_WALLET_VIEW";
+export const SPEND_NODES = "SPEND_NODES";
 
 export function updateDepositNodeAction(value) {
   return {
@@ -30,6 +32,12 @@ export function updateChangeNodeAction(value) {
 export function resetNodesSpend() {
   return {
     type: RESET_NODES_SPEND
+  }
+}
+
+export function spendNodes() {
+  return {
+    type: SPEND_NODES
   }
 }
 
@@ -64,3 +72,10 @@ export function updateWalletNameAction(number, value) {
     value: value
   };
 }
+
+export function resetWalletView() {
+  return {
+    type: RESET_WALLET_VIEW
+  }
+}
+

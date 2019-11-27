@@ -4,6 +4,7 @@ import {
   UPDATE_DEPOSITING,
   UPDATE_SPENDING,
   UPDATE_WALLET_NAME,
+  RESET_WALLET_VIEW,
 } from "../actions/walletActions"
 import { updateState } from './utils';
 
@@ -15,12 +16,16 @@ const initialState = {
   walletName: "My Multisig Wallet",
 };
 
-function setUnique(state, key) {
-  const newState = updateState(state, {
+function resetWalletViews(state) {
+  return updateState(state, {
     spending: false,
     depositing: false,
     viewAddresses: false,
   });
+}
+
+function setUnique(state, key) {
+  const newState = resetWalletViews(state);
   newState[key] = true;
   return newState;
 }
@@ -37,6 +42,8 @@ export default (state = initialState, action) => {
       return setUnique(state, 'viewAddresses');
     case UPDATE_WALLET_NAME:
       return updateState(state, { walletName: action.value });
+    case RESET_WALLET_VIEW:
+      return resetWalletViews(state);
     default:
       return state;
   }

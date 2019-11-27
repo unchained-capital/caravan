@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { RESET_NODES_SPEND } from "../actions/walletActions";
+import { RESET_NODES_SPEND, SPEND_NODES } from "../actions/walletActions";
 
 const initialNodeState = {
   present: true,
@@ -81,6 +81,16 @@ function updateNode(state, action) {
   return updatedState;
 }
 
+function spendNodes(state) {
+  const updatedState = {...state };
+  Object.values(updatedState.nodes).forEach(node => {
+    if (node.spend) node.balanceSats = new BigNumber(0);
+    node.spend = false;
+  })
+  return updatedState;
+
+}
+
 function resetSpend(state) {
   const updatedState = {...state };
   Object.values(updatedState.nodes).forEach(node => {
@@ -93,6 +103,8 @@ export default (actionType) => (state = initialState, action) => {
   switch (action.type) {
   case RESET_NODES_SPEND:
     return resetSpend(state);
+  case SPEND_NODES:
+    return spendNodes(state);
   case actionType:
     return updateNode(state, action);
   default:
