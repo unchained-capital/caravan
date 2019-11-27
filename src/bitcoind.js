@@ -56,6 +56,16 @@ export async function bitcoindListUnspent({url, auth, address}) {
   });
 }
 
+export async function bitcoindGetAddtressStatus(url, auth, address) {
+  try {
+    const resp = await callBitcoind(url, auth, 'getreceivedbyaddress', [address] );
+
+    return {
+      used: resp.result > 0
+    }
+  } catch(e) {throw(e)}
+}
+
 export async function bitcoindEstimateSmartFee({url, auth, numBlocks = 2}) {
   const resp = await callBitcoind(url, auth, 'estimatesmartfee', [numBlocks]);
   const feeRate = resp.result.feerate;

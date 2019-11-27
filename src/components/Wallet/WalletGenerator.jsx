@@ -8,6 +8,7 @@ import {
 } from 'unchained-bitcoin';
 import {
   fetchAddressUTXOs,
+  getAddressStatus,
 } from "../../blockchain";
 
 // Components
@@ -236,8 +237,9 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
 
   fetchUTXOs = async (isChange, bip32Path, multisig, attemptToKeepGenerating) => {
     const {network, client} = this.props;
-    let utxos;
+    let utxos, addressStatus;
     try {
+      addressStatus = await getAddressStatus(multisig.address, network, client);
       utxos = await fetchAddressUTXOs(multisig.address, network, client);
     } catch(e) {
       console.error(e);
@@ -251,6 +253,10 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
               new BigNumber(0));
       this.updateNode(isChange, {bip32Path, balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''});
     }
+    if (addressStatus) {
+      this.updateNode(isChange, {bip32Path, addressUsed: addressStatus.used});
+    }
+
     // Similar to above, we wrap the call to generate the next node
     // with setTimeout with a timeout of zero to allow React time to
     // render.

@@ -34,6 +34,18 @@ export async function blockExplorerGetAddresesUTXOs(address, network) {
   }
 }
 
+export async function blockExplorerGetAddressStatus(address, network) {
+  try {
+    const addressesult = await axios.get(blockExplorerAPIURL(`/address/${address}`, network));
+    const addressData = addressesult.data;
+    return {
+      used: addressData.chain_stats.funded_txo_count > 0 || addressData.mempool_stats.funded_txo_count > 0
+    }
+  } catch(e) {
+    throw((e.response && e.response.data) || e);
+  }
+}
+
 export async function blockExplorerGetFeeEstimate(network) {
   try {
     const feeEstimatesResult = await axios.get(blockExplorerAPIURL('/fee-estimates', network));

@@ -37,7 +37,7 @@ class WalletDeposit extends React.Component {
     const nodes = Object.values(deposits.nodes)
     for(let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      if (node.balanceSats.isEqualTo(0)) {
+      if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
         this.setState({address: node.multisig.address, bip32Path: node.bip32Path});
         break;
       }
@@ -78,7 +78,7 @@ class WalletDeposit extends React.Component {
   }
 
   render() {
-    const { amount, amountError } = this.state;
+    const { amount, amountError, address } = this.state;
     return (
       <Card>
         <CardHeader title="Deposit"/>
@@ -93,6 +93,7 @@ class WalletDeposit extends React.Component {
             helperText={amountError}
           />
           <Copyable text={this.qrString()} newline={true}>
+            <p><code>{address}</code></p>
             <QRCode size={300} value={this.qrString()} level={'L'} />
             <p>Scan QR code or click to copy address to clipboard.</p>
           </Copyable>

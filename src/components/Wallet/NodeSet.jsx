@@ -28,7 +28,8 @@ class NodeSet extends React.Component {
   };
 
   render() {
-    const {page, change, nodesPerPage, spending} = this.state;
+    const {page, change, nodesPerPage} = this.state;
+    const {spending} = this.props
     return (
       <Box>
       <Table>
