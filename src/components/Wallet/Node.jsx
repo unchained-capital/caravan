@@ -23,7 +23,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   setInputs, setFeeRate,
 } from '../../actions/transactionActions';
-import { updateAutoSpendAction } from "../../actions/walletActions"
+import { updateAutoSpendAction } from "../../actions/walletActions";
+
+import styles from '../Spend//styles.module.scss';
 
 class Node extends React.Component {
 
@@ -80,10 +82,12 @@ class Node extends React.Component {
   }
 
   addressContent = () => {
-    const {multisig, network} = this.props;
+    const {multisig, network, addressUsed, balanceSats} = this.props;
     return (
       <div>
-        <Copyable text={multisig.address}><code>{multisig.address}</code></Copyable>
+        <Copyable text={multisig.address}>
+          <code className={addressUsed && balanceSats.isEqualTo(0) ? styles.spent : ""}>{multisig.address}</code>
+          </Copyable>
         &nbsp;
         {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon />)}
       </div>
