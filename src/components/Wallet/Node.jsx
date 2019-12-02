@@ -89,7 +89,7 @@ class Node extends React.Component {
           <code className={addressUsed && balanceSats.isEqualTo(0) ? styles.spent : ""}>{multisig.address}</code>
           </Copyable>
         &nbsp;
-        {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon />)}
+        {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon onClick={e => e.stopPropagation()} />)}
       </div>
     )
   }

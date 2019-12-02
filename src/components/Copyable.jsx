@@ -22,15 +22,17 @@ class Copyable extends React.Component {
   render = () => {
     const {newline, text, children} = this.props;
     return (
-      <CopyToClipboard text={text} onCopy={this.onCopy} options={{format: "text/plain"}}>
-        <span className="copyable">
-          {children || text}
-          {newline && <br />}
-          {/* {this.props.icon && <span>&nbsp;</span>} */}
-          {/* {this.props.icon && <FAIcon name="clipboard" />} */}
-          {this.badge()}
-        </span>
-      </CopyToClipboard>
+      <span onClick={e => e.stopPropagation()}>
+        <CopyToClipboard text={text} onCopy={this.onCopy} options={{format: "text/plain"}}>
+          <span className="copyable">
+            {children || text}
+            {newline && <br />}
+            {/* {this.props.icon && <span>&nbsp;</span>} */}
+            {/* {this.props.icon && <FAIcon name="clipboard" />} */}
+            {this.badge()}
+          </span>
+        </CopyToClipboard>
+      </span>
     );
   }
 
@@ -41,7 +43,7 @@ class Copyable extends React.Component {
       return <FileCopy fontSize="small"/>;
     } else { return null; }
   }
-  
+
   onCopy = () => {
     const timer = setTimeout(() => {
       this.setState({copied: false, timer: null});
