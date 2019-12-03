@@ -63,23 +63,18 @@ class HardwareWalletSignatureImporter extends React.Component {
     const {signatureImporter, network, inputs, outputs} = this.props;
     const keystore = signatureImporter.method;
     if (verified) {
-      // Sign all inputs with the same BIP32 path because we currently
-      // assume each input is attached to the same address, hence
-      // redeem script, hence public key, hence BIP32 path.
-      //
-      // This will need to be changed if we are signing inputs across
-      // addresses.
       const bip32Paths = inputs.map((input) => {
         if (typeof input.bip32Path === 'undefined') return signatureImporter.bip32Path; // pubkey path
         return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}` // xpub/pubkey slice away the m, keep /
       });
       return SignMultisigTransaction({network, keystore, inputs, outputs, bip32Paths});
     } else {
-      const input = inputs[0]; // we can verify one, if it is on the device and can sign, we assume we can sign all inputs
-      let bip32Path;
-      if (typeof input.bip32Path === 'undefined') bip32Path = signatureImporter.bip32Path; // pubkey path
-      else bip32Path = `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}` // xpub/pubkey slice away the m, keep /
-      return ExportPublicKey({network, walletType, bip32Path: bip32Path});
+      let bip32Path, bip32Paths;
+      bip32Path = signatureImporter.bip32Path; // pubkey path
+      if (typeof inputs[0].bip32Path !== 'undefined') {
+        bip32Paths = inputs.map(input => `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`); // xpub/pubkey slice away the m, keep /
+      }
+      return ExportPublicKey({network, walletType, bip32Path, bip32Paths});
     }
   }
 
@@ -252,10 +247,15 @@ class HardwareWalletSignatureImporter extends React.Component {
     const {inputs, signatureImporters, enableChangeMethod} = this.props;
 
     let verifyError = '';
+    const publicKeys = typeof publicKey === 'string' ? [publicKey] : publicKey;
 
     for (let inputIndex=0; inputIndex < inputs.length; inputIndex++) {
       const input = inputs[inputIndex];
-      const publicKeyIndex = multisigPublicKeys(input.multisig).indexOf(publicKey);
+      let publicKeyIndex
+      for(let i = 0; i < publicKeys.length; i++) {
+        publicKeyIndex = multisigPublicKeys(input.multisig).indexOf(publicKeys[i]);
+        if (publicKeyIndex > -1) break;
+      }
       if (publicKeyIndex < 0) {
         verifyError = <span><Error />&nbsp; This device does not contain the correct key.  Are you sure the BIP32 path is correct?</span>;
         break;
