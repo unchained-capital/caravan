@@ -33,11 +33,13 @@ class CreateWallet extends React.Component {
   }
 
   render = () => {
-    const {configuring, walletName, setName} = this.props;
+    const {configuring, walletName, setName, deposits} = this.props;
     return (
       <div>
-        {/* <h1>{configuring ? 'Create' : 'Confirm'} Wallet</h1> */}
-        <h1><EditableName number={0} name={walletName} setName={setName} /></h1>
+        <h1>
+        {!Object.values(deposits.nodes).length && <EditableName number={0} name={walletName} setName={setName} />}
+        {Object.values(deposits.nodes).length > 0 && <span>{walletName}</span>}
+        </h1>
 
         <Box mt={2}>
         <Grid container spacing={3}>
@@ -107,7 +109,8 @@ function mapStateToProps(state) {
   return {
     ...{totalSigners: state.settings.totalSigners},
     ...state.quorum,
-    ...{walletName: state.wallet.info.walletName}
+    ...{walletName: state.wallet.info.walletName},
+    ...state.wallet,
   };
 }
 
