@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { fetchAddressUTXOs } from "../../blockchain"
 import {
   updateDepositNodeAction,
+  resetWalletView,
 } from "../../actions/walletActions";
 import BigNumber from "bignumber.js";
 
@@ -14,6 +15,7 @@ import Copyable from "../Copyable";
 import {
   Card, CardHeader,
   CardContent, TextField,
+  Snackbar,
 } from '@material-ui/core';
 
 let depositTimer;
@@ -24,6 +26,7 @@ class WalletDeposit extends React.Component {
     bip32Path: "",
     amount: 0,
     amountError: "",
+    showReceived: false,
   }
 
   static propTypes = {
@@ -33,7 +36,7 @@ class WalletDeposit extends React.Component {
   }
 
   componentDidMount() {
-    const { deposits, network, client, updateDepositNode } = this.props;
+    const { deposits, network, client, updateDepositNode, resetWalletView } = this.props;
     const nodes = Object.values(deposits.nodes)
     for(let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
@@ -65,6 +68,8 @@ class WalletDeposit extends React.Component {
             fetchedUTXOs: true,
             fetchUTXOsError: ''
           })
+          this.setState({showReceived: true});
+          setTimeout(resetWalletView, 5000);
         }
       } catch(e) {
         console.error(e);
@@ -78,27 +83,42 @@ class WalletDeposit extends React.Component {
   }
 
   render() {
-    const { amount, amountError, address } = this.state;
+    const { amount, amountError, address, showReceived } = this.state;
     return (
-      <Card>
-        <CardHeader title="Deposit"/>
-        <CardContent>
-        <TextField
-            fullWidth
-            label="Amount"
-            name="depositAmount"
-            onChange={this.handleAmountChange}
-            value={amount}
-            error={amountError !== ""}
-            helperText={amountError}
-          />
-          <Copyable text={this.qrString()} newline={true}>
-            <p><code>{address}</code></p>
-            <QRCode size={300} value={this.qrString()} level={'L'} />
-            <p>Scan QR code or click to copy address to clipboard.</p>
-          </Copyable>
-        </CardContent>
-      </Card>
+      <div>
+        <Card>
+          <CardHeader title="Deposit"/>
+          <CardContent>
+          <TextField
+              fullWidth
+              label="Amount"
+              name="depositAmount"
+              onChange={this.handleAmountChange}
+              value={amount}
+              error={amountError !== ""}
+              helperText={amountError}
+            />
+            <Copyable text={this.qrString()} newline={true}>
+              <p><code>{address}</code></p>
+              <QRCode size={300} value={this.qrString()} level={'L'} />
+              <p>Scan QR code or click to copy address to clipboard.</p>
+            </Copyable>
+          </CardContent>
+        </Card>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={showReceived}
+          autoHideDuration={3000}
+          onClose={() => this.setState({showReceived: false})}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">Deposit received</span>}
+        />
+      </div>
     )
   }
 
@@ -135,6 +155,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   updateDepositNode: updateDepositNodeAction,
+  resetWalletView,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletDeposit);
