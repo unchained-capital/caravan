@@ -16,6 +16,7 @@ class NodeSet extends React.Component {
   static propTypes = {
     depositNodes: PropTypes.object.isRequired,
     changeNodes: PropTypes.object.isRequired,
+    canLoad: PropTypes.bool,
     addNode: PropTypes.func.isRequired,
     updateNode: PropTypes.func.isRequired,
   };
@@ -29,7 +30,7 @@ class NodeSet extends React.Component {
 
   render() {
     const {page, change, nodesPerPage} = this.state;
-    const {spending} = this.props
+    const {spending, canLoad} = this.props
     return (
       <Box>
       <Table>
@@ -64,7 +65,7 @@ class NodeSet extends React.Component {
               />
             </Grid>
             <Grid item md={2}>
-              {page === this.pageCount() - 1 && <Button type="button" variant="contained" color="secondary" onClick={this.generateAnotherPage}>More</Button>}
+              {canLoad && page === this.pageCount() - 1 && <Button type="button" variant="contained" color="secondary" onClick={this.generateAnotherPage}>More</Button>}
             </Grid>
             <Grid item md={4}>
               <Button type="button" variant="contained" color="primary" onClick={this.toggleChange}>{change ? "View Deposits" : "View Change"}</Button>

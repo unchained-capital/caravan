@@ -97,7 +97,7 @@ class WalletGenerator extends React.Component {
     const {depositing, spending, viewAddresses} = this.props;
     if (depositing) return <WalletDeposit/>
     else if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
-    else if (viewAddresses) return <WalletView />
+    else if (viewAddresses) return <WalletView  addNode={this.addNode} updateNode={this.updateNode}/>
     return "";
   }
 
@@ -265,7 +265,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     }
   }
 
-  generateNextNodeIfNecessary = (isChange, bip32Path) => {
+  generateNextNodeIfNecessary = (isChange) => {
     const {change, deposits} = this.props;
     const trailingEmptyNodes = (isChange ? change : deposits).trailingEmptyNodes;
     const fetchUTXOsErrors = (isChange ? change : deposits).fetchUTXOsErrors;

@@ -7,13 +7,13 @@ import { updateDepositingAction, updateSpendingAction } from "../../actions/wall
 // Components
 import NodeSet from "./NodeSet";
 
-function nullFun(){}
-
 class WalletView extends React.Component {
 
   render = () => {
+    const { addNode, updateNode } = this.props;
+
     return (
-        <NodeSet addNode={nullFun} updateNode={nullFun} />
+        <NodeSet addNode={addNode} updateNode={updateNode} canLoad={true} />
     )
   }
 

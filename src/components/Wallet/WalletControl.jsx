@@ -16,10 +16,6 @@ import {
 class WalletControl extends React.Component {
   scrollRef = React.createRef();
 
-  static propTypes = {
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-  };
-
   componentDidMount = () => {
     this.scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   }
