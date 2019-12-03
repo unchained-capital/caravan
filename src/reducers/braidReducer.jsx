@@ -85,8 +85,11 @@ function updateNode(state, action) {
 function spendNodes(state) {
   const updatedState = {...state };
   Object.values(updatedState.nodes).forEach(node => {
-    if (node.spend) node.balanceSats = new BigNumber(0);
-    node.spend = false;
+    if (node.spend) {
+      updatedState.balanceSats = updatedState.balanceSats.minus(node.balanceSats);
+      node.balanceSats = new BigNumber(0);
+      node.spend = false;
+    }
   })
   return updatedState;
 
