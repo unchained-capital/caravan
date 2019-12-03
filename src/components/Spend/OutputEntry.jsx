@@ -172,9 +172,9 @@ class OutputEntry extends React.Component {
   }
 
   balanceAction = () => {
-    const {amount} = this.props;
+    const {balanceError} = this.props;
     if ((!this.hasBalanceError()) || this.isNotBalanceable()) {return null; }
-    return (this.autoBalancedAmount() > (new BigNumber(amount))) ? "Increase" : "Decrease";
+    return balanceError.split(" ")[0];
   }
 
   handleBalance = () => {
