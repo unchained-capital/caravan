@@ -10,7 +10,12 @@ import {
   updateChangeNodeAction,
   resetNodesSpend,
 } from "../../actions/walletActions";
-import { setInputs, setFeeRate } from "../../actions/transactionActions";
+import {
+  setInputs,
+  setFeeRate,
+  addOutput,
+  setOutputAddress,
+ } from "../../actions/transactionActions";
 
 // Components
 import NodeSet from "./NodeSet";
@@ -55,7 +60,7 @@ class WalletSpend extends React.Component {
       <Box>
         <Grid container>
           <Grid item md={12}>
-            <OutputsForm/>
+            <OutputsForm addChange={this.handleAddChange} />
           </Grid>
           <Grid item md={12}>
             <Box mt={2}>
@@ -68,6 +73,20 @@ class WalletSpend extends React.Component {
         </Grid>
       </Box>
     )
+  }
+
+  handleAddChange = () => {
+    const {changeNodes, outputs, setAddress, addOutput} = this.props;
+    const change = Object.values(changeNodes)
+    for (let i=0; i < change.length; i++) {
+      const node = change[i];
+      if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
+        const outputIndex = outputs.length + 1
+        addOutput();
+        setAddress(outputIndex, node.multisig.address)
+        break;
+      }
+    }
   }
 
   renderSpend = () => {
@@ -152,8 +171,10 @@ const mapDispatchToProps = {
   setInputs,
   updateChangeNode: updateChangeNodeAction,
   updateDepositNode: updateDepositNodeAction,
+  setAddress: setOutputAddress,
   resetNodesSpend,
   setFeeRate,
+  addOutput,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);
