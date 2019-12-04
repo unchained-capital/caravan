@@ -139,13 +139,13 @@ class NodeSet extends React.Component {
     return Object.keys(nodeSet).length;
   }
 
-  generateAnotherPage = () => {
+  generateAnotherPage = async () => {
     const {addNode, depositNodes, changeNodes} = this.props;
     const {change, nodesPerPage, page} = this.state;
     const startingIndex = Object.keys(change ? changeNodes : depositNodes).length;
     for (let index=0; index < nodesPerPage + (nodesPerPage - (startingIndex % nodesPerPage)); index++) {
       const bip32path = this.bip32Path(startingIndex + index);
-      addNode(change, bip32path);
+      await addNode(change, bip32path);
     }
     if (startingIndex % nodesPerPage === 0) // otherwise we will be filling this page first
       this.setState({page: page + 1});

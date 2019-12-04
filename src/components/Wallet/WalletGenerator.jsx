@@ -202,22 +202,12 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     updater(update);
   }
 
-  addNode = (isChange, bip32Path, attemptToKeepGenerating) => {
-    this.updateNode(isChange, {bip32Path});
-    // If we just call generateMultisig here the calculations proceed
-    // so quickly that React never gets a chance to render; the code
-    // behaves as though generateMultisig is synchronous/blocking,
-    // even though it's not, and the page updates only once ALL the
-    // nodes have been calculated.
-    //
-    // If we instead wrap it with setTimeout with a timeout of 0, we
-    // push its evaluation into the next tick, which lets React catch
-    // up with rendering.  The nodes appear in the UI in rolling
-    // batches.
-    setTimeout(() => this.generateMultisig(isChange, bip32Path, attemptToKeepGenerating));
+  addNode = async (isChange, bip32Path, attemptToKeepGenerating) => {
+    const multisigUpdates = await this.generateMultisig(isChange, bip32Path, attemptToKeepGenerating);
+    this.updateNode(isChange, {bip32Path, ...multisigUpdates})
   }
 
-  generateMultisig = (isChange, bip32Path, attemptToKeepGenerating) => {
+  generateMultisig = async (isChange, bip32Path, attemptToKeepGenerating) => {
     const {extendedPublicKeyImporters, totalSigners, network, addressType, requiredSigners} = this.props;
     const publicKeys = [];
     for (let extendedPublicKeyImporterNumber=1; extendedPublicKeyImporterNumber <= totalSigners; extendedPublicKeyImporterNumber++) {
@@ -228,22 +218,21 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     publicKeys.sort(); // BIP67
 
     const multisig = generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys);
-    this.updateNode(isChange, {bip32Path, multisig});
-    // Similar to above, we wrap the call to lookup the node balance
-    // with setTimeout with a timeout of zero to allow React time to
-    // render.
-    setTimeout(() => this.fetchUTXOs(isChange, bip32Path, multisig, attemptToKeepGenerating));
+
+    const utxoUpdates = await this.fetchUTXOs(isChange, bip32Path, multisig, attemptToKeepGenerating);
+    return {multisig, ...utxoUpdates};
   }
 
   fetchUTXOs = async (isChange, bip32Path, multisig, attemptToKeepGenerating) => {
     const {network, client} = this.props;
     let utxos, addressStatus;
+    let updates = {};
     try {
       addressStatus = await getAddressStatus(multisig.address, network, client);
       utxos = await fetchAddressUTXOs(multisig.address, network, client);
     } catch(e) {
       console.error(e);
-      this.updateNode({bip32Path, fetchUTXOsError: e.toString()});
+      updates =  {fetchUTXOsError: e.toString()}
     }
     if (utxos) {
       const balanceSats = utxos
@@ -251,18 +240,16 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
             .reduce(
               (accumulator, currentValue) => accumulator.plus(currentValue),
               new BigNumber(0));
-      this.updateNode(isChange, {bip32Path, balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''});
+      updates = {...updates, balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''}
     }
     if (addressStatus) {
-      this.updateNode(isChange, {bip32Path, addressUsed: addressStatus.used});
+      updates = {...updates, addressUsed: addressStatus.used};
     }
 
-    // Similar to above, we wrap the call to generate the next node
-    // with setTimeout with a timeout of zero to allow React time to
-    // render.
     if (attemptToKeepGenerating) {
       setTimeout(() => this.generateNextNodeIfNecessary(isChange));
     }
+    return updates;
   }
 
   generateNextNodeIfNecessary = (isChange) => {
