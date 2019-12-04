@@ -261,7 +261,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     // with setTimeout with a timeout of zero to allow React time to
     // render.
     if (attemptToKeepGenerating) {
-      setTimeout(() => this.generateNextNodeIfNecessary(isChange, bip32Path));
+      setTimeout(() => this.generateNextNodeIfNecessary(isChange));
     }
   }
 

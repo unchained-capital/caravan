@@ -140,14 +140,15 @@ class NodeSet extends React.Component {
   }
 
   generateAnotherPage = () => {
-    const {addNode} = this.props;
+    const {addNode, depositNodes, changeNodes} = this.props;
     const {change, nodesPerPage, page} = this.state;
-    const startingIndex = nodesPerPage * this.pageCount();
-    for (let index=0; index < nodesPerPage; index++) {
+    const startingIndex = Object.keys(change ? changeNodes : depositNodes).length;
+    for (let index=0; index < nodesPerPage + (nodesPerPage - (startingIndex % nodesPerPage)); index++) {
       const bip32path = this.bip32Path(startingIndex + index);
       addNode(change, bip32path);
     }
-    this.setState({page: page + 1});
+    if (startingIndex % nodesPerPage === 0) // otherwise we will be filling this page first
+      this.setState({page: page + 1});
   }
 
   toggleChange = () => {

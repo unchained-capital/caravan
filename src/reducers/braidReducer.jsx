@@ -65,13 +65,14 @@ function updateNode(state, action) {
     const p2Index = parseInt(p2Segments[2]);
     return p1Index - p2Index;
   });
+  let nodeFoundWithValue = false
   for (let i=0; i < allBIP32Paths.length; i++) {
     const bip32Path = allBIP32Paths[allBIP32Paths.length - (i + 1)];
     const otherNode = updatedState.nodes[bip32Path];
     if (otherNode.fetchedUTXOs) {
-      if (node.balanceSats.isEqualTo(0)) {
+      if (otherNode.balanceSats.isEqualTo(0) && !nodeFoundWithValue) {
         trailingEmptyNodes++;
-      };
+      } else nodeFoundWithValue = true
     }
     if (otherNode.fetchUTXOsError !== '') {
       fetchUTXOsErrors++;
