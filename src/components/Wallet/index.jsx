@@ -45,7 +45,7 @@ class CreateWallet extends React.Component {
         <Grid container spacing={3}>
           <Grid item md={configuring ? 8 : 12}>
 
-            {configuring && this.renderExtendedPublicKeyImporters()}
+            {this.renderExtendedPublicKeyImporters()}
 
             <Box mt={2}><WalletGenerator /></Box>
 
@@ -91,11 +91,11 @@ class CreateWallet extends React.Component {
   }
 
   renderExtendedPublicKeyImporters = () => {
-    const {totalSigners} = this.props;
+    const {totalSigners, configuring} = this.props;
     const extendedPublicKeyImporters = [];
     for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum  <= totalSigners; extendedPublicKeyImporterNum++) {
       extendedPublicKeyImporters.push(
-        <Box key={extendedPublicKeyImporterNum} mt={extendedPublicKeyImporterNum===1 ? 0 : 2}>
+        <Box key={extendedPublicKeyImporterNum} mt={extendedPublicKeyImporterNum===1 ? 0 : 2} display={configuring ? 'block' : 'none'}>
           <ExtendedPublicKeyImporter key={extendedPublicKeyImporterNum} number={extendedPublicKeyImporterNum} />
         </Box>
       );
