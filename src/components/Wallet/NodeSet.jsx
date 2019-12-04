@@ -120,7 +120,7 @@ class NodeSet extends React.Component {
   }
 
   handleChangeRowsPerPage = (e) => {
-    console.log('rows per page change', e)
+    this.setState({nodesPerPage: e.target.value, page: 0});
   }
 
   bip32Path = (index) => {
