@@ -9,7 +9,7 @@ import {Box, Button} from "@material-ui/core";
 
 // Actions
 import { finalizeOutputs, setRequiredSigners, resetTransaction } from '../../actions/transactionActions';
-import { spendNodes, resetWalletView } from "../../actions/walletActions";
+import { spendNodes, resetWalletView,   updateChangeNodeAction } from "../../actions/walletActions";
 
 class WalletSign extends React.Component {
   static propTypes = {
@@ -19,6 +19,7 @@ class WalletSign extends React.Component {
     setRequiredSigners: PropTypes.func.isRequired,
     spendNodes: PropTypes.func.isRequired,
     resetTransaction: PropTypes.func.isRequired,
+    getChangeNode: PropTypes.func.isRequired,
   };
 
   state = {
@@ -73,11 +74,19 @@ class WalletSign extends React.Component {
   }
 
   transactionFinalized = () => {
-    const { transaction, spendNodes } = this.props;
+    const { transaction, spendNodes, getChangeNode, updateChangeNode } = this.props;
 
     const txid = transaction.txid;
     if (txid !== "" && !this.state.spent) {
       this.setState({spent: true})
+      const changeNode = getChangeNode();
+      const changeAddress = changeNode.multisig.address;
+      for (let i = 0; i < transaction.outputs.length; i++) {
+        if (changeAddress === transaction.outputs[i].address) {
+          updateChangeNode({bip32Path: changeNode.bip32Path, balanceSats: transaction.outputs[i].amountSats})
+          break;
+        }
+      }
       spendNodes();
       return true;
     }
@@ -114,6 +123,7 @@ const mapDispatchToProps = {
   spendNodes,
   resetTransaction,
   resetWalletView,
+  updateChangeNode: updateChangeNodeAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSign);

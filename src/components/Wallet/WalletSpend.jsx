@@ -65,7 +65,7 @@ class WalletSpend extends React.Component {
           <Grid item md={12}>
             <Box mt={2}>
               { finalizedOutputs ?
-                <WalletSign /> :
+                <WalletSign getChangeNode={this.getChangeNode}/> :
                 this.renderSpend()
               }
             </Box>
@@ -75,18 +75,23 @@ class WalletSpend extends React.Component {
     )
   }
 
-  handleAddChange = () => {
-    const {changeNodes, outputs, setAddress, addOutput} = this.props;
+  getChangeNode = () => {
+    const {changeNodes} = this.props;
     const change = Object.values(changeNodes)
     for (let i=0; i < change.length; i++) {
       const node = change[i];
       if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
-        const outputIndex = outputs.length + 1
-        addOutput();
-        setAddress(outputIndex, node.multisig.address)
-        break;
+        return node;
       }
     }
+  }
+
+  handleAddChange = () => {
+    const {outputs, setAddress, addOutput} = this.props;
+    const node = this.getChangeNode();
+    const outputIndex = outputs.length + 1
+    addOutput();
+    setAddress(outputIndex, node.multisig.address)
   }
 
   renderSpend = () => {
