@@ -70,7 +70,7 @@ function updateNode(state, action) {
     const bip32Path = allBIP32Paths[allBIP32Paths.length - (i + 1)];
     const otherNode = updatedState.nodes[bip32Path];
     if (otherNode.fetchedUTXOs) {
-      if (otherNode.balanceSats.isEqualTo(0) && !nodeFoundWithValue) {
+      if (otherNode.balanceSats.isEqualTo(0) && !otherNode.addressUsed && !nodeFoundWithValue) {
         trailingEmptyNodes++;
       } else nodeFoundWithValue = true
     }
@@ -90,6 +90,7 @@ function spendNodes(state) {
       updatedState.balanceSats = updatedState.balanceSats.minus(node.balanceSats);
       node.balanceSats = new BigNumber(0);
       node.spend = false;
+      node.utxos = [];
     }
   })
   return updatedState;
