@@ -9,7 +9,8 @@ import {
   bitcoindListUnspent,
   bitcoindEstimateSmartFee,
   bitcoindSendRawTransaction,
-  bitcoindGetAddtressStatus,
+  bitcoindParams,
+  bitcoindGetAddressStatus,
 } from "./bitcoind";
 
 export const BLOCK_EXPLORER = 'public';
@@ -41,7 +42,7 @@ export function getAddressStatus(address, network, client) {
   if (client.type === BLOCK_EXPLORER) {
     return blockExplorerGetAddressStatus(address, network);
   } else {
-    return bitcoindGetAddtressStatus({
+    return bitcoindGetAddressStatus({
       ...bitcoindParams(client),
       ...{address}
     });

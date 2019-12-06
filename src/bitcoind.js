@@ -18,9 +18,13 @@ async function callBitcoind(url, auth, method, params = []) {
         params,
       },
     }).then(resp => resolve(resp.data)).catch(reject);
+  });
+}
 
-
-  })
+export function bitcoindParams(client) {
+  const {url, username, password} = client;
+  const auth = { username, password };
+  return {url, auth};
 }
 
 /**
@@ -31,10 +35,11 @@ async function callBitcoind(url, auth, method, params = []) {
  * @param {string} options.address - The address from which to obtain the information
  * @returns {UTXO} object for signing transaction inputs
  */
-export async function bitcoindListUnspent({url, auth, address}) {
+export async function bitcoindListUnspent({url, auth, address, addresses}) {
   return new Promise(async (resolve) => {
     try {
-      const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, [address]], );
+      const addressParam = addresses || [address]
+      const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, addressParam], );
       const promises = [];
       resp.result.forEach(utxo => {
         promises.push(callBitcoind(url, auth, 'getrawtransaction', [utxo.txid]))
@@ -56,14 +61,21 @@ export async function bitcoindListUnspent({url, auth, address}) {
   });
 }
 
-export async function bitcoindGetAddtressStatus(url, auth, address) {
+
+export async function bitcoindGetAddressStatus({url, auth, address}) {
   try {
     const resp = await callBitcoind(url, auth, 'getreceivedbyaddress', [address] );
 
     return {
       used: resp.result > 0
     }
-  } catch(e) {throw(e)}
+  } catch(e) {
+    console.log('get address status error', e.response)
+    if (e.response && e.response.data.error.code === -4) {
+      return {used: false};
+    }
+    throw(e); //(e.response && e.response.data.error.message) || e);
+  }
 }
 
 export async function bitcoindEstimateSmartFee({url, auth, numBlocks = 2}) {
