@@ -9,10 +9,12 @@ import {
   Card,
   CardHeader,
   CardContent,
-  FormControlLabel,
   TextField,
   InputAdornment,
-  Switch,
+  FormControl,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from '@material-ui/core';
 
 // Actions
@@ -48,7 +50,7 @@ class ClientPicker extends React.Component {
 
   handleTypeChange = (event) => {
     const { setType, network, setUrl } = this.props;
-    const type = event.target.checked ? 'private' : 'public';
+    const type = event.target.value;
     if (type === 'private' && !this.state.url_edited) {
       setUrl(`http://localhost:${network === 'mainnet' ? 8332 : 18332}`)
     }
@@ -96,27 +98,25 @@ class ClientPicker extends React.Component {
 
   toggle = () => {
     const { client } = this.props;
-    const label = client.type.charAt(0).toUpperCase() + client.type.slice(1);
     return (
+      <FormControl component="fieldset">
+      <RadioGroup  name="client-type" value={client.type} onChange={this.handleTypeChange}>
       <FormControlLabel
-        control={
-          <Switch
-            color="primary"
-            checked={client.type === 'private'}
-            onChange={this.handleTypeChange}
-            value="private" />
-        }
-        label={label}
+        id="client-public"
+        control={<Radio color="primary"/>}
+        value="public"
+        label="Public"
       />
+      <FormControlLabel
+        id="client-private"
+        control={<Radio color="primary"/>}
+        value="private"
+        label="Private"
+      />
+      </RadioGroup>
+    </FormControl>
     );
   }
-
-  title = () => (
-    <Grid container justify="space-between">
-      <Grid item>Consensus</Grid>
-      <Grid item>{this.toggle()}</Grid>
-    </Grid>
-  )
 
   disabled = () => (false);
 
@@ -124,8 +124,9 @@ class ClientPicker extends React.Component {
     const { client, url_error, username_error, password_error } = this.props;
     return (
       <Card>
-        <CardHeader title={this.title()}/>
+        <CardHeader title="Consensus"/>
         <CardContent>
+        {this.toggle()}
           {(client.type === 'public')
            ? (
              <p>
