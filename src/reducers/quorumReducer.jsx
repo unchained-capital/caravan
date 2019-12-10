@@ -64,7 +64,7 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
   newState.extendedPublicKeyImporters[action.number] = updateState(state.extendedPublicKeyImporters[action.number], extendedPublicKeyImporterChange);
   const importCount = Object.values(newState.extendedPublicKeyImporters)
   .reduce((sum, current) => {
-    return sum + (current.extendedPublicKey !== "")
+    return sum + (current.finalized)
   }, 0)
   if (importCount === Object.keys(newState.extendedPublicKeyImporters).length) {
     newState.configuring = false;
