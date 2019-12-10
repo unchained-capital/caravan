@@ -11,6 +11,7 @@ class BitcoindAddressImporter extends React.Component {
   static propTypes = {
     addresses: PropTypes.array.isRequired,
     client: PropTypes.object.isRequired,
+    autoImport: PropTypes.bool
   };
 
   state = {
@@ -22,7 +23,7 @@ class BitcoindAddressImporter extends React.Component {
   };
 
   componentDidMount = () => {
-    interval = setInterval(this.checkAddress, 5000)
+    interval = setInterval(this.checkAddress, 5000);
   }
 
   componentWillUnmount = () => {
@@ -32,24 +33,49 @@ class BitcoindAddressImporter extends React.Component {
   render() {
     const { imported, importError, rescan, addressPresent, addressesError } = this.state;
 
-    if (imported) {
-      if (rescan) {
-        return <FormHelperText>Initiated {this.pluralOrSingularAddress()} import, rescan of your node may take some time.</FormHelperText>
-      } else {
-        return <FormHelperText>Initiated {this.pluralOrSingularAddress()} import.</FormHelperText>
-      }
-    }
-
-
-    return (
+     return (
       <Box>
-      { addressPresent && <p>I have address</p>}
+        {
+          imported && rescan && <FormHelperText>{this.pluralOrSingularAddress()} imported, rescan of your node may take some time.</FormHelperText>
+        }
+        {
+          imported && !rescan && <FormHelperText>{this.pluralOrSingularAddress()} imported.</FormHelperText>
+        }
+      { addressPresent &&
+        <div>
+          <FormHelperText>Address {imported ? 'imported to' : 'found in'} your wallet!</FormHelperText>
+          <FormHelperText>You can properly determine your addresses current balance.</FormHelperText>
+          <FormHelperText>
+            Your node may need to do a rescan to determine if an address has been previously used. If you
+            are sure you have done so, or you are sure of the address's history, you may proceed.  If you
+            are unsure, you may select "rescan" and import.
+          </FormHelperText>
+        </div>
+      }
+
+      {
+        !addressPresent && // addressesError &&
+        <FormHelperText>Checking node for presence of {this.pluralOrSingularAddress()}</FormHelperText>
+      }
       <FormHelperText error>{addressesError}</FormHelperText>
-        <FormHelperText>Addresses used with bitcoind node must be imported to your node.  If you have not already, you can import now.</FormHelperText>
+        {/* <FormHelperText>Addresses used with bitcoind node must be imported to your node.  If you have not already, you can import now.</FormHelperText> */}
         <p>
-          Import {this.pluralOrSingularAddress()} to your node?
+          {/* Import {this.pluralOrSingularAddress()} to your node? */}
           <Box component="span" ml={2}>
-            <Button variant="contained" onClick={this.import}>Import</Button>
+            <Button variant="contained" disabled = {addressPresent && !rescan } onClick={this.import}>Import</Button>
+          </Box>
+          <Box component="span" ml={2}>
+            <FormControlLabel
+              control={
+                <Switch
+                checked={rescan}
+                onChange={this.handleRescan}
+                color="secondary"
+                />
+              }
+              label="Rescan"
+            />
+
           </Box>
           <Box component="span" ml={2}>
             <FormControlLabel
@@ -80,23 +106,35 @@ class BitcoindAddressImporter extends React.Component {
     this.setState({rescan: e.target.checked})
   }
 
-  checkAddress = async (status) => {
-    const { client, addresses } = this.props;
-    const address = addresses[0] // TODO: loop
-    console.log('this should check when status changes', client, status)
+  checkAddress = async () => {
+    const { client, addresses, autoImport } = this.props;
+    const address = addresses[0] // TODO: loop, or maybe just check one
 
     try {
-      await bitcoindGetAddressStatus({
+      const status = await bitcoindGetAddressStatus({ // TODO: use this to warn if spent
         ...bitcoindParams(client),
         address
-      })
-      this.setState({addressPresent: true, addressError: ""});
-      clearInterval(interval);
+      });
+      if (typeof status.used !== 'undefined') {
+        this.setState({addressPresent: true, addressesError: ""});
+        clearInterval(interval);
+      }
     } catch (e) {
       // e.status 401 e.statusText
       // e.status 500 e.data.error.message
-      const status = e.response && e.response.status || 'unknown'
-      this.setState({addressesError: status === 401 ? e.response.statusText : status === 500 ? e.response.data.error.message : "An unknown address error occured"})
+      const status = (e.response && e.response.status) || 'unknown'
+      if (autoImport
+        && e.response &&
+        e.response.data &&
+        e.response.data.error &&
+        e.response.data.error.code === -4 && !this.state.rescan) {
+        this.import();
+      }
+      this.setState({
+        addressesError: status === 401 ?
+        e.response.statusText : status === 500 ?
+        e.response.data.error.message :
+        e.message || "An unknown address error occured"})
       console.log(status, e.response)
     }
 

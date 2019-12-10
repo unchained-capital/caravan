@@ -65,15 +65,17 @@ export async function bitcoindListUnspent({url, auth, address, addresses}) {
 export async function bitcoindGetAddressStatus({url, auth, address}) {
   try {
     const resp = await callBitcoind(url, auth, 'getreceivedbyaddress', [address] );
-
+    if (typeof resp.result === 'undefined') {
+      throw(new Error("Error: invalid response from "+url))
+    }
     return {
       used: resp.result > 0
     }
   } catch(e) {
-    console.log('get address status error', e.response)
-    if (e.response && e.response.data.error.code === -4) {
-      return {used: false};
-    }
+    // console.log('get address status error', e.response)
+    // if (e.response && e.response.data.error.code === -4) {
+    //   return {used: false};
+    // }
     throw(e); //(e.response && e.response.data.error.message) || e);
   }
 }

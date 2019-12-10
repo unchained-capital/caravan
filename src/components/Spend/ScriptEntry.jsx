@@ -204,6 +204,12 @@ class ScriptEntry extends React.Component {
           <FormHelperText error>{fetchUTXOsError}</FormHelperText>
 
         </Box>
+        {
+          client.type === "private" &&
+          <Box mt={2}>
+            <BitcoindAddressImporter addresses={[multisig.address]} autoImport={true}/>
+          </Box>
+        }
       </div>
     );
   }
