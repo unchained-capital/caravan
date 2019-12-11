@@ -13,7 +13,8 @@ const initialNodeState = {
   spend: false,
   fetchedUTXOs: false,
   fetchUTXOsError: '',
-  addressUsed: false
+  addressUsed: false,
+  addressKnown: true,
 };
 
 const initialState = {

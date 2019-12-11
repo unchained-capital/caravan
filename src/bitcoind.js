@@ -21,6 +21,19 @@ async function callBitcoind(url, auth, method, params = []) {
   });
 }
 
+/**
+ * check if error from bitcoind is address not found in wallet
+ * this allows client side interpretation of the error
+ * @param {Error} e - the error object to check
+ * @returns {boolean} true if the desired error
+ */
+export function isWalletAddressNotFoundError(e) {
+  return e.response &&
+  e.response.data &&
+  e.response.data.error &&
+  e.response.data.error.code === -4;
+}
+
 export function bitcoindParams(client) {
   const {url, username, password} = client;
   const auth = { username, password };
@@ -61,7 +74,6 @@ export async function bitcoindListUnspent({url, auth, address, addresses}) {
   });
 }
 
-
 export async function bitcoindGetAddressStatus({url, auth, address}) {
   try {
     const resp = await callBitcoind(url, auth, 'getreceivedbyaddress', [address] );
@@ -72,11 +84,7 @@ export async function bitcoindGetAddressStatus({url, auth, address}) {
       used: resp.result > 0
     }
   } catch(e) {
-    // console.log('get address status error', e.response)
-    // if (e.response && e.response.data.error.code === -4) {
-    //   return {used: false};
-    // }
-    throw(e); //(e.response && e.response.data.error.message) || e);
+    throw(e);
   }
 }
 
@@ -95,4 +103,22 @@ export async function bitcoindSendRawTransaction({url, auth, hex}) {
       throw((e.response && e.response.data.error.message) || e);
   }
 
+}
+
+export function bitcoindImportMulti({url, auth, addresses, label, rescan}) {
+  const imports = addresses.map(address => {
+    return {
+      scriptPubKey: {
+        address: address
+      },
+      label: label,
+      timestamp: 0 // TODO: better option to ensure address history is picked up?
+    }
+  });
+  if (rescan) {
+    callBitcoind(url, auth, 'importmulti', [imports, {rescan: rescan}]); // TODO: what to do on catch?
+    return new Promise(resolve => resolve({result:[]}));
+  } else {
+    return callBitcoind(url, auth, 'importmulti', [imports, {rescan: rescan}]);
+  }
 }

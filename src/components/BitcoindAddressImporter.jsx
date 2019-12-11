@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { bitcoindImportMulti, bitcoindGetAddressStatus } from '../bitcoind';
-import { bitcoindParams } from '../bitcoind'
+import { bitcoindParams, isWalletAddressNotFoundError } from '../bitcoind'
 import { FormHelperText, Button, Box, Switch, FormControlLabel } from '@material-ui/core'
 
 let interval;
@@ -23,7 +23,7 @@ class BitcoindAddressImporter extends React.Component {
   };
 
   componentDidMount = () => {
-    interval = setInterval(this.checkAddress, 5000);
+    if (this.props.autoImport) interval = setInterval(this.checkAddress, 5000);
   }
 
   componentWillUnmount = () => {
@@ -32,6 +32,7 @@ class BitcoindAddressImporter extends React.Component {
 
   render() {
     const { imported, importError, rescan, addressPresent, addressesError } = this.state;
+    const { autoImport, addresses } = this.props;
 
      return (
       <Box>
@@ -54,28 +55,25 @@ class BitcoindAddressImporter extends React.Component {
       }
 
       {
-        !addressPresent && // addressesError &&
+        !addressPresent && autoImport &&
         <FormHelperText>Checking node for presence of {this.pluralOrSingularAddress()}</FormHelperText>
+      }
+      {
+        !addressPresent && !autoImport &&
+        <FormHelperText>To get accurate information from your node your {this.pluralOrSingularAddress()}
+          will need to be imported to your node.  Importing will give you accurate balance information
+          however to know if an address hase been used previously, a rescan needs to take place.
+        </FormHelperText>
       }
       <FormHelperText error>{addressesError}</FormHelperText>
         {/* <FormHelperText>Addresses used with bitcoind node must be imported to your node.  If you have not already, you can import now.</FormHelperText> */}
         <p>
           {/* Import {this.pluralOrSingularAddress()} to your node? */}
           <Box component="span" ml={2}>
-            <Button variant="contained" disabled = {addressPresent && !rescan } onClick={this.import}>Import</Button>
-          </Box>
-          <Box component="span" ml={2}>
-            <FormControlLabel
-              control={
-                <Switch
-                checked={rescan}
-                onChange={this.handleRescan}
-                color="secondary"
-                />
-              }
-              label="Rescan"
-            />
-
+            <Button
+              variant="contained"
+              disabled = { (addressPresent && !rescan) || addresses.length === 0 }
+              onClick={this.import}>Import</Button>
           </Box>
           <Box component="span" ml={2}>
             <FormControlLabel
@@ -124,10 +122,7 @@ class BitcoindAddressImporter extends React.Component {
       // e.status 500 e.data.error.message
       const status = (e.response && e.response.status) || 'unknown'
       if (autoImport
-        && e.response &&
-        e.response.data &&
-        e.response.data.error &&
-        e.response.data.error.code === -4 && !this.state.rescan) {
+        && isWalletAddressNotFoundError(e) && !this.state.rescan) {
         this.import();
       }
       this.setState({
@@ -141,7 +136,7 @@ class BitcoindAddressImporter extends React.Component {
   }
 
   import = () => {
-    const { addresses, client } = this.props;
+    const { addresses, client, importCallback } = this.props;
     const { rescan } = this.state;
     const label = ""; // TODO: do we want to allow to set? or set to "caravan"?
     bitcoindImportMulti({
@@ -155,7 +150,10 @@ class BitcoindAddressImporter extends React.Component {
       this.setState({
         importError: responseError,
         imported: responseError === ""
-      })
+      });
+      if (typeof importCallback !== 'undefined') {
+        importCallback(response.result)
+      }
     })
     .catch(e => {
       this.setState({

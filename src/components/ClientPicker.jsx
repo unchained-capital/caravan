@@ -173,6 +173,7 @@ class ClientPicker extends React.Component {
 
                    <Grid item>
                      <TextField
+                       id="bitcoind-username"
                        fullWidth
                        label="Username"
                        value={client.username}
@@ -185,6 +186,7 @@ class ClientPicker extends React.Component {
 
                    <Grid item>
                      <TextField
+                       id="bitcoind-password"
                        fullWidth
                        type="password"
                        label="Password"

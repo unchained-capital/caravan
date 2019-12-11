@@ -49,7 +49,7 @@ class Node extends React.Component {
 
   render = () => {
     const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError,
-      multisig, utxos, spending} = this.props;
+      multisig, utxos, spending, addressKnown} = this.props;
     return (
       <TableRow key={bip32Path}>
         { spending &&
@@ -70,7 +70,7 @@ class Node extends React.Component {
           {utxos.length}
         </TableCell>
         <TableCell>
-          {fetchedUTXOs ? satoshisToBitcoins(balanceSats).toFixed() : ''}
+          {fetchedUTXOs && addressKnown ? satoshisToBitcoins(balanceSats).toFixed() : ''}
           {fetchUTXOsError !== '' && <FormHelperText className="danger">{fetchUTXOsError}</FormHelperText>}
         </TableCell>
         <TableCell>

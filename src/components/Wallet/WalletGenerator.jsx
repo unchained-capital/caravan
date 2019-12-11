@@ -10,7 +10,7 @@ import {
   fetchAddressUTXOs,
   getAddressStatus,
 } from "../../blockchain";
-
+import { isWalletAddressNotFoundError } from '../../bitcoind'
 // Components
 import {
   Button, Card, CardHeader,
@@ -219,20 +219,32 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
 
     const multisig = generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys);
 
-    const utxoUpdates = await this.fetchUTXOs(isChange, bip32Path, multisig, attemptToKeepGenerating);
+    const utxoUpdates = await this.fetchUTXOs(isChange, multisig, attemptToKeepGenerating);
     return {multisig, ...utxoUpdates};
   }
 
-  fetchUTXOs = async (isChange, bip32Path, multisig, attemptToKeepGenerating) => {
+  fetchUTXOs = async (isChange, multisig, attemptToKeepGenerating) => {
     const {network, client} = this.props;
     let utxos, addressStatus;
     let updates = {};
     try {
-      addressStatus = await getAddressStatus(multisig.address, network, client);
       utxos = await fetchAddressUTXOs(multisig.address, network, client);
+      addressStatus = await getAddressStatus(multisig.address, network, client);
     } catch(e) {
-      console.error(e);
-      updates =  {fetchUTXOsError: e.toString()}
+      console.error(e, e.response);
+      if (client.type === 'private' &&
+        isWalletAddressNotFoundError(e)) {
+          // address not found in wallet, just mark as unused/used/other?
+          addressStatus = {used: false}
+          updates = {
+            utxos: [],
+            balanceSats: BigNumber(0),
+            addressKnown: false,
+            fetchedUTXOs: true,
+            fetchUTXOsError: ''}
+      } else {
+        updates =  {fetchUTXOsError: e.toString()}
+      }
     }
     if (utxos) {
       const balanceSats = utxos
