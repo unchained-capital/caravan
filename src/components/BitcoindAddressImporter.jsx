@@ -19,7 +19,7 @@ class BitcoindAddressImporter extends React.Component {
     importError: "",
     rescan: false,
     addressesError: "",
-    addressPresent: false,
+    addressPresent: false, // this applies for auto import prop only
   };
 
   componentDidMount = () => {
@@ -72,7 +72,7 @@ class BitcoindAddressImporter extends React.Component {
           <Box component="span" ml={2}>
             <Button
               variant="contained"
-              disabled = { (addressPresent && !rescan) || addresses.length === 0 }
+              disabled = { !rescan && (addressPresent  || addresses.length === 0) }
               onClick={this.import}>Import</Button>
           </Box>
           <Box component="span" ml={2}>

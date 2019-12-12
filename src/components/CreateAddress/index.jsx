@@ -9,6 +9,9 @@ import QuorumPicker from '../QuorumPicker';
 import AddressTypePicker from '../AddressTypePicker';
 import AddressGenerator from './AddressGenerator';
 import PublicKeyImporter from './PublicKeyImporter';
+import ClientPicker from '../ClientPicker';
+import BitcoindAddressImporter from '../BitcoindAddressImporter';
+
 import '../styles.css';
 
 class CreateAddress extends React.Component {
@@ -18,6 +21,7 @@ class CreateAddress extends React.Component {
   };
 
   render = () => {
+    const { address } = this.props
     return (
       <Box mt={2}>
         <Grid container spacing={3}>
@@ -32,10 +36,26 @@ class CreateAddress extends React.Component {
             <Box><QuorumPicker /></Box>
             <Box mt={2}><AddressTypePicker /></Box>
             <Box mt={2}><NetworkPicker /></Box>
+            {address !== "" && this.renderClientPicker()}
           </Grid>
         </Grid>
       </Box>
     );
+  }
+
+  renderClientPicker = () => {
+    const { address } = this.props
+    return (
+      <Box mt={2}><ClientPicker
+        publicNotes={<span>If you plan to use this address with your own bitcoind node
+          you can import the address created here by switching for "Public" to "Private".
+          Otherwise no action is needed here.
+        </span>}
+        privateNotes={<div><BitcoindAddressImporter
+          addresses={[address]}/></div>}
+      /></Box>
+
+    )
   }
 
   renderPublicKeyImporters = () => {

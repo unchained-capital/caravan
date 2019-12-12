@@ -124,7 +124,7 @@ class WalletGenerator extends React.Component {
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
             <Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Download Wallet Details</Button>
             <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
-            <Button type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
+            <Button id="confirm-wallet" type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
           </div>
         );
       }

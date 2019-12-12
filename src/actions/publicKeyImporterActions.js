@@ -9,12 +9,21 @@ export const SET_PUBLIC_KEY_IMPORTER_FINALIZED   = "SET_PUBLIC_KEY_IMPORTER_FINA
 export const MOVE_PUBLIC_KEY_IMPORTER_UP         = "MOVE_PUBLIC_KEY_IMPORTER_UP";
 export const MOVE_PUBLIC_KEY_IMPORTER_DOWN       = "MOVE_PUBLIC_KEY_IMPORTER_DOWN";
 export const SORT_PUBLIC_KEY_IMPORTERS           = "SORT_PUBLIC_KEY_IMPORTERS";
+export const UPDATE_MULTISIG_ADDRESS             = "UPDATE_MULTISIG_ADDRESS";
 
 export function sortPublicKeyImporters() {
   return {
     type: SORT_PUBLIC_KEY_IMPORTERS,
   };
 }
+
+export function setMultisigAddress(address) {
+  return {
+    type: UPDATE_MULTISIG_ADDRESS,
+    value: address,
+  };
+}
+
 
 export const {
   setPublicKeyImporterName,

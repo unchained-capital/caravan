@@ -10,7 +10,7 @@ import {
 import {externalLink} from "../../utils";
 
 // Actions
-import {sortPublicKeyImporters} from "../../actions/publicKeyImporterActions";
+import {sortPublicKeyImporters, setMultisigAddress} from "../../actions/publicKeyImporterActions";
 
 // Components
 import {
@@ -19,7 +19,7 @@ import {
 } from '@material-ui/core';
 import MultisigDetails from "../MultisigDetails";
 import Conflict from './Conflict';
-import {downloadFile} from "../../utils"
+import {downloadFile} from "../../utils";
 
 class AddressGenerator extends React.Component {
 
@@ -119,12 +119,15 @@ class AddressGenerator extends React.Component {
   }
 
   generateMultisig = () => {
-    const { network, publicKeyImporters, totalSigners, requiredSigners, addressType } = this.props;
+    const { network, publicKeyImporters, totalSigners, requiredSigners,
+      addressType, setMultisigAddress } = this.props;
     let publicKeys = [];
     for (let publicKeyImporterNum = 1; publicKeyImporterNum <= totalSigners; publicKeyImporterNum++) {
       publicKeys.push(publicKeyImporters[publicKeyImporterNum].publicKey);
     }
-    return generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys);
+    const multisig = generateMultisigFromPublicKeys(network, addressType, requiredSigners, ...publicKeys);
+    setMultisigAddress(multisig.address);
+    return multisig
   }
 
   downloadAddressDetails = (event) => {
@@ -189,6 +192,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   sortPublicKeyImporters,
+  setMultisigAddress,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddressGenerator);

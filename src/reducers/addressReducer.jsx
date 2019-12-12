@@ -1,5 +1,5 @@
 import {
-  MAINNET, 
+  MAINNET,
   P2SH,
   multisigBIP32Path,
 } from "unchained-bitcoin";
@@ -21,6 +21,7 @@ import {
   MOVE_PUBLIC_KEY_IMPORTER_UP,
   MOVE_PUBLIC_KEY_IMPORTER_DOWN,
   SORT_PUBLIC_KEY_IMPORTERS,
+  UPDATE_MULTISIG_ADDRESS
 } from '../actions/publicKeyImporterActions';
 
 const TEXT = "text";
@@ -53,6 +54,7 @@ const initialState = {
   fingerprint: '',
   finalizedNetwork: '',
   finalizedAddressType: '',
+  address: '',
 };
 
 function movePublicKeyImporterUp(state, action) {
@@ -114,7 +116,7 @@ function updateTotalSigners(state, action) {
   const publicKeyImporters = {};
   for (let publicKeyImporterNum = 1; publicKeyImporterNum <= totalSigners; publicKeyImporterNum++) {
     publicKeyImporters[publicKeyImporterNum] = state.publicKeyImporters[publicKeyImporterNum] || {
-      ...initialPublicKeyImporterState, 
+      ...initialPublicKeyImporterState,
       ...{
         name: `Public Key ${publicKeyImporterNum}`,
       },
@@ -211,6 +213,8 @@ export default (state = initialState, action) => {
     return movePublicKeyImporterDown(state, action);
   case SORT_PUBLIC_KEY_IMPORTERS:
     return sortPublicKeyImporters(state, action);
+  case UPDATE_MULTISIG_ADDRESS:
+    return updateState(state, {address: action.value});
   default:
     return state;
   }
