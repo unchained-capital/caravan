@@ -10,7 +10,7 @@ import {
 // Components
 import {
   Button,
-  Box, Grid,
+  Grid,
   Table, TableHead, TableBody,
   TableRow, TableCell, TablePagination,
 } from '@material-ui/core';
@@ -44,23 +44,22 @@ class NodeSet extends React.Component {
     if (useAddressImporter) {
       this.addresses = this.getUnknownAddressNodes()
         .map(node => node.multisig.address) ;
-      console.log('filtered addresses set for import', this.addresses)
     }
     return (
-      <Box>
+      <Grid item md={12}>
         { useAddressImporter &&
           <BitcoindAddressImporter
             addresses={this.addresses}
             importCallback={this.addressesImported}
             />
         }
-      <Table>
+      <Table style={{tableLayout: "fixed"}}>
             <TableHead>
               <TableRow>
-                {spending && <TableCell>Spend?</TableCell>}
-                <TableCell>BIP32 Path</TableCell>
-                <TableCell>UTXOs</TableCell>
-                <TableCell>Balance</TableCell>
+                {spending && <TableCell width={62}>Spend?</TableCell>}
+                <TableCell width={106}>BIP32 Path</TableCell>
+                <TableCell width={68}>UTXOs</TableCell>
+                <TableCell width={82}>Balance</TableCell>
                 <TableCell>Address</TableCell>
               </TableRow>
             </TableHead>
@@ -93,7 +92,7 @@ class NodeSet extends React.Component {
             </Grid>
           </Grid>
 
-        </Box>
+        </Grid>
     );
   }
 

@@ -11,13 +11,14 @@ import {
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText,
+  TableRow, TableCell, Checkbox, FormHelperText, Grid,
   ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
 } from '@material-ui/core';
 import Copyable from "../Copyable";
 import UTXOSet from "../Spend/UTXOSet";
 import LaunchIcon from '@material-ui/icons/Launch';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MultisigDetails from "../MultisigDetails";
 
 // Actions
 import {
@@ -95,27 +96,33 @@ class Node extends React.Component {
   }
 
   renderAddress = () => {
-    const {bip32Path, utxos,  balanceSats} = this.props;
+    const {bip32Path, utxos,  balanceSats, multisig} = this.props;
     return (
       <ExpansionPanel>
       <ExpansionPanelSummary
-        expandIcon={balanceSats.isGreaterThan(0) ? <ExpandMoreIcon /> : null}
+        expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
         id={'address-header'+bip32Path}
       >
         {this.addressContent()}
      </ExpansionPanelSummary>
      <ExpansionPanelDetails>
-       { balanceSats.isGreaterThan(0) &&
-         <UTXOSet
-           inputs={utxos}
-           inputsTotalSats={balanceSats}
-         />
-       }
+       <Grid container>
+        <Grid item md={12}>
+          <MultisigDetails multisig={multisig} />
+        </Grid>
+        { balanceSats.isGreaterThan(0) &&
+        <Grid item md={12}>
+          <UTXOSet
+            inputs={utxos}
+            inputsTotalSats={balanceSats}
+          />
+        </Grid>
+        }
+       </Grid>
      </ExpansionPanelDetails>
 
-   </ExpansionPanel>
-  )
+   </ExpansionPanel>  )
 
   }
 
