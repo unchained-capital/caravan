@@ -30,6 +30,13 @@ class BitcoindAddressImporter extends React.Component {
     clearInterval(interval);
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.autoImport && prevProps.addresses.length && prevProps.addresses[0] !== this.props.addresses[0]) {
+      clearInterval(interval);
+      interval = setInterval(this.checkAddress, 5000);
+    }
+  }
+
   render() {
     const { imported, importError, rescan, addressPresent, addressesError } = this.state;
     const { autoImport, addresses } = this.props;
