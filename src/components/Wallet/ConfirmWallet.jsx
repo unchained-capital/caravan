@@ -38,7 +38,7 @@ import {
         return Object.values(extendedPublicKeyImporters).map((importer, i) => (
           <TableRow key={i}>
             <TableCell>{importer.name}</TableCell>
-            <TableCell>{importer.bip32Path}</TableCell>
+            <TableCell>{importer.method === 'text' ? 'N/A' : importer.bip32Path}</TableCell>
             <TableCell>{importer.extendedPublicKey}</TableCell>
           </TableRow>
         ))
