@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {externalLink} from "../utils";
+import {fetchFeeEstimate} from "../blockchain";
 
 // Components
 import {
@@ -13,6 +14,9 @@ import {
   TextField,
   InputAdornment,
   Switch,
+  Button,
+  FormHelperText,
+  Box,
 } from '@material-ui/core';
 
 // Actions
@@ -43,7 +47,9 @@ const propTypes = {
 
 class ClientPicker extends React.Component {
   state = {
-    url_edited: false
+    url_edited: false,
+    connectError: "",
+    connectSuccess: false
   }
 
   handleTypeChange = (event) => {
@@ -122,6 +128,7 @@ class ClientPicker extends React.Component {
 
   render() {
     const { client, url_error, username_error, password_error } = this.props;
+    const { connectSuccess, connectError } = this.state;
     return (
       <Card>
         <CardHeader title={this.title()}/>
@@ -147,7 +154,7 @@ class ClientPicker extends React.Component {
                </p>
                <form>
 
-                 <Grid container direction="column">
+                 <Grid container direction="column" spacing={1}>
 
                    <Grid item>
                      <TextField
@@ -162,11 +169,6 @@ class ClientPicker extends React.Component {
                          startAdornment: <InputAdornment position="start"></InputAdornment>,
                        }}
                      />
-                   </Grid>
-
-                   <Grid item>
-
-
                    </Grid>
 
                    <Grid item>
@@ -193,6 +195,20 @@ class ClientPicker extends React.Component {
                        helperText={password_error}
                      />
                    </Grid>
+                   <Grid item>
+                     <Box mt={1}>
+                      <Button
+                        variant="contained"
+                        onClick={this.testConnection}
+                        >
+                        Test Connection
+                        </Button>
+                     </Box>
+                     <Box mt={2}>
+                        { connectSuccess && <FormHelperText>Connection Success!</FormHelperText>}
+                        { connectError !== "" && <FormHelperText error>{connectError}</FormHelperText>}
+                     </Box>
+                   </Grid>
                  </Grid>
                </form>
              </div>
@@ -200,6 +216,17 @@ class ClientPicker extends React.Component {
         </CardContent>
       </Card>
     );
+  }
+
+  testConnection = async () => {
+    const { network, client } = this.props
+    this.setState({connectError: "", connectSuccess: false});
+    try {
+      await fetchFeeEstimate(network, client);
+      this.setState({connectSuccess: true});
+    } catch (e) {
+      this.setState({connectError: e.message});
+    }
   }
 }
 ClientPicker.propTypes = propTypes;
