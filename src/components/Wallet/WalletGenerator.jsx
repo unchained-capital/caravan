@@ -79,10 +79,10 @@ class WalletGenerator extends React.Component {
   }
 
   title = () => {
-    const {totalSigners, requiredSigners} = this.props;
+    const {totalSigners, requiredSigners, addressType} = this.props;
     return (
       <span className="justify-content-between d-flex">
-        Your {requiredSigners}-of-{totalSigners} P2SH Multisig Wallet
+        Your {requiredSigners}-of-{totalSigners} {addressType} Multisig Wallet
         <small className="text-muted">{` Extended Public Keys: ${this.extendedPublicKeyCount()}/${totalSigners}`}</small>
       </span>
     );

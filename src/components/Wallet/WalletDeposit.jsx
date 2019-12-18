@@ -16,6 +16,8 @@ import {
   Card, CardHeader,
   CardContent, TextField,
   Snackbar,
+  Button,
+  Box,
 } from '@material-ui/core';
 
 let depositTimer;
@@ -36,8 +38,17 @@ class WalletDeposit extends React.Component {
   }
 
   componentDidMount() {
-    const { deposits, network, client, updateDepositNode, resetWalletView } = this.props;
+    this.getDepositAddress()
+  }
+
+  componentWillUnmount() {
+    clearInterval(depositTimer)
+  }
+
+  getDepositAddress = () => {
+    const { deposits, network, client, updateDepositNode } = this.props;
     const nodes = Object.values(deposits.nodes)
+    this.setState({showReceived: false})
     for(let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
@@ -69,17 +80,13 @@ class WalletDeposit extends React.Component {
             fetchUTXOsError: ''
           })
           this.setState({showReceived: true});
-          setTimeout(resetWalletView, 5000);
+          // setTimeout(resetWalletView, 5000);
         }
       } catch(e) {
         console.error(e);
       }
 
     }, 2000)
-  }
-
-  componentWillUnmount() {
-    clearInterval(depositTimer)
   }
 
   render() {
@@ -89,20 +96,21 @@ class WalletDeposit extends React.Component {
         <Card>
           <CardHeader title="Deposit"/>
           <CardContent>
-          <TextField
+            <Copyable text={this.qrString()} newline={true}>
+              <p><code>{address}</code></p>
+              <QRCode size={300} value={this.qrString()} level={'L'} />
+              <p>Scan QR code or click to copy address to clipboard.</p>
+            </Copyable>
+            <TextField
               fullWidth
-              label="Amount"
+              label="Amount BTC"
               name="depositAmount"
               onChange={this.handleAmountChange}
               value={amount}
               error={amountError !== ""}
               helperText={amountError}
             />
-            <Copyable text={this.qrString()} newline={true}>
-              <p><code>{address}</code></p>
-              <QRCode size={300} value={this.qrString()} level={'L'} />
-              <p>Scan QR code or click to copy address to clipboard.</p>
-            </Copyable>
+            { this.renderReceived() }
           </CardContent>
         </Card>
         <Snackbar
@@ -112,7 +120,7 @@ class WalletDeposit extends React.Component {
           }}
           open={showReceived}
           autoHideDuration={3000}
-          onClose={() => this.setState({showReceived: false})}
+          // onClose={() => this.setState({showReceived: false})}
           ContentProps={{
             'aria-describedby': 'message-id',
           }}
@@ -120,6 +128,21 @@ class WalletDeposit extends React.Component {
         />
       </div>
     )
+  }
+
+  renderReceived = () => {
+    const { showReceived } = this.state;
+    const { resetWalletView } = this.props;
+    if (showReceived) {
+      return (
+        <Box mt={2}>
+          <Button variant="contained" color="primary" onClick={this.getDepositAddress}>Make another deposit</Button>
+          <Box ml={2} component="span">
+            <Button variant="contained" onClick={resetWalletView}>Return</Button>
+          </Box>
+        </Box>
+      )
+    }
   }
 
   handleAmountChange = (event)=> {
