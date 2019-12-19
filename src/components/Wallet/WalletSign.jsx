@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 // Components
 import SignatureImporter from '../Spend/SignatureImporter';
 import Transaction from '../Spend/Transaction';
-import {Box, Button} from "@material-ui/core";
+import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
+import {Box, Button,} from "@material-ui/core";
 
 // Actions
 import { finalizeOutputs, setRequiredSigners, resetTransaction } from '../../actions/transactionActions';
@@ -34,7 +35,8 @@ class WalletSign extends React.Component {
           color="secondary"
           onClick={this.handleCancel}>Cancel</Button>
 
-      {this.renderSignatureImporters()}
+      {this.renderKeySelectors()}
+      {/* {this.renderSignatureImporters()} */}
 
       {
         this.signaturesFinalized() &&
@@ -53,6 +55,19 @@ class WalletSign extends React.Component {
   </Box>
 
     )
+  }
+
+  renderKeySelectors = () => {
+    const {requiredSigners} = this.props;
+    const keySelectors = [];
+    for (var keySelectorNum = 1; keySelectorNum <= requiredSigners; keySelectorNum++) {
+      keySelectors.push(
+        <Box key={keySelectorNum} mt={2}>
+          <ExtendedPublicKeySelector number={keySelectorNum} />
+        </Box>
+      );
+    }
+    return keySelectors;
   }
 
   renderSignatureImporters = () => {
@@ -113,7 +128,9 @@ function mapStateToProps(state) {
   return {
     ...state.wallet,
     ...state.spend,
+    ...state.quorum,
     requiredSigners: state.spend.transaction.requiredSigners,
+    totalSigners: state.spend.transaction.totalSigners,
   };
 }
 
