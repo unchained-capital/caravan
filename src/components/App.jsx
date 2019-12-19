@@ -4,6 +4,7 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 // Components
 import Help from './Help';
 import CreateAddress from './CreateAddress';
+import {TestSuiteRun} from './TestSuiteRun';
 import Spend from './Spend';
 import Navbar from './Navbar';
 import Footer from "./Footer";
@@ -19,6 +20,7 @@ const App = () => (
       <ErrorBoundary>
         <Router>
           <Switch>
+            <Route path="/test" component={TestSuiteRun} />
             <Route path="/address" component={CreateAddress} />
             <Route path="/spend" component={Spend} />
             <Route path="/" component={Help} />

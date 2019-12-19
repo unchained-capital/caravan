@@ -122,7 +122,7 @@ const Help = () => (
           <Card>
             <CardHeader title="Supported Devices"></CardHeader>
             <CardContent>
-              Caravan has been tested with the following hardware wallets:
+              Caravan has been <a href="#/test" target="_blank">tested</a> with the following hardware wallets:
               <ul>
                 <li>{externalLink("https://shop.trezor.io/product/trezor-one-white", "Trezor One")}</li>
                 <li>{externalLink("https://www.ledger.com/products/ledger-nano-s", "Ledger Nano S")}</li>
@@ -135,9 +135,7 @@ const Help = () => (
               Seeing a bug or need a feature?
             </CardContent>
             <CardActions>
-
               <Button href="https://github.com/unchained-capital/caravan/issues"><BugReport /> &nbsp; Report Issue</Button>
-
             </CardActions>
           </Card>
 

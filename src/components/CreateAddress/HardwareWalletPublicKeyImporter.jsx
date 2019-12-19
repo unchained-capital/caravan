@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   UNSUPPORTED, PENDING, ACTIVE, ERROR,
-  HardwareWalletExportPublicKey,
+  ExportPublicKey,
 } from "unchained-wallets";
 
 // Components
@@ -42,7 +42,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
 
   interaction = () => {
     const {network, publicKeyImporter} = this.props;
-    return HardwareWalletExportPublicKey({network, walletType: publicKeyImporter.method, bip32Path:publicKeyImporter.bip32Path});
+    return ExportPublicKey({network, walletType: publicKeyImporter.method, bip32Path:publicKeyImporter.bip32Path});
   }
 
   render = () => {

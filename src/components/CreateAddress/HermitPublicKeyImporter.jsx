@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+  HERMIT,
   PENDING,
-  HermitExportPublicKey,
+  ExportPublicKey,
 } from "unchained-wallets";
 
 // Components
@@ -34,7 +35,7 @@ class HermitPublicKeyImporter extends React.Component {
 
   interaction = () => {
     const {network, publicKeyImporter} = this.props;
-    return new HermitExportPublicKey({network, bip32Path: publicKeyImporter.bip32Path});
+    return ExportPublicKey({walletType: HERMIT, network, bip32Path: publicKeyImporter.bip32Path});
   }
 
   render = () => {

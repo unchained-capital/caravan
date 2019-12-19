@@ -11,8 +11,8 @@ import {
   UNSUPPORTED,
   ACTIVE,
   ERROR,
-  HardwareWalletExportPublicKey,
-  HardwareWalletSignMultisigTransaction,
+  ExportPublicKey,
+  SignMultisigTransaction,
 } from 'unchained-wallets';
 
 // Components
@@ -70,9 +70,9 @@ class HardwareWalletSignatureImporter extends React.Component {
       // This will need to be changed if we are signing inputs across
       // addresses.
       const bip32Paths = inputs.map((input) => (signatureImporter.bip32Path));
-      return HardwareWalletSignMultisigTransaction({network, walletType, inputs, outputs, bip32Paths});
+      return SignMultisigTransaction({network, walletType, inputs, outputs, bip32Paths});
     } else {
-      return HardwareWalletExportPublicKey({network, walletType, bip32Path: signatureImporter.bip32Path});
+      return ExportPublicKey({network, walletType, bip32Path: signatureImporter.bip32Path});
     }
   }
 

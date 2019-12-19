@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+  HERMIT,
   PENDING,
   UNSUPPORTED,
-  HermitSignTransaction,
+  SignMultisigTransaction,
 } from "unchained-wallets";
 
 // Components
@@ -52,7 +53,7 @@ class HermitSignatureImporter extends React.Component {
     // This will need to be changed if we are signing inputs across
     // addresses.
     const bip32Paths = inputs.map((input) => (signatureImporter.bip32Path));
-    return new HermitSignTransaction({network, inputs, outputs, bip32Paths});
+    return SignMultisigTransaction({walletType: HERMIT, network, inputs, outputs, bip32Paths});
   }
 
   render = () => {
@@ -94,7 +95,7 @@ class HermitSignatureImporter extends React.Component {
 
            <Grid container justify="center">
              <Grid item>
-               <HermitDisplayer width={400} string={interaction.messageFor({code: "hermit.signature_request"}).encodedData} />
+               <HermitDisplayer width={400} string={interaction.request()} />
              </Grid>
            </Grid>
 

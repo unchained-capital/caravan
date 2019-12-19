@@ -5,10 +5,12 @@ import clientReducer from './clientReducer';
 import braidReducer from './braidReducer';
 import quorumReducer from './quorumReducer';
 import addressReducer from './addressReducer';
-
 import ownershipReducer from './ownershipReducer';
 import signatureImportersReducer from './signatureImportersReducer';
 import transactionReducer from './transactionReducer';
+import keystoreReducer from "./keystoreReducer";
+import testSuiteRunReducer from "./testSuiteRunReducer";
+import errorNotificationReducer from "./errorNotificationReducer";
 
 import {
   UPDATE_DEPOSIT_NODE,
@@ -33,6 +35,9 @@ const rootReducers = combineReducers({
   spend: spendReducers,
   quorum: quorumReducer,
   wallet: walletReducers,
+  testSuiteRun: testSuiteRunReducer,
+  keystore: keystoreReducer,
+  errorNotification: errorNotificationReducer,
 });
 
 export default rootReducers;
