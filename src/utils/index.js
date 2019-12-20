@@ -1,4 +1,5 @@
 import React from "react";
+import BigNumber from 'bignumber.js'
 
 export function externalLink(url, text) {
   return <a href={url} target="_blank" rel="noopener noreferrer">{text}</a>;
@@ -42,4 +43,26 @@ export function downloadFile(body, filename) {
       elem.click();
       document.body.removeChild(elem);
   }
+}
+
+/**
+ * simple coin selection
+ * @param {Array<object>} spendableInputs - available addresses with balanceSats property as a BigNumber
+ * @param {BigNumber} outputTotal - how much is being spent including estimated fees
+ * @returns {Array<object>} list of address objects meeting the outputTotal or all if insufficient.
+ */
+export function naiveCoinSelection(spendableInputs, outputTotal) {
+  let selectedUtxos = [];
+  let inputTotal = new BigNumber(0);
+  for (let inputIndex=0; inputIndex < spendableInputs.length; inputIndex++) {
+    const spendableInput = spendableInputs[inputIndex];
+    spendableInput.utxos.forEach(utxo => {
+      selectedUtxos.push({...utxo, multisig: spendableInput.multisig, bip32Path: spendableInput.bip32Path});
+    })
+    inputTotal = inputTotal.plus(spendableInput.balanceSats);
+    if (inputTotal.isGreaterThanOrEqualTo(outputTotal)) {
+      break;
+    }
+  }
+  return selectedUtxos;
 }

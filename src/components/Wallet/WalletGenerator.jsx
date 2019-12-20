@@ -31,7 +31,7 @@ import {
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
-import {downloadFile} from "../../utils"
+import {downloadFile, naiveCoinSelection} from "../../utils"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 5;
@@ -96,7 +96,7 @@ class WalletGenerator extends React.Component {
   renderModeComponent = () => {
     const {depositing, spending, viewAddresses} = this.props;
     if (depositing) return <WalletDeposit/>
-    else if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode}/>
+    else if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode} coinSelection={naiveCoinSelection}/>
     else if (viewAddresses) return <WalletView  addNode={this.addNode} updateNode={this.updateNode}/>
     return "";
   }

@@ -36,6 +36,7 @@ class WalletSpend extends React.Component {
     addNode: PropTypes.func.isRequired,
     updateNode: PropTypes.func.isRequired,
     setFeeRate: PropTypes.func.isRequired,
+    coinSelection: PropTypes.func.isRequired,
   };
 
   state = {
@@ -132,7 +133,7 @@ class WalletSpend extends React.Component {
 
     selectCoins = () => {
       const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate,
-        updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate } = this.props;
+        updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate, coinSelection } = this.props;
       const outputsAmount = outputs.reduce((sum, output) => sum.plus(output.amountSats), new BigNumber(0));
       if (outputsAmount.isNaN()) return;
       const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
@@ -142,22 +143,15 @@ class WalletSpend extends React.Component {
         .concat(Object.values(changeNodes))
         .filter(node => node.balanceSats.isGreaterThan(0));
 
-      let selectedUtxos = [];
-      let inputTotal = new BigNumber(0);
       resetNodesSpend();
-      for (let i=0; i < spendableInputs.length; i++) {
-        const spendableInput = spendableInputs[i];
-        spendableInput.utxos.forEach(utxo => {
-          selectedUtxos.push({...utxo, multisig: spendableInput.multisig, bip32Path: spendableInput.bip32Path});
-        })
-        inputTotal = inputTotal.plus(spendableInput.balanceSats);
-        (spendableInput.change ? updateChangeNode : updateDepositNode)({bip32Path: spendableInput.bip32Path, spend: true})
-        if (inputTotal.isGreaterThanOrEqualTo(outputTotal)) {
-          break;
-        }
-      }
+      const selectedInputs = coinSelection(spendableInputs, outputTotal);
+
+      selectedInputs.forEach(selectedUtxo => {
+        (selectedUtxo.change ? updateChangeNode : updateDepositNode)({bip32Path: selectedUtxo.bip32Path, spend: true})
+      })
+
       this.setState({ outputsAmount, feeAmount })
-      setInputs(selectedUtxos);
+      setInputs(selectedInputs);
       setFeeRate(feeRate); // recalulate fee
     }
 }
