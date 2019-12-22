@@ -40,7 +40,8 @@ import {
   SET_TXID,
   RESET_TRANSACTION,
 
-  SET_IS_WALLET
+  SET_IS_WALLET,
+  SET_CHANGE_OUTPUT_INDEX,
 } from '../actions/transactionActions';
 
 function sortInputs(a, b) {
@@ -71,6 +72,7 @@ const initialState = {
   inputs: [],
   inputsTotalSats: new BigNumber(0),
   outputs: [...initialOutputsState],
+  changeOutputIndex: 0,
   feeRate: '',
   feeRateError: '',
   fee: '',
@@ -252,6 +254,8 @@ function deleteOutput(state, action) {
   for (var i = 0; i < state.outputs.length; i++) {
     if (i !== (action.number - 1)) {
       newOutputs.push(state.outputs[i]);
+    } else if (action.number === state.changeOutputIndex) {
+      state.changeOutputIndex = 0;
     }
   }
   return {
@@ -284,6 +288,8 @@ export default (state = initialState, action) => {
     return validateTransaction(updateInputs(state, action));
   case ADD_OUTPUT:
     return validateTransaction(addOutput(state, action));
+  case SET_CHANGE_OUTPUT_INDEX:
+      return updateState(state, { changeOutputIndex: action.value });
   case SET_OUTPUT_ADDRESS:
     return validateTransaction(updateOutputAddress(state, action));
   case SET_OUTPUT_AMOUNT:
@@ -301,6 +307,7 @@ export default (state = initialState, action) => {
       outputs: initialOutputsState,
       fee: '',
       balanceError: '',
+      changeOutputIndex: 0,
       // FIXME what about feeRate ?
     });
   case SET_TXID:

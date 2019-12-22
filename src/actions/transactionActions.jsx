@@ -19,6 +19,7 @@ export const RESET_OUTPUTS = 'RESET_OUTPUTS';
 export const SET_TXID = 'SET_TXID';
 export const RESET_TRANSACTION = 'RESET_TRANSACTION';
 export const SET_IS_WALLET = 'SET_IS_WALLET';
+export const SET_CHANGE_OUTPUT_INDEX = 'SET_CHANGE_OUTPUT_INDEX';
 
 export function choosePerformSpend() {
   return {
@@ -52,6 +53,14 @@ export function addOutput() {
     type: ADD_OUTPUT,
   };
 }
+
+export function setChangeOutputIndex(number) {
+  return {
+    type: SET_CHANGE_OUTPUT_INDEX,
+    value: number,
+  };
+}
+
 
 export function setOutputAddress(number, address) {
   return {

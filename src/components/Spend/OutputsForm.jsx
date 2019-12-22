@@ -82,7 +82,7 @@ class OutputsForm extends React.Component {
   }
 
   render() {
-    const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError, addChange} = this.props;
+    const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError} = this.props;
     const {feeRateFetchError} = this.state;
     return (
       <Card>
@@ -103,18 +103,6 @@ class OutputsForm extends React.Component {
                     >
                       Add output
                     </Button>
-                  {
-                  typeof addChange != 'undefined' &&
-                    <Box component="span" ml={2}>
-                    <Button
-                      variant="contained"
-                      disabled={finalizedOutputs}
-                      onClick={addChange}
-                    >
-                      Add change
-                    </Button>
-                    </Box>
-                  }
                 </Grid>
 
                 <Grid item xs={3}>

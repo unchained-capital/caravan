@@ -24,6 +24,7 @@ const initialState = {
   balanceSats: new BigNumber(0),
   spendingSats: new BigNumber(0),
   autoSpend: false,
+  nextNode: null,
 };
 
 function updateNode(state, action) {
@@ -42,7 +43,6 @@ function updateNode(state, action) {
         ...state.nodes,
         ...newNodes,
       },
-      // balanceSats: state.balanceSats.plus(node.balanceSats),
     },
   };
 
@@ -81,7 +81,19 @@ function updateNode(state, action) {
   }
   updatedState.trailingEmptyNodes = trailingEmptyNodes;
   updatedState.fetchUTXOsErrors = fetchUTXOsErrors;
+  updatedState.nextNode = getNextNode(updatedState);
   return updatedState;
+}
+
+function getNextNode(state) {
+  const nodes = Object.values(state.nodes)
+  for (let i=0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
+      return node;
+    }
+  }
+  return null;
 }
 
 function spendNodes(state) {

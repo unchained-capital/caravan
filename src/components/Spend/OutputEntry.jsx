@@ -12,11 +12,13 @@ import BigNumber from "bignumber.js";
 import {
   setOutputAddress,
   setOutputAmount,
-  deleteOutput
+  deleteOutput,
+  setChangeOutputIndex
 } from '../../actions/transactionActions';
 
 // Components
-import { Grid, Tooltip, TextField, IconButton } from '@material-ui/core';
+import { Grid, Tooltip, TextField, IconButton, InputAdornment } from '@material-ui/core';
+import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWallet';
 import { Delete, AddCircle, RemoveCircle } from '@material-ui/icons';
 
 // Assets
@@ -57,6 +59,8 @@ class OutputEntry extends React.Component {
             value={address}
             error={this.hasAddressError()}
             helperText={addressError}
+            InputProps={this.renderChangeAdornment()}
+
           />
         </Grid>
 
@@ -107,6 +111,44 @@ class OutputEntry extends React.Component {
   //
   // Address
   //
+
+  addChangeAddress = () => {
+    const {changeNode, number, setAddress, setChangeOutput} = this.props;
+    setAddress(number, changeNode.multisig.address);
+    setChangeOutput(number);
+  }
+
+  // TODO: just disable and change the title, use same icon
+  // TODO: add additional check against changeNode.multisig.address, or disable text input
+  renderChangeAdornment = () => {
+    const {changeNode, number, changeOutputIndex} = this.props;
+    if (changeNode !== null) {
+      let title, disable=false
+      if (changeOutputIndex === 0) {
+        title = 'Set to wallet change address';
+      } else if(number === changeOutputIndex) {
+        title = 'Your change will go here.'
+        disable = 'disabled';
+      } else return {}
+      return (
+        {
+          /* min: "0", */
+          /* max: "1000", */
+          /* step: "any", */
+          endAdornment: <InputAdornment position="end">
+            <Tooltip placement='top' title={title}>
+              <small>
+                <IconButton onClick={this.addChangeAddress} disabled={disable}>
+                  <AccountBalanceWalletOutlinedIcon />
+                </IconButton>
+              </small>
+            </Tooltip>
+          </InputAdornment>,
+        }
+      )
+    } else return {}
+
+  }
 
   handleAddressChange = (event) => {
     const {number, setAddress} = this.props;
@@ -201,6 +243,7 @@ function mapStateToProps(state, ownProps) {
   return {
     ...state.spend.transaction,
     ...state.spend.transaction.outputs[ownProps.number - 1],
+    changeNode: state.wallet.change.nextNode,
   };
 }
 
@@ -208,6 +251,7 @@ const mapDispatchToProps =  {
   setAddress: setOutputAddress,
   setAmount: setOutputAmount,
   remove: deleteOutput,
+  setChangeOutput: setChangeOutputIndex,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(OutputEntry);

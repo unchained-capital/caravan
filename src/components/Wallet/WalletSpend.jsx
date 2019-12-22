@@ -61,12 +61,12 @@ class WalletSpend extends React.Component {
       <Box>
         <Grid container>
           <Grid item md={12}>
-            <OutputsForm addChange={this.handleAddChange} />
+            <OutputsForm />
           </Grid>
           <Grid item md={12}>
             <Box mt={2}>
               { finalizedOutputs ?
-                <WalletSign getChangeNode={this.getChangeNode}/> :
+                <WalletSign/> :
                 this.renderSpend()
               }
             </Box>
@@ -74,25 +74,6 @@ class WalletSpend extends React.Component {
         </Grid>
       </Box>
     )
-  }
-
-  getChangeNode = () => {
-    const {changeNodes} = this.props;
-    const change = Object.values(changeNodes)
-    for (let i=0; i < change.length; i++) {
-      const node = change[i];
-      if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
-        return node;
-      }
-    }
-  }
-
-  handleAddChange = () => {
-    const {outputs, setAddress, addOutput} = this.props;
-    const node = this.getChangeNode();
-    const outputIndex = outputs.length + 1
-    addOutput();
-    setAddress(outputIndex, node.multisig.address)
   }
 
   renderSpend = () => {
@@ -160,6 +141,7 @@ function mapStateToProps(state) {
   return {
     ...state.spend.transaction,
     changeNodes: state.wallet.change.nodes,
+    changeNode: state.wallet.change.nextNode,
     depositNodes: state.wallet.deposits.nodes,
     autoSpend: state.wallet.info.autoSpend,
   };
