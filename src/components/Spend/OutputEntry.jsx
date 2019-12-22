@@ -71,7 +71,7 @@ class OutputEntry extends React.Component {
             placeholder="Amount (BTC)"
             className={styles.outputsFormInput}
             name="amount"
-            disabled={finalizedOutputs}
+            disabled={finalizedOutputs || changeOutputIndex === number}
             onChange={this.handleAmountChange}
             value={amount}
             error={this.hasAmountError()}
@@ -214,8 +214,9 @@ class OutputEntry extends React.Component {
   }
 
   balanceAction = () => {
-    const {balanceError} = this.props;
+    const {balanceError, changeOutputIndex, number} = this.props;
     if ((!this.hasBalanceError()) || this.isNotBalanceable()) {return null; }
+    if( changeOutputIndex === number) this.handleBalance();
     return balanceError.split(" ")[0];
   }
 
