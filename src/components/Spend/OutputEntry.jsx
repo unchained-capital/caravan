@@ -43,7 +43,8 @@ class OutputEntry extends React.Component {
   };
 
   render() {
-    const {outputs, finalizedOutputs, address, amount, addressError, amountError} = this.props;
+    const {outputs, finalizedOutputs, address, amount, addressError, amountError,
+           changeOutputIndex, number} = this.props;
 
     return (
       <Grid container>
@@ -54,7 +55,7 @@ class OutputEntry extends React.Component {
             placeholder="Address"
             name="destination"
             className={styles.outputsFormInput}
-            disabled={finalizedOutputs}
+            disabled={finalizedOutputs || changeOutputIndex === number}
             onChange={this.handleAddressChange}
             value={address}
             error={this.hasAddressError()}
@@ -116,19 +117,18 @@ class OutputEntry extends React.Component {
     const {changeNode, number, setAddress, setChangeOutput} = this.props;
     setAddress(number, changeNode.multisig.address);
     setChangeOutput(number);
+    this.handleBalance();
   }
 
-  // TODO: just disable and change the title, use same icon
-  // TODO: add additional check against changeNode.multisig.address, or disable text input
   renderChangeAdornment = () => {
-    const {changeNode, number, changeOutputIndex} = this.props;
+    const {changeNode, number, changeOutputIndex, address } = this.props;
     if (changeNode !== null) {
       let title, disable=false
-      if (changeOutputIndex === 0) {
+      if (changeOutputIndex === 0 && address === '') {
         title = 'Set to wallet change address';
       } else if(number === changeOutputIndex) {
         title = 'Your change will go here.'
-        disable = 'disabled';
+        disable = true;
       } else return {}
       return (
         {
