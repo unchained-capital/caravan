@@ -46,19 +46,9 @@ class WalletDeposit extends React.Component {
   }
 
   getDepositAddress = () => {
-    const { deposits, network, client, updateDepositNode } = this.props;
-    const nodes = Object.values(deposits.nodes)
-    this.setState({showReceived: false})
-    for(let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-      if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
-        this.setState({address: node.multisig.address, bip32Path: node.bip32Path});
-        break;
-      }
-    }
-    if (this.state.address === "") {
-      // TODO: get more
-    }
+    const { depositNode, network, client, updateDepositNode } = this.props;
+
+    this.setState({address: depositNode.multisig.address, bip32Path: depositNode.bip32Path, showReceived: false});
 
     depositTimer = setInterval(async () => {
       let utxos;
@@ -170,8 +160,10 @@ class WalletDeposit extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return { ...state.wallet,
+  return {
+    ...state.wallet,
     ...state.settings,
+    depositNode: state.wallet.deposits.nextNode,
     client: state.client,
   };
 }
