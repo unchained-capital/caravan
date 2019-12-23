@@ -57,7 +57,7 @@ export function naiveCoinSelection(spendableInputs, outputTotal) {
   for (let inputIndex=0; inputIndex < spendableInputs.length; inputIndex++) {
     const spendableInput = spendableInputs[inputIndex];
     spendableInput.utxos.forEach(utxo => {
-      selectedUtxos.push({...utxo, multisig: spendableInput.multisig, bip32Path: spendableInput.bip32Path});
+      selectedUtxos.push({...utxo, multisig: spendableInput.multisig, bip32Path: spendableInput.bip32Path, change: spendableInput.change});
     })
     inputTotal = inputTotal.plus(spendableInput.balanceSats);
     if (inputTotal.isGreaterThanOrEqualTo(outputTotal)) {
