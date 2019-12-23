@@ -44,7 +44,7 @@ class WalletControl extends React.Component {
           textColor="primary"
           variant="fullWidth"
           >
-            <Tab label="View Addresses" value={WALLET_MODES.VIEW} />
+            <Tab label="Addresses" value={WALLET_MODES.VIEW} />
             <Tab label="Receive" value={WALLET_MODES.DEPOSIT} />
             <Tab label="Send" value={WALLET_MODES.SPEND} />
         </Tabs>
@@ -70,9 +70,8 @@ class WalletControl extends React.Component {
   }
 
   handleModeChange = (event, mode)  => {
-    const { setMode } = this.props;
-    if (mode === 1) {
-      const { requiredSigners, setRequiredSigners } = this.props;
+    const { setMode,  requiredSigners, setRequiredSigners  } = this.props;
+    if (mode === WALLET_MODES.SPEND) {
       setRequiredSigners(requiredSigners); // this will generate signature importers
     }
     setMode(mode);

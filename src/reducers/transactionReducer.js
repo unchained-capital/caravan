@@ -62,7 +62,7 @@ const initialOutputState  = {
   amountError: '',
 };
 
-const initialOutputsState = [
+const initialOutputsState = () => [
   {...initialOutputState}
 ];
 
@@ -71,7 +71,7 @@ const initialState = {
   network: MAINNET,
   inputs: [],
   inputsTotalSats: new BigNumber(0),
-  outputs: [...initialOutputsState],
+  outputs: initialOutputsState(),
   changeOutputIndex: 0,
   feeRate: '',
   feeRateError: '',
@@ -304,7 +304,7 @@ export default (state = initialState, action) => {
     return finalizeOutputs(state, action);
   case RESET_OUTPUTS:
     return updateState(state, {
-      outputs: initialOutputsState,
+      outputs: initialOutputsState(),
       fee: '',
       balanceError: '',
       changeOutputIndex: 0,

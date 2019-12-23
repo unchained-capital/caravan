@@ -39,10 +39,8 @@ class WalletSpend extends React.Component {
     coinSelection: PropTypes.func.isRequired,
   };
 
-  state = {
-    outputsAmount: new BigNumber(0),
-    feeAmount: new BigNumber(0)
-  }
+  outputsAmount = new BigNumber(0);
+  feeAmount = new BigNumber(0);
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.autoSpend) {
@@ -118,7 +116,7 @@ class WalletSpend extends React.Component {
       const outputsAmount = outputs.reduce((sum, output) => sum.plus(output.amountSats), new BigNumber(0));
       if (outputsAmount.isNaN()) return;
       const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
-      if (outputsAmount.isEqualTo(this.state.outputsAmount) && feeAmount.isEqualTo(this.state.feeAmount)) return;
+      if (outputsAmount.isEqualTo(this.outputsAmount) && feeAmount.isEqualTo(this.feeAmount)) return;
       const outputTotal = outputsAmount.plus(feeAmount);
       const spendableInputs = Object.values(depositNodes)
         .concat(Object.values(changeNodes))
@@ -131,7 +129,8 @@ class WalletSpend extends React.Component {
         (selectedUtxo.change ? updateChangeNode : updateDepositNode)({bip32Path: selectedUtxo.bip32Path, spend: true})
       })
 
-      this.setState({ outputsAmount, feeAmount })
+      this.outputsAmount = outputsAmount;
+      this.feeAmount = feeAmount;
       setInputs(selectedInputs);
       setFeeRate(feeRate); // recalulate fee
     }

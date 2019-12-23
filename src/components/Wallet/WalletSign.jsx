@@ -16,11 +16,11 @@ class WalletSign extends React.Component {
   static propTypes = {
     transaction: PropTypes.object.isRequired,
     signatureImporters: PropTypes.shape({}).isRequired,
+    changeNode: PropTypes.shape({}).isRequired,
     finalizeOutputs: PropTypes.func.isRequired,
     setRequiredSigners: PropTypes.func.isRequired,
     spendNodes: PropTypes.func.isRequired,
     resetTransaction: PropTypes.func.isRequired,
-    getChangeNode: PropTypes.func.isRequired,
   };
 
   state = {
@@ -89,12 +89,11 @@ class WalletSign extends React.Component {
   }
 
   transactionFinalized = () => {
-    const { transaction, spendNodes, getChangeNode, updateChangeNode } = this.props;
+    const { transaction, spendNodes, changeNode, updateChangeNode } = this.props;
 
     const txid = transaction.txid;
     if (txid !== "" && !this.state.spent) {
       this.setState({spent: true})
-      const changeNode = getChangeNode();
       const changeAddress = changeNode.multisig.address;
       for (let i = 0; i < transaction.outputs.length; i++) {
         if (changeAddress === transaction.outputs[i].address) {
@@ -131,6 +130,7 @@ function mapStateToProps(state) {
     ...state.quorum,
     requiredSigners: state.spend.transaction.requiredSigners,
     totalSigners: state.spend.transaction.totalSigners,
+    changeNode: state.wallet.change.nextNode
   };
 }
 
