@@ -1,9 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-// Actions
-import { updateDepositingAction, updateSpendingAction } from "../../actions/walletActions";
-
 // Components
 import NodeSet from "./NodeSet";
 
@@ -23,9 +20,6 @@ function mapStateToProps(state) {
   return { ...state.wallet, };
 }
 
-const mapDispatchToProps = {
-  setDepositing: updateDepositingAction,
-  setSpending: updateSpendingAction,
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletView);

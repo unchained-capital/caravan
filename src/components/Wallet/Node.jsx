@@ -24,7 +24,7 @@ import MultisigDetails from "../MultisigDetails";
 import {
   setInputs, setFeeRate,
 } from '../../actions/transactionActions';
-import { updateAutoSpendAction } from "../../actions/walletActions";
+import { updateAutoSpendAction, WALLET_MODES } from "../../actions/walletActions";
 
 import styles from '../Spend//styles.module.scss';
 
@@ -50,7 +50,8 @@ class Node extends React.Component {
 
   render = () => {
     const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError,
-      multisig, utxos, spending, addressKnown} = this.props;
+      multisig, utxos, walletMode, addressKnown} = this.props;
+    const spending = walletMode === WALLET_MODES.SPEND;
     return (
       <TableRow key={bip32Path}>
         { spending &&
@@ -163,7 +164,7 @@ function mapStateToProps(state, ownProps) {
     ...{change},
     ...braid.nodes[ownProps.bip32Path],
     ...state.spend.transaction,
-    spending: state.wallet.info.spending,
+    walletMode: state.wallet.info.walletMode,
 
   };
 }

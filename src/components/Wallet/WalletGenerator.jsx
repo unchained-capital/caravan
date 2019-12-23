@@ -14,13 +14,10 @@ import { isWalletAddressNotFoundError } from '../../bitcoind'
 // Components
 import {
   Button, Card, CardHeader,
-  CardContent, Box
+  CardContent,
 } from '@material-ui/core';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
-import WalletDeposit from './WalletDeposit';
-import WalletSpend from './WalletSpend';
-import WalletView from './WalletView';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -31,7 +28,7 @@ import {
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
-import {downloadFile, naiveCoinSelection} from "../../utils"
+import {downloadFile} from "../../utils"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 5;
@@ -60,15 +57,7 @@ class WalletGenerator extends React.Component {
   render() {
     return (
       <div>
-        <Card>
-          <CardHeader title={this.title()}/>
-          <CardContent>
           {this.body()}
-          </CardContent>
-        </Card>
-        <Box mt={2}>
-          {this.renderModeComponent()}
-        </Box>
       </div>
     );
   }
@@ -93,14 +82,6 @@ class WalletGenerator extends React.Component {
     return Object.values(extendedPublicKeyImporters).filter(extendedPublicKeyImporter => (extendedPublicKeyImporter.finalized)).length;
   }
 
-  renderModeComponent = () => {
-    const {depositing, spending, viewAddresses} = this.props;
-    if (depositing) return <WalletDeposit/>
-    else if (spending) return <WalletSpend addNode={this.addNode} updateNode={this.updateNode} coinSelection={naiveCoinSelection}/>
-    else if (viewAddresses) return <WalletView  addNode={this.addNode} updateNode={this.updateNode}/>
-    return "";
-  }
-
   body() {
     const {totalSigners, configuring} = this.props;
     const {generating} = this.state;
@@ -108,7 +89,7 @@ class WalletGenerator extends React.Component {
       if (generating) {
         return (
           <div>
-            {<WalletControl/>}
+            {<WalletControl addNode={this.addNode} updateNode={this.updateNode}/>}
           </div>
         );
       } else {
@@ -116,7 +97,9 @@ class WalletGenerator extends React.Component {
         // add download details button.
 
         return (
-          <div>
+        <Card>
+          <CardHeader title={this.title()}/>
+          <CardContent>
             <Button type="button" variant="contained" color="secondary" onClick={this.toggleImporters}>
               {configuring ? 'Hide Key Selection' : 'Edit Details'}
             </Button>
@@ -125,7 +108,8 @@ class WalletGenerator extends React.Component {
             <Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Download Wallet Details</Button>
             <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
             <Button id="confirm-wallet" type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
-          </div>
+          </CardContent>
+        </Card>
         );
       }
     }

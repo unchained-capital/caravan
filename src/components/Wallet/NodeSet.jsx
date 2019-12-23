@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 import Node from "./Node";
 import BitcoindAddressImporter from '../BitcoindAddressImporter';
+import { WALLET_MODES } from '../../actions/walletActions';
 
 class NodeSet extends React.Component {
 
@@ -38,7 +39,8 @@ class NodeSet extends React.Component {
 
   render() {
     const {page, nodesPerPage, change} = this.state;
-    const {spending, canLoad, client} = this.props
+    const {walletMode, canLoad, client} = this.props
+    const spending = walletMode === WALLET_MODES.SPEND;
     const useAddressImporter = !spending && client.type === "private";
 
     if (useAddressImporter) {
@@ -137,11 +139,11 @@ class NodeSet extends React.Component {
   }
 
   getNodeSet = () => {
-    const {spending, changeNodes, depositNodes} = this.props;
+    const {walletMode, changeNodes, depositNodes} = this.props;
     const {change} = this.state;
 
     const nodes = change ? changeNodes : depositNodes
-    const nodeSet = spending ? Object.values(nodes)
+    const nodeSet = walletMode === WALLET_MODES.SPEND ? Object.values(nodes)
       .filter(node => node.balanceSats.isGreaterThan(0))
       .reduce((nodesObject, currentNode) => {
         nodesObject[currentNode.bip32Path] = currentNode;
@@ -222,7 +224,7 @@ function mapStateToProps(state) {
   return {
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
-    spending: state.wallet.info.spending,
+    walletMode: state.wallet.info.walletMode,
     client: state.client,
     ...state.settings,
 

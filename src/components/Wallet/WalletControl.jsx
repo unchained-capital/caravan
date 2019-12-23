@@ -4,14 +4,19 @@ import { connect } from 'react-redux';
 import {
   satoshisToBitcoins,
 } from 'unchained-bitcoin';
-import { updateDepositingAction,
-  updateSpendingAction,
-  updateViewAdderssesAction
+import {
+  setWalletModeAction,
+  WALLET_MODES
 } from "../../actions/walletActions";
 import { setRequiredSigners } from "../../actions/transactionActions";
+import {naiveCoinSelection} from "../../utils"
 import {
-  Grid, Button, Box
+  Tabs, Tab, Box,
 } from '@material-ui/core';
+
+import WalletDeposit from './WalletDeposit';
+import WalletSpend from './WalletSpend';
+import WalletView from './WalletView';
 
 class WalletControl extends React.Component {
   scrollRef = React.createRef();
@@ -19,9 +24,7 @@ class WalletControl extends React.Component {
   static propTypes = {
     deposits: PropTypes.object.isRequired,
     change: PropTypes.object.isRequired,
-    setDepositing: PropTypes.func.isRequired,
-    setSpending: PropTypes.func.isRequired,
-    setViewing: PropTypes.func.isRequired,
+    setMode: PropTypes.func.isRequired,
     setRequiredSigners: PropTypes.func.isRequired,
   };
 
@@ -29,60 +32,63 @@ class WalletControl extends React.Component {
     this.scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   }
 
-
   render = () => {
     return (
-      <Grid container justify="center"  ref={this.scrollRef}>
-        <Grid item md={8}>
-          <h3>Balance: {this.totalBalance()}</h3>
-        </Grid>
-        <Grid item md={4}>
-          <Box component="span">
-            <Button variant="contained" color="secondary" onClick={this.setDeposit}>Deposit</Button>
-          </Box>
-          <Box component="span" ml={2}>
-            <Button variant="contained" color="primary" onClick={this.setSpend}>Spend</Button>
-          </Box>
-          <Box component="span" ml={2}>
-            <Button variant="contained" onClick={this.setView}>View Addresses</Button>
-          </Box>
-        </Grid>
-      </Grid>
+      <div>
+        <h3>Balance: {this.totalBalance()}</h3>
+        <Tabs
+          ref={this.scrollRef}
+          value={this.props.walletMode}
+          onChange={this.handleModeChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+          >
+            <Tab label="View Addresses" value={WALLET_MODES.VIEW} />
+            <Tab label="Receive" value={WALLET_MODES.DEPOSIT} />
+            <Tab label="Send" value={WALLET_MODES.SPEND} />
+        </Tabs>
+        <Box mt={2}>
+          {this.renderModeComponent()}
+        </Box>
+      </div>
     )
   }
+
+  renderModeComponent = () => {
+    const {walletMode, addNode, updateNode} = this.props;
+    if (walletMode === WALLET_MODES.DEPOSIT) return <WalletDeposit/>
+    else if (walletMode === WALLET_MODES.SPEND) return <WalletSpend addNode={addNode} updateNode={updateNode} coinSelection={naiveCoinSelection}/>
+    else if (walletMode === WALLET_MODES.VIEW) return <WalletView  addNode={addNode} updateNode={updateNode}/>
+    return "";
+  }
+
 
   totalBalance() {
     const { deposits, change } = this.props;
     return satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
   }
 
-  setDeposit = () => {
-    const { setDepositing } = this.props;
-    setDepositing();
-  }
-
-  setSpend = () => {
-    const { setSpending, requiredSigners, setRequiredSigners } = this.props;
-    setRequiredSigners(requiredSigners); // this will generate signature importers
-    setSpending();
-  }
-
-  setView = () => {
-    this.props.setViewing()
+  handleModeChange = (event, mode)  => {
+    const { setMode } = this.props;
+    if (mode === 1) {
+      const { requiredSigners, setRequiredSigners } = this.props;
+      setRequiredSigners(requiredSigners); // this will generate signature importers
+    }
+    setMode(mode);
   }
 }
 
 function mapStateToProps(state) {
   return {
     ...state.wallet,
+    ...state.wallet.info,
     requiredSigners: state.spend.transaction.requiredSigners
   };
 }
 
 const mapDispatchToProps = {
-  setDepositing: updateDepositingAction,
-  setSpending: updateSpendingAction,
-  setViewing: updateViewAdderssesAction,
+  setMode: setWalletModeAction,
   setRequiredSigners,
 };
 
