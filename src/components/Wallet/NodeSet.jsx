@@ -10,7 +10,8 @@ import {
 // Components
 import {
   Button,
-  Grid,
+  FormGroup, FormControlLabel, Checkbox, FormLabel,
+  Grid, Box,
   Table, TableHead, TableBody,
   TableRow, TableCell, TablePagination,
 } from '@material-ui/core';
@@ -33,9 +34,11 @@ class NodeSet extends React.Component {
     nodesPerPage: 10,
     change: false,
     spend: false,
+    filterIncludeSpent: false,
+    filterIncludeZeroBalance: !(this.props.walletMode === WALLET_MODES.SPEND),
   };
 
-  addresses = [];
+  unknownAddresses = [];
 
   render() {
     const {page, nodesPerPage, change} = this.state;
@@ -44,14 +47,15 @@ class NodeSet extends React.Component {
     const useAddressImporter = !spending && client.type === "private";
 
     if (useAddressImporter) {
-      this.addresses = this.getUnknownAddressNodes()
+      this.unknownAddresses = this.getUnknownAddressNodes()
         .map(node => node.multisig.address) ;
     }
     return (
       <Grid item md={12}>
+        {!spending && this.renderFilters()}
         { useAddressImporter &&
           <BitcoindAddressImporter
-            addresses={this.addresses}
+            addresses={this.unknownAddresses}
             importCallback={this.addressesImported}
             />
         }
@@ -98,6 +102,31 @@ class NodeSet extends React.Component {
     );
   }
 
+  renderFilters = () => {
+    const { filterIncludeSpent, filterIncludeZeroBalance } = this.state
+    return (
+    <FormGroup row>
+      <FormLabel component="h2"><Box mr={3}>Include</Box></FormLabel>
+      <FormControlLabel control={
+        <Checkbox
+          checked={filterIncludeSpent}
+          value="filterIncludeSpent"
+          onChange={this.filterAddresses}
+        />} label="Spent Addresses" />
+      <FormControlLabel control={
+        <Checkbox
+          checked={filterIncludeZeroBalance}
+          value="filterIncludeZeroBalance"
+          onChange={this.filterAddresses}
+        />} label="Zero Balance" />
+    </FormGroup>
+    )
+  }
+
+  filterAddresses = (event, checked) => {
+    this.setState({[event.target.value]: checked, page: 0});
+  }
+
   getUnknownAddressNodes = () => {
     const {changeNodes, depositNodes} = this.props
     return Object.values(depositNodes).concat(Object.values(changeNodes))
@@ -139,17 +168,26 @@ class NodeSet extends React.Component {
   }
 
   getNodeSet = () => {
-    const {walletMode, changeNodes, depositNodes} = this.props;
-    const {change} = this.state;
-
+    const { changeNodes, depositNodes} = this.props;
+    const { change, filterIncludeSpent, filterIncludeZeroBalance } = this.state
     const nodes = change ? changeNodes : depositNodes
-    const nodeSet = walletMode === WALLET_MODES.SPEND ? Object.values(nodes)
-      .filter(node => node.balanceSats.isGreaterThan(0))
-      .reduce((nodesObject, currentNode) => {
+
+    let nodeSet = []
+    Object.values(nodes).forEach(node => {
+      if (node.balanceSats.isGreaterThan(0)) {
+        nodeSet.push(node);
+      } else if (filterIncludeZeroBalance && node.balanceSats.isEqualTo(0) && !node.addressUsed) {
+        nodeSet.push(node);
+      } else if (filterIncludeSpent && node.addressUsed) {
+        nodeSet.push(node);
+      }
+    })
+
+    nodeSet = nodeSet.reduce((nodesObject, currentNode) => {
         nodesObject[currentNode.bip32Path] = currentNode;
         return nodesObject;
-      },{})
-      : nodes;
+    },{});
+
     return nodeSet
   }
 
