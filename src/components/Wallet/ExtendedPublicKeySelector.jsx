@@ -8,6 +8,10 @@ import {
   setSignatureImporterMethod,
 } from "../../actions/signatureImporterActions";
 
+// Components
+import {
+  deriveChildPublicKey,
+} from 'unchained-bitcoin';
 import SignatureImporter from '../Spend/SignatureImporter';
 
 import {
@@ -75,14 +79,34 @@ class ExtendedPublicKeySelector extends React.Component {
 
   }
 
+  extendedPublicKeyImporterNotUsed = (extendedPublicKeyImporter) => {
+    const { inputs, network, signatureImporters} = this.props;
+
+    for(let inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
+      const input = inputs[inputIndex];
+      const derivedKey = deriveChildPublicKey(extendedPublicKeyImporter.extendedPublicKey, input.bip32Path, network);
+      for(let importerIndex = 1; importerIndex <= Object.keys(signatureImporters).length; importerIndex++) {
+        const importer = signatureImporters[importerIndex];
+        for(let publicKeyIndex = 0; publicKeyIndex < importer.publicKeys.length; publicKeyIndex++) {
+          const publicKey = importer.publicKeys[publicKeyIndex];
+          if (publicKey === derivedKey) return false;
+        }
+      }
+    }
+    return true;
+  }
+
   renderKeySelectorMenuItems = () => {
     const { extendedPublicKeyImporters, totalSigners } = this.props;
     const extendedPublicKeys = [];
     for (var extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= totalSigners; extendedPublicKeyImporterNum++) {
       const extendedPublicKeyImporter = extendedPublicKeyImporters[extendedPublicKeyImporterNum]
-      extendedPublicKeys.push(<MenuItem value={extendedPublicKeyImporterNum}  key={extendedPublicKeyImporterNum}>
-        {extendedPublicKeyImporter.name}
+      if (this.extendedPublicKeyImporterNotUsed(extendedPublicKeyImporter)) {
+        extendedPublicKeys.push(<MenuItem value={extendedPublicKeyImporterNum}  key={extendedPublicKeyImporterNum}>
+          {extendedPublicKeyImporter.name}
+
       </MenuItem>)
+      }
     }
     return extendedPublicKeys;
   }
@@ -108,6 +132,9 @@ function mapStateToProps(state) {
   return {
     ...state.quorum,
     totalSigners: state.spend.transaction.totalSigners,
+    inputs: state.spend.transaction.inputs,
+    network: state.settings.network,
+    signatureImporters: state.spend.signatureImporters
   };
 }
 
