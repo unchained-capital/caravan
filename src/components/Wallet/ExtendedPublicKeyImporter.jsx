@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
   validateBIP32Path,
-  validateExtendedPublicKey,
+  convertAndValidateExtendedPublicKey,
+  NETWORKS,
 } from 'unchained-bitcoin';
 import {
   TREZOR,
@@ -15,7 +16,8 @@ import {
 import {
   Card, CardHeader, CardContent,
   FormControl, Select, MenuItem,
-  InputLabel, Button,
+  InputLabel, Button, FormHelperText,
+  Box,
 } from '@material-ui/core';
 import Copyable from "../Copyable";
 import ExtendedPublicKeyExtendedPublicKeyImporter from "./ExtendedPublicKeyExtendedPublicKeyImporter";
@@ -57,7 +59,7 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   state = {
     disableChangeMethod: false,
-
+    conversionMessage: "",
   };
 
   render() {
@@ -260,7 +262,11 @@ class ExtendedPublicKeyImporter extends React.Component {
 
 
   renderExtendedPublicKey = () => {
-    const { extendedPublicKeyImporter } = this.props;
+    const { extendedPublicKeyImporter, network } = this.props;
+    const { conversionMessage } = this.state;
+    let conversionAppend = extendedPublicKeyImporter.method === HERMIT && network === NETWORKS.TESTNET ?
+      "this should not be an issue as hermit signing is not affected by the conversion." :
+      "this may indicate an invalid network setting, if so correct setting, remove key and try again."
     return (
       <div>
         <p>The following extended public key was imported:</p>
@@ -270,6 +276,11 @@ class ExtendedPublicKeyImporter extends React.Component {
           </Copyable>
         </div>
         {this.renderBIP32Path()}
+        {conversionMessage !== "" &&
+        <Box mb={2}>
+          <FormHelperText>{conversionMessage}, {conversionAppend} </FormHelperText>
+        </Box>
+        }
         <Button
           variant="contained"
           color="secondary"
@@ -284,17 +295,18 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   validateAndSetExtendedPublicKey = (extendedPublicKey, errback, callback) => {
     const {number, network, extendedPublicKeyImporters, setExtendedPublicKey} = this.props;
-    const error = validateExtendedPublicKey(extendedPublicKey, network);
-    setExtendedPublicKey(number, extendedPublicKey);
-    if (error) {
-      errback(error);
+    const convertedPublicKey = convertAndValidateExtendedPublicKey(extendedPublicKey, network);
+    setExtendedPublicKey(number, convertedPublicKey.extendedPublicKey);
+    if (convertedPublicKey.error !== "") {
+      errback(convertedPublicKey.error);
     } else {
-      if (extendedPublicKey && Object.values(extendedPublicKeyImporters).find((extendedPublicKeyImporter, extendedPublicKeyImporterIndex) => (
-        extendedPublicKeyImporterIndex !== (number - 1) && extendedPublicKeyImporter.extendedPublicKey === extendedPublicKey
+      if (convertedPublicKey.extendedPublicKey && Object.values(extendedPublicKeyImporters).find((extendedPublicKeyImporter, extendedPublicKeyImporterIndex) => (
+        extendedPublicKeyImporterIndex !== (number - 1) && extendedPublicKeyImporter.extendedPublicKey === convertedPublicKey.extendedPublicKey
       ))) {
         errback('This extended public key has already been imported.');
       } else {
         errback('');
+        this.setState({conversionMessage: convertedPublicKey.message})
         this.finalize();
         callback && callback();
       }
