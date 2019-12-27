@@ -97,6 +97,8 @@ class ExtendedPublicKeySelector extends React.Component {
       setTimeout(() => {
         setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
       },0)
+    } else if (importMethod === 'hermit') {
+      setMethod(number, importMethod)
     }
   }
 

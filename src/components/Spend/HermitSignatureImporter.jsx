@@ -46,13 +46,11 @@ class HermitSignatureImporter extends React.Component {
 
   interaction = () => {
     const {signatureImporter, network, inputs, outputs} = this.props;
-    // Sign all inputs with the same BIP32 path because we currently
-    // assume each input is attached to the same address, hence redeem
-    // script, hence public key, hence BIP32 path.
-    //
-    // This will need to be changed if we are signing inputs across
-    // addresses.
-    const bip32Paths = inputs.map((input) => (signatureImporter.bip32Path));
+    const bip32Paths = inputs.map((input) => {
+      if (typeof input.bip32Path === 'undefined') return signatureImporter.bip32Path; // pubkey path
+      return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}` // xpub/pubkey slice away the m, keep /
+    });
+
     return SignMultisigTransaction({keystore: HERMIT, network, inputs, outputs, bip32Paths});
   }
 
@@ -82,7 +80,7 @@ class HermitSignatureImporter extends React.Component {
           </Grid>
 
           <Grid item md={2}>
-            {!this.bip32PathIsDefault() && 
+            {!this.bip32PathIsDefault() &&
              <Button type="button" variant="contained" size="small" onClick={resetBIP32Path} disabled={status !== PENDING}>Default</Button>}
           </Grid>
 
