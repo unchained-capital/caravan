@@ -116,13 +116,11 @@ class ExtendedPublicKeySelector extends React.Component {
     const extendedPublicKeyImporter = extendedPublicKeyImporters[event.target.value]
     const importMethod = extendedPublicKeyImporter.method;
     this.setState({selection: event.target.value});
-    if (importMethod === 'trezor' || importMethod === 'ledger') {
+    if (importMethod === 'trezor' || importMethod === 'ledger' || importMethod === 'hermit') {
       setMethod(number, importMethod)
       setTimeout(() => {
         setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
       },0)
-    } else if (importMethod === 'hermit') {
-      setMethod(number, importMethod)
     }
   }
 
