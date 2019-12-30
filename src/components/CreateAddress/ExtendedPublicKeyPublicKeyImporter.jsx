@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  validateExtendedPublicKey,
+  convertAndValidateExtendedPublicKey,
   deriveChildPublicKey,
 } from "unchained-bitcoin";
 
@@ -28,11 +28,12 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
     extendedPublicKey: '',
     extendedPublicKeyError: '',
     bip32PathError: '',
+    conversionMessage: "",
   };
 
   render = () => {
     const {publicKeyImporter} = this.props;
-    const {extendedPublicKey, extendedPublicKeyError, bip32PathError} = this.state;
+    const {extendedPublicKey, extendedPublicKeyError, bip32PathError, conversionMessage} = this.state;
     return (
       <div>
         <Box mt={2}>
@@ -46,6 +47,10 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
             helperText={extendedPublicKeyError}
           />
         </Box>
+        {conversionMessage !== "" &&
+        <Box mb={2}>
+          <FormHelperText>{conversionMessage}, this may indicate an invalid network setting, if so correct setting, remove key and try again.</FormHelperText>
+        </Box>}
 
           <Box mt={2}>
             <Grid container>
@@ -118,9 +123,11 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
 
   handleExtendedPublicKeyChange = (event) => {
     const {network} = this.props;
-    const extendedPublicKey = event.target.value;
-    const extendedPublicKeyError = validateExtendedPublicKey(extendedPublicKey, network);
-    this.setState({extendedPublicKey, extendedPublicKeyError});
+    const enteredExtendedPublicKey = event.target.value;
+    const convertedPublicKey = convertAndValidateExtendedPublicKey(enteredExtendedPublicKey, network);
+    const extendedPublicKeyError = convertedPublicKey.error;
+    const extendedPublicKey = convertedPublicKey.extendedPublicKey;
+    this.setState({extendedPublicKey, extendedPublicKeyError, conversionMessage: convertedPublicKey.message});
   };
 
 }
