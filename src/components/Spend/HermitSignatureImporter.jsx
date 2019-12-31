@@ -13,6 +13,8 @@ import {
   TextField,
   Button,
   FormHelperText,
+  Table, TableHead, TableBody,
+  TableRow, TableCell,
 } from '@material-ui/core';
 import HermitReader from "../Hermit/HermitReader";
 import HermitDisplayer from "../Hermit/HermitDisplayer";
@@ -24,6 +26,7 @@ class HermitSignatureImporter extends React.Component {
     network: PropTypes.string.isRequired,
     inputs: PropTypes.array.isRequired,
     outputs: PropTypes.array.isRequired,
+    fee: PropTypes.string.isRequired,
     signatureImporter: PropTypes.shape({}).isRequired,
     resetBIP32Path: PropTypes.func.isRequired,
     defaultBIP32Path: PropTypes.string.isRequired,
@@ -98,6 +101,8 @@ class HermitSignatureImporter extends React.Component {
              </Grid>
            </Grid>
 
+           {this.renderDeviceConfirmInfo()}
+
            <HermitReader
              startText="Scan Signature QR Code"
              interaction={interaction}
@@ -112,6 +117,70 @@ class HermitSignatureImporter extends React.Component {
       </Box>
     );
   }
+
+  renderDeviceConfirmInfo = () => {
+    const {fee} = this.props;
+
+    return (
+      <Box>
+        <p>Hermit will ask you to verify the following information:</p>
+        <Table>
+          <TableHead>
+            <TableRow hover>
+                <TableCell></TableCell>
+              <TableCell>Amount (BTC)</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableHead>
+            <TableRow>
+              <TableCell>Inputs</TableCell><TableCell>&nbsp;</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+          {this.renderInputs()}
+          </TableBody>
+          <TableHead>
+            <TableRow>
+              <TableCell>Outputs</TableCell><TableCell>&nbsp;</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+          {this.renderOutputs()}
+          <TableRow hover>
+            <TableCell>Fee</TableCell>
+            <TableCell>{fee}</TableCell>
+          </TableRow>
+          </TableBody>
+        </Table>
+      </Box>
+    )
+  }
+
+  renderInputs = () => {
+    const { inputs, signatureImporter } = this.props;
+    console.log('renderInputs', inputs)
+    return inputs.map((input, i) => {
+      return (
+      <TableRow hover key={i}>
+        <TableCell><code>{input.multisig.address} - {signatureImporter.bip32Path}</code></TableCell>
+        <TableCell>{input.amount}</TableCell>
+      </TableRow>
+      );
+    });
+  }
+
+  renderOutputs = () => {
+    const { outputs } = this.props;
+    return outputs.map((output, i) => {
+      return (
+      <TableRow hover key={i}>
+        <TableCell><code>{output.address}</code></TableCell>
+        <TableCell>{output.amount}</TableCell>
+      </TableRow>
+      );
+    });
+  }
+
 
   import = (signature) => {
     console.log("IMPORTED SIGNATURE:", signature);

@@ -82,7 +82,9 @@ class SignatureImporter extends React.Component {
   }
 
   componentDidUpdate = () => {
-    this.scrollToTitle();
+    const { signatureImporter } = this.props;
+    if (signatureImporter.method !== HERMIT)
+      this.scrollToTitle();
   }
 
   scrollToTitle = () => {
@@ -173,6 +175,7 @@ class SignatureImporter extends React.Component {
                signatureImporter={signatureImporter}
                inputs={inputs}
                outputs={outputs}
+               fee={fee}
                validateAndSetBIP32Path={this.validateAndSetBIP32Path}
                resetBIP32Path={this.resetBIP32Path}
                defaultBIP32Path={this.defaultBIP32Path()}
