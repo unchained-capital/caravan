@@ -27,6 +27,7 @@ class Transaction extends React.Component {
     network: PropTypes.string.isRequired,
     client: PropTypes.object.isRequired,
     inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     signatureImporters: PropTypes.object.isRequired,
   };
 
@@ -90,18 +91,10 @@ class Transaction extends React.Component {
   }
 
   buildSignedTransaction = () => {
-    const {unsignedTransaction, inputs, signatureImporters} = this.props;
-    const inputsSignaturesByPublicKey = [];
-    inputs.forEach((input, inputIndex) => {
-      const inputSignaturesByPublicKey = {};
-      Object.values(signatureImporters).forEach((signatureImporter) => {
-        const signerInputPublicKey = signatureImporter.publicKeys[inputIndex];
-        const signerInputSignature = signatureImporter.signature[inputIndex];
-        inputSignaturesByPublicKey[signerInputPublicKey] = signerInputSignature;
-      });
-      inputsSignaturesByPublicKey.push(inputSignaturesByPublicKey);
-    });
-    return signedMultisigTransaction(unsignedTransaction, inputs, inputsSignaturesByPublicKey);
+    const {network, inputs, outputs, signatureImporters} = this.props;
+    return signedMultisigTransaction(
+      network, inputs, outputs,
+      signatureImporters.map((signatureImporter) => signatureImporter.signature));
   }
 
   handleBroadcast = async () => {
@@ -136,7 +129,7 @@ function mapStateToProps(state) {
     ...state.client,
     signatureImporters: state.spend.signatureImporters,
     inputs: state.spend.transaction.inputs,
-    unsignedTransaction: state.spend.transaction.unsignedTransaction,
+    outputs: state.spend.transaction.outputs,
   };
 }
 

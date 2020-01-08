@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 import HermitReader from "../Hermit/HermitReader";
 import HermitDisplayer from "../Hermit/HermitDisplayer";
-import WalletFeedback from '../WalletFeedback';
+import InteractionMessages from '../InteractionMessages';
 
 class HermitSignatureImporter extends React.Component {
 
@@ -40,7 +40,7 @@ class HermitSignatureImporter extends React.Component {
       bip32PathError: '',
       bip32PathFinalized: false,
       signatureError: '',
-      walletState: (this.interaction(true).isSupported() ? PENDING : UNSUPPORTED),
+      status: (this.interaction(true).isSupported() ? PENDING : UNSUPPORTED),
     };
   }
 
@@ -53,16 +53,16 @@ class HermitSignatureImporter extends React.Component {
     // This will need to be changed if we are signing inputs across
     // addresses.
     const bip32Paths = inputs.map((input) => (signatureImporter.bip32Path));
-    return SignMultisigTransaction({walletType: HERMIT, network, inputs, outputs, bip32Paths});
+    return SignMultisigTransaction({keystore: HERMIT, network, inputs, outputs, bip32Paths});
   }
 
   render = () => {
     const {signatureImporter, disableChangeMethod, resetBIP32Path} = this.props;
-    const {bip32PathError, signatureError, walletState} = this.state;
+    const {bip32PathError, signatureError, status} = this.state;
     const interaction = this.interaction();
-    if (walletState === UNSUPPORTED) {
+    if (status === UNSUPPORTED) {
       return (
-        <WalletFeedback messages={interaction.messagesFor({walletState})} excludeCodes={["hermit.signature_request", "hermit.command"]}/>
+        <InteractionMessages messages={interaction.messagesFor({state: status})} excludeCodes={["hermit.signature_request", "hermit.command"]}/>
       );
     }
     return (
@@ -75,7 +75,7 @@ class HermitSignatureImporter extends React.Component {
               name="bip32Path"
               value={signatureImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
-              disabled={walletState !== PENDING}
+              disabled={status !== PENDING}
               error={this.hasBIP32PathError()}
               helperText={bip32PathError}
             />
@@ -83,7 +83,7 @@ class HermitSignatureImporter extends React.Component {
 
           <Grid item md={2}>
             {!this.bip32PathIsDefault() && 
-             <Button type="button" variant="contained" size="small" onClick={resetBIP32Path} disabled={walletState !== PENDING}>Default</Button>}
+             <Button type="button" variant="contained" size="small" onClick={resetBIP32Path} disabled={status !== PENDING}>Default</Button>}
           </Grid>
 
         </Grid>
@@ -106,7 +106,7 @@ class HermitSignatureImporter extends React.Component {
              onSuccess={this.import}
              onClear={this.clear} />
 
-           <WalletFeedback messages={interaction.messagesFor({walletState})} excludeCodes={["hermit.signature_request", "hermit.command"]}/>
+           <InteractionMessages messages={interaction.messagesFor({state: status})} excludeCodes={["hermit.signature_request", "hermit.command"]}/>
 
            <FormHelperText error>{signatureError}</FormHelperText>
          </Box>

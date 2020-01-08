@@ -16,7 +16,7 @@ import {
   setErrorNotification,
 } from "../../actions/errorNotificationActions";
 
-import WalletFeedback from "../WalletFeedback";
+import InteractionMessages from "../InteractionMessages";
 import { 
   Box, Typography,
   Card, CardHeader, CardContent, CardActions,
@@ -115,9 +115,9 @@ class TestRunBase extends React.Component {
   renderInteractionMessages = () => {
     const {status, test} = this.props;
     if (status === PENDING || status === ACTIVE) {
-      return <WalletFeedback 
+      return <InteractionMessages 
                excludeCodes={['hermit.command']}
-               messages={test.interaction().messagesFor({walletState: status})} />;
+               messages={test.interaction().messagesFor({state: status})} />;
     } else { return null; }
   }
 

@@ -11,7 +11,7 @@ import {
   Box, Grid
 } from '@material-ui/core';
 
-import WalletFeedback from '../WalletFeedback';
+import InteractionMessages from '../InteractionMessages';
 
 class HardwareWalletPublicKeyImporter extends React.Component {
 
@@ -36,21 +36,21 @@ class HardwareWalletPublicKeyImporter extends React.Component {
     this.state = {
       publicKeyError: '',
       bip32PathError: '',
-      walletState: (this.interaction().isSupported() ? PENDING : UNSUPPORTED),
+      status: (this.interaction().isSupported() ? PENDING : UNSUPPORTED),
     };
   }
 
   interaction = () => {
     const {network, publicKeyImporter} = this.props;
-    return ExportPublicKey({network, walletType: publicKeyImporter.method, bip32Path:publicKeyImporter.bip32Path});
+    return ExportPublicKey({network, keystore: publicKeyImporter.method, bip32Path:publicKeyImporter.bip32Path});
   }
 
   render = () => {
     const {publicKeyImporter} = this.props;
-    const {walletState, publicKeyError} = this.state;
+    const {status, publicKeyError} = this.state;
     const interaction = this.interaction();
-    if (walletState === UNSUPPORTED) {
-      return <FormHelperText error>{interaction.messageTextFor({walletState})}</FormHelperText>;
+    if (status === UNSUPPORTED) {
+      return <FormHelperText error>{interaction.messageTextFor({status})}</FormHelperText>;
     }
     return (
       <Box mt={2}>
@@ -61,13 +61,13 @@ class HardwareWalletPublicKeyImporter extends React.Component {
               label="BIP32 Path"
               value={publicKeyImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
-              disabled={walletState !== PENDING}
+              disabled={status !== PENDING}
               error={this.hasBIP32PathError()}
               helperText={this.bip32PathError()}
               />
         </Grid>
         <Grid item md={6}>
-              {!this.bip32PathIsDefault() && <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path} disabled={walletState !== PENDING}>Default</Button>}
+              {!this.bip32PathIsDefault() && <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path} disabled={status !== PENDING}>Default</Button>}
         </Grid>
        </Grid>
         <FormHelperText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormHelperText>
@@ -78,9 +78,9 @@ class HardwareWalletPublicKeyImporter extends React.Component {
             color="primary"
             size="large"
             onClick={this.import}
-            disabled={this.hasBIP32PathError() || walletState === ACTIVE}>Import Public Key</Button>
+            disabled={this.hasBIP32PathError() || status === ACTIVE}>Import Public Key</Button>
         </Box>
-        <WalletFeedback messages={interaction.messagesFor({walletState})} excludeCodes={["bip32"]}/>
+        <InteractionMessages messages={interaction.messagesFor({state: status})} excludeCodes={["bip32"]}/>
         <FormHelperText error>{publicKeyError}</FormHelperText>
       </Box>
     );
@@ -89,27 +89,27 @@ class HardwareWalletPublicKeyImporter extends React.Component {
   import = async () => {
     const {validateAndSetPublicKey, enableChangeMethod, disableChangeMethod} = this.props;
     disableChangeMethod();
-    this.setState({publicKeyError: '', walletState: ACTIVE});
+    this.setState({publicKeyError: '', status: ACTIVE});
     try {
       const publicKey = await this.interaction().run();
-      validateAndSetPublicKey(publicKey, (error) => {this.setState({publicKeyError: error, walletState: PENDING});});
+      validateAndSetPublicKey(publicKey, (error) => {this.setState({publicKeyError: error, status: PENDING});});
     } catch(e) {
       console.error(e);
-      this.setState({publicKeyError: e.message, walletState: PENDING});
+      this.setState({publicKeyError: e.message, status: PENDING});
     }
 
     enableChangeMethod();
   }
 
   hasBIP32PathError = () => {
-    const {bip32PathError, walletState} = this.state;
-    return (bip32PathError !== '' || this.interaction().hasMessagesFor({walletState, level: ERROR, code: "bip32"}));
+    const {bip32PathError, status} = this.state;
+    return (bip32PathError !== '' || this.interaction().hasMessagesFor({state: status, level: ERROR, code: "bip32"}));
   }
 
   bip32PathError = () => {
-    const {bip32PathError, walletState} = this.state;
+    const {bip32PathError, status} = this.state;
     if (bip32PathError !== '') { return bip32PathError; }
-    return this.interaction().messageTextFor({walletState, level: ERROR, code: "bip32"});
+    return this.interaction().messageTextFor({state: status, level: ERROR, code: "bip32"});
   }
 
   setBIP32PathError = (value) => {

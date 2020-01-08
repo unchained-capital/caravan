@@ -24,7 +24,7 @@ import {
   Button,
 } from '@material-ui/core';
 import {KeystoreNote} from "./Note";
-import WalletFeedback from "../WalletFeedback";
+import InteractionMessages from "../InteractionMessages";
 
 class KeystorePickerBase extends React.Component {
 
@@ -68,7 +68,7 @@ class KeystorePickerBase extends React.Component {
           
         </Grid>
         
-        {type && type !== HERMIT && <WalletFeedback messages={this.interaction().messagesFor({walletState: status})} />}
+        {type && type !== HERMIT && <InteractionMessages messages={this.interaction().messagesFor({state: status})} />}
         
         <KeystoreNote />
 
@@ -90,7 +90,7 @@ class KeystorePickerBase extends React.Component {
 
   interaction = () => {
     const {type} = this.props;
-    return GetMetadata({walletType: type});
+    return GetMetadata({keystore: type});
   }
 
   detectVersion = async () => {
@@ -98,7 +98,9 @@ class KeystorePickerBase extends React.Component {
     setKeystoreStatus(ACTIVE);
     try {
       const result = await this.interaction().run();
-      setKeystore(type, result.spec);
+      if (result) {
+        setKeystore(type, result.spec);
+      }
     } catch(e) {
       console.error(e);
       setErrorNotification(e.message);

@@ -5,6 +5,7 @@ import Bowser from "bowser";
 import {
   TREZOR,
   LEDGER,
+  HERMIT,
   PENDING,
   ACTIVE,
   VERSION as UNCHAINED_WALLETS_VERSION,
@@ -156,6 +157,8 @@ class TestSuiteRunSummaryBase extends React.Component {
       return "Trezor";
     case LEDGER:
       return "Ledger";
+    case HERMIT:
+      return "Hermit";
     default:
       return "";
     }

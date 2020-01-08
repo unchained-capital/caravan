@@ -23,7 +23,7 @@ import {
   TableRow, TableCell,
 } from '@material-ui/core';
 import {Error} from "@material-ui/icons";
-import WalletFeedback from '../WalletFeedback';
+import InteractionMessages from '../InteractionMessages';
 
 class HardwareWalletSignatureImporter extends React.Component {
 
@@ -50,7 +50,7 @@ class HardwareWalletSignatureImporter extends React.Component {
       verifyError: '',
       signatureError: '',
       bip32PathError: '',
-      walletState: (this.interaction(true).isSupported() ? PENDING : UNSUPPORTED),
+      status: (this.interaction(true).isSupported() ? PENDING : UNSUPPORTED),
     };
   }
 
@@ -61,7 +61,7 @@ class HardwareWalletSignatureImporter extends React.Component {
   interaction = (inConstructor) => {
     const verified = (inConstructor ? false : this.state.verified);
     const {signatureImporter, network, inputs, outputs} = this.props;
-    const walletType = signatureImporter.method;
+    const keystore = signatureImporter.method;
     if (verified) {
       // Sign all inputs with the same BIP32 path because we currently
       // assume each input is attached to the same address, hence
@@ -70,18 +70,18 @@ class HardwareWalletSignatureImporter extends React.Component {
       // This will need to be changed if we are signing inputs across
       // addresses.
       const bip32Paths = inputs.map((input) => (signatureImporter.bip32Path));
-      return SignMultisigTransaction({network, walletType, inputs, outputs, bip32Paths});
+      return SignMultisigTransaction({network, keystore, inputs, outputs, bip32Paths});
     } else {
-      return ExportPublicKey({network, walletType, bip32Path: signatureImporter.bip32Path});
+      return ExportPublicKey({network, keystore, bip32Path: signatureImporter.bip32Path});
     }
   }
 
   render = () => {
     const {signatureImporter} = this.props;
-    const {verified, walletState} = this.state;
+    const {verified, status} = this.state;
     const interaction = this.interaction();
-    if (walletState === UNSUPPORTED) {
-      return <FormHelperText error>{interaction.messageTextFor({walletState})}</FormHelperText>;
+    if (status === UNSUPPORTED) {
+      return <FormHelperText error>{interaction.messageTextFor({state: status})}</FormHelperText>;
     }
     return (
       <Box mt={2}>
@@ -94,7 +94,7 @@ class HardwareWalletSignatureImporter extends React.Component {
               type="text"
               value={signatureImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
-              disabled={walletState !== PENDING || verified}
+              disabled={status !== PENDING || verified}
               error={this.hasBIP32PathError()}
               helperText={this.bip32PathError()}
             />
@@ -102,7 +102,7 @@ class HardwareWalletSignatureImporter extends React.Component {
           </Grid>
           <Grid item md={2}>
             {!this.bip32PathIsDefault() &&
-             <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path} disabled={verified || walletState !== PENDING}>Default</Button>}
+             <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path} disabled={verified || status !== PENDING}>Default</Button>}
           </Grid>
         </Grid>
         <FormHelperText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormHelperText>
@@ -110,16 +110,16 @@ class HardwareWalletSignatureImporter extends React.Component {
           {this.renderAction()}
         </Box>
         {this.renderDeviceConfirmInfo()}
-        <WalletFeedback messages={interaction.messagesFor({walletState})} excludeCodes={["bip32"]}/>
+        <InteractionMessages messages={interaction.messagesFor({state: status})} excludeCodes={["bip32"]}/>
       </Box>
     );
   }
 
   renderDeviceConfirmInfo = () => {
     const {fee, inputsTotalSats} = this.props;
-    const {verified, walletState} = this.state;
+    const {verified, status} = this.state;
 
-    if (verified && walletState === ACTIVE) {
+    if (verified && status === ACTIVE) {
       return (
         <Box>
           <p>Your device will ask you to verify the following information:</p>
@@ -160,12 +160,12 @@ class HardwareWalletSignatureImporter extends React.Component {
   }
 
   renderAction = () => {
-    const {verified, verifyError, signatureError, walletState} = this.state;
+    const {verified, verifyError, signatureError, status} = this.state;
     if (verified) {
       return (
         <Grid container alignItems="center">
           <Grid item md={3}>
-            <Button variant="contained" size="large" color="primary" onClick={this.sign} disabled={walletState !== PENDING}>Sign</Button>
+            <Button variant="contained" size="large" color="primary" onClick={this.sign} disabled={status !== PENDING}>Sign</Button>
           </Grid>
           <Grid item md={9}>
             <FormHelperText error>{signatureError}</FormHelperText>
@@ -176,7 +176,7 @@ class HardwareWalletSignatureImporter extends React.Component {
       return (
         <Grid container alignItems="center">
           <Grid item md={3}>
-            <Button variant="contained" size="large" onClick={this.verify} color="primary" disabled={walletState !== PENDING || this.hasBIP32PathError()}>Verify</Button>
+            <Button variant="contained" size="large" onClick={this.verify} color="primary" disabled={status !== PENDING || this.hasBIP32PathError()}>Verify</Button>
           </Grid>
           <Grid item md={9}>
             <FormHelperText error>{verifyError}</FormHelperText>
@@ -191,14 +191,14 @@ class HardwareWalletSignatureImporter extends React.Component {
   //
 
   hasBIP32PathError = () => {
-    const {bip32PathError, walletState} = this.state;
-    return (bip32PathError !== '' || this.interaction().hasMessagesFor({walletState, level: ERROR, code: "bip32"}));
+    const {bip32PathError, status} = this.state;
+    return (bip32PathError !== '' || this.interaction().hasMessagesFor({state: status, level: ERROR, code: "bip32"}));
   }
 
   bip32PathError = () => {
-    const {bip32PathError, walletState} = this.state;
+    const {bip32PathError, status} = this.state;
     if (bip32PathError !== '') { return bip32PathError; }
-    return this.interaction().messageTextFor({walletState, level: ERROR, code: "bip32"});
+    return this.interaction().messageTextFor({state: status, level: ERROR, code: "bip32"});
   }
 
   setBIP32PathError = (value) => {
@@ -229,14 +229,14 @@ class HardwareWalletSignatureImporter extends React.Component {
   verify = async () => {
     const { disableChangeMethod, enableChangeMethod } = this.props;
     disableChangeMethod();
-    this.setState({verifyError: '', walletState: ACTIVE});
+    this.setState({verifyError: '', status: ACTIVE});
 
     try {
       const publicKey = await this.interaction().run();
       this.verifyPublicKey(publicKey);
     } catch(e) {
       console.error(e);
-      this.setState({verifyError: e.message, walletState: PENDING});
+      this.setState({verifyError: e.message, status: PENDING});
       enableChangeMethod();
     }
   }
@@ -271,7 +271,7 @@ class HardwareWalletSignatureImporter extends React.Component {
     this.setState({
       verified: (verifyError === ''),
       verifyError,
-      walletState: PENDING,
+      status: PENDING,
     });
     enableChangeMethod();
   }
@@ -283,7 +283,7 @@ class HardwareWalletSignatureImporter extends React.Component {
   sign = async () => {
     const { disableChangeMethod, validateAndSetSignature, enableChangeMethod } = this.props;
     disableChangeMethod();
-    this.setState({signatureError: '', walletState: ACTIVE});
+    this.setState({signatureError: '', status: ACTIVE});
 
     try {
       const signature = await this.interaction().run();
@@ -291,12 +291,12 @@ class HardwareWalletSignatureImporter extends React.Component {
         signature,
         (signatureError) => {
           const stateUpdate = {signatureError};
-          if (signatureError !== '') stateUpdate.walletState = PENDING;
+          if (signatureError !== '') stateUpdate.status = PENDING;
           this.setState(stateUpdate);
         });
     } catch(e) {
       console.error(e);
-      this.setState({signatureError: e.message, walletState: PENDING});
+      this.setState({signatureError: e.message, status: PENDING});
     }
     enableChangeMethod();
   }

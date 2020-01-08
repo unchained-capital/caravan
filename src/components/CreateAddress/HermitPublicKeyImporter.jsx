@@ -25,7 +25,6 @@ class HermitPublicKeyImporter extends React.Component {
 
   state = {
     publicKeyError: '',
-    walletState: PENDING,
   };
 
   componentDidMount = () => {
@@ -35,7 +34,7 @@ class HermitPublicKeyImporter extends React.Component {
 
   interaction = () => {
     const {network, publicKeyImporter} = this.props;
-    return ExportPublicKey({walletType: HERMIT, network, bip32Path: publicKeyImporter.bip32Path});
+    return ExportPublicKey({keystore: HERMIT, network, bip32Path: publicKeyImporter.bip32Path});
   }
 
   render = () => {

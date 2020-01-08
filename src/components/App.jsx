@@ -9,7 +9,8 @@ import Spend from './Spend';
 import Navbar from './Navbar';
 import Footer from "./Footer";
 import { CssBaseline, Container } from '@material-ui/core';
-import {ErrorBoundary} from './ErrorBoundry';
+import {ErrorBoundary} from './ErrorBoundary';
+import {ErrorNotification} from './ErrorNotification';
 
 
 const App = () => (
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" component={Help} />
           </Switch>
         </Router>
+        <ErrorNotification />
       </ErrorBoundary>
       <Footer />
     </Container>

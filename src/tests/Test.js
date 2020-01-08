@@ -66,6 +66,7 @@ export class Test {
       const actual = await this.actual();
       return this.resolve(actual);
     } catch(e) {
+      console.error(e);
       return {status: ERROR, message: e.message};
     }
   }

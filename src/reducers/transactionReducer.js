@@ -6,8 +6,8 @@ import {
   estimateMultisigTransactionFee,
   estimateMultisigTransactionFeeRate,
   validateFeeRate,
-  validateFeeBTC,
-  validateOutputAmountBTC,
+  validateFee,
+  validateOutputAmount,
   satoshisToBitcoins, 
   bitcoinsToSatoshis, 
   validateAddress,
@@ -142,7 +142,7 @@ function setFeeForRate(state, feeRateString, nout) {
       m: state.requiredSigners,
       n: state.totalSigners,
       feesPerByteInSatoshis: feeRateString
-    })).toString()
+    })).toString();
 }
 
 function updateFeeRate(state, action) {
@@ -163,7 +163,8 @@ function updateFeeRate(state, action) {
 
 function updateFee(state, action) {
   const feeString = action.value;
-  const feeError = validateFeeBTC(feeString, state.inputsTotalSats);
+  const feeSats = bitcoinsToSatoshis(feeString);
+  const feeError = validateFee(feeSats, state.inputsTotalSats);
   const feeRate = (
     feeError === '' ? 
       estimateMultisigTransactionFeeRate(
@@ -173,8 +174,8 @@ function updateFee(state, action) {
           numOutputs: state.outputs.length,
           m: state.requiredSigners,
           n: state.totalSigners,
-          feesInSatoshis: bitcoinsToSatoshis(new BigNumber(feeString))
-        }).toString() 
+          feesInSatoshis: feeSats,
+        }).toFixed(0) 
       :
       '');
     
@@ -228,10 +229,11 @@ function updateOutputAddress(state, action) {
 function updateOutputAmount(state, action) {
   const newOutputs = [...state.outputs];
   const amount = action.value;
-  let error = validateOutputAmountBTC(amount, state.inputsTotalSats);
+  const amountSats = bitcoinsToSatoshis(BigNumber(amount));
+  let error = validateOutputAmount(amountSats, state.inputsTotalSats);
   newOutputs[action.number - 1].amount = amount;
   newOutputs[action.number - 1].amountError = error;
-  newOutputs[action.number - 1].amountSats = (error ? '' : bitcoinsToSatoshis(new BigNumber(action.value)));
+  newOutputs[action.number - 1].amountSats = (error ? '' : amountSats);
   return {
     ...state,
     ...{outputs: newOutputs},
@@ -252,7 +254,7 @@ function deleteOutput(state, action) {
 }
 
 function finalizeOutputs(state) {
-  const unsignedTransaction = unsignedMultisigTransaction(state.network, state.inputs, state.outputs);
+  const unsignedTransaction = unsignedMultisigTransaction(state.network, state.inputs, state.outputs); 
   return {
     ...state,
     ...{finalizedOutputs: true, unsignedTransaction},

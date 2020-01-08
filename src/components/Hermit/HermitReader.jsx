@@ -29,16 +29,16 @@ class HermitReader extends Component {
   }
   
   state = {
-    walletState: PENDING,
+    status: PENDING,
     error: '',
   };
 
   render = () => {
-    const {walletState, error} = this.state;
+    const {status, error} = this.state;
     const {interaction, width, startText} = this.props;
 
-    if (walletState === PENDING) {
-      const commandMessage = interaction.messageFor({walletState, code: "hermit.command"});
+    if (status === PENDING) {
+      const commandMessage = interaction.messageFor({state: status, code: "hermit.command"});
       return (
         <div>
           <p>{commandMessage.instructions}</p>
@@ -55,7 +55,7 @@ class HermitReader extends Component {
       );
     } 
 
-    if (walletState === ACTIVE) {
+    if (status === ACTIVE) {
       return (
         <Grid container direction="column">
           <Grid item>
@@ -74,7 +74,7 @@ class HermitReader extends Component {
       );
     }
     
-    if (walletState === 'error' || walletState === 'success') {
+    if (status === 'error' || status === 'success') {
       return (
         <div>
           <FormHelperText error>{error}</FormHelperText>
@@ -88,13 +88,13 @@ class HermitReader extends Component {
 
   handleStart = () => {
     const {onStart} = this.props;
-    this.setState({walletState: ACTIVE, error: ''});
+    this.setState({status: ACTIVE, error: ''});
     if (onStart) { onStart(); }
   }
 
   handleError = (error) => {
     const {onClear} = this.props;
-    this.setState({walletState: 'error', error: error.message});
+    this.setState({status: 'error', error: error.message});
     if (onClear) {onClear(); }
   }
 
@@ -104,7 +104,7 @@ class HermitReader extends Component {
       try {
         const result = interaction.parse(data);
         onSuccess(result);
-        this.setState({walletState: 'success'});
+        this.setState({status: 'success'});
       } catch(e) {
         this.handleError(e);
       }
@@ -114,7 +114,7 @@ class HermitReader extends Component {
   handleStop = () => {
     const {onClear} = this.props;
     this.setState({
-      walletState: PENDING,
+      status: PENDING,
       error: '',
     });
     if (onClear) {onClear(); }

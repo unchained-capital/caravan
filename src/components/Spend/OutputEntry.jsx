@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {
   satoshisToBitcoins,
   bitcoinsToSatoshis,
-  validateOutputAmountBTC,
+  validateOutputAmount,
 } from 'unchained-bitcoin';
 import BigNumber from "bignumber.js";
 
@@ -147,7 +147,7 @@ class OutputEntry extends React.Component {
       }
     }
     const newAmount = this.autoBalancedAmount();
-    if (validateOutputAmountBTC(newAmount, inputsTotalSats) !== '') { return true; }
+    if (validateOutputAmount(bitcoinsToSatoshis(newAmount), inputsTotalSats) !== '') { return true; }
     if (amountError === '' && (newAmount === new BigNumber(amount))) { return true; }
     return false;
   }
@@ -163,7 +163,7 @@ class OutputEntry extends React.Component {
     const {number, fee, inputsTotalSats, outputs} = this.props;
     const outputTotalSats = outputs
           .filter((output, i) => i !== number - 1)
-          .map((output) => bitcoinsToSatoshis(new BigNumber(output.amount)))
+          .map((output) => output.amountSats)
           .reduce(
             (accumulator, currentValue) => accumulator.plus(currentValue),
             new BigNumber(0));

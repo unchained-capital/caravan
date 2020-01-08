@@ -1,3 +1,4 @@
+import {sortInputs} from "unchained-bitcoin";
 import {
   blockExplorerGetAddresesUTXOs,
   blockExplorerGetFeeEstimate,
@@ -18,7 +19,12 @@ function bitcoindParams(client) {
   return {url, auth};
 }
 
-export function fetchAddressUTXOs(address, network, client) {
+export async function fetchAddressUTXOs(address, network, client) {
+  const unsortedUTXOs = await fetchAddressUTXOsUnsorted(address, network, client);
+  return sortInputs(unsortedUTXOs);
+}
+
+function fetchAddressUTXOsUnsorted(address, network, client) {
   if (client.type === BLOCK_EXPLORER) {
     return blockExplorerGetAddresesUTXOs(address, network);
   } else {
