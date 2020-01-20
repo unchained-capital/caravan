@@ -127,7 +127,7 @@ function updateAddressType(state, action) {
 
 function updateFinalizedSettings(state, action) {
   const newState = {...state}
-  if (action.value === true && state.finalizedNetwork === '' && newState.extendedPublicKeyImporters[action.number].method !== TEXT) {
+  if (action.value === true && state.finalizedNetwork === '' /*&& newState.extendedPublicKeyImporters[action.number].method !== TEXT*/) {
     newState.finalizedNetwork = state.network;
     newState.finalizedAddressType = state.addressType;
   } else if (action.value === false && state.finalizedNetwork !== '') {

@@ -94,7 +94,7 @@ class Transaction extends React.Component {
     const {network, inputs, outputs, signatureImporters} = this.props;
     return signedMultisigTransaction(
       network, inputs, outputs,
-      signatureImporters.map((signatureImporter) => signatureImporter.signature));
+      Object.values(signatureImporters).map((signatureImporter) => signatureImporter.signature));
   }
 
   handleBroadcast = async () => {

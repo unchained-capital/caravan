@@ -74,7 +74,7 @@ class HardwareWalletSignatureImporter extends React.Component {
       if (typeof inputs[0].bip32Path !== 'undefined') {
         bip32Paths = inputs.map(input => `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`); // xpub/pubkey slice away the m, keep /
       }
-      return ExportPublicKey({network, walletType, bip32Path, bip32Paths});
+      return ExportPublicKey({network, keystore, bip32Path, bip32Paths});
     }
   }
 

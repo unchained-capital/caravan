@@ -16,12 +16,6 @@ import {
 export const BLOCK_EXPLORER = 'public';
 export const BITCOIND = 'private';
 
-function bitcoindParams(client) {
-  const {url, username, password} = client;
-  const auth = { username, password };
-  return {url, auth};
-}
-
 export async function fetchAddressUTXOs(address, network, client) {
   const unsortedUTXOs = await fetchAddressUTXOsUnsorted(address, network, client);
   return sortInputs(unsortedUTXOs);

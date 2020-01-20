@@ -237,7 +237,7 @@ function updateOutputAmount(state, action) {
   const newOutputs = [...state.outputs];
   const amount = action.value;
   const amountSats = bitcoinsToSatoshis(BigNumber(amount));
-  let error = state.inputs.length ? validateOutputAmount(amount, state.inputsTotalSats) : "";
+  let error = state.inputs.length ? validateOutputAmount(amountSats, state.inputsTotalSats) : "";
   if (state.isWallet && error === "Output amount is too large.") error = ""
 
   newOutputs[action.number - 1].amount = amount;

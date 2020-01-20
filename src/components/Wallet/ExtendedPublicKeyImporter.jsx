@@ -64,7 +64,7 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   render() {
     const { extendedPublicKeyImporter, finalizedNetwork, network } = this.props;
-    const hasConflict = extendedPublicKeyImporter.method && extendedPublicKeyImporter.method !== TEXT && extendedPublicKeyImporter.conflict
+    const hasConflict = extendedPublicKeyImporter.method /*&& extendedPublicKeyImporter.method !== TEXT*/ && extendedPublicKeyImporter.conflict
     let conflictMessage = "";
     if (hasConflict) {
       if (finalizedNetwork !== network) {
@@ -296,7 +296,9 @@ class ExtendedPublicKeyImporter extends React.Component {
   validateAndSetExtendedPublicKey = (extendedPublicKey, errback, callback) => {
     const {number, network, extendedPublicKeyImporters, setExtendedPublicKey} = this.props;
     const convertedPublicKey = convertAndValidateExtendedPublicKey(extendedPublicKey, network);
+    // setExtendedPublicKey(number, extendedPublicKey);
     setExtendedPublicKey(number, convertedPublicKey.extendedPublicKey);
+
     if (convertedPublicKey.error !== "") {
       errback(convertedPublicKey.error);
     } else {
