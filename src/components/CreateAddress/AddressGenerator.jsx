@@ -178,7 +178,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
     const {publicKeyImporters} =  this.props;
     const publicKeyImporter = publicKeyImporters[number];
     const bip32Path = (publicKeyImporter.method === 'text' ? 'Unknown (make sure you have written this down previously!)' : publicKeyImporter.bip32Path);
-    return `  * ${publicKeyImporter.name}: ${bip32Path}`;
+    return `  * ${publicKeyImporter.name}: ${bip32Path}: ${publicKeyImporter.publicKey}`;
   }
 
 }

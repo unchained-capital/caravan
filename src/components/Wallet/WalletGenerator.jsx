@@ -28,7 +28,6 @@ import {
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
-import {downloadFile} from "../../utils"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 5;
@@ -83,7 +82,7 @@ class WalletGenerator extends React.Component {
   }
 
   body() {
-    const {totalSigners, configuring} = this.props;
+    const {totalSigners, configuring, downloadWalletDetails} = this.props;
     const {generating} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating) {
@@ -105,7 +104,7 @@ class WalletGenerator extends React.Component {
             </Button>
             <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
-            <Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Download Wallet Details</Button>
+            <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
             <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
             <Button id="confirm-wallet" type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
           </CardContent>
@@ -119,51 +118,6 @@ class WalletGenerator extends React.Component {
         {'your wallet will be generated here.'}
       </p>
     );
-  }
-
-  downloadWalletDetails = (event) => {
-    event.preventDefault();
-    const body = this.walletDetailsText();
-    const filename = this.walletDetailsFilename();
-    downloadFile(body, filename)
-  }
-
-  walletDetailsText = () => {
-    const {addressType, network, totalSigners, requiredSigners, walletName} = this.props;
-    return `Wallet: ${walletName}
-
-Type: ${addressType}
-
-Network: ${network}
-
-Quorum: ${requiredSigners}-of-${totalSigners}
-
-BIP32 Paths:
-${this.extendedPublicKeyImporterBIP32Paths()}
-`
-
-  }
-
-  extendedPublicKeyImporterBIP32Paths = () => {
-    const {totalSigners} = this.props;
-    let extendedPublicKeyImporterBIP32Paths = [];
-    for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= totalSigners; extendedPublicKeyImporterNum++) {
-      extendedPublicKeyImporterBIP32Paths.push(this.extendedPublicKeyImporterBIP32Path(extendedPublicKeyImporterNum));
-    }
-    return extendedPublicKeyImporterBIP32Paths.join("\n");
-  }
-
-  extendedPublicKeyImporterBIP32Path = (number) => {
-    const {extendedPublicKeyImporters} =  this.props;
-    const extendedPublicKeyImporter = extendedPublicKeyImporters[number];
-    const bip32Path = (extendedPublicKeyImporter.method === 'text' ? 'Unknown (make sure you have written this down previously!)' : extendedPublicKeyImporter.bip32Path);
-    return `  * ${extendedPublicKeyImporter.name}: ${bip32Path}`;
-  }
-
-  walletDetailsFilename = () => {
-    const {totalSigners, requiredSigners, addressType, walletName} = this.props;
-    return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${walletName}.txt`;
-
   }
 
 
