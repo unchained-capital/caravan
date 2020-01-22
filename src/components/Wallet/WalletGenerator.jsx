@@ -14,7 +14,7 @@ import { isWalletAddressNotFoundError } from '../../bitcoind'
 // Components
 import {
   Button, Card, CardHeader,
-  CardContent,
+  CardContent, Link
 } from '@material-ui/core';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
@@ -99,9 +99,10 @@ class WalletGenerator extends React.Component {
         <Card>
           <CardHeader title={this.title()}/>
           <CardContent>
-            <Button type="button" variant="contained" color="secondary" onClick={this.toggleImporters}>
+            <Link href="#" onClick={this.toggleImporters}>
+
               {configuring ? 'Hide Key Selection' : 'Edit Details'}
-            </Button>
+            </Link>
             <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
             <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
@@ -121,7 +122,8 @@ class WalletGenerator extends React.Component {
   }
 
 
-  toggleImporters = () => {
+  toggleImporters = (event) => {
+    event.preventDefault();
     const { setImportersVisible, configuring } = this.props;
     setImportersVisible(!configuring);
   }
