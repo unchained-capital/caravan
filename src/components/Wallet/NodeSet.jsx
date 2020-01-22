@@ -35,7 +35,7 @@ class NodeSet extends React.Component {
     change: false,
     spend: false,
     filterIncludeSpent: false,
-    filterIncludeZeroBalance: !(this.props.walletMode === WALLET_MODES.SPEND),
+    filterIncludeZeroBalance: false,
   };
 
   unknownAddresses = [];
@@ -52,7 +52,6 @@ class NodeSet extends React.Component {
     }
     return (
       <Grid item md={12}>
-        {!spending && this.renderFilters()}
         { useAddressImporter &&
           <BitcoindAddressImporter
             addresses={this.unknownAddresses}
@@ -97,6 +96,7 @@ class NodeSet extends React.Component {
               <Button type="button" variant="contained" color="primary" onClick={this.toggleChange}>{change ? "View Deposits" : "View Change"}</Button>
             </Grid>
           </Grid>
+          {!spending && this.renderFilters()}
 
         </Grid>
     );
@@ -106,7 +106,7 @@ class NodeSet extends React.Component {
     const { filterIncludeSpent, filterIncludeZeroBalance } = this.state
     return (
     <FormGroup row>
-      <FormLabel component="h2"><Box mr={3}>Include</Box></FormLabel>
+      <FormLabel component="h2"><Box mr={3}>Show Additional</Box></FormLabel>
       <FormControlLabel control={
         <Checkbox
           checked={filterIncludeSpent}
