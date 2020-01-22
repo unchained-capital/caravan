@@ -27,6 +27,7 @@ export async function blockExplorerGetAddresesUTXOs(address, network) {
         amount: satoshisToBitcoins(amount).toFixed(8),
         amountSats: amount,
         transactionHex,
+        time: utxo.status.block_time
       };
     }));
   } catch(e) {

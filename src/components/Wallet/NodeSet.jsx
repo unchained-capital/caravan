@@ -13,7 +13,7 @@ import {
   FormGroup, FormControlLabel, Checkbox, FormLabel,
   Grid, Box,
   Table, TableHead, TableBody,
-  TableRow, TableCell, TablePagination,
+  TableRow, TableCell, TablePagination, TableSortLabel,
 } from '@material-ui/core';
 import Node from "./Node";
 import BitcoindAddressImporter from '../BitcoindAddressImporter';
@@ -36,12 +36,14 @@ class NodeSet extends React.Component {
     spend: false,
     filterIncludeSpent: false,
     filterIncludeZeroBalance: !(this.props.walletMode === WALLET_MODES.SPEND),
+    orderBy: "bip32Path",
+    orderDir: "asc"
   };
 
   unknownAddresses = [];
 
   render() {
-    const {page, nodesPerPage, change} = this.state;
+    const {page, nodesPerPage, change, orderBy, orderDir} = this.state;
     const {walletMode, canLoad, client} = this.props
     const spending = walletMode === WALLET_MODES.SPEND;
     const useAddressImporter = !spending && client.type === "private";
@@ -63,9 +65,38 @@ class NodeSet extends React.Component {
             <TableHead>
               <TableRow>
                 {spending && <TableCell width={62}>Spend?</TableCell>}
-                <TableCell width={106}>BIP32 Path</TableCell>
-                <TableCell width={68}>UTXOs</TableCell>
-                <TableCell width={82}>Balance</TableCell>
+                <TableCell width={106}>
+                  <TableSortLabel
+                    active={orderBy === "bip32Path"}
+                    direction={orderDir}
+                    onClick={() => this.sortAddresses("bip32Path")}
+                  >BIP32 Path</TableSortLabel>
+
+                </TableCell>
+                <TableCell width={78}>
+                  <TableSortLabel
+                    active={orderBy === "utxos"}
+                    direction={orderDir}
+                    onClick={() => this.sortAddresses("utxos")}
+                  >UTXOs</TableSortLabel>
+
+                </TableCell>
+                <TableCell width={82}>
+                  <TableSortLabel
+                    active={orderBy === "balanceSats"}
+                    direction={orderDir}
+                    onClick={() => this.sortAddresses("balanceSats")}
+                  >Balance</TableSortLabel>
+
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel width={82}
+                    active={orderBy === "time"}
+                    direction={orderDir}
+                    onClick={() => this.sortAddresses("time")}
+                  >Date</TableSortLabel>
+
+                </TableCell>
                 <TableCell>Address</TableCell>
               </TableRow>
             </TableHead>
@@ -100,6 +131,15 @@ class NodeSet extends React.Component {
 
         </Grid>
     );
+  }
+
+  sortAddresses = (key) => {
+    const {orderBy, orderDir} = this.state;
+    if (key === orderBy) {
+      this.setState({page:0, orderDir: orderDir === "asc" ? "desc" : "asc"})
+    } else {
+      this.setState({page:0, orderBy: key})
+    }
   }
 
   renderFilters = () => {
@@ -169,7 +209,7 @@ class NodeSet extends React.Component {
 
   getNodeSet = () => {
     const { changeNodes, depositNodes} = this.props;
-    const { change, filterIncludeSpent, filterIncludeZeroBalance } = this.state
+    const { change, filterIncludeSpent, filterIncludeZeroBalance, orderBy, orderDir } = this.state
     const nodes = change ? changeNodes : depositNodes
 
     let nodeSet = []
@@ -180,6 +220,34 @@ class NodeSet extends React.Component {
         nodeSet.push(node);
       } else if (filterIncludeSpent && node.addressUsed) {
         nodeSet.push(node);
+      }
+    })
+
+    nodeSet = nodeSet.sort((a, b) => {
+      const direction = orderDir === "asc" ? 1 : -1
+      if (orderBy === "bip32Path") {
+        const aint = parseInt(a.bip32Path.split("/").reverse()[0],10)
+        const bint = parseInt(b.bip32Path.split("/").reverse()[0],10)
+        return aint > bint ? direction : -direction
+      } else if (orderBy === "balanceSats") {
+        if (a.balanceSats.isEqualTo(b.balanceSats)) return 0
+        else return a.balanceSats.isGreaterThan(b.balanceSats) ?  direction : -direction
+      } else if (orderBy === "utxos") {
+        if (a.utxos.length === b.utxos.length) return 0
+        else return a.utxos.length > b.utxos.length ?  direction : -direction
+      } else if (orderBy === "time") {
+        if (a.utxos.length === 0) {
+          return b.utxos.length === 0 ? 0 : direction
+        }
+        if (b.utxos.length === 0) {
+          return a.utxos.length === 0 ? 0 : -direction
+        }
+        const amin = Math.min(...a.utxos.map(utxo => utxo.time));
+        const bmin = Math.min(...b.utxos.map(utxo => utxo.time));
+        if (isNaN(amin) && isNaN(bmin)) return 0
+        if (isNaN(amin)) return direction;
+        if (isNaN(bmin)) return -direction;
+        return amin > bmin ? direction : -direction
       }
     })
 

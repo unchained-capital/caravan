@@ -76,11 +76,23 @@ class Node extends React.Component {
           {fetchUTXOsError !== '' && <FormHelperText className="danger">{fetchUTXOsError}</FormHelperText>}
         </TableCell>
         <TableCell>
+          {this.minUtxoDate()}
+        </TableCell>
+
+        <TableCell>
           {multisig ? this.renderAddress()
            : '...'}
         </TableCell>
       </TableRow>
       );
+  }
+
+  minUtxoDate = () => {
+    const {utxos} = this.props;
+    if (!utxos.length) return ""
+    const mintime = Math.min(...utxos.map(utxo => utxo.time))
+    if (isNaN(mintime)) return "Pending"
+    return (new Date(1000 * mintime).toLocaleDateString())
   }
 
   addressContent = () => {
