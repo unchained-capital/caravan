@@ -127,12 +127,12 @@ function updateAddressType(state, action) {
 
 function updateFinalizedSettings(state, action) {
   const newState = {...state}
-  if (action.value === true && state.finalizedNetwork === '' /*&& newState.extendedPublicKeyImporters[action.number].method !== TEXT*/) {
+  if (action.value === true && state.finalizedNetwork === '') {
     newState.finalizedNetwork = state.network;
     newState.finalizedAddressType = state.addressType;
   } else if (action.value === false && state.finalizedNetwork !== '') {
     const finalizedCount = Object.values(state.extendedPublicKeyImporters).reduce((count, importer) => {
-      if (importer.finalized === true && importer.method !== TEXT) return count+1; else return count
+      if (importer.finalized === true) return count+1; else return count
     }, 0);
     if (finalizedCount === 1) { // last one to be removed
       newState.finalizedNetwork = '';
