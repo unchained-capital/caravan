@@ -55,7 +55,7 @@ export async function bitcoindListUnspent({url, auth, address, addresses}) {
       const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, addressParam], );
       const promises = [];
       resp.result.forEach(utxo => {
-        promises.push(callBitcoind(url, auth, 'getrawtransaction', [utxo.txid]))
+        promises.push(callBitcoind(url, auth, 'getrawtransaction', [utxo.txid, 1]))
       })
       const previousTransactions = await Promise.all(promises)
       resolve(resp.result.map((utxo, mapindex) => {
@@ -66,7 +66,8 @@ export async function bitcoindListUnspent({url, auth, address, addresses}) {
           index: utxo.vout,
           amount: amount.toFixed(8),
           amountSats: bitcoinsToSatoshis(amount),
-          transactionHex: previousTransactions[mapindex].result
+          transactionHex: previousTransactions[mapindex].result.hex,
+          time: previousTransactions[mapindex].result.blocktime,
         };
       }));
 
