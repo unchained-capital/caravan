@@ -109,34 +109,64 @@ class Node extends React.Component {
   }
 
   renderAddress = () => {
-    const {bip32Path, utxos,  balanceSats, multisig} = this.props;
+    const {bip32Path, utxos,  balanceSats} = this.props;
     return (
       <ExpansionPanel>
-      <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id={'address-header'+bip32Path}
-      >
-        {this.addressContent()}
-     </ExpansionPanelSummary>
-     <ExpansionPanelDetails>
-       <Grid container>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id={'address-header'+bip32Path}
+        >
+          {this.addressContent()}
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Grid container>
+        { balanceSats.isGreaterThan(0) &&
+          <Grid item md={12}>
+            <UTXOSet
+              inputs={utxos}
+              inputsTotalSats={balanceSats}
+            />
+          </Grid>
+          }
+          {this.renderAddressDetails()}
+        </Grid>
+      </ExpansionPanelDetails>
+
+    </ExpansionPanel>  )
+
+  }
+
+  renderAddressDetails = () => {
+    const {utxos,  multisig, bip32Path} = this.props;
+    if (utxos.length === 0)
+      return (
         <Grid item md={12}>
           <MultisigDetails multisig={multisig} />
         </Grid>
-        { balanceSats.isGreaterThan(0) &&
-        <Grid item md={12}>
-          <UTXOSet
-            inputs={utxos}
-            inputsTotalSats={balanceSats}
-          />
+      )
+    else return (
+      <Grid item md={12}>
+      <ExpansionPanel>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id={'address-header'+bip32Path}
+        >
+        Multisig Details
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Grid container>
+          <Grid item md={12}>
+            <MultisigDetails multisig={multisig} />
+          </Grid>
         </Grid>
-        }
-       </Grid>
-     </ExpansionPanelDetails>
+      </ExpansionPanelDetails>
 
-   </ExpansionPanel>  )
+    </ExpansionPanel>
+    </Grid>
 
+    )
   }
 
   generate = () => {
