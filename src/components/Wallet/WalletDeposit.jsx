@@ -29,6 +29,7 @@ class WalletDeposit extends React.Component {
     amount: 0,
     amountError: "",
     showReceived: false,
+    depositIndex: 0,
   }
 
   static propTypes = {
@@ -45,11 +46,35 @@ class WalletDeposit extends React.Component {
     clearInterval(depositTimer)
   }
 
+  getDepositableNodes = () => {
+    const { depositNodes } = this.props;
+    console.log('depositNodes', depositNodes)
+
+    const nodes = Object.values(depositNodes.nodes)
+    console.log('depositable', nodes)
+    const depositable = []
+    for (let i=0; i < nodes.length; i++) {
+      const node = nodes[i];
+      if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
+        depositable.push(node);
+      }
+    }
+    return depositable;
+  }
+
+  getNextDepositAddress = () => {
+    this.setState({depositIndex: this.state.depositIndex + 1});
+    setTimeout(this.getDepositAddress, 0);
+  }
+
   getDepositAddress = () => {
-    const { depositNode, network, client, updateDepositNode } = this.props;
+    const { network, client, updateDepositNode } = this.props;
+    const { depositIndex } = this.state;
+    const depositableNodes = this.getDepositableNodes();
+    if (depositIndex < depositableNodes.length)
+      this.setState({address: depositableNodes[depositIndex].multisig.address, bip32Path: depositableNodes[depositIndex].bip32Path, showReceived: false});
 
-    this.setState({address: depositNode.multisig.address, bip32Path: depositNode.bip32Path, showReceived: false});
-
+    clearInterval(depositTimer);
     depositTimer = setInterval(async () => {
       let utxos;
       try {
@@ -70,7 +95,6 @@ class WalletDeposit extends React.Component {
             fetchUTXOsError: ''
           })
           this.setState({showReceived: true});
-          // setTimeout(resetWalletView, 5000);
         }
       } catch(e) {
         console.error(e);
@@ -110,29 +134,25 @@ class WalletDeposit extends React.Component {
           }}
           open={showReceived}
           autoHideDuration={3000}
-          // onClose={() => this.setState({showReceived: false})}
           ContentProps={{
             'aria-describedby': 'message-id',
           }}
-          message={<span id="message-id">Deposit received</span>}
+          message={<span id="message-id">Deposit received, choose Next Address to make another deposit.</span>}
         />
       </div>
     )
   }
 
   renderReceived = () => {
-    const { showReceived } = this.state;
     const { resetWalletView } = this.props;
-    if (showReceived) {
       return (
         <Box mt={2}>
-          <Button variant="contained" color="primary" onClick={this.getDepositAddress}>Make another deposit</Button>
+          <Button variant="contained" color="primary" onClick={this.getNextDepositAddress}>Next Address</Button>
           <Box ml={2} component="span">
             <Button variant="contained" onClick={resetWalletView}>Return</Button>
           </Box>
         </Box>
       )
-    }
   }
 
   handleAmountChange = (event)=> {
@@ -163,7 +183,7 @@ function mapStateToProps(state) {
   return {
     ...state.wallet,
     ...state.settings,
-    depositNode: state.wallet.deposits.nextNode,
+    depositNodes: state.wallet.deposits,
     client: state.client,
   };
 }
