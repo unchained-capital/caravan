@@ -3,22 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
   satoshisToBitcoins,
-  blockExplorerAddressURL,
 } from 'unchained-bitcoin';
-import {
-  externalLink,
-} from "../../utils";
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText, Grid,
-  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
+  TableRow, TableCell, Checkbox, FormHelperText,
 } from '@material-ui/core';
-import Copyable from "../Copyable";
-import UTXOSet from "../Spend/UTXOSet";
-import LaunchIcon from '@material-ui/icons/Launch';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MultisigDetails from "../MultisigDetails";
+import AddressExpander from "./AddressExpander";
 
 // Actions
 import {
@@ -26,7 +17,6 @@ import {
 } from '../../actions/transactionActions';
 import { updateAutoSpendAction, WALLET_MODES } from "../../actions/walletActions";
 
-import styles from '../Spend//styles.module.scss';
 
 class Node extends React.Component {
 
@@ -83,48 +73,9 @@ class Node extends React.Component {
       );
   }
 
-  addressContent = () => {
-    const {multisig, network, addressUsed, balanceSats} = this.props;
-    return (
-      <div>
-        <Copyable text={multisig.address}>
-          <code className={addressUsed && balanceSats.isEqualTo(0) ? styles.spent : ""}>{multisig.address}</code>
-          </Copyable>
-        &nbsp;
-        {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon onClick={e => e.stopPropagation()} />)}
-      </div>
-    )
-  }
 
   renderAddress = () => {
-    const {bip32Path, utxos,  balanceSats, multisig} = this.props;
-    return (
-      <ExpansionPanel>
-      <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id={'address-header'+bip32Path}
-      >
-        {this.addressContent()}
-     </ExpansionPanelSummary>
-     <ExpansionPanelDetails>
-       <Grid container>
-        <Grid item md={12}>
-          <MultisigDetails multisig={multisig} />
-        </Grid>
-        { balanceSats.isGreaterThan(0) &&
-        <Grid item md={12}>
-          <UTXOSet
-            inputs={utxos}
-            inputsTotalSats={balanceSats}
-          />
-        </Grid>
-        }
-       </Grid>
-     </ExpansionPanelDetails>
-
-   </ExpansionPanel>  )
-
+    return <AddressExpander node={this.props.braidNode} />
   }
 
   generate = () => {
@@ -165,6 +116,7 @@ function mapStateToProps(state, ownProps) {
     ...braid.nodes[ownProps.bip32Path],
     ...state.spend.transaction,
     walletMode: state.wallet.info.walletMode,
+    braidNode: braid.nodes[ownProps.bip32Path],
 
   };
 }
