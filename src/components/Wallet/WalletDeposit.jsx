@@ -151,9 +151,15 @@ class WalletDeposit extends React.Component {
 
   renderReceived = () => {
     const { resetWalletView } = this.props;
+    const { depositIndex } = this.state;
       return (
         <Box mt={2}>
-          <Button variant="contained" color="primary" onClick={this.getNextDepositAddress}>Next Address</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.getNextDepositAddress}
+            disabled={depositIndex >= this.getDepositableNodes().length - 1}
+          >Next Address</Button>
           <Box ml={2} component="span">
             <Button variant="contained" onClick={resetWalletView}>Return</Button>
           </Box>
