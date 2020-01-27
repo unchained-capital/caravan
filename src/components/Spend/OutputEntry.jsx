@@ -96,7 +96,7 @@ class OutputEntry extends React.Component {
            </Tooltip>
          </Grid>}
 
-        {(!finalizedOutputs) && outputs.length > 1 &&
+        {(!finalizedOutputs) && outputs.length > (changeOutputIndex > 0 ? 2 : 1) &&
          <Grid item xs={1}>
            <Tooltip title="Remove Output" placement="top">
              <IconButton onClick={this.handleDelete}>
