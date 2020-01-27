@@ -74,9 +74,10 @@ class OutputsForm extends React.Component {
   }
 
   async initialOutputState() {
-    const { inputs, outputs, inputsTotalSats, fee, setOutputAmount, isWallet,
+    const { inputs, outputs, isWallet,
       change, setChangeOutputIndex, addOutput, setOutputAddress, changeOutputIndex } = this.props;
     await this.getFeeEstimate();
+    const {inputsTotalSats, fee, setOutputAmount} = this.props;
     const feeSats = bitcoinsToSatoshis(new BigNumber(fee));
     const outputAmount = satoshisToBitcoins(inputsTotalSats.minus(feeSats));
     // onliy initialize once so we don't lose state
