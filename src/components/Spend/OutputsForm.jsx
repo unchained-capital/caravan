@@ -13,10 +13,12 @@ import {
 import {
   addOutput,
   setOutputAmount,
+  setOutputAddress,
   setFeeRate,
   setFee,
   finalizeOutputs,
   resetOutputs,
+  setChangeOutputIndex,
 } from '../../actions/transactionActions';
 
 // Components
@@ -72,13 +74,20 @@ class OutputsForm extends React.Component {
   }
 
   async initialOutputState() {
-    const { inputs, outputs } = this.props;
+    const { inputs, outputs, inputsTotalSats, fee, setOutputAmount, isWallet,
+      change, setChangeOutputIndex, addOutput, setOutputAddress, changeOutputIndex } = this.props;
     await this.getFeeEstimate();
-    const {inputsTotalSats, fee, setOutputAmount} = this.props;
     const feeSats = bitcoinsToSatoshis(new BigNumber(fee));
     const outputAmount = satoshisToBitcoins(inputsTotalSats.minus(feeSats));
     // onliy initialize once so we don't lose state
     if (inputs.length && outputs[0].amount === '') setOutputAmount(1, outputAmount.toFixed(8));
+
+    if (isWallet && changeOutputIndex === 0) {
+      addOutput();
+      setOutputAddress(2, change.nextNode.multisig.address)
+      setChangeOutputIndex(2);
+      setOutputAmount(2, BigNumber(0).toFixed(8));
+    }
   }
 
   render() {
@@ -229,11 +238,13 @@ class OutputsForm extends React.Component {
   }
 
   renderOutputs = () => {
-    const { outputs } = this.props;
+    const { outputs, changeOutputIndex } = this.props;
     return map(outputs).map((output, i) => (
-      <Grid container key={i}>
-        <OutputEntry number={i+1} />
-      </Grid>
+      <Box display={changeOutputIndex === i+1 ? 'none' : 'block'}>
+        <Grid container key={i}>
+          <OutputEntry number={i+1} />
+        </Grid>
+      </Box>
     ));
   }
 
@@ -347,6 +358,7 @@ function mapStateToProps(state) {
     ...state.spend.transaction,
     ...state.client,
     signatureImporters: state.spend.signatureImporters,
+    change: state.wallet.change
   };
 }
 
@@ -357,6 +369,8 @@ const mapDispatchToProps = {
   setFee,
   finalizeOutputs,
   resetOutputs,
+  setChangeOutputIndex,
+  setOutputAddress,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(OutputsForm);
