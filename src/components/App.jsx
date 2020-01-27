@@ -23,10 +23,10 @@ const App = () => (
         <Router>
           <Switch>
             <Route path="/test" component={TestSuiteRun} />
-            <Route path="/wallet" component={Wallet} />
             <Route path="/address" component={CreateAddress} />
             <Route path="/spend" component={Spend} />
-            <Route path="/" component={Help} />
+            <Route path="/help" component={Help} />
+            <Route path="/" component={Wallet} />
           </Switch>
         </Router>
         <ErrorNotification />
