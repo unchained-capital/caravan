@@ -78,7 +78,7 @@ class WalletSpend extends React.Component {
     const { addNode, updateNode, autoSpend } = this.props;
     return (
       <Card>
-        <CardHeader title="Spend"/>
+        <CardHeader title="Coin Selection"/>
         <CardContent>
           <Grid item md={12}>
             <Grid component="label" container alignItems="center" spacing={1}>
@@ -92,7 +92,9 @@ class WalletSpend extends React.Component {
               <Grid item>Auto</Grid>
             </Grid>
           </Grid>
-          <NodeSet addNode={addNode} updateNode={updateNode} />
+          <Box component="div" display={autoSpend ? 'none' : 'block'}>
+            <NodeSet addNode={addNode} updateNode={updateNode}  />
+          </Box>
         </CardContent>
       </Card>)
   }
@@ -111,9 +113,11 @@ class WalletSpend extends React.Component {
     }
 
     selectCoins = () => {
-      const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate,
+      const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate, changeOutputIndex,
         updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate, coinSelection } = this.props;
-      const outputsAmount = outputs.reduce((sum, output) => sum.plus(output.amountSats), new BigNumber(0));
+      const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
+        return changeOutputIndex === outputIndex + 1 ? sum : sum.plus(output.amountSats)
+      }, new BigNumber(0));
       if (outputsAmount.isNaN()) return;
       const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
       if (outputsAmount.isEqualTo(this.outputsAmount) && feeAmount.isEqualTo(this.feeAmount)) return;
