@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
+import {validateBIP32Path} from "unchained-bitcoin"
 
 // Components
 import { Grid, Box, Drawer, IconButton, Button, Card, TextField, CardHeader, CardContent } from '@material-ui/core';
@@ -27,7 +28,13 @@ import { setExtendedPublicKeyImporterMethod, setExtendedPublicKeyImporterExtende
   setExtendedPublicKeyImporterBIP32Path, setExtendedPublicKeyImporterName,
   setExtendedPublicKeyImporterFinalized
 } from '../../actions/extendedPublicKeyImporterActions';
-import { ExportPublicKey } from 'unchained-wallets';
+import { wrappedActions } from '../../actions/utils';
+import {
+  SET_CLIENT_TYPE,
+  SET_CLIENT_URL,
+  SET_CLIENT_USERNAME,
+  SET_CLIENT_PASSWORD,
+} from '../../actions/clientActions';
 
 const bip32 = require('bip32');
 
@@ -74,18 +81,68 @@ class CreateWallet extends React.Component {
     );
   }
 
+  validateProperties(config, properties, key) {
+    for(let index = 0; index < properties.length; index++) {
+      const property = properties[index];
+      const configObj = key !== '' ? config[key] : config
+      if (!configObj.hasOwnProperty(property)) {
+        return `Configuration missing property "${key !== '' ? key+'.' : ''}${property}"`;
+      }
+    }
+    return "";
+  }
+
+  validateExtendedPublicKeys(xpubs) {
+    const xpubFields = {
+      name:  (name, index) => typeof name === 'string' ? '' : `Extended public key ${index} name must be a string`,
+      bip32Path: (bip32Path, index) =>  {
+        const pathError = validateBIP32Path(bip32Path);
+        if (pathError !== "") return `Extended public key ${index} error: ${pathError}`;
+        return ""
+      },
+      xpub: (xpub, index) => "", // TODO: validate
+      method: (method, index) => ~['trezor', 'ledger', 'hermit', 'xpub', 'text'].indexOf(method) ? "" : `Invalid method for extended public key ${index}`
+    }
+
+    const keys = Object.keys(xpubFields)
+    for(let xpubIndex = 0; xpubIndex < xpubs.length; xpubIndex++) {
+      for(let keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+        const key = keys[keyIndex];
+        const value = xpubs[xpubIndex][key];
+        const valueError = xpubFields[key](value, xpubIndex+1);
+        if (valueError !== "") return valueError;
+      }
+    }
+    return "";
+  }
+
+  validateConfig(config) {
+    const configProperties = ["name", "addressType", "network", "client", "quorum", "extendedPublicKeys"];
+    const validProperties = this.validateProperties(config, configProperties, '')
+    if (validProperties !== "") return validProperties
+
+    const clientProperties = config.client.type === "public" ? ["type"] : ["type", "url", "username"]
+    const validClient = this.validateProperties(config, clientProperties, 'client')
+    if (validClient !== "") return validClient
+
+    const quorumProperties = ["requiredSigners", "totalSigners"]
+    const validQuorum = this.validateProperties(config, quorumProperties, 'quorum')
+    if (validQuorum !== "") return validQuorum
+
+    return this.validateExtendedPublicKeys(config.extendedPublicKeys);
+  }
+
   handleConfigChange = (event) => {
     const configJson = event.target.value;
+    let configError
     try {
-      JSON.parse(configJson);
-      this.setState({configError: ""});
-
-      // TODO: validate fields
-
+      const config = JSON.parse(configJson);
+      configError = this.validateConfig(config);
     } catch(parseError) {
-      this.setState({configError: "Invlaid JSON"});
+      configError = "Invlaid JSON";
     }
-    this.setState({configJson: configJson});
+
+    this.setState({configJson: configJson, configError: configError});
   }
 
   importDetails = () => {
@@ -93,7 +150,8 @@ class CreateWallet extends React.Component {
     const { setTotalSigners, setRequiredSigners,setAddressType,
       setNetwork, setExtendedPublicKeyImporterMethod, setExtendedPublicKeyImporterExtendedPublicKey,
       setExtendedPublicKeyImporterBIP32Path, setExtendedPublicKeyImporterFinalized,
-      setExtendedPublicKeyImporterName, updateWalletNameAction } = this.props;
+      setExtendedPublicKeyImporterName, updateWalletNameAction,
+      setClientType, setClientUrl, setClientUsername } = this.props;
 
     const walletConfiguration = JSON.parse(configJson);
     setTotalSigners(walletConfiguration.quorum.totalSigners);
@@ -101,6 +159,11 @@ class CreateWallet extends React.Component {
     setAddressType(walletConfiguration.addressType);
     setNetwork(walletConfiguration.network);
     updateWalletNameAction(0, walletConfiguration.name);
+    setClientType(walletConfiguration.client.type);
+    if (walletConfiguration.client.type === 'private') {
+      setClientUrl(walletConfiguration.client.url);
+      setClientUsername(walletConfiguration.client.username);
+    }
     walletConfiguration.extendedPublicKeys.forEach((extendedPublicKey, index) => {
       const number = index + 1
       setExtendedPublicKeyImporterName(number, extendedPublicKey.name);
@@ -201,15 +264,33 @@ class CreateWallet extends React.Component {
   "name": "${walletName}",
   "addressType": "${addressType}",
   "network": "${network}",
+  "client":  ${this.clientDetails()},
   "quorum": {
     "requiredSigners": ${requiredSigners},
-    "totalSigners":${totalSigners}
+    "totalSigners": ${totalSigners}
   },
   "extendedPublicKeys": [
 ${this.extendedPublicKeyImporterBIP32Paths()}
   ]
 }
 `
+
+  }
+
+  clientDetails = () => {
+    const {client} = this.props;
+
+    if (client.type === 'private') {
+      return `{
+    "type": "private",
+    "url": "${client.url}",
+    "username": "${client.username}"
+  }`
+    } else {
+      return `{
+    "type": "public"
+  }`
+    }
 
   }
 
@@ -249,6 +330,7 @@ function mapStateToProps(state) {
     ...state.quorum,
     ...{walletName: state.wallet.info.walletName},
     ...state.wallet,
+    client: state.client,
   };
 }
 
@@ -263,7 +345,13 @@ const mapDispatchToProps = {
   setExtendedPublicKeyImporterBIP32Path,
   setExtendedPublicKeyImporterName,
   setExtendedPublicKeyImporterFinalized,
-  updateWalletNameAction
+  updateWalletNameAction,
+  ...wrappedActions({
+    setClientType: SET_CLIENT_TYPE,
+    setClientUrl: SET_CLIENT_URL,
+    setClientUsername: SET_CLIENT_USERNAME,
+    setClientPassword: SET_CLIENT_PASSWORD,
+  })
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateWallet);
