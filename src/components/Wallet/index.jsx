@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
 
 // Components
-import { Grid, Box, Drawer, IconButton, Button } from '@material-ui/core';
+import { Grid, Box, Drawer, IconButton, Button, Card, TextField, CardHeader, CardContent } from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 
 import NetworkPicker from '../NetworkPicker';
@@ -15,7 +15,19 @@ import WalletGenerator from './WalletGenerator';
 import ExtendedPublicKeyImporter from './ExtendedPublicKeyImporter';
 import EditableName from "../EditableName";
 
+// Actions
+import {
+  setTotalSigners,
+  setRequiredSigners,
+  setAddressType,
+  setNetwork,
+} from "../../actions/settingsActions";
 import { updateWalletNameAction } from '../../actions/walletActions';
+import { setExtendedPublicKeyImporterMethod, setExtendedPublicKeyImporterExtendedPublicKey,
+  setExtendedPublicKeyImporterBIP32Path, setExtendedPublicKeyImporterName,
+  setExtendedPublicKeyImporterFinalized
+} from '../../actions/extendedPublicKeyImporterActions';
+import { ExportPublicKey } from 'unchained-wallets';
 
 const bip32 = require('bip32');
 
@@ -31,6 +43,8 @@ class CreateWallet extends React.Component {
 
   state = {
     showSettings: false,
+    configError: "",
+    configJson: "",
   }
 
   render = () => {
@@ -46,6 +60,8 @@ class CreateWallet extends React.Component {
         <Grid container spacing={3}>
           <Grid item md={configuring ? 8 : 12}>
 
+            {this.renderWalletImporter()}
+
             {this.renderExtendedPublicKeyImporters()}
 
             <Box mt={2}><WalletGenerator downloadWalletDetails={this.downloadWalletDetails} /></Box>
@@ -56,6 +72,73 @@ class CreateWallet extends React.Component {
       </Box>
       </div>
     );
+  }
+
+  handleConfigChange = (event) => {
+    const configJson = event.target.value;
+    try {
+      JSON.parse(configJson);
+      this.setState({configError: ""});
+
+      // TODO: validate fields
+
+    } catch(parseError) {
+      this.setState({configError: "Invlaid JSON"});
+    }
+    this.setState({configJson: configJson});
+  }
+
+  importDetails = () => {
+    const { configJson } = this.state;
+    const { setTotalSigners, setRequiredSigners,setAddressType,
+      setNetwork, setExtendedPublicKeyImporterMethod, setExtendedPublicKeyImporterExtendedPublicKey,
+      setExtendedPublicKeyImporterBIP32Path, setExtendedPublicKeyImporterFinalized,
+      setExtendedPublicKeyImporterName, updateWalletNameAction } = this.props;
+
+    const walletConfiguration = JSON.parse(configJson);
+    setTotalSigners(walletConfiguration.quorum.totalSigners);
+    setRequiredSigners(walletConfiguration.quorum.requiredSigners);
+    setAddressType(walletConfiguration.addressType);
+    setNetwork(walletConfiguration.network);
+    updateWalletNameAction(0, walletConfiguration.name);
+    walletConfiguration.extendedPublicKeys.forEach((extendedPublicKey, index) => {
+      const number = index + 1
+      setExtendedPublicKeyImporterName(number, extendedPublicKey.name);
+      setExtendedPublicKeyImporterMethod(number, extendedPublicKey.method);
+      setExtendedPublicKeyImporterBIP32Path(number, extendedPublicKey.bip32Path);
+      setExtendedPublicKeyImporterExtendedPublicKey(number, extendedPublicKey.xpub);
+      setExtendedPublicKeyImporterFinalized(number, true);
+    })
+  }
+
+  renderWalletImporter = () => {
+    const { configJson, configError } = this.state;
+    const {configuring} = this.props;
+
+    if (configuring)
+      return (
+        <Card>
+          <CardHeader title="Import Configuration" />
+          <CardContent>
+              <TextField
+                fullWidth
+                multiline
+                // autoFocus
+                variant="outlined"
+                label="Configuration"
+                value={configJson}
+                rows={5}
+                onChange={this.handleConfigChange}
+                helperText={configError}
+                error={configError!==''}
+              />
+              <Box mt={2} textAlign={"center"}>
+                <Button variant="contained" color="primary" disabled={configError!==''} onClick={this.importDetails}>Import Wallet Configuration</Button>
+              </Box>
+          </CardContent>
+        </Card>
+      );
+    return "";
   }
 
   renderSettings = () => {
@@ -80,7 +163,7 @@ class CreateWallet extends React.Component {
         <Box  width={400}>
 
           <Box mt={2}><ClientPicker /></Box>
-          <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Download Wallet Details</Button></Box>
+          <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Export Wallet Details</Button></Box>
         </Box>
       </Drawer>
 
@@ -114,16 +197,18 @@ class CreateWallet extends React.Component {
 
   walletDetailsText = () => {
     const {addressType, network, totalSigners, requiredSigners, walletName} = this.props;
-    return `Wallet: ${walletName}
-
-Type: ${addressType}
-
-Network: ${network}
-
-Quorum: ${requiredSigners}-of-${totalSigners}
-
-BIP32 Paths:
+    return `{
+  "name": "${walletName}",
+  "addressType": "${addressType}",
+  "network": "${network}",
+  "quorum": {
+    "requiredSigners": ${requiredSigners},
+    "totalSigners":${totalSigners}
+  },
+  "extendedPublicKeys": [
 ${this.extendedPublicKeyImporterBIP32Paths()}
+  ]
+}
 `
 
   }
@@ -132,7 +217,8 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     const {totalSigners} = this.props;
     let extendedPublicKeyImporterBIP32Paths = [];
     for (let extendedPublicKeyImporterNum = 1; extendedPublicKeyImporterNum <= totalSigners; extendedPublicKeyImporterNum++) {
-      extendedPublicKeyImporterBIP32Paths.push(this.extendedPublicKeyImporterBIP32Path(extendedPublicKeyImporterNum));
+      extendedPublicKeyImporterBIP32Paths
+        .push(`${this.extendedPublicKeyImporterBIP32Path(extendedPublicKeyImporterNum)}${extendedPublicKeyImporterNum < totalSigners ? ',' : ''}`);
     }
     return extendedPublicKeyImporterBIP32Paths.join("\n");
   }
@@ -141,12 +227,17 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     const {extendedPublicKeyImporters} =  this.props;
     const extendedPublicKeyImporter = extendedPublicKeyImporters[number];
     const bip32Path = (extendedPublicKeyImporter.method === 'text' ? 'Unknown (make sure you have written this down previously!)' : extendedPublicKeyImporter.bip32Path);
-    return `  * ${extendedPublicKeyImporter.name}: ${bip32Path}: ${extendedPublicKeyImporter.extendedPublicKey}`;
+    return `    {
+      "name": "${extendedPublicKeyImporter.name}",
+      "bip32Path": "${bip32Path}",
+      "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
+      "method": "${extendedPublicKeyImporter.method}"
+    }`
   }
 
   walletDetailsFilename = () => {
     const {totalSigners, requiredSigners, addressType, walletName} = this.props;
-    return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${walletName}.txt`;
+    return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${walletName}.json`;
 
   }
 
@@ -162,7 +253,17 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setName: updateWalletNameAction
+  setName: updateWalletNameAction,
+  setTotalSigners,
+  setRequiredSigners,
+  setAddressType,
+  setNetwork,
+  setExtendedPublicKeyImporterMethod,
+  setExtendedPublicKeyImporterExtendedPublicKey,
+  setExtendedPublicKeyImporterBIP32Path,
+  setExtendedPublicKeyImporterName,
+  setExtendedPublicKeyImporterFinalized,
+  updateWalletNameAction
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateWallet);
