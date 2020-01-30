@@ -10,6 +10,7 @@ import {Box, Button,} from "@material-ui/core";
 // Actions
 import { finalizeOutputs, setRequiredSigners, resetTransaction } from '../../actions/transactionActions';
 import { spendNodes, resetWalletView,   updateChangeNodeAction } from "../../actions/walletActions";
+import UnsignedTransaction from '../UnsignedTransaction';
 
 class WalletSign extends React.Component {
   static propTypes = {
@@ -23,7 +24,7 @@ class WalletSign extends React.Component {
   };
 
   state = {
-    spent: false
+    spent: false,
   }
 
   render = () => {
@@ -34,6 +35,9 @@ class WalletSign extends React.Component {
           color="secondary"
           onClick={this.handleCancel}>Cancel</Button>
 
+      <Box mt={2}>
+        <UnsignedTransaction/>
+      </Box>
       {this.renderKeySelectors()}
 
       {

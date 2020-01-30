@@ -74,7 +74,6 @@ class SignatureImporter extends React.Component {
 
   state = {
     disableChangeMethod: false,
-    showUnsignedTransaction: false,
   };
 
   componentDidMount = () => {
@@ -100,9 +99,6 @@ class SignatureImporter extends React.Component {
         <CardHeader title={this.title()} ref={this.titleRef}/>
         <CardContent>
           {signatureImporter.finalized ? this.renderSignature() : this.renderImport()}
-          <Box mt={2}>
-            {this.renderUnsignedTransaction()}
-          </Box>
         </CardContent>
       </Card>
     );
@@ -218,44 +214,6 @@ class SignatureImporter extends React.Component {
     this.setState({disableChangeMethod: false});
   }
 
-  //
-  // Unsigned Transaction
-  //
-
-  renderUnsignedTransaction = () => {
-    const {showUnsignedTransaction} = this.state;
-    const {unsignedTransaction} = this.props;
-    if (showUnsignedTransaction) {
-      const hex = unsignedTransaction.toHex();
-      return (
-        <div>
-          <p><Copyable text={hex}><code>{hex}</code></Copyable></p>
-          <small>
-            <Button size="small" onClick={this.handleHideUnsignedTransaction}>
-              Hide Unsigned Transaction
-            </Button>
-          </small>
-        </div>
-
-      );
-    } else {
-      return (
-        <small>
-          <Button size="small" onClick={this.handleShowUnsignedTransaction}>
-            Show Unsigned Transaction
-          </Button>
-        </small>
-      );
-    }
-  }
-
-  handleShowUnsignedTransaction = () => {
-    this.setState({showUnsignedTransaction: true});
-  }
-
-  handleHideUnsignedTransaction = () => {
-    this.setState({showUnsignedTransaction: false});
-  }
 
 
   //
