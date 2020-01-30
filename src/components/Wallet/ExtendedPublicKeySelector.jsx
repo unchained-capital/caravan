@@ -30,7 +30,7 @@ class ExtendedPublicKeySelector extends React.Component {
   };
 
   state = {
-    selection: 0,
+    selection: "",
   };
 
   render = () => {

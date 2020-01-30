@@ -42,6 +42,8 @@ import {
 
   SET_IS_WALLET,
   SET_CHANGE_OUTPUT_INDEX,
+
+  UPDATE_AUTO_SPEND,
 } from '../actions/transactionActions';
 
 function sortInputs(a, b) {
@@ -85,6 +87,8 @@ const initialState = {
   totalSigners: 3,
   unsignedTransaction: {},
   isWallet: false,
+  autoSpend: true,
+  changeAddress: "",
 };
 
 function updateInputs(state, action) {
@@ -125,6 +129,26 @@ function validateTransaction(state) {
     if (diff.isNaN()) {
       balanceError = "Cannot calculate total.";
     } else{
+      if (state.isWallet && state.autoSpend) {
+        let changeAmount;
+        const dust = satoshisToBitcoins(BigNumber(546))
+        if (state.changeOutputIndex > 0) {
+          changeAmount = satoshisToBitcoins(state.outputs[state.changeOutputIndex-1].amountSats.minus(diff));
+        } else {
+          changeAmount = satoshisToBitcoins(BigNumber(0).minus(diff));
+        }
+        if (changeAmount.isLessThan(dust)) {
+          state = deleteOutput(state, {number: state.changeOutputIndex});
+          state = updateState(state, { changeOutputIndex: 0 });
+        } else if (state.changeOutputIndex === 0) {
+          state = addOutput(state)
+          state.changeOutputIndex = state.outputs.length;
+          state.outputs[state.changeOutputIndex -1].address = state.changeAddress;
+        }
+        if (changeAmount.isGreaterThanOrEqualTo(dust)) {
+          state = updateOutputAmount(state, {value: changeAmount.toFixed(8), number: state.changeOutputIndex})
+        }
+      }
       const action = diff.isLessThan(0) ? 'Increase' : 'Decrease';
       balanceError =`${action} by ${satoshisToBitcoins(diff.absoluteValue()).toFixed(8)}.`;
     }
@@ -238,7 +262,8 @@ function updateOutputAmount(state, action) {
   const amount = action.value;
   const amountSats = bitcoinsToSatoshis(BigNumber(amount));
   let error = state.inputs.length ? validateOutputAmount(amountSats, state.inputsTotalSats) : "";
-  if (state.isWallet && error === "Output amount is too large.") error = ""
+  if (state.isWallet && error === "Output amount is too large.") error = "";
+  if (state.isWallet && action.number === state.changeOutputIndex) error = "";
 
   newOutputs[action.number - 1].amount = amount;
   newOutputs[action.number - 1].amountError = error;
@@ -257,6 +282,7 @@ function deleteOutput(state, action) {
     } else if (action.number === state.changeOutputIndex) {
       state.changeOutputIndex = 0;
     }
+    if (action.number < state.changeOutputIndex) state.changeOutputIndex--;
   }
   return {
     ...state,
@@ -316,6 +342,8 @@ export default (state = initialState, action) => {
     return updateState(state, { isWallet: true} );
   case RESET_TRANSACTION:
     return updateState(state, initialState)
+  case UPDATE_AUTO_SPEND:
+    return updateState(state, { autoSpend: action.value });
   default:
     return state;
   }

@@ -13,9 +13,9 @@ import AddressExpander from "./AddressExpander";
 
 // Actions
 import {
-  setInputs, setFeeRate,
+  setInputs, setFeeRate, updateAutoSpendAction,
 } from '../../actions/transactionActions';
-import { updateAutoSpendAction, WALLET_MODES } from "../../actions/walletActions";
+import { WALLET_MODES } from "../../actions/walletActions";
 
 
 class Node extends React.Component {

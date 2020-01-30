@@ -23,7 +23,6 @@ const initialState = {
   fetchUTXOsErrors: 0,
   balanceSats: new BigNumber(0),
   spendingSats: new BigNumber(0),
-  autoSpend: false,
   nextNode: null,
 };
 

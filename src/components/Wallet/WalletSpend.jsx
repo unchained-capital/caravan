@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js'
 
 // Actions
 import {
-  updateAutoSpendAction,
   updateDepositNodeAction,
   updateChangeNodeAction,
   resetNodesSpend,
@@ -15,6 +14,8 @@ import {
   setFeeRate,
   addOutput,
   setOutputAddress,
+  updateAutoSpendAction,
+  setChangeAddressAction,
  } from "../../actions/transactionActions";
 
 // Components
@@ -47,6 +48,11 @@ class WalletSpend extends React.Component {
       if (coinSelectTimer) clearTimeout(coinSelectTimer)
       coinSelectTimer = setTimeout(this.selectCoins, 1000);
     }
+  }
+
+  componentDidMount = () => {
+    const { changeNode, setChangeAddress } = this.props;
+    setChangeAddress(changeNode.multisig.address);
   }
 
   componentWillUnmount() {
@@ -146,7 +152,7 @@ function mapStateToProps(state) {
     changeNodes: state.wallet.change.nodes,
     changeNode: state.wallet.change.nextNode,
     depositNodes: state.wallet.deposits.nodes,
-    autoSpend: state.wallet.info.autoSpend,
+    autoSpend: state.spend.transaction.autoSpend,
   };
 }
 
@@ -159,6 +165,7 @@ const mapDispatchToProps = {
   resetNodesSpend,
   setFeeRate,
   addOutput,
+  setChangeAddress: setChangeAddressAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);

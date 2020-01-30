@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Components
-import SignatureImporter from '../Spend/SignatureImporter';
 import Transaction from '../Spend/Transaction';
 import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
 import {Box, Button,} from "@material-ui/core";
@@ -36,7 +35,6 @@ class WalletSign extends React.Component {
           onClick={this.handleCancel}>Cancel</Button>
 
       {this.renderKeySelectors()}
-      {/* {this.renderSignatureImporters()} */}
 
       {
         this.signaturesFinalized() &&
@@ -68,19 +66,6 @@ class WalletSign extends React.Component {
       );
     }
     return keySelectors;
-  }
-
-  renderSignatureImporters = () => {
-    const {transaction} = this.props;
-    const signatureImporters = [];
-    for (var signatureImporterNum = 1; signatureImporterNum <= transaction.requiredSigners; signatureImporterNum++) {
-      signatureImporters.push(
-        <Box key={signatureImporterNum} mt={2}>
-          <SignatureImporter number={signatureImporterNum} />
-        </Box>
-      );
-    }
-    return signatureImporters;
   }
 
   signaturesFinalized = () => {

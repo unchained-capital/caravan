@@ -1,7 +1,6 @@
 export const UPDATE_DEPOSIT_NODE = "UPDATE_DEPOSIT_NODE";
 export const UPDATE_CHANGE_NODE = "UPDATE_CHANGE_NODE";
 export const RESET_NODES_SPEND = "RESET_NODES_SPEND";
-export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
 export const UPDATE_WALLET_MODE = "UPDATE_WALLET_MODE";
 export const RESET_WALLET_VIEW = "RESET_WALLET_VIEW";
@@ -44,13 +43,6 @@ export function spendNodes() {
   return {
     type: SPEND_NODES
   }
-}
-
-export function updateAutoSpendAction(value) {
-  return {
-    type: UPDATE_AUTO_SPEND,
-    value: value
-  };
 }
 
 export function setWalletModeAction(value) {

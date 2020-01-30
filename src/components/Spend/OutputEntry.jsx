@@ -44,7 +44,7 @@ class OutputEntry extends React.Component {
 
   render() {
     const {outputs, finalizedOutputs, address, amount, addressError, amountError,
-           changeOutputIndex, number} = this.props;
+           changeOutputIndex, autoSpend} = this.props;
 
     return (
       <Grid container>
@@ -55,7 +55,7 @@ class OutputEntry extends React.Component {
             placeholder="Address"
             name="destination"
             className={styles.outputsFormInput}
-            disabled={finalizedOutputs || changeOutputIndex === number}
+            disabled={finalizedOutputs}
             onChange={this.handleAddressChange}
             value={address}
             error={this.hasAddressError()}
@@ -71,21 +71,15 @@ class OutputEntry extends React.Component {
             placeholder="Amount (BTC)"
             className={styles.outputsFormInput}
             name="amount"
-            disabled={finalizedOutputs || changeOutputIndex === number}
+            disabled={finalizedOutputs}
             onChange={this.handleAmountChange}
             value={amount}
             error={this.hasAmountError()}
             helperText={amountError}
-            /* type="number" */
-            /* InputProps={{ */
-            /*   min: "0",  */
-            /*   max: "21000000",  */
-            /*   step: "0.00000001" */
-            /* }} */
           />
         </Grid>
 
-        {(!finalizedOutputs) && this.hasBalanceError() && this.isBalanceable() &&
+        {this.displayBalanceAction() &&
          <Grid item xs={1}>
            <Tooltip title={`${this.balanceAction()} to ${this.autoBalancedAmount().toString()}`} placement="top">
              <small>
@@ -96,7 +90,7 @@ class OutputEntry extends React.Component {
            </Tooltip>
          </Grid>}
 
-        {(!finalizedOutputs) && outputs.length > (changeOutputIndex > 0 ? 2 : 1) &&
+        {(!finalizedOutputs) && outputs.length > (((changeOutputIndex > 0) && autoSpend) ? 2 : 1) &&
          <Grid item xs={1}>
            <Tooltip title="Remove Output" placement="top">
              <IconButton onClick={this.handleDelete}>
@@ -109,6 +103,14 @@ class OutputEntry extends React.Component {
     );
   }
 
+  displayBalanceAction = () => {
+    const {isWallet, finalizedOutputs, autoSpend} = this.props;
+      if (isWallet) {
+        return !autoSpend && !finalizedOutputs && this.hasBalanceError() && this.isBalanceable();
+      }
+      return !finalizedOutputs && this.hasBalanceError() && this.isBalanceable()
+  }
+
   //
   // Address
   //
@@ -117,7 +119,6 @@ class OutputEntry extends React.Component {
     const {changeNode, number, setAddress, setChangeOutput} = this.props;
     setAddress(number, changeNode.multisig.address);
     setChangeOutput(number);
-    this.handleBalance();
   }
 
   renderChangeAdornment = () => {
@@ -214,9 +215,8 @@ class OutputEntry extends React.Component {
   }
 
   balanceAction = () => {
-    const {balanceError, changeOutputIndex, number} = this.props;
+    const {balanceError} = this.props;
     if ((!this.hasBalanceError()) || this.isNotBalanceable()) {return null; }
-    if( changeOutputIndex === number) this.handleBalance();
     return balanceError.split(" ")[0];
   }
 
