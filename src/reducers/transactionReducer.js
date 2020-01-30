@@ -44,6 +44,7 @@ import {
   SET_CHANGE_OUTPUT_INDEX,
 
   UPDATE_AUTO_SPEND,
+  SET_SIGNING_KEY,
 } from '../actions/transactionActions';
 
 function sortInputs(a, b) {
@@ -89,6 +90,7 @@ const initialState = {
   isWallet: false,
   autoSpend: true,
   changeAddress: "",
+  signingKeys: [0, 0], // default 2 required signers
 };
 
 function updateInputs(state, action) {
@@ -298,6 +300,22 @@ function finalizeOutputs(state, action) {
   };
 }
 
+function updateRequiredSigners(state, action) {
+  let newState = updateState(state, { requiredSigners: action.value });
+  if (action.value > state.signingKeys.length) {
+    for(var i=0; i < action.value - state.signingKeys.length; i++) newState.signingKeys.push(0);
+  } else if (action.value < state.signingKeys.length) {
+    newState.signingKeys = state.signingKeys.slice(0, state.signingKeys.length - action.value)
+  }
+  return newState;
+}
+
+function updateSigningKey(state, action) {
+  const signingKeys = [...state.signingKeys] ;
+  signingKeys[action.number - 1] = action.value;
+  return updateState(state, {signingKeys: signingKeys});
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
   case CHOOSE_PERFORM_SPEND:
@@ -307,7 +325,7 @@ export default (state = initialState, action) => {
   case SET_ADDRESS_TYPE:
     return updateState(state, { addressType: action.value });
   case SET_REQUIRED_SIGNERS:
-    return updateState(state, { requiredSigners: action.value });
+    return updateRequiredSigners(state, action);
   case SET_TOTAL_SIGNERS:
     return updateState(state, { totalSigners: action.value });
   case SET_INPUTS:
@@ -344,6 +362,8 @@ export default (state = initialState, action) => {
     return updateState(state, initialState)
   case UPDATE_AUTO_SPEND:
     return updateState(state, { autoSpend: action.value });
+  case SET_SIGNING_KEY:
+    return updateSigningKey(state, action);
   default:
     return state;
   }

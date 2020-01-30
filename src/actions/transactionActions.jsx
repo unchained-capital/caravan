@@ -22,6 +22,7 @@ export const SET_IS_WALLET = 'SET_IS_WALLET';
 export const SET_CHANGE_OUTPUT_INDEX = 'SET_CHANGE_OUTPUT_INDEX';
 export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const SET_CHANGE_ADDRESS = "SET_CHANGE_ADDRESS";
+export const SET_SIGNING_KEY = "SET_SIGNING_KEY";
 
 export function choosePerformSpend() {
   return {
@@ -147,3 +148,13 @@ export function setChangeAddressAction(value) {
     value: value
   };
 }
+
+export function setSigningKey(number, extendedPublicKeyImporterIndex) {
+  return {
+    type: SET_SIGNING_KEY,
+    number: number,
+    value: extendedPublicKeyImporterIndex,
+  };
+}
+
+
