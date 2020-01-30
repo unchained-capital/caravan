@@ -20,6 +20,7 @@ export const SET_TXID = 'SET_TXID';
 export const RESET_TRANSACTION = 'RESET_TRANSACTION';
 export const SET_IS_WALLET = 'SET_IS_WALLET';
 export const SET_CHANGE_OUTPUT_INDEX = 'SET_CHANGE_OUTPUT_INDEX';
+export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 
 export function choosePerformSpend() {
   return {
@@ -129,5 +130,12 @@ export function setTXID(txid) {
 export function setIsWallet() {
   return {
     type: SET_IS_WALLET,
+  };
+}
+
+export function updateAutoSpendAction(value) {
+  return {
+    type: UPDATE_AUTO_SPEND,
+    value: value
   };
 }

@@ -22,9 +22,9 @@ import MultisigDetails from "../MultisigDetails";
 
 // Actions
 import {
-  setInputs, setFeeRate,
+  setInputs, setFeeRate, updateAutoSpendAction,
 } from '../../actions/transactionActions';
-import { updateAutoSpendAction, WALLET_MODES } from "../../actions/walletActions";
+import { WALLET_MODES } from "../../actions/walletActions";
 
 import styles from '../Spend//styles.module.scss';
 

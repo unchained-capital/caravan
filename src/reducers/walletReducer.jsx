@@ -8,7 +8,6 @@ import {
 import { updateState } from './utils';
 
 const initialState = {
-  autoSpend: true,
   walletMode: WALLET_MODES.VIEW,
   walletName: "My Multisig Wallet",
 };
@@ -21,8 +20,6 @@ function resetWalletViews(state) {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case UPDATE_AUTO_SPEND:
-      return updateState(state, { autoSpend: action.value });
     case UPDATE_WALLET_MODE:
       return updateState(state, {walletMode: action.value});
     case UPDATE_WALLET_NAME:

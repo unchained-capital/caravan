@@ -85,7 +85,7 @@ class OutputEntry extends React.Component {
           />
         </Grid>
 
-        {(!finalizedOutputs) && this.hasBalanceError() && this.isBalanceable() &&
+        {this.displayBalanceAction() &&
          <Grid item xs={1}>
            <Tooltip title={`${this.balanceAction()} to ${this.autoBalancedAmount().toString()}`} placement="top">
              <small>
@@ -107,6 +107,14 @@ class OutputEntry extends React.Component {
 
       </Grid>
     );
+  }
+
+  displayBalanceAction = () => {
+    const {isWallet, finalizedOutputs} = this.props;
+      if (isWallet) {
+        return false;
+      }
+      return !finalizedOutputs && this.hasBalanceError() && this.isBalanceable()
   }
 
   //

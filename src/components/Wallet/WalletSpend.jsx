@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js'
 
 // Actions
 import {
-  updateAutoSpendAction,
   updateDepositNodeAction,
   updateChangeNodeAction,
   resetNodesSpend,
@@ -15,6 +14,7 @@ import {
   setFeeRate,
   addOutput,
   setOutputAddress,
+  updateAutoSpendAction,
  } from "../../actions/transactionActions";
 
 // Components
@@ -146,7 +146,7 @@ function mapStateToProps(state) {
     changeNodes: state.wallet.change.nodes,
     changeNode: state.wallet.change.nextNode,
     depositNodes: state.wallet.deposits.nodes,
-    autoSpend: state.wallet.info.autoSpend,
+    autoSpend: state.spend.transaction.autoSpend,
   };
 }
 

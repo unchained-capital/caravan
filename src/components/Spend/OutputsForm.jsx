@@ -241,11 +241,11 @@ class OutputsForm extends React.Component {
   renderOutputs = () => {
     const { outputs, changeOutputIndex } = this.props;
     return map(outputs).map((output, i) => (
-      <Box display={changeOutputIndex === i+1 ? 'none' : 'block'}>
-        <Grid container key={i}>
+      // <Box key={i} display={changeOutputIndex === i+1 ? 'none' : 'block'}>
+        <Grid container>
           <OutputEntry number={i+1} />
         </Grid>
-      </Box>
+      // </Box>
     ));
   }
 
@@ -315,9 +315,12 @@ class OutputsForm extends React.Component {
   };
 
   handleReset = () => {
-    const { resetOutputs } = this.props;
-    resetOutputs();
-    this.initialOutputState();
+    const { resetOutputs, isWallet, setChangeOutputIndex } = this.props;
+    if (isWallet) setChangeOutputIndex(0);
+    setTimeout(() => {
+      resetOutputs();
+      this.initialOutputState();
+    });
   }
 
   getFeeEstimate = async () => {

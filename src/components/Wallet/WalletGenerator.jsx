@@ -24,10 +24,9 @@ import {setFrozen} from "../../actions/settingsActions";
 import {
   updateDepositNodeAction,
   updateChangeNodeAction,
-  updateAutoSpendAction,
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
-import { setIsWallet } from "../../actions/transactionActions";
+import { setIsWallet,   updateAutoSpendAction,} from "../../actions/transactionActions";
 import {downloadFile} from "../../utils"
 
 const MAX_TRAILING_EMPTY_NODES = 20;
