@@ -93,8 +93,8 @@ class WalletControl extends React.Component {
   }
 
   handleModeChange = (event, mode)  => {
-    const { setMode,  requiredSigners, setRequiredSigners  } = this.props;
-    if (mode === WALLET_MODES.SPEND) {
+    const { setMode,  requiredSigners, setRequiredSigners, signatureImporters  } = this.props;
+    if (mode === WALLET_MODES.SPEND && Object.keys(signatureImporters).length !== requiredSigners) {
       setRequiredSigners(requiredSigners); // this will generate signature importers
     }
     setMode(mode);
@@ -105,7 +105,8 @@ function mapStateToProps(state) {
   return {
     ...state.wallet,
     ...state.wallet.info,
-    requiredSigners: state.spend.transaction.requiredSigners
+    requiredSigners: state.spend.transaction.requiredSigners,
+    signatureImporters: state.spend.signatureImporters,
   };
 }
 

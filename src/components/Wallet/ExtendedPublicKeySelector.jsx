@@ -8,6 +8,8 @@ import {
   setSignatureImporterMethod,
 } from "../../actions/signatureImporterActions";
 
+import { setSigningKey } from "../../actions/transactionActions"
+
 // Components
 import {
   deriveChildPublicKey,
@@ -33,6 +35,12 @@ class ExtendedPublicKeySelector extends React.Component {
     selection: "",
   };
 
+  componentDidMount = () => {
+    const { signingKeys, number } = this.props;
+    if (signingKeys[number - 1] > 0)
+      this.updateKeySelection(signingKeys[number - 1]);
+  }
+
   render = () => {
     const { selection } = this.state;
     return (<div>
@@ -54,7 +62,7 @@ class ExtendedPublicKeySelector extends React.Component {
 
   renderKeySelectorMenu = () => {
     const { number } = this.props;
-    const { selection } = this.state
+    const { selection } = this.state;
     const labelId = `keySelector${number}`
     return (
       <form>
@@ -111,17 +119,22 @@ class ExtendedPublicKeySelector extends React.Component {
     return extendedPublicKeys;
   }
 
-  handleKeyChange = (event) => {
-    const { extendedPublicKeyImporters , setBIP32Path, setMethod, number} = this.props;
-    const extendedPublicKeyImporter = extendedPublicKeyImporters[event.target.value]
+  updateKeySelection(value) {
+    const { extendedPublicKeyImporters , setBIP32Path, setMethod, number, setSigningKey} = this.props;
+    const extendedPublicKeyImporter = extendedPublicKeyImporters[value]
     const importMethod = extendedPublicKeyImporter.method;
-    this.setState({selection: event.target.value});
+    this.setState({selection: value});
+    setSigningKey(number, value);
     if (importMethod === 'trezor' || importMethod === 'ledger' || importMethod === 'hermit') {
       setMethod(number, importMethod)
       setTimeout(() => {
         setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
       },0)
     }
+  }
+
+  handleKeyChange = (event) => {
+    this.updateKeySelection(event.target.value);
   }
 
 }
@@ -132,13 +145,15 @@ function mapStateToProps(state) {
     totalSigners: state.spend.transaction.totalSigners,
     inputs: state.spend.transaction.inputs,
     network: state.settings.network,
-    signatureImporters: state.spend.signatureImporters
+    signatureImporters: state.spend.signatureImporters,
+    signingKeys: state.spend.transaction.signingKeys,
   };
 }
 
 const mapDispatchToProps = {
   setBIP32Path: setSignatureImporterBIP32Path,
   setMethod: setSignatureImporterMethod,
+  setSigningKey,
 };
 
 
