@@ -15,6 +15,7 @@ import {
   addOutput,
   setOutputAddress,
   updateAutoSpendAction,
+  setChangeAddressAction,
  } from "../../actions/transactionActions";
 
 // Components
@@ -47,6 +48,11 @@ class WalletSpend extends React.Component {
       if (coinSelectTimer) clearTimeout(coinSelectTimer)
       coinSelectTimer = setTimeout(this.selectCoins, 1000);
     }
+  }
+
+  componentDidMount = () => {
+    const { changeNode, setChangeAddress } = this.props;
+    setChangeAddress(changeNode.multisig.address);
   }
 
   componentWillUnmount() {
@@ -159,6 +165,7 @@ const mapDispatchToProps = {
   resetNodesSpend,
   setFeeRate,
   addOutput,
+  setChangeAddress: setChangeAddressAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);

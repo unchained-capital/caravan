@@ -88,6 +88,7 @@ const initialState = {
   unsignedTransaction: {},
   isWallet: false,
   autoSpend: true,
+  changeAddress: "",
 };
 
 function updateInputs(state, action) {
@@ -128,7 +129,7 @@ function validateTransaction(state) {
     if (diff.isNaN()) {
       balanceError = "Cannot calculate total.";
     } else{
-      if (state.isWallet) {
+      if (state.isWallet && state.autoSpend) {
         let changeAmount;
         const dust = satoshisToBitcoins(BigNumber(546))
         if (state.changeOutputIndex > 0) {
@@ -139,12 +140,10 @@ function validateTransaction(state) {
         if (changeAmount.isLessThan(dust)) {
           state = deleteOutput(state, {number: state.changeOutputIndex});
           state = updateState(state, { changeOutputIndex: 0 });
-          console.log('delete change output')
         } else if (state.changeOutputIndex === 0) {
           state = addOutput(state)
           state.changeOutputIndex = state.outputs.length;
-
-          console.log('add change output')
+          state.outputs[state.changeOutputIndex -1].address = state.changeAddress;
         }
         if (changeAmount.isGreaterThanOrEqualTo(dust)) {
           state = updateOutputAmount(state, {value: changeAmount.toFixed(8), number: state.changeOutputIndex})
@@ -283,6 +282,7 @@ function deleteOutput(state, action) {
     } else if (action.number === state.changeOutputIndex) {
       state.changeOutputIndex = 0;
     }
+    if (action.number < state.changeOutputIndex) state.changeOutputIndex--;
   }
   return {
     ...state,

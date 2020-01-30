@@ -92,8 +92,9 @@ class OutputsForm extends React.Component {
   }
 
   render() {
-    const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError} = this.props;
+    const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError, inputs} = this.props;
     const {feeRateFetchError} = this.state;
+    const feeDisplay = inputs.length > 0 ? fee : ""
     return (
       <Card>
         <CardHeader ref={this.titleRef} title="Define Outputs"/>
@@ -152,16 +153,10 @@ class OutputsForm extends React.Component {
                     placeholder="BTC"
                     name="fee_total"
                     disabled={finalizedOutputs}
-                    value={fee}
+                    value={feeDisplay}
                     onChange={this.handleFeeChange}
                     error={this.hasFeeError()}
                     helperText={feeError}
-                    /* type="number" */
-                    /* InputProps={{ */
-                    /*   min: "0.00000001", */
-                    /*   max: "0.025", */
-                    /*   step: "0.00000001", */
-                    /* }} */
                   />
                 </Grid>
 
@@ -239,13 +234,13 @@ class OutputsForm extends React.Component {
   }
 
   renderOutputs = () => {
-    const { outputs, changeOutputIndex } = this.props;
+    const { outputs, changeOutputIndex, autoSpend } = this.props;
     return map(outputs).map((output, i) => (
-      // <Box key={i} display={changeOutputIndex === i+1 ? 'none' : 'block'}>
+      <Box key={i} display={(autoSpend && changeOutputIndex === i+1) ? 'none' : 'block'}>
         <Grid container>
           <OutputEntry number={i+1} />
         </Grid>
-      // </Box>
+      </Box>
     ));
   }
 
