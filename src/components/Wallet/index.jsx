@@ -96,6 +96,7 @@ class CreateWallet extends React.Component {
     const xpubFields = {
       name:  (name, index) => typeof name === 'string' ? '' : `Extended public key ${index} name must be a string`,
       bip32Path: (bip32Path, index) =>  {
+        if (xpubs[index -1].method === 'text') return "";
         const pathError = validateBIP32Path(bip32Path);
         if (pathError !== "") return `Extended public key ${index} error: ${pathError}`;
         return ""
