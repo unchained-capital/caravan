@@ -72,11 +72,13 @@ class WalletSpend extends React.Component {
               }
             </Box>
           </Grid>
+          {!finalizedOutputs &&
           <Grid item md={12}>
             <Box mt={2}>
               <OutputsForm />
             </Box>
           </Grid>
+          }
         </Grid>
       </Box>
     )

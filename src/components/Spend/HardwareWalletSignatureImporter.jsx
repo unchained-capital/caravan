@@ -81,7 +81,7 @@ class HardwareWalletSignatureImporter extends React.Component {
   }
 
   render = () => {
-    const {signatureImporter} = this.props;
+    const {signatureImporter, extendedPublicKeyImporter, isWallet} = this.props;
     const {verified, status} = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
@@ -89,6 +89,8 @@ class HardwareWalletSignatureImporter extends React.Component {
     }
     return (
       <Box mt={2}>
+        {(extendedPublicKeyImporter === null || typeof extendedPublicKeyImporter === 'undefined' || extendedPublicKeyImporter.method === "text") &&
+        <React.Fragment>
         <Grid container>
           <Grid item md={10}>
             <TextField
@@ -98,7 +100,7 @@ class HardwareWalletSignatureImporter extends React.Component {
               type="text"
               value={signatureImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
-              disabled={status !== PENDING || verified}
+              disabled={status !== PENDING || (!isWallet && verified)}
               error={this.hasBIP32PathError()}
               helperText={this.bip32PathError()}
             />
@@ -110,6 +112,7 @@ class HardwareWalletSignatureImporter extends React.Component {
           </Grid>
         </Grid>
         <FormHelperText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormHelperText>
+        </React.Fragment>}
         <Box mt={2}>
           {this.renderAction()}
         </Box>

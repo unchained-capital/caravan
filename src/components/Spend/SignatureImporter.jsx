@@ -117,7 +117,7 @@ class SignatureImporter extends React.Component {
   }
 
   renderImport = () => {
-    const { signatureImporter, number } = this.props;
+    const { signatureImporter, number, extendedPublicKeyImporter } = this.props;
     const currentNumber = this.getCurrent();
     const notMyTurn =  (number > currentNumber);
     const { disableChangeMethod } = this.state;
@@ -132,24 +132,25 @@ class SignatureImporter extends React.Component {
 
     return (
       <form>
+        {(extendedPublicKeyImporter === null || typeof extendedPublicKeyImporter === 'undefined' || extendedPublicKeyImporter.method === TEXT) &&
+          <FormControl fullWidth>
+            <InputLabel id={labelId}>Select Method</InputLabel>
 
-        <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Method</InputLabel>
-
-          <Select
-            labelId={labelId}
-            id={`signature-${number}-importer-select`}
-            disabled={disableChangeMethod}
-            value={signatureImporter.method}
-            onChange={this.handleMethodChange}
-          >
-            <MenuItem value="">{'< Select method >'}</MenuItem>
-            <MenuItem value={TREZOR}>Trezor</MenuItem>
-            <MenuItem value={LEDGER}>Ledger</MenuItem>
-            <MenuItem value={HERMIT}>Hermit</MenuItem>
-            <MenuItem value={TEXT}>Enter as text</MenuItem>
-          </Select>
-        </FormControl>
+            <Select
+              labelId={labelId}
+              id={`signature-${number}-importer-select`}
+              disabled={disableChangeMethod}
+              value={signatureImporter.method}
+              onChange={this.handleMethodChange}
+            >
+              <MenuItem value="">{'< Select method >'}</MenuItem>
+              <MenuItem value={TREZOR}>Trezor</MenuItem>
+              <MenuItem value={LEDGER}>Ledger</MenuItem>
+              <MenuItem value={HERMIT}>Hermit</MenuItem>
+              <MenuItem value={TEXT}>Enter as text</MenuItem>
+            </Select>
+          </FormControl>
+        }
 
         {this.renderImportByMethod()}
 
@@ -158,7 +159,8 @@ class SignatureImporter extends React.Component {
   }
 
   renderImportByMethod = () => {
-    const {network, signatureImporter, signatureImporters, inputs, inputsTotalSats,  outputs, fee, isWallet} = this.props;
+    const {network, signatureImporter, signatureImporters, inputs, inputsTotalSats,
+      outputs, fee, isWallet, extendedPublicKeyImporter} = this.props;
     if (signatureImporter.method === TEXT) {
       return <TextSignatureImporter
                                signatureImporter={signatureImporter}
@@ -187,6 +189,7 @@ class SignatureImporter extends React.Component {
                inputsTotalSats={inputsTotalSats}
                fee={fee}
                isWallet={isWallet}
+               extendedPublicKeyImporter={extendedPublicKeyImporter}
                validateAndSetBIP32Path={this.validateAndSetBIP32Path}
                resetBIP32Path={this.resetBIP32Path}
                defaultBIP32Path={this.defaultBIP32Path()}
