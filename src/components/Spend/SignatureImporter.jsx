@@ -158,7 +158,7 @@ class SignatureImporter extends React.Component {
   }
 
   renderImportByMethod = () => {
-    const {network, signatureImporter, signatureImporters, inputs, inputsTotalSats,  outputs, fee} = this.props;
+    const {network, signatureImporter, signatureImporters, inputs, inputsTotalSats,  outputs, fee, isWallet} = this.props;
     if (signatureImporter.method === TEXT) {
       return <TextSignatureImporter
                                signatureImporter={signatureImporter}
@@ -186,6 +186,7 @@ class SignatureImporter extends React.Component {
                outputs={outputs}
                inputsTotalSats={inputsTotalSats}
                fee={fee}
+               isWallet={isWallet}
                validateAndSetBIP32Path={this.validateAndSetBIP32Path}
                resetBIP32Path={this.resetBIP32Path}
                defaultBIP32Path={this.defaultBIP32Path()}
