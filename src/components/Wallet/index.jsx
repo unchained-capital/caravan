@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
-import {validateBIP32Path} from "unchained-bitcoin"
+import {validateBIP32Path, validateExtendedPublicKey} from "unchained-bitcoin"
 
 // Components
 import { Grid, Box, Drawer, IconButton, Button, Card, TextField, CardHeader, CardContent } from '@material-ui/core';
@@ -92,7 +92,7 @@ class CreateWallet extends React.Component {
     return "";
   }
 
-  validateExtendedPublicKeys(xpubs) {
+  validateExtendedPublicKeys(xpubs, network) {
     const xpubFields = {
       name:  (name, index) => typeof name === 'string' ? '' : `Extended public key ${index} name must be a string`,
       bip32Path: (bip32Path, index) =>  {
@@ -101,7 +101,7 @@ class CreateWallet extends React.Component {
         if (pathError !== "") return `Extended public key ${index} error: ${pathError}`;
         return ""
       },
-      xpub: (xpub, index) => "", // TODO: validate
+      xpub: (xpub) => validateExtendedPublicKey(xpub, network),
       method: (method, index) => ~['trezor', 'ledger', 'hermit', 'xpub', 'text'].indexOf(method) ? "" : `Invalid method for extended public key ${index}`
     }
 
@@ -130,7 +130,7 @@ class CreateWallet extends React.Component {
     const validQuorum = this.validateProperties(config, quorumProperties, 'quorum')
     if (validQuorum !== "") return validQuorum
 
-    return this.validateExtendedPublicKeys(config.extendedPublicKeys);
+    return this.validateExtendedPublicKeys(config.extendedPublicKeys, config.network);
   }
 
   handleConfigChange = (event) => {
