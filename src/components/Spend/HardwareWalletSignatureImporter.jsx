@@ -55,6 +55,8 @@ class HardwareWalletSignatureImporter extends React.Component {
   }
 
   componentDidMount = () => {
+    const {isWallet} = this.props;
+    if (isWallet) this.setState({verified: true});
     this.resetBIP32Path();
   }
 
