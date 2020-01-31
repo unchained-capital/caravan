@@ -23,8 +23,8 @@ import NodeSet from "./NodeSet";
 import OutputsForm from '../Spend/OutputsForm';
 import WalletSign from './WalletSign'
 import {
-    Box, Card, CardHeader,
-    CardContent, Grid, Switch,
+    Box, Grid, Switch,
+    FormControlLabel,
   } from '@material-ui/core';
 
 import { bitcoinsToSatoshis } from 'unchained-bitcoin/lib/utils';
@@ -65,14 +65,16 @@ class WalletSpend extends React.Component {
       <Box>
         <Grid container>
           <Grid item md={12}>
-            <OutputsForm />
-          </Grid>
-          <Grid item md={12}>
-            <Box mt={2}>
+          <Box>
               { finalizedOutputs ?
                 <WalletSign/> :
                 this.renderSpend()
               }
+            </Box>
+          </Grid>
+          <Grid item md={12}>
+            <Box mt={2}>
+              <OutputsForm />
             </Box>
           </Grid>
         </Grid>
@@ -83,26 +85,20 @@ class WalletSpend extends React.Component {
   renderSpend = () => {
     const { addNode, updateNode, autoSpend } = this.props;
     return (
-      <Card>
-        <CardHeader title="Coin Selection"/>
-        <CardContent>
-          <Grid item md={12}>
-            <Grid component="label" container alignItems="center" spacing={1}>
-              <Grid item>Manual</Grid>
-              <Grid item>
-                <Switch
-                  checked={autoSpend}
-                  onChange={this.handleSpendMode}
+      <Box>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!autoSpend}
+                onChange={this.handleSpendMode}
               />
-              </Grid>
-              <Grid item>Auto</Grid>
-            </Grid>
-          </Grid>
+            }
+            label="Choose your own inputs"
+          />
           <Box component="div" display={autoSpend ? 'none' : 'block'}>
             <NodeSet addNode={addNode} updateNode={updateNode}  />
           </Box>
-        </CardContent>
-      </Card>)
+      </Box>)
   }
 
     handleSpendMode = (event) => {
@@ -115,11 +111,11 @@ class WalletSpend extends React.Component {
 
       }
 
-      updateAutoSpend(event.target.checked)
+      updateAutoSpend(!event.target.checked)
     }
 
     selectCoins = () => {
-      const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate, changeOutputIndex,
+      const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate, changeOutputIndex, autoSpend,
         updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate, coinSelection } = this.props;
       const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
         return changeOutputIndex === outputIndex + 1 ? sum : sum.plus(output.amountSats)
@@ -142,7 +138,7 @@ class WalletSpend extends React.Component {
       this.outputsAmount = outputsAmount;
       this.feeAmount = feeAmount;
       setInputs(selectedInputs);
-      setFeeRate(feeRate); // recalulate fee
+      if (changeOutputIndex > 0 || !autoSpend) setFeeRate(feeRate); // recalulate fee
     }
 }
 
