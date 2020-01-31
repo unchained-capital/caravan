@@ -61,9 +61,22 @@ class ExtendedPublicKeySelector extends React.Component {
   }
 
   renderKeySelectorMenu = () => {
-    const { number } = this.props;
+    const { signingKeys, number, signatureImporters, extendedPublicKeyImporters, setBIP32Path } = this.props;
     const { selection } = this.state;
     const labelId = `keySelector${number}`
+
+    if (signingKeys[number - 1] > 0) {
+      const signatureImporter = signatureImporters[number];
+      if (signatureImporter.signature.length > 0) return ""
+
+      const extendedPublicKeyImporter = extendedPublicKeyImporters[signingKeys[number - 1]];
+      if(extendedPublicKeyImporter.bip32Path != signatureImporter.bip32Path) {
+        setTimeout(() => {
+          setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
+        },0)
+      }
+    }
+
     return (
       <form>
 
