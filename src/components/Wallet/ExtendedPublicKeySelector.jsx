@@ -53,23 +53,31 @@ class ExtendedPublicKeySelector extends React.Component {
 
   renderSignatureImporter = () => {
     const { number } = this.props;
+    const extendedPublicKeyImporter = this.getAssociatedExtendedPublicKeyImporter();
     return (
       <Box mt={2}>
-        <SignatureImporter number={number} />
+        <SignatureImporter number={number} extendedPublicKeyImporter={extendedPublicKeyImporter}/>
       </Box>
     )
   }
 
+  getAssociatedExtendedPublicKeyImporter = () => {
+    const { signingKeys, number, extendedPublicKeyImporters } = this.props;
+
+    if (signingKeys[number - 1] > 0) return extendedPublicKeyImporters[signingKeys[number - 1]];
+    return null;
+  }
+
   renderKeySelectorMenu = () => {
-    const { signingKeys, number, signatureImporters, extendedPublicKeyImporters, setBIP32Path } = this.props;
+    const { number, signatureImporters, setBIP32Path } = this.props;
     const { selection } = this.state;
     const labelId = `keySelector${number}`
 
-    if (signingKeys[number - 1] > 0) {
+    const extendedPublicKeyImporter = this.getAssociatedExtendedPublicKeyImporter();
+    if (extendedPublicKeyImporter !== null) {
       const signatureImporter = signatureImporters[number];
       if (signatureImporter.signature.length > 0) return ""
 
-      const extendedPublicKeyImporter = extendedPublicKeyImporters[signingKeys[number - 1]];
       if(extendedPublicKeyImporter.bip32Path != signatureImporter.bip32Path) {
         setTimeout(() => {
           setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
