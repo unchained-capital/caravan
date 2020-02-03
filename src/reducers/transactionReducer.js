@@ -139,10 +139,11 @@ function validateTransaction(state) {
         } else {
           changeAmount = satoshisToBitcoins(BigNumber(0).minus(diff));
         }
-        if (changeAmount.isLessThan(dust)) {
+        if (changeAmount.isLessThan(dust) && changeAmount.isGreaterThanOrEqualTo(0)) {
           state = deleteOutput(state, {number: state.changeOutputIndex});
           state = updateState(state, { changeOutputIndex: 0 });
-        } else if (state.changeOutputIndex === 0) {
+          state = updateFee(state, {value: satoshisToBitcoins(BigNumber(0).minus(diff)).plus(BigNumber(state.fee)).toFixed(8)});
+        } else if (state.changeOutputIndex === 0 && changeAmount.isGreaterThanOrEqualTo(dust)) {
           state = addOutput(state)
           state.changeOutputIndex = state.outputs.length;
           state.outputs[state.changeOutputIndex -1].address = state.changeAddress;
