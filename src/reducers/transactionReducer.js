@@ -45,6 +45,7 @@ import {
 
   UPDATE_AUTO_SPEND,
   SET_SIGNING_KEY,
+  SET_CHANGE_ADDRESS,
 } from '../actions/transactionActions';
 
 function sortInputs(a, b) {
@@ -137,12 +138,13 @@ function validateTransaction(state) {
         if (state.changeOutputIndex > 0) {
           changeAmount = satoshisToBitcoins(state.outputs[state.changeOutputIndex-1].amountSats.minus(diff));
         } else {
-          changeAmount = satoshisToBitcoins(BigNumber(0).minus(diff));
+          changeAmount = satoshisToBitcoins(diff.times(-1));
         }
         if (changeAmount.isLessThan(dust) && changeAmount.isGreaterThanOrEqualTo(0)) {
           state = deleteOutput(state, {number: state.changeOutputIndex});
           state = updateState(state, { changeOutputIndex: 0 });
-          state = updateFee(state, {value: satoshisToBitcoins(BigNumber(0).minus(diff)).plus(BigNumber(state.fee)).toFixed(8)});
+          const amountWithoutFee = state.inputsTotalSats.minus(outputTotalSats).abs()
+          state = updateFee(state, {value: satoshisToBitcoins(amountWithoutFee).toFixed(8)});
         } else if (state.changeOutputIndex === 0 && changeAmount.isGreaterThanOrEqualTo(dust)) {
           state = addOutput(state)
           state.changeOutputIndex = state.outputs.length;
@@ -365,7 +367,9 @@ export default (state = initialState, action) => {
     return updateState(state, { autoSpend: action.value });
   case SET_SIGNING_KEY:
     return updateSigningKey(state, action);
-  default:
+  case SET_CHANGE_ADDRESS:
+    return updateState(state, { changeAddress: action.value });
+    default:
     return state;
   }
 };
