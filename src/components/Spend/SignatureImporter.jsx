@@ -242,7 +242,11 @@ class SignatureImporter extends React.Component {
   }
 
   resetBIP32Path = () => {
-    const {number, setBIP32Path} = this.props;
+    const {number, setBIP32Path, isWallet} = this.props;
+    if (isWallet) {
+      const { extendedPublicKeyImporter } = this.props;
+      if (extendedPublicKeyImporter.method !== "text") return;
+    }
     setBIP32Path(number, this.defaultBIP32Path());
   }
 

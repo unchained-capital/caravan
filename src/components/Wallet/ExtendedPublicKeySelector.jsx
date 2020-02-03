@@ -8,7 +8,7 @@ import {
   setSignatureImporterMethod,
 } from "../../actions/signatureImporterActions";
 
-import { setSigningKey } from "../../actions/transactionActions"
+import { setSigningKey } from "../../actions/transactionActions";
 
 // Components
 import {
@@ -78,7 +78,7 @@ class ExtendedPublicKeySelector extends React.Component {
       const signatureImporter = signatureImporters[number];
       if (signatureImporter.signature.length > 0) return ""
 
-      if(extendedPublicKeyImporter.bip32Path != signatureImporter.bip32Path) {
+      if(extendedPublicKeyImporter.bip32Path != signatureImporter.bip32Path && extendedPublicKeyImporter.method !== 'text') {
         setTimeout(() => {
           setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
         },0)
@@ -94,7 +94,6 @@ class ExtendedPublicKeySelector extends React.Component {
         <Select
           labelId={labelId}
           id={`signature-${number}-key-select`}
-          // disabled={disableChangeMethod}
           value={selection}
           onChange={this.handleKeyChange}
         >
@@ -141,17 +140,18 @@ class ExtendedPublicKeySelector extends React.Component {
   }
 
   updateKeySelection(value) {
-    const { extendedPublicKeyImporters , setBIP32Path, setMethod, number, setSigningKey} = this.props;
+    this.setState({selection: value});
+    if(value === "") return;
+
+    const { extendedPublicKeyImporters , setMethod, number, setSigningKey} = this.props;
     const extendedPublicKeyImporter = extendedPublicKeyImporters[value]
     const importMethod = extendedPublicKeyImporter.method;
-    this.setState({selection: value});
-    setSigningKey(number, value);
-    if (importMethod === 'trezor' || importMethod === 'ledger' || importMethod === 'hermit') {
+    if (importMethod === 'text') {
+      setMethod(number, ""); // user picks
+    } else {
       setMethod(number, importMethod)
-      setTimeout(() => {
-        setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
-      },0)
     }
+    setSigningKey(number, value);
   }
 
   handleKeyChange = (event) => {
