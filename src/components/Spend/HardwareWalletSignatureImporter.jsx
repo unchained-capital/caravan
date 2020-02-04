@@ -46,8 +46,6 @@ class HardwareWalletSignatureImporter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      verified: false,
-      verifyError: '',
       signatureError: '',
       bip32PathError: '',
       status: (this.interaction(true).isSupported() ? PENDING : UNSUPPORTED),
@@ -55,34 +53,22 @@ class HardwareWalletSignatureImporter extends React.Component {
   }
 
   componentDidMount = () => {
-    const {isWallet} = this.props;
-    if (isWallet) this.setState({verified: true});
     this.resetBIP32Path();
   }
 
   interaction = (inConstructor) => {
-    const verified = (inConstructor ? false : this.state.verified);
     const {signatureImporter, network, inputs, outputs} = this.props;
     const keystore = signatureImporter.method;
-    if (verified) {
       const bip32Paths = inputs.map((input) => {
         if (typeof input.bip32Path === 'undefined') return signatureImporter.bip32Path; // pubkey path
         return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}` // xpub/pubkey slice away the m, keep /
       });
       return SignMultisigTransaction({network, keystore, inputs, outputs, bip32Paths});
-    } else {
-      let bip32Path, bip32Paths;
-      bip32Path = signatureImporter.bip32Path; // pubkey path
-      if (typeof inputs[0].bip32Path !== 'undefined') {
-        bip32Paths = inputs.map(input => `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`); // xpub/pubkey slice away the m, keep /
-      }
-      return ExportPublicKey({network, keystore, bip32Path, bip32Paths});
-    }
   }
 
   render = () => {
     const {signatureImporter, extendedPublicKeyImporter, isWallet} = this.props;
-    const {verified, status} = this.state;
+    const {status} = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
       return <FormHelperText error>{interaction.messageTextFor({state: status})}</FormHelperText>;
@@ -100,7 +86,7 @@ class HardwareWalletSignatureImporter extends React.Component {
               type="text"
               value={signatureImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
-              disabled={status !== PENDING || (!isWallet && verified)}
+              disabled={status !== PENDING}
               error={this.hasBIP32PathError()}
               helperText={this.bip32PathError()}
             />
@@ -108,7 +94,7 @@ class HardwareWalletSignatureImporter extends React.Component {
           </Grid>
           <Grid item md={2}>
             {!this.bip32PathIsDefault() &&
-             <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path} disabled={verified || status !== PENDING}>Default</Button>}
+             <Button type="button" variant="contained" size="small" onClick={this.resetBIP32Path} disabled={status !== PENDING}>Default</Button>}
           </Grid>
         </Grid>
         <FormHelperText>Use the default value if you don&rsquo;t understand BIP32 paths.</FormHelperText>
@@ -124,9 +110,9 @@ class HardwareWalletSignatureImporter extends React.Component {
 
   renderDeviceConfirmInfo = () => {
     const {fee, inputsTotalSats} = this.props;
-    const {verified, status} = this.state;
+    const {status} = this.state;
 
-    if (verified && status === ACTIVE) {
+    if (status === ACTIVE) {
       return (
         <Box>
           <p>Your device will ask you to verify the following information:</p>
@@ -167,30 +153,17 @@ class HardwareWalletSignatureImporter extends React.Component {
   }
 
   renderAction = () => {
-    const {verified, verifyError, signatureError, status} = this.state;
-    if (verified) {
-      return (
-        <Grid container alignItems="center">
-          <Grid item md={3}>
-            <Button variant="contained" size="large" color="primary" onClick={this.sign} disabled={status !== PENDING}>Sign</Button>
-          </Grid>
-          <Grid item md={9}>
-            <FormHelperText error>{signatureError}</FormHelperText>
-          </Grid>
+    const {signatureError, status} = this.state;
+    return (
+      <Grid container alignItems="center">
+        <Grid item md={3}>
+          <Button variant="contained" size="large" color="primary" onClick={this.sign} disabled={status !== PENDING}>Sign</Button>
         </Grid>
-      );
-    } else {
-      return (
-        <Grid container alignItems="center">
-          <Grid item md={3}>
-            <Button variant="contained" size="large" onClick={this.verify} color="primary" disabled={status !== PENDING || this.hasBIP32PathError()}>Verify</Button>
-          </Grid>
-          <Grid item md={9}>
-            <FormHelperText error>{verifyError}</FormHelperText>
-          </Grid>
+        <Grid item md={9}>
+          <FormHelperText error>{signatureError}</FormHelperText>
         </Grid>
-      );
-    }
+      </Grid>
+    );
   }
 
   //
@@ -229,64 +202,6 @@ class HardwareWalletSignatureImporter extends React.Component {
     resetBIP32Path();
   }
 
-  //
-  // Verify
-  //
-
-  verify = async () => {
-    const { disableChangeMethod, enableChangeMethod } = this.props;
-    disableChangeMethod();
-    this.setState({verifyError: '', status: ACTIVE});
-
-    try {
-      const publicKey = await this.interaction().run();
-      this.verifyPublicKey(publicKey);
-    } catch(e) {
-      console.error(e);
-      this.setState({verifyError: e.message, status: PENDING});
-      enableChangeMethod();
-    }
-  }
-
-  verifyPublicKey = (publicKey) => {
-    const {inputs, signatureImporters, enableChangeMethod} = this.props;
-
-    let verifyError = '';
-    const publicKeys = typeof publicKey === 'string' ? [publicKey] : publicKey;
-
-    for (let inputIndex=0; inputIndex < inputs.length; inputIndex++) {
-      const input = inputs[inputIndex];
-      let publicKeyIndex
-      for(let i = 0; i < publicKeys.length; i++) {
-        publicKeyIndex = multisigPublicKeys(input.multisig).indexOf(publicKeys[i]);
-        if (publicKeyIndex > -1) break;
-      }
-      if (publicKeyIndex < 0) {
-        verifyError = <span><Error />&nbsp; This device does not contain the correct key.  Are you sure the BIP32 path is correct?</span>;
-        break;
-      }
-
-      for (let signatureImporterNum=1; signatureImporterNum < multisigRequiredSigners(input.multisig); signatureImporterNum++) {
-        const otherSignatureImporter = signatureImporters[signatureImporterNum];
-        for(let otherPublicKeyIndex=0; otherPublicKeyIndex < otherSignatureImporter.publicKeys.length; otherPublicKeyIndex++){
-          const otherPublicKey = otherSignatureImporter.publicKeys[otherPublicKeyIndex];
-          if (otherPublicKey === publicKey) {
-            verifyError = <span><Error />A signature from this key was already imported.</span>;
-            break;
-          }
-        }
-        if (verifyError !== '') { break; }
-      }
-      if (verifyError !== '') { break; }
-    }
-
-    this.setState({
-      verified: (verifyError === ''),
-      verifyError,
-      status: PENDING,
-    });
-    enableChangeMethod();
-  }
 
   //
   // Sign
