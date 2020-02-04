@@ -1,7 +1,7 @@
 import { updateState } from './utils';
 import {
   RESET_SIGNATURES,
-  
+
   SET_SIGNATURE_IMPORTER_NAME,
   SET_SIGNATURE_IMPORTER_METHOD,
   SET_SIGNATURE_IMPORTER_BIP32_PATH,
@@ -33,10 +33,7 @@ function setRequiredSigners(state, action) {
       ...{name: `Signature ${signatureImporterNum}`},
     };
   }
-  return {
-    ...state,
-    ...signatureImporters,
-  };
+  return signatureImporters;
 }
 
 function updateSignatureImporterState(state, action, field) {
@@ -77,7 +74,7 @@ export default (state = initialState, action) => {
     return updateSignatureImporterState(state, action, "finalized");
   case SET_SIGNATURE_IMPORTER_COMPLETE:
     return finalizeSignatureImporterState(state, action);
-  
+
   default:
     return state;
   }
