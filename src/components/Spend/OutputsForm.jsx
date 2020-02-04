@@ -310,12 +310,8 @@ class OutputsForm extends React.Component {
   };
 
   handleReset = () => {
-    const { resetOutputs, isWallet, setChangeOutputIndex } = this.props;
-    if (isWallet) setChangeOutputIndex(0);
-    setTimeout(() => {
-      resetOutputs();
-      this.initialOutputState();
-    });
+    const { resetOutputs } = this.props;
+    resetOutputs();
   }
 
   getFeeEstimate = async () => {

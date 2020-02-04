@@ -319,6 +319,24 @@ function updateSigningKey(state, action) {
   return updateState(state, {signingKeys: signingKeys});
 }
 
+function outputInitialStateForMode(state) {
+  let newState = updateState(state, {
+    outputs: initialOutputsState(),
+    fee: '',
+    balanceError: '',
+    changeOutputIndex: 0,
+  });
+
+  if (newState.isWallet) {
+    newState = addOutput(newState)
+    newState = updateState(newState, { changeOutputIndex: 2 });
+    newState = updateOutputAmount(newState, {number: 2, value: '0'});
+    newState = updateOutputAddress(newState, {number: 2, value: newState.changeAddress});
+  }
+
+  return newState;
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
   case CHOOSE_PERFORM_SPEND:
@@ -350,13 +368,7 @@ export default (state = initialState, action) => {
   case FINALIZE_OUTPUTS:
     return finalizeOutputs(state, action);
   case RESET_OUTPUTS:
-    return updateState(state, {
-      outputs: initialOutputsState(),
-      fee: '',
-      balanceError: '',
-      changeOutputIndex: 0,
-      // FIXME what about feeRate ?
-    });
+    return outputInitialStateForMode(state);
   case SET_TXID:
     return updateState(state, { txid: action.value });
   case SET_IS_WALLET:
