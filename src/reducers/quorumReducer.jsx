@@ -66,7 +66,7 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
   .reduce((sum, current) => {
     return sum + (current.finalized)
   }, 0)
-  if (importCount === Object.keys(newState.extendedPublicKeyImporters).length) {
+  if (importCount === Object.keys(newState.extendedPublicKeyImporters).length && field === 'finalized') {
     newState.configuring = false;
   }
   setConflict(newState.extendedPublicKeyImporters[action.number] ,state);
