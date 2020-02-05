@@ -88,12 +88,12 @@ class NodeSet extends React.Component {
                   >Balance</TableSortLabel>
 
                 </TableCell>
-                <TableCell width={82}>
+                <TableCell width={98}>
                   <TableSortLabel
                     active={orderBy === "time"}
                     direction={orderDir}
                     onClick={() => this.sortAddresses("time")}
-                  >Date</TableSortLabel>
+                  >Last Used</TableSortLabel>
 
                 </TableCell>
                 <TableCell>Address</TableCell>
