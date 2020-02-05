@@ -128,8 +128,9 @@ class WalletGenerator extends React.Component {
   }
 
   generate = () => {
-    const {freeze} = this.props;
+    const {setImportersVisible, freeze} = this.props;
     freeze(true);
+    setImportersVisible(false);
     this.setState({generating: true});
     this.addNode(false, "m/0/0", true);
     this.addNode(true, "m/1/0", true);
