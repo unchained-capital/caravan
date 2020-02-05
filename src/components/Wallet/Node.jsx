@@ -76,7 +76,7 @@ class Node extends React.Component {
           {fetchUTXOsError !== '' && <FormHelperText className="danger">{fetchUTXOsError}</FormHelperText>}
         </TableCell>
         <TableCell>
-          {this.minUtxoDate()}
+          {this.maxUtxoDate()}
         </TableCell>
 
         <TableCell>
@@ -87,12 +87,12 @@ class Node extends React.Component {
       );
   }
 
-  minUtxoDate = () => {
+  maxUtxoDate = () => {
     const {utxos} = this.props;
     if (!utxos.length) return ""
-    const mintime = Math.min(...utxos.map(utxo => utxo.time))
-    if (isNaN(mintime)) return "Pending"
-    return (new Date(1000 * mintime).toLocaleDateString())
+    const maxtime = Math.max(...utxos.map(utxo => utxo.time));
+    if (isNaN(maxtime)) return "Pending";
+    return (new Date(1000 * maxtime).toLocaleDateString());
   }
 
   addressContent = () => {
