@@ -337,6 +337,20 @@ function outputInitialStateForMode(state) {
   return newState;
 }
 
+function resetTransactionState(state) {
+  let newState = updateState(state, {
+    ...initialState,
+    totalSigners: state.totalSigners,
+    network: state.network,
+    addressType: state.addressType,
+    isWallet: state.isWallet,
+    changeAddress: state.changeAddress,
+  });
+  newState = updateRequiredSigners(newState, {value: state.requiredSigners});
+  newState = outputInitialStateForMode(newState);
+  return newState;
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
   case CHOOSE_PERFORM_SPEND:
@@ -374,7 +388,7 @@ export default (state = initialState, action) => {
   case SET_IS_WALLET:
     return updateState(state, { isWallet: true} );
   case RESET_TRANSACTION:
-    return updateState(state, initialState)
+    return resetTransactionState(state)
   case UPDATE_AUTO_SPEND:
     return updateState(state, { autoSpend: action.value });
   case SET_SIGNING_KEY:

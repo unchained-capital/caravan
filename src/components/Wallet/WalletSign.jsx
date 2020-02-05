@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 // Components
 import Transaction from '../Spend/Transaction';
 import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
-import {Box, Button,} from "@material-ui/core";
+import {Box, Button, Link} from "@material-ui/core";
 
 // Actions
-import { finalizeOutputs, setRequiredSigners, resetTransaction } from '../../actions/transactionActions';
+import { finalizeOutputs, setRequiredSigners, resetTransaction} from '../../actions/transactionActions';
 import { spendNodes, resetWalletView,   updateChangeNodeAction } from "../../actions/walletActions";
 import UnsignedTransaction from '../UnsignedTransaction';
 
@@ -30,15 +30,27 @@ class WalletSign extends React.Component {
   render = () => {
     return (
       <Box>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={this.handleCancel}>Cancel</Button>
+
+      {
+        !this.signaturesFinalized() &&
+          <Link
+            href="#"
+            onClick={this.handleCancel}>Edit Transaction</Link>
+      }
 
       <Box mt={2}>
         <UnsignedTransaction/>
       </Box>
       {this.renderKeySelectors()}
+
+      {
+        !this.signaturesFinalized() &&
+        <Box mt={2}>
+          <Link
+            href="#"
+            onClick={e => {{e.preventDefault(); this.handleReturn();}}}>Abandon Transaction</Link>
+        </Box>
+      }
 
       {
         this.signaturesFinalized() &&
@@ -103,8 +115,9 @@ class WalletSign extends React.Component {
     resetWalletView();
   }
 
-  handleCancel = () => {
+  handleCancel = (event) => {
     const { finalizeOutputs, requiredSigners, setRequiredSigners } = this.props;
+    event.preventDefault();
     setRequiredSigners(requiredSigners); // this will generate signature importers
     finalizeOutputs(false);
 
@@ -130,6 +143,7 @@ const mapDispatchToProps = {
   resetTransaction,
   resetWalletView,
   updateChangeNode: updateChangeNodeAction,
+  resetTransaction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSign);
