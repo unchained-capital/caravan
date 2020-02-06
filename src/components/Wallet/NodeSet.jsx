@@ -24,7 +24,6 @@ class NodeSet extends React.Component {
   static propTypes = {
     depositNodes: PropTypes.object.isRequired,
     changeNodes: PropTypes.object.isRequired,
-    canLoad: PropTypes.bool,
     addNode: PropTypes.func.isRequired,
     updateNode: PropTypes.func.isRequired,
   };
@@ -32,7 +31,6 @@ class NodeSet extends React.Component {
   state = {
     page: 0,
     nodesPerPage: 10,
-    change: false,
     spend: false,
     filterIncludeSpent: false,
     filterIncludeZeroBalance: false,
@@ -43,8 +41,8 @@ class NodeSet extends React.Component {
   unknownAddresses = [];
 
   render() {
-    const {page, nodesPerPage, change, orderBy, orderDir} = this.state;
-    const {walletMode, canLoad, client} = this.props
+    const {page, nodesPerPage, orderBy, orderDir} = this.state;
+    const {walletMode, client} = this.props
     const spending = walletMode === WALLET_MODES.SPEND;
     const useAddressImporter = !spending && client.type === "private";
 
@@ -119,12 +117,6 @@ class NodeSet extends React.Component {
                 onChangePage={this.handlePageChange}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
               />
-            </Grid>
-            <Grid item md={2}>
-              {canLoad && page === this.pageCount() - 1 && <Button type="button" variant="contained" color="secondary" onClick={this.generateAnotherPage}>More</Button>}
-            </Grid>
-            <Grid item md={4}>
-              <Button type="button" variant="contained" color="primary" onClick={this.toggleChange}>{change ? "View Deposits" : "View Change"}</Button>
             </Grid>
           </Grid>
           {!spending && this.renderFilters()}
@@ -209,8 +201,13 @@ class NodeSet extends React.Component {
 
   getNodeSet = () => {
     const { changeNodes, depositNodes} = this.props;
-    const { change, filterIncludeSpent, filterIncludeZeroBalance, orderBy, orderDir } = this.state
-    const nodes = change ? changeNodes : depositNodes
+    const { filterIncludeSpent, filterIncludeZeroBalance, orderBy, orderDir } = this.state
+    const nodes = Object.values(depositNodes)
+                        .concat(Object.values(changeNodes))
+                        .reduce((result, node) => {
+                          result[node.bip32Path] = node;
+                          return result;
+                        },{})
 
     let nodeSet = []
     Object.values(nodes).forEach(node => {
@@ -226,6 +223,8 @@ class NodeSet extends React.Component {
     nodeSet = nodeSet.sort((a, b) => {
       const direction = orderDir === "asc" ? 1 : -1
       if (orderBy === "bip32Path") {
+        if (a.change && !b.change) return direction;
+        if (!a.change && b.change) return -direction;
         const aint = parseInt(a.bip32Path.split("/").reverse()[0],10)
         const bint = parseInt(b.bip32Path.split("/").reverse()[0],10)
         return aint > bint ? direction : -direction
@@ -260,7 +259,7 @@ class NodeSet extends React.Component {
   }
 
   renderNodes = () => {
-    const {page, nodesPerPage, change, spend} = this.state;
+    const {page, nodesPerPage, spend} = this.state;
     const {addNode, updateNode} = this.props;
     const startingIndex = (page) * nodesPerPage;
     const nodesRows = [];
@@ -269,6 +268,7 @@ class NodeSet extends React.Component {
       const whichOne = startingIndex + index;
       if(whichOne > Object.keys(nodeSet).length -1) break;
       const bip32Path = Object.values(nodeSet)[whichOne].bip32Path;
+      const change = Object.values(nodeSet)[whichOne].change;
       const nodeRow = <Node
         key={bip32Path}
         bip32Path={bip32Path}
@@ -291,12 +291,6 @@ class NodeSet extends React.Component {
     this.setState({nodesPerPage: e.target.value, page: 0});
   }
 
-  bip32Path = (index) => {
-    const {change} = this.state;
-    const changePath = (change ? "1" : "0");
-    return `m/${changePath}/${index}`;
-  }
-
   pageCount = () => {
     const {nodesPerPage} = this.state;
     return Math.ceil(this.rowCount() / nodesPerPage);
@@ -305,28 +299,6 @@ class NodeSet extends React.Component {
   rowCount = () => {
     const nodeSet = this.getNodeSet();
     return Object.keys(nodeSet).length;
-  }
-
-  generateAnotherPage = async () => {
-    const {addNode, depositNodes, changeNodes} = this.props;
-    const {change, nodesPerPage, page} = this.state;
-    const nodes = change ? changeNodes : depositNodes
-    const startingIndex = Object.keys(nodes).length;
-    const nodeEnd = nodesPerPage + (nodesPerPage - (startingIndex % nodesPerPage)) - 1;
-    for (let index=0; index < nodeEnd; index++) {
-      const bip32path = this.bip32Path(startingIndex + index);
-      await addNode(change, bip32path);
-    }
-    const bip32path = this.bip32Path(startingIndex + nodeEnd);
-    await addNode(change, bip32path, true);
-
-    if (startingIndex % nodesPerPage === 0) // otherwise we will be filling this page first
-      this.setState({page: page + 1});
-  }
-
-  toggleChange = () => {
-    const {change} = this.state;
-    this.setState({change: (!change), page: 0});
   }
 
 }

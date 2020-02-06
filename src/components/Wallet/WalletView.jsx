@@ -10,7 +10,7 @@ class WalletView extends React.Component {
     const { addNode, updateNode } = this.props;
 
     return (
-        <NodeSet addNode={addNode} updateNode={updateNode} canLoad={true} />
+        <NodeSet addNode={addNode} updateNode={updateNode} />
     )
   }
 
