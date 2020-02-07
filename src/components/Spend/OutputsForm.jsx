@@ -26,8 +26,11 @@ import {
   Card, CardHeader, CardContent,
   Grid, Button, Tooltip, TextField,
   Box, IconButton, InputAdornment,
+  Typography,
+  FormHelperText,
 } from "@material-ui/core";
 import {Speed} from "@material-ui/icons";
+import AddIcon from '@material-ui/icons/Add';
 import OutputEntry from './OutputEntry';
 
 class OutputsForm extends React.Component {
@@ -92,145 +95,184 @@ class OutputsForm extends React.Component {
   }
 
   render() {
-    const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError, inputs} = this.props;
+    const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError, inputs,
+           isWallet, autoSpend} = this.props;
     const {feeRateFetchError} = this.state;
-    const feeDisplay = inputs.length > 0 ? fee : ""
+    const feeDisplay = inputs.length > 0 ? fee : "";
+    const feeMt = 3;
+    const totalMt = 7;
+    const actionMt = 7;
     return (
-      <Card>
-        <CardHeader ref={this.titleRef} title="Define Outputs"/>
+      <Card ref={this.titleRef}>
+        {!isWallet && <CardHeader title="Define Outputs"/>}
         <CardContent>
-            <Box>
-              <Grid>
-              {this.renderOutputs()}
+          <Box>
+
+            <Grid container>
+              <Grid item xs={4}>
+                <Typography variant="caption">
+                  To
+                </Typography>
+              </Grid>
+              <Grid item xs={3}>&nbsp;</Grid>
+              <Grid item xs={3}>
+                <Typography variant="caption">
+                  Amount
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Grid>
+            {this.renderOutputs()}
+            </Grid>
+
+            <Grid item container spacing={1}>
+
+              <Grid item xs={12}>
+                  <Button
+                    color="primary"
+                    disabled={finalizedOutputs}
+                    onClick={this.handleAddOutput}
+                  >
+                    <AddIcon /> Add output
+                  </Button>
+              </Grid>
+            </Grid>
+            <Grid item container spacing={1}>
+
+              <Grid item xs={3}>
+                <Box mt={feeMt}>
+                <TextField
+                  fullWidth
+                  label="Fee Rate"
+                  value={feeRate}
+                  name="fee_rate"
+                  disabled={finalizedOutputs}
+                  onChange={this.handleFeeRateChange}
+                  error={this.hasFeeRateError()}
+                  helperText={feeRateFetchError || feeRateError}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">
+                                    <Tooltip placement='top' title='Estimate best rate'>
+                                      <small>
+                                        <IconButton onClick={this.getFeeEstimate}  disabled={finalizedOutputs}>
+                                          <Speed />
+                                        </IconButton>
+                                      </small>
+                                    </Tooltip>
+                                    <FormHelperText>Sats/byte</FormHelperText>
+                                  </InputAdornment>,
+                  }}
+                />
+                </Box>
               </Grid>
 
-              <Grid item container spacing={1}>
+              <Grid item xs={4}><Box mt={feeMt}>&nbsp;</Box></Grid>
 
-                <Grid item xs={4}>
-                    <Button
-                      variant="contained"
-                      disabled={finalizedOutputs}
-                      onClick={this.handleAddOutput}
-                    >
-                      Add output
-                    </Button>
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField
-                    fullWidth
-                    label="Fee Rate (Sats/byte)"
-                    value={feeRate}
-                    placeholder="Sats/byte"
-                    name="fee_rate"
-                    disabled={finalizedOutputs}
-                    onChange={this.handleFeeRateChange}
-                    error={this.hasFeeRateError()}
-                    helperText={feeRateFetchError || feeRateError}
-                    /* type="number" */
-                    InputProps={{
-                      /* min: "0", */
-                      /* max: "1000", */
-                      /* step: "any", */
-                      endAdornment: <InputAdornment position="end">
-                                      <Tooltip placement='top' title='Estimate best rate'>
-                                        <small>
-                                          <IconButton onClick={this.getFeeEstimate}  disabled={finalizedOutputs}>
-                                            <Speed />
-                                          </IconButton>
-                                        </small>
-                                      </Tooltip>
-                                    </InputAdornment>,
-                    }}
-                  />
-                </Grid>
-
-
-                <Grid item xs={3}>
-                  <TextField
-                    fullWidth
-                    label="Estimated Fees (BTC)"
-                    placeholder="BTC"
-                    name="fee_total"
-                    disabled={finalizedOutputs}
-                    value={feeDisplay}
-                    onChange={this.handleFeeChange}
-                    error={this.hasFeeError()}
-                    helperText={feeError}
-                  />
-                </Grid>
-
-                <Grid item xs={2}/>
-
+              <Grid item xs={3}>
+              <Box mt={feeMt}>
+                <TextField
+                  fullWidth
+                  label="Estimated Fees"
+                  placeholder="BTC"
+                  name="fee_total"
+                  disabled={finalizedOutputs}
+                  value={feeDisplay}
+                  onChange={this.handleFeeChange}
+                  error={this.hasFeeError()}
+                  helperText={feeError}
+                  InputProps={this.unitLabel('BTC', {readOnly: true})}
+                /></Box>
               </Grid>
 
-              <Grid item container spacing={1}>
-                <Grid item xs={4}/>
-                <Grid item xs={3}>
-                  <TextField
-                    fullWidth
-                    label="Inputs Total"
-                    readOnly={true}
-                    value={this.inputsTotal().toString()}
-                    disabled={finalizedOutputs}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    fullWidth
-                    label="Outputs & Fee Total"
-                    value={this.outputsAndFeeTotal().toString()}
-                    error={this.hasBalanceError()}
-                    disabled={finalizedOutputs}
-                    helperText={balanceError}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={2}/>
+              <Grid item xs={2}/>
+
+            </Grid>
+
+            <Grid item container spacing={1}>
+              <Grid item xs={4}>
+              <Box mt={totalMt}>
+              <Typography variant="h6">{!isWallet || (isWallet && !autoSpend) ? "Totals" : "Outputs & Fee Total"}</Typography>
+              </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box display={(!isWallet || (isWallet && !autoSpend)) ? 'block' : 'none'} mt={totalMt}>
+                <TextField
+                  fullWidth
+                  label="Inputs Total"
+                  readOnly={true}
+                  value={this.inputsTotal().toString()}
+                  disabled={finalizedOutputs}
+                  InputProps={this.unitLabel('BTC', {readOnly: true})}
+                />
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+              <Box mt={totalMt}>
+                <TextField
+                  fullWidth
+                  label={!isWallet || (isWallet && !autoSpend) ? "Outputs & Fee Total" : ""}
+                  value={this.outputsAndFeeTotal().toString()}
+                  error={this.hasBalanceError()}
+                  disabled={finalizedOutputs}
+                  helperText={balanceError}
+                  InputProps={this.unitLabel('BTC', {readOnly: true})}
+                /></Box>
+              </Grid>
+              <Grid item xs={2}/>
+            </Grid>
+
+            {/* <Grid item> */}
+
+
+            {/* </Grid> */}
+
+          </Box>
+
+          <Box mt={actionMt}>
+            <Grid container spacing={3} justify="center">
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={this.gatherSignaturesDisabled()}
+                  onClick={this.handleFinalize}
+                >
+                  Gather Signatures
+                </Button>
               </Grid>
 
               <Grid item>
-
-                <Grid container spacing={3}>
-
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={this.gatherSignaturesDisabled()}
-                      onClick={this.handleFinalize}
-                    >
-                      Gather Signatures
-                    </Button>
-                  </Grid>
-
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      disabled={finalizedOutputs}
-                      onClick={this.handleReset}
-                    >
-                      Reset Outputs
-                    </Button>
-                  </Grid>
-
-                </Grid>
-
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={finalizedOutputs}
+                  onClick={this.handleReset}
+                >
+                  Reset Outputs
+                </Button>
               </Grid>
 
-            </Box>
-
+            </Grid>
+          </Box>
 
 
         </CardContent>
       </Card>
     );
+  }
+
+  unitLabel(label, options) {
+    let inputProps = {
+      endAdornment: <InputAdornment position="end"><FormHelperText>{label}</FormHelperText></InputAdornment>
+    }
+    if (options) {
+      inputProps = {
+        ...inputProps,
+        ...options,
+      }
+    }
+    return inputProps
   }
 
   renderOutputs = () => {

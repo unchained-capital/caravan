@@ -17,7 +17,7 @@ import {
 } from '../../actions/transactionActions';
 
 // Components
-import { Grid, Tooltip, TextField, IconButton, InputAdornment } from '@material-ui/core';
+import { Grid, Tooltip, TextField, IconButton, InputAdornment, FormHelperText } from '@material-ui/core';
 import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWallet';
 import { Delete, AddCircle, RemoveCircle } from '@material-ui/icons';
 
@@ -68,7 +68,7 @@ class OutputEntry extends React.Component {
         <Grid item xs={3}>
           <TextField
             fullWidth
-            placeholder="Amount (BTC)"
+            placeholder="Amount"
             className={styles.outputsFormInput}
             name="amount"
             disabled={finalizedOutputs}
@@ -76,6 +76,9 @@ class OutputEntry extends React.Component {
             value={amount}
             error={this.hasAmountError()}
             helperText={amountError}
+            InputProps={{
+              endAdornment: <InputAdornment position="end"><FormHelperText>BTC</FormHelperText></InputAdornment>
+            }}
           />
         </Grid>
 

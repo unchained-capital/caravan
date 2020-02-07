@@ -24,7 +24,7 @@ import OutputsForm from '../Spend/OutputsForm';
 import WalletSign from './WalletSign'
 import {
     Box, Grid, Switch,
-    FormControlLabel,
+    FormControlLabel, Typography,
   } from '@material-ui/core';
 
 import { bitcoinsToSatoshis } from 'unchained-bitcoin/lib/utils';
@@ -54,23 +54,37 @@ class WalletSpend extends React.Component {
   }
 
   render() {
-    const { finalizedOutputs } = this.props;
+    const { finalizedOutputs, autoSpend, updateNode, addNode } = this.props;
     return (
       <Box>
         <Grid container>
           <Grid item md={12}>
           <Box>
-              { finalizedOutputs ?
-                <WalletSign/> :
-                this.renderSpend()
+              { finalizedOutputs &&
+                <WalletSign/>
               }
             </Box>
           </Grid>
           {!finalizedOutputs &&
           <Grid item md={12}>
             <Box mt={2}>
-              <OutputsForm />
+            <Box mb={7}>
+            <div style={{ width: '100%' }}>
+              <Box display="flex" p={1}>
+                <Box p={1} flexGrow={1}>
+                <Typography align="center" variant="h4">Create Transaction</Typography>
+                </Box>
+                <Box p={1}>
+                {this.renderSpend()}
+                </Box>
+              </Box>
+            </div>
+            <Box component="div" display={autoSpend ? 'none' : 'block'}>
+              <NodeSet addNode={addNode} updateNode={updateNode}  />
             </Box>
+              <OutputsForm />
+              </Box>
+              </Box>
           </Grid>
           }
         </Grid>
@@ -79,7 +93,7 @@ class WalletSpend extends React.Component {
   }
 
   renderSpend = () => {
-    const { addNode, updateNode, autoSpend } = this.props;
+    const { autoSpend } = this.props;
     return (
       <Box>
           <FormControlLabel
@@ -89,11 +103,8 @@ class WalletSpend extends React.Component {
                 onChange={this.handleSpendMode}
               />
             }
-            label="Choose your own inputs"
+            label="Manual"
           />
-          <Box component="div" display={autoSpend ? 'none' : 'block'}>
-            <NodeSet addNode={addNode} updateNode={updateNode}  />
-          </Box>
       </Box>)
   }
 

@@ -168,7 +168,7 @@ function validateTransaction(state, finalUpdate) {
           newState = updateOutputAmount(newState, {value: changeAmount.toFixed(8), number: newState.changeOutputIndex});
         }
         const newOutputTotalSats = calcOutputTotalSats(newState);
-        newState.fee = setFeeForRate(newState, newState.fee, newState.outputs.length);
+        newState = updateState(newState, {fee:setFeeForRate(newState, newState.feeRate, newState.outputs.length)});
         const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
 
         if (finalUpdate) return validateTransaction(newState);
