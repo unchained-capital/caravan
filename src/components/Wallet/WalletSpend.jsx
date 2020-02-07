@@ -29,7 +29,6 @@ import {
 
 import { bitcoinsToSatoshis } from 'unchained-bitcoin/lib/utils';
 
-let coinSelectTimer;
 
 class WalletSpend extends React.Component {
 
@@ -45,18 +44,13 @@ class WalletSpend extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.autoSpend) {
-      if (coinSelectTimer) clearTimeout(coinSelectTimer)
-      coinSelectTimer = setTimeout(this.selectCoins, 1000);
+      setTimeout(this.selectCoins, 0);
     }
   }
 
   componentDidMount = () => {
     const { changeNode, setChangeAddress } = this.props;
     setChangeAddress(changeNode.multisig.address);
-  }
-
-  componentWillUnmount() {
-    if (coinSelectTimer) clearTimeout(coinSelectTimer)
   }
 
   render() {

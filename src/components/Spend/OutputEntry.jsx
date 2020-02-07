@@ -122,7 +122,8 @@ class OutputEntry extends React.Component {
   }
 
   renderChangeAdornment = () => {
-    const {changeNode, number, changeOutputIndex, address } = this.props;
+    const {changeNode, number, changeOutputIndex, address, isWallet, autoSpend } = this.props;
+    if (isWallet && autoSpend) return {}
     if (changeNode !== null) {
       let title, disable=false
       if (changeOutputIndex === 0 && address === '') {
