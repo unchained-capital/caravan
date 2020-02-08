@@ -148,7 +148,7 @@ function validateTransaction(state, finalUpdate) {
         if (newState.changeOutputIndex > 0) {
           changeAmount = satoshisToBitcoins(newState.outputs[newState.changeOutputIndex-1].amountSats.minus(diff));
         } else {
-          changeAmount = satoshisToBitcoins(diff.abs());
+          changeAmount = satoshisToBitcoins(diff.times(-1));
         }
         if (changeAmount.isLessThan(dust) && changeAmount.isGreaterThanOrEqualTo(0)) {
           newState = deleteOutput(newState, {number: newState.changeOutputIndex});
@@ -171,10 +171,9 @@ function validateTransaction(state, finalUpdate) {
         newState = updateState(newState, {fee:setFeeForRate(newState, newState.feeRate, newState.outputs.length)});
         const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
 
-        if (finalUpdate) return validateTransaction(newState);
         if (! newState.inputsTotalSats.isEqualTo(newOutputTotalSats.plus(newFeeSats)) && finalUpdate) {
           const newDiff = newOutputTotalSats.plus(newFeeSats).minus(newState.inputsTotalSats);
-          const action = newDiff.isLessThan(0) ? 'Increase' : 'Decrease';
+          const action = newDiff.isLessThan(0) ? 'Increase' : 'Insufficient Funds, Decrease';
 
           balanceError = `${action} by ${satoshisToBitcoins(newDiff.absoluteValue()).toFixed(8)}.`;
         }
