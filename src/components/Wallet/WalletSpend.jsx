@@ -108,45 +108,45 @@ class WalletSpend extends React.Component {
       </Box>)
   }
 
-    handleSpendMode = (event) => {
-      const { updateAutoSpend } = this.props;
-      if (event.target.checked) {
-        // select inputs for transaction
-        // select change address???,
-        // how to identify???
-        // calculate change???
+  handleSpendMode = (event) => {
+    const { updateAutoSpend } = this.props;
+    if (event.target.checked) {
+      // select inputs for transaction
+      // select change address???,
+      // how to identify???
+      // calculate change???
 
-      }
-
-      updateAutoSpend(!event.target.checked)
     }
 
-    selectCoins = () => {
-      const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate, changeOutputIndex, autoSpend,
-        updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate, coinSelection } = this.props;
-      const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
-        return changeOutputIndex === outputIndex + 1 ? sum : sum.plus(output.amountSats)
-      }, new BigNumber(0));
-      if (outputsAmount.isNaN()) return;
-      const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
-      if (outputsAmount.isEqualTo(this.outputsAmount) && feeAmount.isEqualTo(this.feeAmount)) return;
-      const outputTotal = outputsAmount.plus(feeAmount);
-      const spendableInputs = Object.values(depositNodes)
-        .concat(Object.values(changeNodes))
-        .filter(node => node.balanceSats.isGreaterThan(0));
+    updateAutoSpend(!event.target.checked)
+  }
 
-      resetNodesSpend();
-      const selectedInputs = coinSelection(spendableInputs, outputTotal);
+  selectCoins = () => {
+    const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate, changeOutputIndex, autoSpend,
+      updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate, coinSelection } = this.props;
+    const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
+      return changeOutputIndex === outputIndex + 1 ? sum : sum.plus(output.amountSats)
+    }, new BigNumber(0));
+    if (outputsAmount.isNaN()) return;
+    const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
+    if (outputsAmount.isEqualTo(this.outputsAmount) && feeAmount.isEqualTo(this.feeAmount)) return;
+    const outputTotal = outputsAmount.plus(feeAmount);
+    const spendableInputs = Object.values(depositNodes)
+      .concat(Object.values(changeNodes))
+      .filter(node => node.balanceSats.isGreaterThan(0));
 
-      selectedInputs.forEach(selectedUtxo => {
-        (selectedUtxo.change ? updateChangeNode : updateDepositNode)({bip32Path: selectedUtxo.bip32Path, spend: true})
-      })
+    resetNodesSpend();
+    const selectedInputs = coinSelection(spendableInputs, outputTotal);
 
-      this.outputsAmount = outputsAmount;
-      this.feeAmount = feeAmount;
-      setInputs(selectedInputs);
-      if (changeOutputIndex > 0 || !autoSpend) setFeeRate(feeRate); // recalulate fee
-    }
+    selectedInputs.forEach(selectedUtxo => {
+      (selectedUtxo.change ? updateChangeNode : updateDepositNode)({bip32Path: selectedUtxo.bip32Path, spend: true})
+    })
+
+    this.outputsAmount = outputsAmount;
+    this.feeAmount = feeAmount;
+    setInputs(selectedInputs);
+    if (changeOutputIndex > 0 || !autoSpend) setFeeRate(feeRate); // recalulate fee
+  }
 }
 
 function mapStateToProps(state) {

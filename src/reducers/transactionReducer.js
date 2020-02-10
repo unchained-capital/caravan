@@ -121,7 +121,46 @@ function calcOutputTotalSats(state) {
 
 }
 
-function validateTransaction(state, finalUpdate) {
+function handleChangeAddressAndDust(newState, diff, outputTotalSats, finalUpdate) {
+  let changeAmount;
+  const dust = satoshisToBitcoins(BigNumber(546))
+  if (newState.changeOutputIndex > 0) {
+    changeAmount = satoshisToBitcoins(newState.outputs[newState.changeOutputIndex-1].amountSats.minus(diff));
+  } else {
+    changeAmount = satoshisToBitcoins(diff.times(-1));
+  }
+  if (changeAmount.isLessThan(dust) && changeAmount.isGreaterThanOrEqualTo(0)) {
+    newState = deleteOutput(newState, {number: newState.changeOutputIndex});
+    newState = updateState(newState, { changeOutputIndex: 0 });
+    const amountWithoutFee = newState.inputsTotalSats.minus(outputTotalSats).abs()
+    newState = updateFee(newState, {value: satoshisToBitcoins(amountWithoutFee).toFixed(8)});
+    return validateTransaction(newState);
+  } else if (newState.changeOutputIndex === 0 && changeAmount.isGreaterThanOrEqualTo(dust)) {
+    newState = addOutput(newState)
+    newState = updateState(newState, { changeOutputIndex: newState.outputs.length });
+    newState = updateOutputAddress(newState, {number: newState.outputs.length, value: newState.changeAddress})
+    newState = updateOutputAmount(newState, {number: newState.outputs.length, value: "0"})
+    return validateTransaction(newState);
+  }
+
+  if (changeAmount.isGreaterThanOrEqualTo(dust)) {
+    newState = updateOutputAmount(newState, {value: changeAmount.toFixed(8), number: newState.changeOutputIndex});
+  }
+  const newOutputTotalSats = calcOutputTotalSats(newState);
+  newState = updateState(newState, {fee:setFeeForRate(newState, newState.feeRate, newState.outputs.length)});
+  const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
+
+  let balanceError = "";
+  if (! newState.inputsTotalSats.isEqualTo(newOutputTotalSats.plus(newFeeSats)) && finalUpdate) {
+    const newDiff = newOutputTotalSats.plus(newFeeSats).minus(newState.inputsTotalSats);
+    const action = newDiff.isLessThan(0) ? 'Increase' : 'Insufficient Funds, Decrease';
+
+    balanceError = `${action} by ${satoshisToBitcoins(newDiff.absoluteValue()).toFixed(8)}.`;
+  }
+  return {newState, balanceError};
+}
+
+function validateTransaction(state, finalUpdate) { // TODO: need less hacky way to supress error
   let newState = {...state};
   if (
     newState.outputs.find((output) => (output.addressError !== '' || output.amountError  !== ''))
@@ -143,40 +182,7 @@ function validateTransaction(state, finalUpdate) {
       balanceError = "Cannot calculate total.";
     } else {
       if (newState.isWallet && newState.autoSpend) {
-        let changeAmount;
-        const dust = satoshisToBitcoins(BigNumber(546))
-        if (newState.changeOutputIndex > 0) {
-          changeAmount = satoshisToBitcoins(newState.outputs[newState.changeOutputIndex-1].amountSats.minus(diff));
-        } else {
-          changeAmount = satoshisToBitcoins(diff.times(-1));
-        }
-        if (changeAmount.isLessThan(dust) && changeAmount.isGreaterThanOrEqualTo(0)) {
-          newState = deleteOutput(newState, {number: newState.changeOutputIndex});
-          newState = updateState(newState, { changeOutputIndex: 0 });
-          const amountWithoutFee = newState.inputsTotalSats.minus(outputTotalSats).abs()
-          newState = updateFee(newState, {value: satoshisToBitcoins(amountWithoutFee).toFixed(8)});
-          return validateTransaction(newState);
-        } else if (newState.changeOutputIndex === 0 && changeAmount.isGreaterThanOrEqualTo(dust)) {
-          newState = addOutput(newState)
-          newState = updateState(newState, { changeOutputIndex: newState.outputs.length });
-          newState = updateOutputAddress(newState, {number: newState.outputs.length, value: newState.changeAddress})
-          newState = updateOutputAmount(newState, {number: newState.outputs.length, value: "0"})
-          return validateTransaction(newState);
-        }
-
-        if (changeAmount.isGreaterThanOrEqualTo(dust)) {
-          newState = updateOutputAmount(newState, {value: changeAmount.toFixed(8), number: newState.changeOutputIndex});
-        }
-        const newOutputTotalSats = calcOutputTotalSats(newState);
-        newState = updateState(newState, {fee:setFeeForRate(newState, newState.feeRate, newState.outputs.length)});
-        const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
-
-        if (! newState.inputsTotalSats.isEqualTo(newOutputTotalSats.plus(newFeeSats)) && finalUpdate) {
-          const newDiff = newOutputTotalSats.plus(newFeeSats).minus(newState.inputsTotalSats);
-          const action = newDiff.isLessThan(0) ? 'Increase' : 'Insufficient Funds, Decrease';
-
-          balanceError = `${action} by ${satoshisToBitcoins(newDiff.absoluteValue()).toFixed(8)}.`;
-        }
+        ({newState, balanceError} = handleChangeAddressAndDust(newState, diff, outputTotalSats, finalUpdate));
       } else {
         const action = diff.isLessThan(0) ? 'Increase' : 'Decrease';
         balanceError =`${action} by ${satoshisToBitcoins(diff.absoluteValue()).toFixed(8)}.`;
