@@ -5,7 +5,8 @@ import {downloadFile} from "../../utils"
 import {validateBIP32Path, validateExtendedPublicKey} from "unchained-bitcoin"
 
 // Components
-import { Grid, Box, Drawer, IconButton, Button, Card, TextField, CardHeader, CardContent } from '@material-ui/core';
+import { Grid, Box, Drawer, IconButton, Button, FormHelperText }
+  from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 
 import NetworkPicker from '../NetworkPicker';
@@ -133,18 +134,24 @@ class CreateWallet extends React.Component {
     return this.validateExtendedPublicKeys(config.extendedPublicKeys, config.network);
   }
 
-  handleConfigChange = (event) => {
-    const configJson = event.target.value;
-    let configError
-    try {
-      const config = JSON.parse(configJson);
-      configError = this.validateConfig(config);
-    } catch(parseError) {
-      configError = "Invlaid JSON";
-    }
+  handleImport = ({ target }) => {
+    const fileReader = new FileReader();
 
-    this.setState({configJson: configJson, configError: configError});
-  }
+    fileReader.readAsText(target.files[0]);
+    fileReader.onload = (event) => {
+      const configJson = event.target.result;
+      let configError
+      try {
+        const config = JSON.parse(configJson);
+        configError = this.validateConfig(config);
+      } catch(parseError) {
+        configError = "Invlaid JSON";
+      }
+
+      this.setState({configJson, configError});
+      if (configError === "") this.importDetails();
+    };
+  };
 
   importDetails = () => {
     const { configJson } = this.state;
@@ -176,31 +183,28 @@ class CreateWallet extends React.Component {
   }
 
   renderWalletImporter = () => {
-    const { configJson, configError } = this.state;
+    const { configError } = this.state;
     const {configuring} = this.props;
 
     if (configuring)
       return (
-        <Card>
-          <CardHeader title="Import Configuration" />
-          <CardContent>
-              <TextField
-                fullWidth
-                multiline
-                // autoFocus
-                variant="outlined"
-                label="Configuration"
-                value={configJson}
-                rows={5}
-                onChange={this.handleConfigChange}
-                helperText={configError}
-                error={configError!==''}
-              />
-              <Box mt={2} textAlign={"center"}>
-                <Button variant="contained" color="primary" disabled={configError!==''} onClick={this.importDetails}>Import Wallet Configuration</Button>
-              </Box>
-          </CardContent>
-        </Card>
+        <React.Fragment>
+          <label htmlFor="upload-config">
+            <input
+              style={{ display: 'none' }}
+              id="upload-config"
+              name="upload-config"
+              accept="application/json"
+              onChange={this.handleImport}
+              type="file"
+            />
+
+            <Button color="primary" variant="contained" component="span">
+              Import Wallet Configuration
+            </Button>
+          </label>
+          <FormHelperText error>{configError}</FormHelperText>
+        </React.Fragment>
       );
     return "";
   }
