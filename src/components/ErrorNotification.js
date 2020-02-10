@@ -5,8 +5,8 @@ import {
   clearErrorNotification,
 } from "../actions/errorNotificationActions";
 
-import { 
-  Snackbar, Button, IconButton
+import {
+  Snackbar, IconButton
 } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 
@@ -37,7 +37,7 @@ class ErrorNotificationBase extends React.Component {
             <Close />
           </IconButton>,
         ]}
-      /> 
+      />
     );
   }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import {
@@ -38,7 +37,7 @@ class AddressExpander extends React.Component {
     }
 
     render = () => {
-      const {bip32Path, utxos,  balanceSats, multisig} = this.props.node;
+      const {bip32Path, utxos,  balanceSats} = this.props.node;
       return (
         <ExpansionPanel>
           <ExpansionPanelSummary

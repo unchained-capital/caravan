@@ -78,7 +78,7 @@ class ExtendedPublicKeySelector extends React.Component {
       const signatureImporter = signatureImporters[number];
       if (signatureImporter.signature.length > 0) return ""
 
-      if(extendedPublicKeyImporter.bip32Path != signatureImporter.bip32Path && extendedPublicKeyImporter.method !== 'text') {
+      if(extendedPublicKeyImporter.bip32Path !== signatureImporter.bip32Path && extendedPublicKeyImporter.method !== 'text') {
         setTimeout(() => {
           setBIP32Path(number, extendedPublicKeyImporter.bip32Path);
         },0)

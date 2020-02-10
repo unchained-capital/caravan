@@ -17,7 +17,7 @@ import {
 } from "../../actions/errorNotificationActions";
 
 import InteractionMessages from "../InteractionMessages";
-import { 
+import {
   Box, Typography,
   Card, CardHeader, CardContent, CardActions,
   Button,
@@ -76,18 +76,18 @@ class TestRunBase extends React.Component {
           <CardContent>
             {test.description()}
             {this.renderInteractionMessages()}
-            {keystore.type === HERMIT && test.interaction().displayer && status === PENDING && 
+            {keystore.type === HERMIT && test.interaction().displayer && status === PENDING &&
              <Box align="center">
                <HermitDisplayer width={400} string={test.interaction().request()}  />
              </Box>}
-            {status === PENDING && (keystore.type !== HERMIT) && 
+            {status === PENDING && (keystore.type !== HERMIT) &&
              <Box align="center">
                <Button variant="contained" color="primary" onClick={this.start}>Start Test</Button>
              </Box>}
-            {keystore.type === HERMIT && (! this.testComplete()) && 
+            {keystore.type === HERMIT && (! this.testComplete()) &&
              <Box>
-               <HermitReader 
-                 onStart={this.start} 
+               <HermitReader
+                 onStart={this.start}
                  onSuccess={this.resolve}
                  onClear={this.reset}
                  startText={"Scan Hermit Response"}
@@ -115,7 +115,7 @@ class TestRunBase extends React.Component {
   renderInteractionMessages = () => {
     const {status, test} = this.props;
     if (status === PENDING || status === ACTIVE) {
-      return <InteractionMessages 
+      return <InteractionMessages
                excludeCodes={['hermit.command']}
                messages={test.interaction().messagesFor({state: status})} />;
     } else { return null; }
@@ -160,7 +160,7 @@ class TestRunBase extends React.Component {
   }
 
   start = async () => {
-    const {test, keystore, testRunIndex, startTestRun, endTestRun, setErrorNotification} = this.props;
+    const {test, keystore, testRunIndex, startTestRun} = this.props;
     startTestRun(testRunIndex);
     if (keystore.type === HERMIT) { return; }
     const result = await test.run();
@@ -196,7 +196,7 @@ class TestRunBase extends React.Component {
             <dd><code className="TestRun-wrap">{this.formatOutput(result.expected)}</code></dd>
             <dt>Actual:</dt>
             <dd><code className="TestRun-wrap">{this.formatOutput(result.actual)}</code></dd>
-            {result.diff && 
+            {result.diff &&
              <div>
                <dt>Diff:</dt>
                <dd><code className="TestRun-wrap">{result.diff.map(this.formatDiffSegment)}</code></dd>
@@ -223,7 +223,7 @@ class TestRunBase extends React.Component {
   formatDiffSegment = (segment, i) => {
     return <span key={i} className={`TestRun-diff-segment-${this.diffSegmentClass(segment)}`}>{segment.value}</span>;
   }
-  
+
   diffSegmentClass = (segment) => {
     if (segment.added) { return 'added'; }
     if (segment.removed) { return 'removed'; }

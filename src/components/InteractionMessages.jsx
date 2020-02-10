@@ -5,9 +5,9 @@ import {
   WARNING,
   ERROR,
 } from "unchained-wallets";
-import { 
-  Box, Typography, 
-  AppBar, Tabs, Tab, Paper,
+import {
+  Box, Typography,
+  Tabs, Tab, Paper,
   List, ListItem, ListItemIcon, ListItemText,
 } from '@material-ui/core';
 import { Info, Warning, Error } from '@material-ui/icons';
@@ -32,7 +32,7 @@ class MessagesList extends React.Component {
   renderMessage = (message, key) => {
     return (
       <ListItem key={key}>
-        {message.level && 
+        {message.level &&
          <ListItemIcon>
            {this.messageIcon(message)}
          </ListItemIcon>}
@@ -47,7 +47,7 @@ class MessagesList extends React.Component {
     return (
       <Box>
         {this.renderMessageBody(message)}
-        {message.messages && 
+        {message.messages &&
          <List dense>
            {message.messages.map(this.renderMessage)}
          </List>}
@@ -74,9 +74,9 @@ class MessagesList extends React.Component {
       return <Error />;
     default:
       return null;
-    }    
+    }
   }
-  
+
 }
 
 class VersionTabPanel extends React.Component {
@@ -90,10 +90,10 @@ class VersionTabPanel extends React.Component {
   render = () => {
     const {version, currentVersion} = this.props;
     return (
-      <Box 
+      <Box
         role="tabpanel"
-        hidden={version !== currentVersion} 
-        id={`interactionMessages-tabpanel-${version}`} 
+        hidden={version !== currentVersion}
+        id={`interactionMessages-tabpanel-${version}`}
         aria-labelledby={`interactionMessages-tab-${version}`}>
         {version === currentVersion && <MessagesList messages={this.filteredMessages()} />}
       </Box>

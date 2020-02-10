@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  multisigRequiredSigners,
-  multisigPublicKeys,
   satoshisToBitcoins,
 } from 'unchained-bitcoin';
 import {
@@ -11,7 +9,6 @@ import {
   UNSUPPORTED,
   ACTIVE,
   ERROR,
-  ExportPublicKey,
   SignMultisigTransaction,
 } from 'unchained-wallets';
 
@@ -22,7 +19,6 @@ import {
   Table, TableHead, TableBody,
   TableRow, TableCell,
 } from '@material-ui/core';
-import {Error} from "@material-ui/icons";
 import InteractionMessages from '../InteractionMessages';
 
 class HardwareWalletSignatureImporter extends React.Component {
@@ -67,7 +63,7 @@ class HardwareWalletSignatureImporter extends React.Component {
   }
 
   render = () => {
-    const {signatureImporter, extendedPublicKeyImporter, isWallet} = this.props;
+    const {signatureImporter, extendedPublicKeyImporter} = this.props;
     const {status} = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {

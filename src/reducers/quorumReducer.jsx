@@ -21,8 +21,6 @@ import {
   SET_ADDRESS_TYPE,
 } from '../actions/settingsActions';
 
-const TEXT = "text";
-
 function fingerprint(state) {
   const timestamp = new Date().getTime().toString();
   const extendedPublicKeys = Object.values(state.extendedPublicKeyImporters).map((extendedPublicKeyImporter) => (extendedPublicKeyImporter.extendedPublicKey)).join('');

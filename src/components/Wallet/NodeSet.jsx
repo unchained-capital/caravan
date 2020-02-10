@@ -9,7 +9,6 @@ import {
 
 // Components
 import {
-  Button,
   FormGroup, FormControlLabel, Checkbox, FormLabel,
   Grid, Box,
   Table, TableHead, TableBody,
@@ -248,6 +247,7 @@ class NodeSet extends React.Component {
         if (isNaN(bmin)) return -direction;
         return amin > bmin ? direction : -direction
       }
+      return 0;
     })
 
     nodeSet = nodeSet.reduce((nodesObject, currentNode) => {

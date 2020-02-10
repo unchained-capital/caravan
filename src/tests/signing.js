@@ -11,7 +11,7 @@ import {externalLink} from "../utils";
 import Test from "./Test";
 
 import {
-  Box, Button,
+  Box,
   Table, TableBody, TableRow, TableCell
 } from "@material-ui/core";
 
@@ -80,7 +80,7 @@ class SignMultisigTransactionTest extends Test {
 
   interaction() {
     return SignMultisigTransaction({
-      keystore: this.params.keystore, 
+      keystore: this.params.keystore,
       network: this.params.network,
       inputs: this.params.inputs,
       outputs: this.params.outputs,
@@ -91,7 +91,7 @@ class SignMultisigTransactionTest extends Test {
   postprocess(result) {
     return (result.signatures ? result.signatures : result);
   }
-  
+
   expected() {
     return this.params.signature;
   }

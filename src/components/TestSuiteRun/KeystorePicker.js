@@ -18,9 +18,9 @@ import {
 } from "../../actions/errorNotificationActions";
 
 import {
-  Box, Grid, Typography,
+  Box, Grid,
   FormControl, InputLabel, Select, MenuItem,
-  TextField, 
+  TextField,
   Button,
 } from '@material-ui/core';
 import {KeystoreNote} from "./Note";
@@ -33,7 +33,7 @@ class KeystorePickerBase extends React.Component {
     return (
       <Box>
         <Grid container spacing={2} justify="center">
-          
+
           <Grid item md={4}>
             <FormControl fullWidth>
               <InputLabel id="keystore-select-label">Type</InputLabel>
@@ -50,7 +50,7 @@ class KeystorePickerBase extends React.Component {
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item md={6}>
             <TextField
               name="version"
@@ -61,15 +61,15 @@ class KeystorePickerBase extends React.Component {
               onChange={this.handleVersionChange}
             />
           </Grid>
-          
+
           <Grid item md={2}>
             <Button disabled={status === ACTIVE || type === '' || type === HERMIT} onClick={this.detectVersion}>{status === ACTIVE ? "Detecting..." : "Detect"}</Button>
           </Grid>
-          
+
         </Grid>
-        
+
         {type && type !== HERMIT && <InteractionMessages messages={this.interaction().messagesFor({state: status})} />}
-        
+
         <KeystoreNote />
 
       </Box>
@@ -107,7 +107,7 @@ class KeystorePickerBase extends React.Component {
     }
     setKeystoreStatus(PENDING);
   }
-  
+
 }
 
 const mapStateToProps = (state) => {

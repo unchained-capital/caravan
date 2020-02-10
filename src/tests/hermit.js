@@ -1,4 +1,3 @@
-import {P2SH} from "unchained-bitcoin";
 import {HERMIT} from "unchained-wallets";
 
 import publicKeyTests from "./publicKeys";

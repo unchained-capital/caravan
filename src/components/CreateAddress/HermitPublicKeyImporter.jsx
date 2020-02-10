@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   HERMIT,
-  PENDING,
   ExportPublicKey,
 } from "unchained-wallets";
 

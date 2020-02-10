@@ -48,7 +48,7 @@ class WalletSign extends React.Component {
         <Box mt={2}>
           <Link
             href="#"
-            onClick={e => {{e.preventDefault(); this.handleReturn();}}}>Abandon Transaction</Link>
+            onClick={e => {e.preventDefault(); this.handleReturn();}}>Abandon Transaction</Link>
         </Box>
       }
 
@@ -143,7 +143,6 @@ const mapDispatchToProps = {
   resetTransaction,
   resetWalletView,
   updateChangeNode: updateChangeNodeAction,
-  resetTransaction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSign);
