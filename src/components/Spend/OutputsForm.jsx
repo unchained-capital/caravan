@@ -37,6 +37,8 @@ class OutputsForm extends React.Component {
 
   titleRef = React.createRef();
 
+  outputsTotal = 0;
+
   static propTypes = {
     network: PropTypes.string.isRequired,
     client: PropTypes.object.isRequired,
@@ -292,14 +294,22 @@ class OutputsForm extends React.Component {
   }
 
   outputsAndFeeTotal = () => {
-    const {outputs, fee, inputs} = this.props;
+    const {outputs, fee, inputs, updatesComplete} = this.props;
     if (!inputs.length) return '';
-    return outputs
-      .map((output) => new BigNumber(output.amount || 0))
-      .reduce(
-        (accumulator, currentValue) => accumulator.plus(currentValue),
-        new BigNumber(0))
-      .plus(new BigNumber(fee));
+
+    const total = outputs
+    .map((output) => new BigNumber(output.amount || 0))
+    .reduce(
+      (accumulator, currentValue) => accumulator.plus(currentValue),
+      new BigNumber(0))
+    .plus(new BigNumber(fee));
+
+    if (updatesComplete) {
+      this.outputsTotal = total;
+      return total;
+    } else {
+      return this.outputsTotal;
+    }
   }
 
   hasFeeRateFetchError = () => {

@@ -95,6 +95,7 @@ const initialState = {
   isWallet: false,
   autoSpend: true,
   changeAddress: "",
+  updatesComplete: true,
   signingKeys: [0, 0], // default 2 required signers
 };
 
@@ -182,8 +183,10 @@ function validateTransaction(state, finalUpdate) { // TODO: need less hacky way 
       balanceError = "Cannot calculate total.";
     } else {
       if (newState.isWallet && newState.autoSpend) {
+        newState = updateState(newState, {updatesComplete: finalUpdate});
         ({newState, balanceError} = handleChangeAddressAndDust(newState, diff, outputTotalSats, finalUpdate));
       } else {
+        newState = updateState(newState, {updatesComplete: true});
         const action = diff.isLessThan(0) ? 'Increase' : 'Decrease';
         balanceError =`${action} by ${satoshisToBitcoins(diff.absoluteValue()).toFixed(8)}.`;
       }
