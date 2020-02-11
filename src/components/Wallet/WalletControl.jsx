@@ -6,6 +6,7 @@ import {
 } from 'unchained-bitcoin';
 import {
   setWalletModeAction,
+  initialLoadComplete,
   WALLET_MODES
 } from "../../actions/walletActions";
 import { setRequiredSigners } from "../../actions/transactionActions";
@@ -79,9 +80,11 @@ class WalletControl extends React.Component {
   }
 
   addressesAreLoaded = () => {
-    const {change, deposits} = this.props;
+    const {change, deposits, nodesLoaded, initialLoadComplete} = this.props;
+    if (nodesLoaded) return true;
     if (((deposits.trailingEmptyNodes >= MAX_TRAILING_EMPTY_NODES) || (deposits.fetchUTXOsErrors >= MAX_FETCH_UTXOS_ERRORS)) &&
       ((change.trailingEmptyNodes >= MAX_TRAILING_EMPTY_NODES) || (change.fetchUTXOsErrors >= MAX_FETCH_UTXOS_ERRORS))) {
+        initialLoadComplete();
         return true;
       }
     return false;
@@ -113,6 +116,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   setMode: setWalletModeAction,
   setRequiredSigners,
+  initialLoadComplete,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletControl);

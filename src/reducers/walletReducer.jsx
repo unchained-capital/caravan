@@ -3,12 +3,14 @@ import {
   RESET_WALLET_VIEW,
   WALLET_MODES,
   UPDATE_WALLET_MODE,
+  INITIAL_LOAD_COMPLETE,
 } from "../actions/walletActions"
 import { updateState } from './utils';
 
 const initialState = {
   walletMode: WALLET_MODES.VIEW,
   walletName: "My Multisig Wallet",
+  nodesLoaded: false,
 };
 
 function resetWalletViews(state) {
@@ -25,6 +27,8 @@ export default (state = initialState, action) => {
       return updateState(state, { walletName: action.value });
     case RESET_WALLET_VIEW:
       return resetWalletViews(state);
+    case INITIAL_LOAD_COMPLETE:
+      return updateState(state, {nodesLoaded: true});
     default:
       return state;
   }

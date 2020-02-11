@@ -5,6 +5,7 @@ export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
 export const UPDATE_WALLET_MODE = "UPDATE_WALLET_MODE";
 export const RESET_WALLET_VIEW = "RESET_WALLET_VIEW";
 export const SPEND_NODES = "SPEND_NODES";
+export const INITIAL_LOAD_COMPLETE = "INITIAL_LOAD_COMPLETE";
 
 export const WALLET_MODES = {
   VIEW: 0,
@@ -62,6 +63,12 @@ export function updateWalletNameAction(number, value) {
 export function resetWalletView() {
   return {
     type: RESET_WALLET_VIEW
+  }
+}
+
+export function initialLoadComplete() {
+  return {
+    type: INITIAL_LOAD_COMPLETE
   }
 }
 
