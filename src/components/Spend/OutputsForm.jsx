@@ -23,7 +23,6 @@ import {
 
 // Components
 import {
-  Card, CardHeader, CardContent,
   Grid, Button, Tooltip, TextField,
   Box, IconButton, InputAdornment,
   Typography,
@@ -105,10 +104,8 @@ class OutputsForm extends React.Component {
     const totalMt = 7;
     const actionMt = 7;
     return (
-      <Card ref={this.titleRef}>
-        {!isWallet && <CardHeader title="Define Outputs"/>}
-        <CardContent>
-          <Box>
+        <React.Fragment>
+          <Box ref={this.titleRef}>
 
             <Grid container>
               <Grid item xs={4}>
@@ -258,9 +255,8 @@ class OutputsForm extends React.Component {
             </Grid>
           </Box>
 
+        </React.Fragment>
 
-        </CardContent>
-      </Card>
     );
   }
 

@@ -12,7 +12,7 @@ import {
 import { setRequiredSigners } from "../../actions/transactionActions";
 import {naiveCoinSelection} from "../../utils"
 import {
-  Tabs, Tab, Box, LinearProgress
+  Tabs, Tab, Box, LinearProgress, Typography
 } from '@material-ui/core';
 
 import WalletDeposit from './WalletDeposit';
@@ -41,7 +41,7 @@ class WalletControl extends React.Component {
   render = () => {
     return (
       <div>
-        <h3>Balance: {this.totalBalance()}</h3>
+        <Typography variant="caption">{this.totalBalance()} BTC</Typography>
         <Tabs
           ref={this.scrollRef}
           value={this.props.walletMode}

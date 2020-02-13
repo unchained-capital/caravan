@@ -64,7 +64,7 @@ class CreateWallet extends React.Component {
         {Object.values(deposits.nodes).length > 0 && <span>{walletName}</span>}
         </h1>
 
-        <Box mt={2}>
+        <Box>
         <Grid container spacing={3}>
           <Grid item md={configuring ? 8 : 12}>
 
