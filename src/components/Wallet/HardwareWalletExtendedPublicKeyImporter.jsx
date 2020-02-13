@@ -10,7 +10,8 @@ import {
   Button, TextField, FormHelperText,
   Box, Grid
 } from '@material-ui/core';
-// import WalletFeedback from '../WalletFeedback';
+
+import InteractionMessages from '../InteractionMessages';
 
 class HardwareWalletExtendedPublicKeyImporter extends React.Component {
 
@@ -79,7 +80,7 @@ class HardwareWalletExtendedPublicKeyImporter extends React.Component {
             onClick={this.import}
             disabled={this.hasBIP32PathError() || status === ACTIVE}>Import Extended Public Key</Button>
         </Box>
-        {/* <WalletFeedback messages={interaction.messagesFor({status})} excludeCodes={["bip32"]}/> */}
+        <InteractionMessages messages={interaction.messagesFor({state: status})} excludeCodes={["bip32"]}/>
         <FormHelperText className="text-danger">{extendedPublicKeyError}</FormHelperText>
       </Box>
     );
