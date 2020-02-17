@@ -295,7 +295,7 @@ class SignatureImporter extends React.Component {
   }
 
   validateAndSetSignature = (inputsSignatures, errback) => {
-    const {number, inputs, signatureImporters, unsignedTransaction, setComplete} = this.props;
+    const {number, inputs, signatureImporters, setComplete, network, outputs} = this.props;
 
     if (!Array.isArray(inputsSignatures)) {
       errback("Signature is not an array of strings.");
@@ -314,7 +314,6 @@ class SignatureImporter extends React.Component {
     const publicKeys = [];
     const finalizedSignatureImporters = Object.values(signatureImporters).filter((signatureImporter) => (signatureImporter.finalized));
     for (let inputIndex = 0; inputIndex < inputsSignatures.length; inputIndex += 1) {
-      const input = inputs[inputIndex];
       const inputNumber = inputIndex + 1;
       const inputSignature = inputsSignatures[inputIndex];
       if (validateHex(inputSignature) !== '') {
@@ -324,7 +323,7 @@ class SignatureImporter extends React.Component {
 
       let publicKey;
       try{
-        publicKey = validateMultisigSignature(unsignedTransaction, inputIndex, input, inputSignature);
+        publicKey = validateMultisigSignature(network, inputs, outputs, inputIndex, inputSignature);
       } catch(e) {
         errback(`Signature for input ${inputNumber} is invalid.`);
         return;
