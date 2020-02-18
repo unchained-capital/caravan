@@ -49,30 +49,28 @@ export function bitcoindParams(client) {
  * @returns {UTXO} object for signing transaction inputs
  */
 export async function bitcoindListUnspent({url, auth, address, addresses}) {
-  return new Promise(async (resolve) => {
-    try {
-      const addressParam = addresses || [address]
-      const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, addressParam], );
-      const promises = [];
-      resp.result.forEach(utxo => {
-        promises.push(callBitcoind(url, auth, 'getrawtransaction', [utxo.txid, 1]))
-      })
-      const previousTransactions = await Promise.all(promises)
-      resolve(resp.result.map((utxo, mapindex) => {
-        const amount = new BigNumber(utxo.amount);
-        return {
-          confirmed: (utxo.confirmations || 0) > 0,
-          txid: utxo.txid,
-          index: utxo.vout,
-          amount: amount.toFixed(8),
-          amountSats: bitcoinsToSatoshis(amount),
-          transactionHex: previousTransactions[mapindex].result.hex,
-          time: previousTransactions[mapindex].result.blocktime,
-        };
-      }));
+  try {
+    const addressParam = addresses || [address]
+    const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, addressParam], );
+    const promises = [];
+    resp.result.forEach(utxo => {
+      promises.push(callBitcoind(url, auth, 'getrawtransaction', [utxo.txid, 1]))
+    })
+    const previousTransactions = await Promise.all(promises)
+    return resp.result.map((utxo, mapindex) => {
+      const amount = new BigNumber(utxo.amount);
+      return {
+        confirmed: (utxo.confirmations || 0) > 0,
+        txid: utxo.txid,
+        index: utxo.vout,
+        amount: amount.toFixed(8),
+        amountSats: bitcoinsToSatoshis(amount),
+        transactionHex: previousTransactions[mapindex].result.hex,
+        time: previousTransactions[mapindex].result.blocktime,
+      };
+    });
 
-    } catch(e) {throw(e)}
-  });
+  } catch(e) {throw(e)}
 }
 
 export async function bitcoindGetAddressStatus({url, auth, address}) {

@@ -31,6 +31,7 @@ import {
   SET_CLIENT_PASSWORD_ERROR,
 
   SET_CLIENT_STATUS,
+  SET_CLIENT_CONNECTED,
 } from '../actions/clientActions';
 
 const propTypes = {
@@ -221,13 +222,15 @@ class ClientPicker extends React.Component {
   }
 
   testConnection = async () => {
-    const { network, client } = this.props
+    const { network, client, setConnected } = this.props
     this.setState({connectError: "", connectSuccess: false});
     try {
       await fetchFeeEstimate(network, client);
       this.setState({connectSuccess: true});
+      setConnected(true);
     } catch (e) {
       this.setState({connectError: e.message});
+      setConnected(false);
     }
   }
 }
@@ -255,5 +258,6 @@ export default connect(
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
 
     setStatus: SET_CLIENT_STATUS,
+    setConnected: SET_CLIENT_CONNECTED,
   }),
 )(ClientPicker);
