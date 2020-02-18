@@ -56,7 +56,7 @@ class WalletSpend extends React.Component {
   render() {
     const { finalizedOutputs, autoSpend, updateNode, addNode } = this.props;
     return (
-      <Box>
+      <Box style={{marginLeft: "10%"}}>
         <Grid container>
           <Grid item md={12}>
           <Box>

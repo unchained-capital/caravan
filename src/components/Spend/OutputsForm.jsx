@@ -72,9 +72,9 @@ class OutputsForm extends React.Component {
   }
 
   scrollToTitle = () => {
-    const { signatureImporters } = this.props;
+    const { signatureImporters, isWallet } = this.props;
     const finalizedCount = Object.keys(signatureImporters).reduce((o, k) => o + (signatureImporters[k].finalized), 0);
-    if(finalizedCount === 0) this.titleRef.current.scrollIntoView({ behavior: 'smooth' });
+    if(finalizedCount === 0 && !isWallet) this.titleRef.current.scrollIntoView({ behavior: 'smooth' });
   }
 
   async initialOutputState() {
@@ -103,11 +103,12 @@ class OutputsForm extends React.Component {
     const feeMt = 3;
     const totalMt = 7;
     const actionMt = 7;
+    const gridSpacing = isWallet ? 10 : 1;
     return (
         <React.Fragment>
           <Box ref={this.titleRef}>
 
-            <Grid container>
+            <Grid container spacing={gridSpacing}>
               <Grid item xs={4}>
                 <Typography variant="caption">
                   To
@@ -125,7 +126,7 @@ class OutputsForm extends React.Component {
             {this.renderOutputs()}
             </Grid>
 
-            <Grid item container spacing={1}>
+            <Grid item container spacing={gridSpacing}>
 
               <Grid item xs={12}>
                   <Button
@@ -137,7 +138,7 @@ class OutputsForm extends React.Component {
                   </Button>
               </Grid>
             </Grid>
-            <Grid item container spacing={1}>
+            <Grid item container spacing={gridSpacing}>
 
               <Grid item xs={3}>
                 <Box mt={feeMt}>
@@ -188,7 +189,7 @@ class OutputsForm extends React.Component {
 
             </Grid>
 
-            <Grid item container spacing={1}>
+            <Grid item container spacing={gridSpacing}>
               <Grid item xs={4}>
               <Box mt={totalMt}>
               <Typography variant="h6">{!isWallet || (isWallet && !autoSpend) ? "Totals" : "Outputs & Fee Total"}</Typography>

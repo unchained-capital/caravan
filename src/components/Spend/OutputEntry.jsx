@@ -44,10 +44,12 @@ class OutputEntry extends React.Component {
 
   render() {
     const {outputs, finalizedOutputs, address, amount, addressError, amountError,
-           changeOutputIndex, autoSpend} = this.props;
+           changeOutputIndex, autoSpend, isWallet} = this.props;
+
+    const gridSpacing = isWallet ? 10 : 1;
 
     return (
-      <Grid container>
+      <Grid container spacing={gridSpacing}>
 
         <Grid item xs={7}>
           <TextField

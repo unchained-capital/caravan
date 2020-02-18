@@ -9,7 +9,6 @@ import {
   SET_CLIENT_USERNAME_ERROR,
   SET_CLIENT_PASSWORD_ERROR,
 
-  SET_CLIENT_STATUS,
   SET_CLIENT_CONNECTED,
 } from '../actions/clientActions';
 
@@ -41,10 +40,6 @@ export default (state = initialState, action) => {
       return updateState(state, { username_error: action.value });
     case SET_CLIENT_PASSWORD_ERROR:
       return updateState(state, { password_error: action.value });
-
-    case SET_CLIENT_STATUS:
-      return updateState(state, { status: action.value });
-
     case SET_CLIENT_CONNECTED:
       return updateState(state, { connected: action.value });
       

@@ -30,7 +30,6 @@ import {
   SET_CLIENT_USERNAME_ERROR,
   SET_CLIENT_PASSWORD_ERROR,
 
-  SET_CLIENT_STATUS,
   SET_CLIENT_CONNECTED,
 } from '../actions/clientActions';
 
@@ -257,7 +256,6 @@ export default connect(
     setUsernameError: SET_CLIENT_USERNAME_ERROR,
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
 
-    setStatus: SET_CLIENT_STATUS,
     setConnected: SET_CLIENT_CONNECTED,
   }),
 )(ClientPicker);

@@ -2,9 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-  satoshisToBitcoins,
-} from 'unchained-bitcoin';
-import {
   setWalletModeAction,
   initialLoadComplete,
   WALLET_MODES
@@ -12,7 +9,7 @@ import {
 import { setRequiredSigners } from "../../actions/transactionActions";
 import {naiveCoinSelection} from "../../utils"
 import {
-  Tabs, Tab, Box, LinearProgress, Typography
+  Tabs, Tab, Box, LinearProgress,
 } from '@material-ui/core';
 
 import WalletDeposit from './WalletDeposit';
@@ -41,7 +38,6 @@ class WalletControl extends React.Component {
   render = () => {
     return (
       <div>
-        <Typography variant="caption">{this.totalBalance()} BTC</Typography>
         <Tabs
           ref={this.scrollRef}
           value={this.props.walletMode}
@@ -88,11 +84,6 @@ class WalletControl extends React.Component {
         return true;
       }
     return false;
-  }
-
-  totalBalance() {
-    const { deposits, change } = this.props;
-    return satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
   }
 
   handleModeChange = (event, mode)  => {

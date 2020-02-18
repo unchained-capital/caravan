@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
-import {validateBIP32Path, validateExtendedPublicKey} from "unchained-bitcoin"
+import {validateBIP32Path, validateExtendedPublicKey, satoshisToBitcoins} from "unchained-bitcoin"
 
 // Components
-import { Grid, Box, Drawer, IconButton, Button, FormHelperText }
+import { Grid, Box, Drawer, IconButton, Button, FormHelperText, Typography }
   from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 
@@ -57,12 +57,14 @@ class CreateWallet extends React.Component {
 
   render = () => {
     const {configuring, walletName, setName, deposits} = this.props;
+    
     return (
       <div>
-        <h1>
-        {!Object.values(deposits.nodes).length && <EditableName number={0} name={walletName} setName={setName} />}
-        {Object.values(deposits.nodes).length > 0 && <span>{walletName}</span>}
+        <h1 style={{marginBottom: 0}} >
+        {!Object.keys(deposits.nodes).length && <EditableName number={0} name={walletName} setName={setName} />}
+        {Object.keys(deposits.nodes).length > 0 && <span>{walletName}</span>}
         </h1>
+        { this.totalBalance() }
 
         <Box>
         <Grid container spacing={3}>
@@ -81,6 +83,16 @@ class CreateWallet extends React.Component {
       </div>
     );
   }
+
+
+  totalBalance() {
+    const { deposits, change } = this.props;
+    if (!Object.keys(deposits.nodes).length) return "";
+    const btc = satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
+
+    return <Typography variant="caption">{btc} BTC</Typography>
+  }
+
 
   validateProperties(config, properties, key) {
     for(let index = 0; index < properties.length; index++) {
@@ -199,7 +211,7 @@ class CreateWallet extends React.Component {
               type="file"
             />
 
-            <Button color="primary" variant="contained" component="span">
+            <Button color="primary" variant="contained" component="span" style={{marginTop: "20px"}}>
               Import Wallet Configuration
             </Button>
           </label>
