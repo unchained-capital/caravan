@@ -1,7 +1,5 @@
 import { updateState } from './utils';
 import {
-  RESET_SIGNATURES,
-
   SET_SIGNATURE_IMPORTER_NAME,
   SET_SIGNATURE_IMPORTER_METHOD,
   SET_SIGNATURE_IMPORTER_BIP32_PATH,
@@ -12,6 +10,7 @@ import {
 } from '../actions/signatureImporterActions';
 import {
   SET_REQUIRED_SIGNERS,
+  RESET_TRANSACTION,
 } from "../actions/transactionActions";
 
 const initialSignatureImporterState = {
@@ -56,7 +55,7 @@ function finalizeSignatureImporterState(state, action) {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-  case RESET_SIGNATURES:
+  case RESET_TRANSACTION:
     return {...initialState};
   case SET_REQUIRED_SIGNERS:
     return setRequiredSigners(state, action);

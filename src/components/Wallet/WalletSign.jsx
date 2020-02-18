@@ -31,26 +31,20 @@ class WalletSign extends React.Component {
     return (
       <Box>
 
-      {
-        !this.signaturesFinalized() &&
-          <Link
-            href="#"
-            onClick={this.handleCancel}>Edit Transaction</Link>
-      }
+        <Link
+          href="#"
+          onClick={this.handleCancel}>Edit Transaction</Link>
 
       <Box mt={2}>
         <UnsignedTransaction/>
       </Box>
       {this.renderKeySelectors()}
 
-      {
-        !this.signaturesFinalized() &&
         <Box mt={2}>
           <Link
             href="#"
             onClick={e => {e.preventDefault(); this.handleReturn();}}>Abandon Transaction</Link>
         </Box>
-      }
 
       {
         this.signaturesFinalized() &&
