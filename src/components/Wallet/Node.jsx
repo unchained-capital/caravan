@@ -125,7 +125,7 @@ function mapStateToProps(state, ownProps) {
     ...{change},
     ...braid.nodes[ownProps.bip32Path],
     ...state.spend.transaction,
-    walletMode: state.wallet.info.walletMode,
+    walletMode: state.wallet.common.walletMode,
     braidNode: braid.nodes[ownProps.bip32Path],
 
   };

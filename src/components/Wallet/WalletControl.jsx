@@ -101,7 +101,7 @@ class WalletControl extends React.Component {
 function mapStateToProps(state) {
   return {
     ...state.wallet,
-    ...state.wallet.info,
+    ...state.wallet.common,
     requiredSigners: state.spend.transaction.requiredSigners,
     signatureImporters: state.spend.signatureImporters,
   };

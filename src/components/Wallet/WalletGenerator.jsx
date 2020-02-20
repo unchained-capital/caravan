@@ -24,12 +24,13 @@ import {setFrozen} from "../../actions/settingsActions";
 import {
   updateDepositNodeAction,
   updateChangeNodeAction,
+  resetNodesFetchErrors,
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet,   updateAutoSpendAction,} from "../../actions/transactionActions";
 
 const MAX_TRAILING_EMPTY_NODES = 20;
-const MAX_FETCH_UTXOS_ERRORS = 5;
+const MAX_FETCH_UTXOS_ERRORS = 25;
 
 class WalletGenerator extends React.Component {
 
@@ -230,12 +231,24 @@ class WalletGenerator extends React.Component {
   }
 
   refreshNodes = async () => {
-    const {change, deposits} = this.props;
+    const {change, deposits, resetNodesFetchErrors} = this.props;
     const allNodes = Object.values(deposits.nodes).concat(Object.values(change.nodes));
-    allNodes.forEach(async (node) => {
+    const previousFetchErrors = Math.max(change.fetchUTXOsErrors, deposits.fetchUTXOsErrors)
+
+    resetNodesFetchErrors();
+    await Promise.all(allNodes.map(async (node) => {
       const utxos = await this.fetchUTXOs(node.change, node.multisig);
       this.updateNode(node.change, {bip32Path: node.bip32Path, ...utxos});
-    })
+    }))
+
+    if (previousFetchErrors >= MAX_FETCH_UTXOS_ERRORS) {
+      const {change, deposits} = this.props;
+      const currentFetchErrors = Math.max(change.fetchUTXOsErrors, deposits.fetchUTXOsErrors);
+      if (currentFetchErrors < 5) {
+        console.log("we had errors but now looks good, try to build more"); // TODO:
+
+      }
+    }
   }
 
 }
@@ -246,7 +259,7 @@ function mapStateToProps(state) {
     ...{client: state.client},
     ...state.quorum,
     ...state.wallet,
-    ...state.wallet.info,
+    ...state.wallet.common,
   };
 }
 
@@ -257,6 +270,7 @@ const mapDispatchToProps = {
   updateAutoSpned: updateAutoSpendAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
+  resetNodesFetchErrors,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);

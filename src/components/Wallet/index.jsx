@@ -96,7 +96,7 @@ class CreateWallet extends React.Component {
   }
 
   walletActivated = () => {
-    return this.props.info.nodesLoaded;
+    return this.props.nodesLoaded;
   }
 
   totalBalance() {
@@ -359,7 +359,10 @@ function mapStateToProps(state) {
   return {
     ...state.settings,
     ...state.quorum,
-    ...{walletName: state.wallet.info.walletName},
+    ...{
+      walletName: state.wallet.common.walletName,
+      nodesLoaded: state.wallet.common.nodesLoaded,
+    },
     ...state.wallet,
     client: state.client,
   };

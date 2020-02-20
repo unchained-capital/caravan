@@ -307,7 +307,7 @@ function mapStateToProps(state) {
   return {
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
-    walletMode: state.wallet.info.walletMode,
+    walletMode: state.wallet.common.walletMode,
     client: state.client,
     ...state.settings,
 
