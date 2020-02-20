@@ -63,7 +63,6 @@ class Node extends React.Component {
         </TableCell>
         <TableCell>
           {fetchedUTXOs && addressKnown ? satoshisToBitcoins(balanceSats).toFixed() : ''}
-          {fetchUTXOsError !== '' && <FormHelperText className="danger">{fetchUTXOsError}</FormHelperText>}
         </TableCell>
         <TableCell>
           {this.maxUtxoDate()}
