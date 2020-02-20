@@ -52,7 +52,8 @@ function updateNode(state, action) {
   }
 
   if (action.value.balanceSats) {
-    updatedState.balanceSats = state.balanceSats.plus(node.balanceSats)
+    const currentNodeBalance = state.nodes[node.bip32Path] ? state.nodes[node.bip32Path].balanceSats : BigNumber(0)
+    updatedState.balanceSats = state.balanceSats.plus(node.balanceSats.minus(currentNodeBalance))
   }
 
   let trailingEmptyNodes = 0;

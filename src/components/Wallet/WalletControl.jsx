@@ -8,6 +8,9 @@ import {
 } from "../../actions/walletActions";
 import { setRequiredSigners } from "../../actions/transactionActions";
 import {naiveCoinSelection} from "../../utils"
+
+// Components
+
 import {
   Tabs, Tab, Box, LinearProgress,
 } from '@material-ui/core';

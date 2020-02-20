@@ -8,6 +8,7 @@ import {validateBIP32Path, validateExtendedPublicKey, satoshisToBitcoins} from "
 import { Grid, Box, Drawer, IconButton, Button, FormHelperText, Typography }
   from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 import NetworkPicker from '../NetworkPicker';
 import QuorumPicker from '../QuorumPicker';
@@ -65,6 +66,12 @@ class CreateWallet extends React.Component {
         {Object.keys(deposits.nodes).length > 0 && <span>{walletName}</span>}
         </h1>
         { this.totalBalance() }
+        <IconButton 
+          onClick={() => this.generatorRefresh()} 
+          style={{float: "right", display: this.walletActivated() ? "block" : "none"}}>
+            <RefreshIcon/>
+        </IconButton>
+
 
         <Box>
         <Grid container spacing={3}>
@@ -74,7 +81,11 @@ class CreateWallet extends React.Component {
 
             {this.renderExtendedPublicKeyImporters()}
 
-            <Box mt={2}><WalletGenerator downloadWalletDetails={this.downloadWalletDetails} /></Box>
+            <Box mt={2}><WalletGenerator 
+              downloadWalletDetails={this.downloadWalletDetails}
+              refreshNodes={click => this.generatorRefresh = click}
+              />
+            </Box>
 
           </Grid>
           {this.renderSettings()}
@@ -84,6 +95,9 @@ class CreateWallet extends React.Component {
     );
   }
 
+  walletActivated = () => {
+    return this.props.info.nodesLoaded;
+  }
 
   totalBalance() {
     const { deposits, change } = this.props;

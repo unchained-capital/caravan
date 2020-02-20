@@ -61,8 +61,9 @@ class WalletGenerator extends React.Component {
   }
 
   componentDidMount() {
-    const { setIsWallet } = this.props
+    const { setIsWallet, refreshNodes } = this.props;
     setIsWallet();
+    refreshNodes(this.refreshNodes);
   }
 
   title = () => {
@@ -236,6 +237,16 @@ class WalletGenerator extends React.Component {
     // render.
     setTimeout(() => this.addNode(isChange, nextBIP32Path, true));
   }
+
+  refreshNodes = async () => {
+    const {change, deposits} = this.props;
+    const allNodes = Object.values(deposits.nodes).concat(Object.values(change.nodes));
+    allNodes.forEach(async (node) => {
+      const utxos = await this.fetchUTXOs(node.change, node.multisig);
+      this.updateNode(node.change, {bip32Path: node.bip32Path, ...utxos});
+    })
+  }
+
 }
 
 function mapStateToProps(state) {
