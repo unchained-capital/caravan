@@ -32,6 +32,9 @@ import {Speed} from "@material-ui/icons";
 import AddIcon from '@material-ui/icons/Add';
 import OutputEntry from './OutputEntry';
 
+// Assets
+import styles from './styles.module.scss';
+
 class OutputsForm extends React.Component {
 
   titleRef = React.createRef();
@@ -99,7 +102,7 @@ class OutputsForm extends React.Component {
     const {feeRate, fee, finalizedOutputs, feeRateError, feeError, balanceError, inputs,
            isWallet, autoSpend} = this.props;
     const {feeRateFetchError} = this.state;
-    const feeDisplay = inputs.length > 0 ? fee : "";
+    const feeDisplay = inputs && inputs.length > 0 ? fee : "0.0000";
     const feeMt = 3;
     const totalMt = 7;
     const actionMt = 7;
@@ -110,13 +113,13 @@ class OutputsForm extends React.Component {
 
             <Grid container spacing={gridSpacing}>
               <Grid item xs={4}>
-                <Typography variant="caption">
+                <Typography variant="caption" className={styles.outputsFormLabel}>
                   To
                 </Typography>
               </Grid>
               <Grid item xs={3}>&nbsp;</Grid>
               <Grid item xs={3}>
-                <Typography variant="caption">
+                <Typography variant="caption" className={styles.outputsFormLabel}>
                   Amount
                 </Typography>
               </Grid>
@@ -142,9 +145,11 @@ class OutputsForm extends React.Component {
 
               <Grid item xs={3}>
                 <Box mt={feeMt}>
+                <Typography variant="caption" className={styles.outputsFormLabel}>
+                  Fee Rate
+                </Typography>
                 <TextField
                   fullWidth
-                  label="Fee Rate"
                   value={feeRate}
                   name="fee_rate"
                   disabled={finalizedOutputs}
@@ -171,17 +176,18 @@ class OutputsForm extends React.Component {
 
               <Grid item xs={3}>
               <Box mt={feeMt}>
+              <Typography variant="caption" className={styles.outputsFormLabel}>
+              Estimated Fees
+                </Typography>
                 <TextField
                   fullWidth
-                  label="Estimated Fees"
-                  placeholder="BTC"
                   name="fee_total"
                   disabled={finalizedOutputs}
                   value={feeDisplay}
                   onChange={this.handleFeeChange}
                   error={this.hasFeeError()}
                   helperText={feeError}
-                  InputProps={this.unitLabel('BTC', {readOnly: true})}
+                  InputProps={this.unitLabel('BTC', {readOnly: true, disableUnderline: true, style: {color: "gray"}})}
                 /></Box>
               </Grid>
 
@@ -212,11 +218,11 @@ class OutputsForm extends React.Component {
                 <TextField
                   fullWidth
                   label={!isWallet || (isWallet && !autoSpend) ? "Outputs & Fee Total" : ""}
-                  value={this.outputsAndFeeTotal().toString()}
+                  value={this.outputsAndFeeTotal().toString() || "0.0000"}
                   error={this.hasBalanceError()}
                   disabled={finalizedOutputs}
                   helperText={balanceError}
-                  InputProps={this.unitLabel('BTC', {readOnly: true})}
+                  InputProps={this.unitLabel('BTC', {readOnly: true, disableUnderline: true})}
                 /></Box>
               </Grid>
               <Grid item xs={2}/>
