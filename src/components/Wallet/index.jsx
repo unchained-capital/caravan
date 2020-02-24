@@ -3,6 +3,16 @@ import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
 import {validateBIP32Path, validateExtendedPublicKey, satoshisToBitcoins} from "unchained-bitcoin"
+import {
+  fetchAddressUTXOs,
+  getAddressStatus,
+} from "../../blockchain";
+import BigNumber from "bignumber.js";
+import {
+  updateDepositNodeAction,
+  updateChangeNodeAction,
+  WALLET_MODES,
+} from "../../actions/walletActions";
 
 // Components
 import { Grid, Box, Drawer, IconButton, Button, FormHelperText, Typography }
@@ -17,6 +27,7 @@ import ClientPicker from '../ClientPicker';
 import WalletGenerator from './WalletGenerator';
 import ExtendedPublicKeyImporter from './ExtendedPublicKeyImporter';
 import EditableName from "../EditableName";
+import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
 import {
@@ -235,38 +246,98 @@ class CreateWallet extends React.Component {
     return "";
   }
 
+  unknownAddresses = [];
+
   renderSettings = () => {
-    const {configuring} = this.props;
+    const {configuring, walletMode, client} = this.props;
+    const spending = walletMode === WALLET_MODES.SPEND;
+    
     if (configuring)
-      return (
-        <Grid item md={4}>
+    return (
+      <Grid item md={4}>
           <Box><QuorumPicker /></Box>
           <Box mt={2}><AddressTypePicker /></Box>
           <Box mt={2}><NetworkPicker /></Box>
           <Box mt={2}><ClientPicker /></Box>
         </Grid>
       )
-    else return (
-      <div>
-      <Box position="fixed" right={10}>
-        <IconButton onClick={this.toggleDrawer}>
-          <Settings/>
-        </IconButton>
-      </Box>
-      <Drawer md={4} anchor="right" open={this.state.showSettings} onClose={this.toggleDrawer}>
-        <Box  width={400}>
-
-          <Box mt={2}><ClientPicker /></Box>
-          <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Export Wallet Details</Button></Box>
+      else {
+        const useAddressImporter = !spending && client.type === "private";
+        if (useAddressImporter) {
+          this.unknownAddresses = this.getUnknownAddressNodes()
+            .map(node => node.multisig.address) ;
+        }
+      return (
+        <div>
+        <Box position="fixed" right={10}>
+          <IconButton onClick={this.toggleDrawer}>
+            <Settings/>
+          </IconButton>
         </Box>
-      </Drawer>
+        <Drawer md={4} anchor="right" open={this.state.showSettings} onClose={this.toggleDrawer}>
+          <Box  width={400}>
+            <Box mt={2}>
+              <ClientPicker />
+              { useAddressImporter &&
+                <Box p={2}>
+                <BitcoindAddressImporter
+                  addresses={this.unknownAddresses}
+                  importCallback={this.addressesImported}
+                  /></Box>
+              }
+            </Box>
+            <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Export Wallet Details</Button></Box>
+          </Box>
+        </Drawer>
 
-      </div>
+        </div>
       )
+    }
   }
 
   toggleDrawer = () => {
     this.setState({showSettings: !this.state.showSettings})
+  }
+
+  getUnknownAddressNodes = () => {
+    const {changeNodes, depositNodes} = this.props
+    return Object.values(depositNodes).concat(Object.values(changeNodes))
+    .filter(node => !node.addressKnown);
+  }
+
+  addressesImported = async result => {
+    // this will give me an array [{success: true/false}...]
+    // need to loop through and mark nodes as addressKnown
+    const { client, network, updateChangeNode, updateDepositNode} = this.props;
+
+    const nodes = []
+    const unknown = this.getUnknownAddressNodes();
+    result.forEach((addr, i) => {
+      if (addr.success) nodes.push(unknown[i]); // can now set to known and refresh status
+    });
+
+    nodes.forEach(async node => {
+      const utxos = await fetchAddressUTXOs(node.multisig.address, network, client);
+      const addressStatus = await getAddressStatus(node.multisig.address, network, client);
+      let updates;
+      if (utxos) {
+        const balanceSats = utxos
+              .map((utxo) => utxo.amountSats)
+              .reduce(
+                (accumulator, currentValue) => accumulator.plus(currentValue),
+                new BigNumber(0));
+        updates = {balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''}
+      }
+
+      const updater = (node.change ? updateChangeNode : updateDepositNode);
+      updater({
+        bip32Path: node.bip32Path,
+        addressKnown: true,
+        ...updates,
+        addressStatus,
+      });
+  
+    });
   }
 
   renderExtendedPublicKeyImporters = () => {
@@ -362,7 +433,10 @@ function mapStateToProps(state) {
     ...{
       walletName: state.wallet.common.walletName,
       nodesLoaded: state.wallet.common.nodesLoaded,
+      walletMode: state.wallet.common.walletMode,
     },
+    changeNodes: state.wallet.change.nodes,
+    depositNodes: state.wallet.deposits.nodes,
     ...state.wallet,
     client: state.client,
   };
@@ -385,7 +459,10 @@ const mapDispatchToProps = {
     setClientUrl: SET_CLIENT_URL,
     setClientUsername: SET_CLIENT_USERNAME,
     setClientPassword: SET_CLIENT_PASSWORD,
-  })
+  }),
+  updateDepositNode: updateDepositNodeAction,
+  updateChangeNode: updateChangeNodeAction,
+
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateWallet);

@@ -1,11 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import BigNumber from "bignumber.js";
-import {
-  fetchAddressUTXOs,
-  getAddressStatus,
-} from "../../blockchain";
 
 // Components
 import {
@@ -15,7 +10,6 @@ import {
   TableRow, TableCell, TablePagination, TableSortLabel,
 } from '@material-ui/core';
 import Node from "./Node";
-import BitcoindAddressImporter from '../BitcoindAddressImporter';
 import { WALLET_MODES } from '../../actions/walletActions';
 
 class NodeSet extends React.Component {
@@ -37,26 +31,13 @@ class NodeSet extends React.Component {
     orderDir: "asc"
   };
 
-  unknownAddresses = [];
 
   render() {
     const {page, nodesPerPage, orderBy, orderDir} = this.state;
-    const {walletMode, client} = this.props
+    const {walletMode} = this.props
     const spending = walletMode === WALLET_MODES.SPEND;
-    const useAddressImporter = !spending && client.type === "private";
-
-    if (useAddressImporter) {
-      this.unknownAddresses = this.getUnknownAddressNodes()
-        .map(node => node.multisig.address) ;
-    }
     return (
       <Grid item md={12}>
-        { useAddressImporter &&
-          <BitcoindAddressImporter
-            addresses={this.unknownAddresses}
-            importCallback={this.addressesImported}
-            />
-        }
       <Table style={{tableLayout: "fixed"}}>
             <TableHead>
               <TableRow>
@@ -156,46 +137,6 @@ class NodeSet extends React.Component {
 
   filterAddresses = (event, checked) => {
     this.setState({[event.target.value]: checked, page: 0});
-  }
-
-  getUnknownAddressNodes = () => {
-    const {changeNodes, depositNodes} = this.props
-    return Object.values(depositNodes).concat(Object.values(changeNodes))
-    .filter(node => !node.addressKnown);
-  }
-
-
-  addressesImported = async result => {
-    // this will give me an array [{success: true/false}...]
-    // need to loop through and mark nodes as addressKnown
-    const { updateNode, client, network } = this.props;
-    const nodes = []
-    const unknown = this.getUnknownAddressNodes();
-    result.forEach((addr, i) => {
-      if (addr.success) nodes.push(unknown[i]); // can now set to known and refresh status
-    });
-
-    nodes.forEach(async node => {
-      const utxos = await fetchAddressUTXOs(node.multisig.address, network, client);
-      const addressStatus = await getAddressStatus(node.multisig.address, network, client);
-      let updates;
-      if (utxos) {
-        const balanceSats = utxos
-              .map((utxo) => utxo.amountSats)
-              .reduce(
-                (accumulator, currentValue) => accumulator.plus(currentValue),
-                new BigNumber(0));
-        updates = {balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''}
-      }
-
-
-      updateNode(node.change, {
-        bip32Path: node.bip32Path,
-        addressKnown: true,
-        ...updates,
-        addressStatus,
-      });
-    });
   }
 
   getNodeSet = () => {

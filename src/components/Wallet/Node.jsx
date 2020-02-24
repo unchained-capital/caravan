@@ -7,7 +7,7 @@ import {
 
 // Components
 import {
-  TableRow, TableCell, Checkbox, FormHelperText,
+  TableRow, TableCell, Checkbox,
 } from '@material-ui/core';
 import AddressExpander from "./AddressExpander";
 
@@ -39,7 +39,7 @@ class Node extends React.Component {
   }
 
   render = () => {
-    const {bip32Path, spend, fetchedUTXOs, balanceSats, fetchUTXOsError,
+    const {bip32Path, spend, fetchedUTXOs, balanceSats,
       multisig, utxos, walletMode, addressKnown} = this.props;
     const spending = walletMode === WALLET_MODES.SPEND;
     return (

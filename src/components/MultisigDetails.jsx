@@ -29,26 +29,26 @@ class MultisigDetails extends React.Component {
   };
 
   render() {
-    const {network, multisig} = this.props;
+    const {network, multisig, showAddress} = this.props;
     const address = multisig.address;
     const redeemScript = multisigRedeemScript(multisig);
     const witnessScript = multisigWitnessScript(multisig);
     return (
       <Box mt={2}>
 
-        <Typography variant="h6">Address</Typography>
+        {showAddress && <Typography variant="h6">Address</Typography>}
 
         <Typography align="center" variant="h5">
 
           <Grid container direction="column" spacing={2}>
 
-            <Grid item>
+          {showAddress && <Grid item>
               <Copyable text={address}>
                 <code>{address}</code>
               </Copyable>
               &nbsp;
               {externalLink(blockExplorerAddressURL(address, network), <OpenInNew />)}
-            </Grid>
+            </Grid>}
 
             <Grid item justify="center" container spacing={3}>
 

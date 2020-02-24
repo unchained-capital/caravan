@@ -10,9 +10,8 @@ import Copyable from "../Copyable";
 
 // Components
 import {
-  Card, CardHeader, CardContent,
   Table, TableHead, TableBody, TableFooter,
-  TableRow, TableCell,
+  TableRow, TableCell, Typography,
 } from '@material-ui/core';
 import { OpenInNew } from '@material-ui/icons';
 
@@ -31,9 +30,8 @@ class UTXOSet extends React.Component {
   render() {
     const {inputs, inputsTotalSats} = this.props;
     return (
-      <Card >
-        <CardHeader title={`Available Inputs (${inputs.length})`} />
-        <CardContent>
+      <>
+        <Typography variant="h5">{`Available Inputs (${inputs.length})`} </Typography>
           <p>The following UTXOs will be spent as inputs in a new transaction.</p>
           <Table>
             <TableHead>
@@ -60,8 +58,7 @@ class UTXOSet extends React.Component {
             </TableFooter>
           </Table>
 
-        </CardContent>
-      </Card>
+      </>
     );
   }
 

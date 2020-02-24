@@ -11,7 +11,7 @@ import UTXOSet from './UTXOSet';
 import OutputsForm from './OutputsForm';
 import SignatureImporter from './SignatureImporter';
 import Transaction from './Transaction';
-import {Grid, Box} from "@material-ui/core";
+import {Grid, Box, Card, CardContent, Typography} from "@material-ui/core";
 import ConfirmOwnership from './ConfirmOwnership';
 import UnsignedTransaction from '../UnsignedTransaction';
 import '../styles.css';
@@ -52,12 +52,23 @@ class Spend extends React.Component {
         this.spendable() &&
         <Box>
           <Box mt={2}>
-            <UTXOSet
-              inputs={transaction.inputs}
-              inputsTotalSats={transaction.inputsTotalSats}
-            />
+            <Card>
+              <CardContent>
+                <UTXOSet
+                  inputs={transaction.inputs}
+                  inputsTotalSats={transaction.inputsTotalSats}
+                />
+              </CardContent>
+            </Card>
           </Box>
-          <Box mt={2}><OutputsForm/></Box>
+          <Box mt={2}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5">Define Outputs</Typography>
+                <OutputsForm/>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
       }
 
