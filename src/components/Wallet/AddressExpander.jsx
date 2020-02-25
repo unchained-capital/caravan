@@ -1,10 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+// Components
 import {
-  Grid, //Card,
-  Menu, MenuItem,
-  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary
+  Grid,
+  Menu, MenuItem, Button,
+  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary,
+  Box,
+  Table, TableBody, TableRow, TableCell,
+  Typography,
 } from '@material-ui/core';
 import UTXOSet from "../Spend/UTXOSet";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -13,10 +17,25 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MultisigDetails from "../MultisigDetails";
 import BitcoindAddressImporter from "../BitcoindAddressImporter";
 import Copyable from "../Copyable";
+import InteractionMessages from "../InteractionMessages";
+import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
+import {
+  ThumbUp as SuccessIcon,
+  Error as ErrorIcon,
+} from '@material-ui/icons';
+
 import styles from '../Spend//styles.module.scss';
 import {
   blockExplorerAddressURL,
+  multisigAddressType
 } from 'unchained-bitcoin';
+
+import {
+  PENDING,
+  ACTIVE,
+  ConfirmMultisigAddress,
+} from "unchained-wallets";
+
 import {
   externalLink,
 } from "../../utils";
@@ -34,6 +53,10 @@ class AddressExpander extends React.Component {
     expandMode: null,
     showMenu: false,
     showMenuIcon: false,
+    hasInteraction: false,
+    interactionState: PENDING,
+    interactionError: "",
+    interactionMessage: ""
   }
 
   componentDidMount = () => {
@@ -52,7 +75,7 @@ class AddressExpander extends React.Component {
             <FileCopyIcon></FileCopyIcon>
           </Copyable>
           {externalLink(blockExplorerAddressURL(multisig.address, network), <LaunchIcon onClick={e => e.stopPropagation()} />)}
-          <MoreVertIcon  onClick={this.handleMenu} style={{float:'right', display: showMenuIcon ? 'block' : 'none'}}  aria-controls="address-menu" aria-haspopup="true"></MoreVertIcon>
+          <MoreVertIcon  onClick={this.handleMenu} style={{float:'right', display: showMenuIcon && this.hasAdditionalOptions() ? 'block' : 'none'}}  aria-controls="address-menu" aria-haspopup="true"></MoreVertIcon>
           <Menu
             id="address-menu"
             anchorEl={anchor}
@@ -62,12 +85,23 @@ class AddressExpander extends React.Component {
           >
             {balanceSats.isGreaterThan(0) && <MenuItem selected={expandMode === MODE_UTXO} onClick={e => {this.setState({expandMode: MODE_UTXO});this.handleClose(e)}}>UTXOs</MenuItem>}
             <MenuItem selected={expandMode === MODE_REDEEM} onClick={e => {this.setState({expandMode: MODE_REDEEM});this.handleClose(e)}}>Scripts</MenuItem>
-            <MenuItem selected={expandMode === MODE_CONFIRM} onClick={e => {this.setState({expandMode: MODE_CONFIRM});this.handleClose(e)}}>Confirm on Device</MenuItem>
+            {this.canConfirm() && <MenuItem selected={expandMode === MODE_CONFIRM} onClick={e => {this.setState({expandMode: MODE_CONFIRM});this.handleClose(e)}}>Confirm on Device</MenuItem>}
             {client.type === 'private' && <MenuItem selected={expandMode === MODE_WATCH} onClick={e => {this.setState({expandMode: MODE_WATCH});this.handleClose(e)}}>Watch with bitcoind Node</MenuItem>}
           </Menu>
         </div>
       )
     }
+
+    canConfirm = () => {
+      const {extendedPublicKeyImporters} = this.props;
+      return Object.values(extendedPublicKeyImporters).filter(importer => importer.method === 'trezor').length > 0;
+    }
+
+    hasAdditionalOptions = () => {
+      const {balanceSats} = this.props.node;
+      const {client} = this.props;
+      return balanceSats.isGreaterThan(0) || client.type === 'private' || this.canConfirm()
+    } 
 
     handleClose = (event) => {
       event.stopPropagation();
@@ -137,11 +171,7 @@ class AddressExpander extends React.Component {
             </Grid>            
           )
         case MODE_CONFIRM:
-          return (
-            <Grid item md={12}>
-              TBD
-            </Grid>            
-          )
+          return this.renderAddressConfirmation();
         case MODE_WATCH:
           return (
             <Grid item md={12}>
@@ -152,13 +182,128 @@ class AddressExpander extends React.Component {
           return ""
       }
     }
+
+    renderAddressConfirmation = () => {
+      const {interactionState, interactionMessage, interactionError, hasInteraction} = this.state;
+      return (
+        <Grid item md={12}>
+          <ExtendedPublicKeySelector number={0} onChange={this.keySelected} />
+          {hasInteraction && (
+            <>
+              {this.confirmAddressDescription()}
+              {
+                interactionMessage !== "" && 
+                <Box mt={2} align="center">
+                  <Typography variant="h5" style={{color: "green"}}>
+                    <SuccessIcon />&nbsp; {interactionMessage}
+                  </Typography>
+                </Box>                  
+              }
+              {
+                interactionError !== "" && 
+                <Box mt={2} align="center" style={{color: "red"}}>
+                  <Typography variant="h5">
+                    <ErrorIcon />&nbsp; Confirmation Error
+                  </Typography>
+                  <Typography variant="caption">{interactionError}</Typography>
+                </Box>                  
+              }
+              {
+                interactionMessage === "" && interactionError === "" &&
+                <InteractionMessages
+                messages={this.interaction.messagesFor({state: interactionState})} />
+              }
+              <Button variant="contained" size="large" onClick={this.confirmOnDevice} disabled={interactionState === ACTIVE}>Confirm</Button>
+              {
+              (interactionMessage !== "" || interactionError !== "") &&
+              <Button size="large" onClick={this.resetInteractionState}>Reset</Button>
+              }
+            </>
+          )}
+        </Grid>            
+      )
+
+    }
+
+    resetInteractionState = () => {
+      this.setState({interactionError:"", interactionMessage:"", interactionState: PENDING})
+    }
+
+    confirmOnDevice = async () => {
+      this.setState({interactionState: ACTIVE});
+      try {
+        const confirmed = await this.interaction.run()
+        this.setState({interactionState: ACTIVE, interactionMessage: "Success", interactionError:""});
+      } catch (error) {
+        this.setState({interactionState: ACTIVE, interactionError: error.message, interactionMessage: ""});
+      }
+    }
+
+    interaction = null
+
+    keySelected = (event, extendedPublicKeyImporter) => {
+      const {multisig, bip32Path} = this.props.node;
+      const network = this.props.network;
+
+      
+      this.interaction = ConfirmMultisigAddress({
+        keystore: extendedPublicKeyImporter.method,
+        network,
+        bip32Path: `${extendedPublicKeyImporter.bip32Path}${bip32Path.slice(1)}`,
+        multisig,
+      });
+      this.setState({hasInteraction: true});
+      this.resetInteractionState();
+    }
+
+    // TODO: DRY out with test
+    confirmAddressDescription() {
+      const {network, requiredSigners, totalSigners} = this.props;
+      const {multisig} = this.props.node;
+      const addressType = multisigAddressType(multisig);
+
+      return (
+        <Box>
+          <p>Confirm the following {network} {addressType} {requiredSigners}-of-{totalSigners} multisig address on your device:</p>
+  
+          <Table>
+            <TableBody>
+  
+              <TableRow>
+                <TableCell>
+                  Address:
+                </TableCell>
+                <TableCell>
+                  <code>{multisig.address}</code>
+                </TableCell>
+              </TableRow>
+  
+  
+              <TableRow>
+                <TableCell>
+                  BIP32 Path:
+                </TableCell>
+                <TableCell>
+                  <code>{this.interaction.bip32Path}</code>
+                </TableCell>
+              </TableRow>
+  
+            </TableBody>
+          </Table>
+  
+        </Box>
+      );
+    }
 }
 
 
 function mapStateToProps(state, ownProps) {
   return {
     network: state.settings.network,
+    requiredSigners: state.settings.requiredSigners,
+    totalSigners: state.settings.totalSigners,
     client: state.client,
+    extendedPublicKeyImporters: state.quorum.extendedPublicKeyImporters
   }
 }
 

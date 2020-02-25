@@ -43,9 +43,10 @@ class ExtendedPublicKeySelector extends React.Component {
 
   render = () => {
     const { selection } = this.state;
+    const { number } = this.props;
     return (<div>
       {this.renderKeySelectorMenu()}
-      {selection > 0 && this.renderSignatureImporter()}
+      {selection > 0 && number > 0 && this.renderSignatureImporter()}
     </div>
 
     )
@@ -63,8 +64,10 @@ class ExtendedPublicKeySelector extends React.Component {
 
   getAssociatedExtendedPublicKeyImporter = () => {
     const { signingKeys, number, extendedPublicKeyImporters } = this.props;
+    const { selection } = this.state;
 
-    if (signingKeys[number - 1] > 0) return extendedPublicKeyImporters[signingKeys[number - 1]];
+    const keyIndex = number > 0 ? signingKeys[number - 1] : selection
+    if (keyIndex > 0) return extendedPublicKeyImporters[keyIndex];
     return null;
   }
 
@@ -74,7 +77,7 @@ class ExtendedPublicKeySelector extends React.Component {
     const labelId = `keySelector${number}`
 
     const extendedPublicKeyImporter = this.getAssociatedExtendedPublicKeyImporter();
-    if (extendedPublicKeyImporter !== null) {
+    if (extendedPublicKeyImporter !== null && number > 0) {
       const signatureImporter = signatureImporters[number];
       if (signatureImporter.signature.length > 0) return ""
 
@@ -108,7 +111,8 @@ class ExtendedPublicKeySelector extends React.Component {
   }
 
   extendedPublicKeyImporterNotUsed = (extendedPublicKeyImporter) => {
-    const { inputs, network, signatureImporters} = this.props;
+    const { inputs, network, signatureImporters, number} = this.props;
+    if (number === 0) return true;
 
     for(let inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
       const input = inputs[inputIndex];
@@ -151,11 +155,18 @@ class ExtendedPublicKeySelector extends React.Component {
     } else {
       setMethod(number, importMethod)
     }
-    setSigningKey(number, value);
+    if (number > 0) setSigningKey(number, value);
   }
 
   handleKeyChange = (event) => {
     this.updateKeySelection(event.target.value);
+
+    if (this.props.onChange) {
+      const { extendedPublicKeyImporters} = this.props;
+
+      const importer = extendedPublicKeyImporters[event.target.value]
+      this.props.onChange(event, importer);
+    }
   }
 
 }
