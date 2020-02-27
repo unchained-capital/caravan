@@ -8,7 +8,8 @@ import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
 import {Box, Button, Link} from "@material-ui/core";
 
 // Actions
-import { finalizeOutputs, setRequiredSigners, resetTransaction} from '../../actions/transactionActions';
+import { finalizeOutputs, setRequiredSigners, 
+  resetTransaction, setSpendStep, SPEND_STEP_CREATE} from '../../actions/transactionActions';
 import { spendNodes, resetWalletView,   updateChangeNodeAction } from "../../actions/walletActions";
 import UnsignedTransaction from '../UnsignedTransaction';
 
@@ -110,10 +111,11 @@ class WalletSign extends React.Component {
   }
 
   handleCancel = (event) => {
-    const { finalizeOutputs, requiredSigners, setRequiredSigners } = this.props;
+    const { finalizeOutputs, requiredSigners, setRequiredSigners, setSpendStep } = this.props;
     event.preventDefault();
     setRequiredSigners(requiredSigners); // this will generate signature importers
     finalizeOutputs(false);
+    setSpendStep(SPEND_STEP_CREATE)
 
   }
 }
@@ -137,6 +139,7 @@ const mapDispatchToProps = {
   resetTransaction,
   resetWalletView,
   updateChangeNode: updateChangeNodeAction,
+  setSpendStep,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSign);

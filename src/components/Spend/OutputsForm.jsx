@@ -235,6 +235,7 @@ class OutputsForm extends React.Component {
 
           </Box>
 
+          {!isWallet &&
           <Box mt={actionMt}>
             <Grid container spacing={3} justify="center">
               <Grid item>
@@ -260,7 +261,7 @@ class OutputsForm extends React.Component {
               </Grid>
 
             </Grid>
-          </Box>
+          </Box>}
 
         </React.Fragment>
 

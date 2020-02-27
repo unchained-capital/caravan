@@ -16,19 +16,25 @@ import {
   setOutputAddress,
   updateAutoSpendAction,
   setChangeAddressAction,
+  finalizeOutputs,
+  SPEND_STEP_CREATE,
+  SPEND_STEP_PREVIEW,
+  SPEND_STEP_SIGN,
+  setSpendStep,
  } from "../../actions/transactionActions";
 
 // Components
 import NodeSet from "./NodeSet";
 import OutputsForm from '../Spend/OutputsForm';
-import WalletSign from './WalletSign'
+import WalletSign from './WalletSign';
+import TransactionPreview from './TransactionPreview';
+
 import {
     Box, Grid, Switch,
-    FormControlLabel, Typography,
+    FormControlLabel, Typography, Button,
   } from '@material-ui/core';
 
-import { bitcoinsToSatoshis } from 'unchained-bitcoin/lib/utils';
-
+import { bitcoinsToSatoshis } from 'unchained-bitcoin';
 
 class WalletSpend extends React.Component {
 
@@ -49,48 +55,102 @@ class WalletSpend extends React.Component {
   }
 
   componentDidMount = () => {
-    const { changeNode, setChangeAddress } = this.props;
-    setChangeAddress(changeNode.multisig.address);
+    const { changeNode, setChangeAddress, finalizeOutputs, finalizedOutputs, autoSpend } = this.props;
+    if (autoSpend) setChangeAddress(changeNode.multisig.address);
+    if (finalizedOutputs) finalizeOutputs(false);
   }
 
   render() {
-    const { finalizedOutputs, autoSpend, updateNode, addNode } = this.props;
+    const { autoSpend, updateNode, addNode, spendingStep } = this.props;
+
     return (
       <Box style={{marginLeft: "10%"}}>
         <Grid container>
+          { (spendingStep === SPEND_STEP_SIGN) &&
           <Grid item md={12}>
-          <Box>
-              { finalizedOutputs &&
+            <Box>
                 <WalletSign/>
-              }
             </Box>
           </Grid>
-          {!finalizedOutputs &&
+          }
+          { (spendingStep === SPEND_STEP_CREATE) &&
           <Grid item md={12}>
             <Box mt={2}>
-            <Box mb={7}>
-            <div style={{ width: '100%' }}>
-              <Box display="flex" p={1}>
-                <Box p={1} flexGrow={1}>
-                <Typography align="center" variant="h4">Create Transaction</Typography>
+              <Box mb={7}>
+                <div style={{ width: '100%' }}>
+                  <Box display="flex" p={1}>
+                    <Box p={1} flexGrow={1}>
+                      <Typography align="center" variant="h4">Create Transaction</Typography>
+                    </Box>
+                    <Box p={1}>
+                      {this.renderSpend()}
+                    </Box>
+                  </Box>
+                </div>
+                <Box component="div" display={autoSpend ? 'none' : 'block'}>
+                  <NodeSet addNode={addNode} updateNode={updateNode}  />
                 </Box>
-                <Box p={1}>
-                {this.renderSpend()}
-                </Box>
+                <OutputsForm />
+                <div style={{ width: '100%' }}>
+                  <Box display="flex" p={1}>
+                    <Box p={1} flexGrow={1} mt={8}>
+                      <Typography align="center" variant="h4">
+                        <Button 
+                          onClick={this.showPreview} 
+                          variant="contained" 
+                          color="primary"
+                          disabled={this.previewDisabled()}
+                          >Preview Transaction</Button>
+                      </Typography>
+                    </Box>
+                  </Box>
+                </div>
+                  
               </Box>
-            </div>
-            <Box component="div" display={autoSpend ? 'none' : 'block'}>
-              <NodeSet addNode={addNode} updateNode={updateNode}  />
             </Box>
-              <OutputsForm />
-              </Box>
-              </Box>
+          </Grid>
+          }
+          { (spendingStep === SPEND_STEP_PREVIEW) &&
+          <Grid item md={12}>
+            <Box mt={3}>
+              <TransactionPreview editTransaction={this.showCreate} signTransaction={this.signTransaction} />
+            </Box>
           </Grid>
           }
         </Grid>
       </Box>
     )
   }
+
+  previewDisabled = () => {
+    const {finalizedOutputs, outputs, inputs, feeRateError, feeError, balanceError} = this.props;
+    if (inputs.length === 0) return true;
+    if (finalizedOutputs || feeRateError || feeError || balanceError) { return true; }
+    for (var i=0; i < outputs.length; i++) {
+      const output = outputs[i];
+      if (output.address === '' || output.amount === '' || output.addressError !== '' || output.amountError !== '') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  signTransaction = () => this.props.setSpendStep(SPEND_STEP_SIGN)
+
+  showPreview = () => {
+    const { finalizeOutputs } = this.props;
+
+    this.props.setSpendStep(SPEND_STEP_PREVIEW);
+    finalizeOutputs(true);
+  }
+
+  showCreate = () => {
+    const { finalizeOutputs } = this.props;
+
+    this.props.setSpendStep(SPEND_STEP_CREATE);
+    finalizeOutputs(false);
+  }
+
 
   renderSpend = () => {
     const { autoSpend } = this.props;
@@ -147,6 +207,7 @@ class WalletSpend extends React.Component {
     setInputs(selectedInputs);
     if (changeOutputIndex > 0 || !autoSpend) setFeeRate(feeRate); // recalulate fee
   }
+
 }
 
 function mapStateToProps(state) {
@@ -168,7 +229,9 @@ const mapDispatchToProps = {
   resetNodesSpend,
   setFeeRate,
   addOutput,
+  finalizeOutputs,
   setChangeAddress: setChangeAddressAction,
+  setSpendStep,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);

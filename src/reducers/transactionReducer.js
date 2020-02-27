@@ -46,6 +46,8 @@ import {
   UPDATE_AUTO_SPEND,
   SET_SIGNING_KEY,
   SET_CHANGE_ADDRESS,
+  SET_SPEND_STEP,
+  SPEND_STEP_CREATE,
 } from '../actions/transactionActions';
 
 import {
@@ -97,6 +99,7 @@ const initialState = {
   changeAddress: "",
   updatesComplete: true,
   signingKeys: [0, 0], // default 2 required signers
+  spendingStep: SPEND_STEP_CREATE,
 };
 
 function updateInputs(state, action) {
@@ -434,6 +437,8 @@ export default (state = initialState, action) => {
     return updateState(state, { changeAddress: action.value });
   case RESET_NODES_SPEND:
     return updateInputs(state, {value: []});
+  case SET_SPEND_STEP:
+    return updateState(state, {spendingStep: action.value})
   default:
     return state;
   }

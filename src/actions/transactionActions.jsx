@@ -23,6 +23,11 @@ export const SET_CHANGE_OUTPUT_INDEX = 'SET_CHANGE_OUTPUT_INDEX';
 export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const SET_CHANGE_ADDRESS = "SET_CHANGE_ADDRESS";
 export const SET_SIGNING_KEY = "SET_SIGNING_KEY";
+export const SET_SPEND_STEP = "SET_SPEND_STEP";
+
+export const SPEND_STEP_CREATE = 0;
+export const SPEND_STEP_PREVIEW = 1;
+export const SPEND_STEP_SIGN = 2;
 
 export function choosePerformSpend() {
   return {
@@ -157,4 +162,9 @@ export function setSigningKey(number, extendedPublicKeyImporterIndex) {
   };
 }
 
-
+export function setSpendStep(value) {
+  return {
+    type: SET_SPEND_STEP,
+    value: value
+  };
+}
