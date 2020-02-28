@@ -70,8 +70,9 @@ class CreateWallet extends React.Component {
   }
 
   render = () => {
-    const {configuring, walletName, setName, deposits} = this.props;
-    
+    const {configuring, walletName, setName, deposits, change} = this.props;
+    const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
+      "Wallet loaded with errors" : "";
     return (
       <div>
         <h1 style={{marginBottom: 0}} >
@@ -85,6 +86,7 @@ class CreateWallet extends React.Component {
             <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
             <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
         </IconButton>
+        <FormHelperText style={{float: "right", padding: "11px"}} error>{walletLoadError}</FormHelperText>
 
 
         <Box>
