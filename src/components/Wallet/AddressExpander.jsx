@@ -231,9 +231,14 @@ class AddressExpander extends React.Component {
 
     confirmOnDevice = async () => {
       this.setState({interactionState: ACTIVE});
+      const {multisig} = this.props.node;
       try {
         const confirmed = await this.interaction.run()
-        this.setState({interactionState: ACTIVE, interactionMessage: "Success", interactionError:""});
+        if (confirmed.address === multisig.address && confirmed.serializedPath === this.interaction.bip32Path) {
+          this.setState({interactionState: ACTIVE, interactionMessage: "Success", interactionError:""});
+        } else {
+          this.setState({interactionState: ACTIVE, interactionError: "An unknow error occured", interactionMessage: ""});
+        }
       } catch (error) {
         this.setState({interactionState: ACTIVE, interactionError: error.message, interactionMessage: ""});
       }
