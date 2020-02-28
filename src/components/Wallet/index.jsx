@@ -19,6 +19,7 @@ import { Grid, Box, Drawer, IconButton, Button, FormHelperText, Typography }
   from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import NetworkPicker from '../NetworkPicker';
 import QuorumPicker from '../QuorumPicker';
@@ -65,6 +66,7 @@ class CreateWallet extends React.Component {
     showSettings: false,
     configError: "",
     configJson: "",
+    refreshing: false,
   }
 
   render = () => {
@@ -78,9 +80,10 @@ class CreateWallet extends React.Component {
         </h1>
         { this.totalBalance() }
         <IconButton 
-          onClick={() => this.generatorRefresh()} 
+          onClick={this.refesh} 
           style={{float: "right", display: this.walletActivated() ? "block" : "none"}}>
-            <RefreshIcon/>
+            <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
+            <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
         </IconButton>
 
 
@@ -94,7 +97,7 @@ class CreateWallet extends React.Component {
 
             <Box mt={2}><WalletGenerator 
               downloadWalletDetails={this.downloadWalletDetails}
-              refreshNodes={click => this.generatorRefresh = click}
+              refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
               />
             </Box>
 
@@ -104,6 +107,12 @@ class CreateWallet extends React.Component {
       </Box>
       </div>
     );
+  }
+
+  refesh = async () => {
+    this.setState({refreshing: true})
+    await this.generatorRefresh();
+    this.setState({refreshing: false})
   }
 
   walletActivated = () => {
