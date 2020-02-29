@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
   validateBIP32Path,
-  convertAndValidateExtendedPublicKey,
+  convertExtendedPublicKey,
+  validateExtendedPublicKey,
+  validateExtendedPublicKeyForNetwork,
   NETWORKS,
 } from 'unchained-bitcoin';
 import {
@@ -295,23 +297,37 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   validateAndSetExtendedPublicKey = (extendedPublicKey, errback, callback) => {
     const {number, network, extendedPublicKeyImporters, setExtendedPublicKey} = this.props;
-    const convertedPublicKey = convertAndValidateExtendedPublicKey(extendedPublicKey, network);
-    // setExtendedPublicKey(number, extendedPublicKey);
-    setExtendedPublicKey(number, convertedPublicKey.extendedPublicKey);
-
-    if (convertedPublicKey.error !== "") {
-      errback(convertedPublicKey.error);
-    } else {
-      if (convertedPublicKey.extendedPublicKey && Object.values(extendedPublicKeyImporters).find((extendedPublicKeyImporter, extendedPublicKeyImporterIndex) => (
-        extendedPublicKeyImporterIndex !== (number - 1) && extendedPublicKeyImporter.extendedPublicKey === convertedPublicKey.extendedPublicKey
-      ))) {
-        errback('This extended public key has already been imported.');
-      } else {
-        errback('');
-        this.setState({conversionMessage: convertedPublicKey.message})
-        this.finalize();
-        callback && callback();
+    const networkError = validateExtendedPublicKeyForNetwork(extendedPublicKey, network);
+    let actualExtendedPublicKey = extendedPublicKey;
+    if (networkError !== "") {
+      try {
+        actualExtendedPublicKey = convertExtendedPublicKey(extendedPublicKey, network === 'testnet' ? 'tpub' : 'xpub');
+      } catch (error) {
+        errback(error.message);
+        setExtendedPublicKey(number, extendedPublicKey);
+        return;
       }
+    }
+    
+    const validationError = validateExtendedPublicKey(actualExtendedPublicKey, network);
+    if (validationError !== "") {
+      errback(validationError);
+      setExtendedPublicKey(number, extendedPublicKey);
+      return;
+    }
+    setExtendedPublicKey(number, actualExtendedPublicKey);
+
+    if (actualExtendedPublicKey && Object.values(extendedPublicKeyImporters).find((extendedPublicKeyImporter, extendedPublicKeyImporterIndex) => (
+      extendedPublicKeyImporterIndex !== (number - 1) && extendedPublicKeyImporter.extendedPublicKey === actualExtendedPublicKey
+    ))) {
+      errback('This extended public key has already been imported.');
+    } else {
+      errback('');
+      const conversionMessage = actualExtendedPublicKey === extendedPublicKey ? "" : 
+        `Your extended public key has been converted from ${extendedPublicKey.slice(0, 4)} to ${actualExtendedPublicKey.slice(0, 4)}`;
+      this.setState({conversionMessage})
+      this.finalize();
+      callback && callback();
     }
   }
 

@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  convertAndValidateExtendedPublicKey,
+  convertExtendedPublicKey,
+  validateExtendedPublicKey,
+  validateExtendedPublicKeyForNetwork,
   deriveChildPublicKey,
 } from "unchained-bitcoin";
 
@@ -123,11 +125,30 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
 
   handleExtendedPublicKeyChange = (event) => {
     const {network} = this.props;
-    const enteredExtendedPublicKey = event.target.value;
-    const convertedPublicKey = convertAndValidateExtendedPublicKey(enteredExtendedPublicKey, network);
-    const extendedPublicKeyError = convertedPublicKey.error;
-    const extendedPublicKey = convertedPublicKey.extendedPublicKey;
-    this.setState({extendedPublicKey, extendedPublicKeyError, conversionMessage: convertedPublicKey.message});
+
+    const extendedPublicKey = event.target.value;
+
+    const networkError = validateExtendedPublicKeyForNetwork(extendedPublicKey, network);
+    let actualExtendedPublicKey = extendedPublicKey;
+    if (networkError !== "") {
+      try {
+        actualExtendedPublicKey = convertExtendedPublicKey(extendedPublicKey, network === 'testnet' ? 'tpub' : 'xpub');
+      } catch (error) {
+        this.setState({extendedPublicKey, extendedPublicKeyError: error.message, conversionMessage: ''});
+        return;
+      }
+    }
+    
+    const validationError = validateExtendedPublicKey(actualExtendedPublicKey, network);
+    if (validationError !== "") {
+      this.setState({extendedPublicKey, extendedPublicKeyError: validationError, conversionMessage: ''});
+      return;
+    }
+    const conversionMessage = actualExtendedPublicKey === extendedPublicKey ? "" : 
+    `Your extended public key has been converted from ${extendedPublicKey.slice(0, 4)} to ${actualExtendedPublicKey.slice(0, 4)}`;
+
+    this.setState({extendedPublicKey: actualExtendedPublicKey, extendedPublicKeyError:"", conversionMessage});
+
   };
 
 }
