@@ -297,7 +297,8 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   validateAndSetExtendedPublicKey = (extendedPublicKey, errback, callback) => {
     const {number, network, extendedPublicKeyImporters, setExtendedPublicKey} = this.props;
-    const networkError = validateExtendedPublicKeyForNetwork(extendedPublicKey, network);
+    console.log('validateExtendedPublicKey', validateExtendedPublicKeyForNetwork)
+    const networkError = validateExtendedPublicKey(extendedPublicKey, network);
     let actualExtendedPublicKey = extendedPublicKey;
     if (networkError !== "") {
       try {
