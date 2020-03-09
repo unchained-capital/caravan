@@ -1,7 +1,10 @@
-import {TREZOR} from "unchained-wallets";
+import { TREZOR } from "unchained-wallets";
 
 import publicKeyTests from "./publicKeys";
+import extendedPublicKeyTests from "./extendedPublicKeys";
 import signingTests from "./signing";
-import addressTests from "./addresses";
 
-export default publicKeyTests(TREZOR).concat(signingTests(TREZOR)).concat(addressTests(TREZOR));
+export default
+  publicKeyTests(TREZOR)
+    .concat(extendedPublicKeyTests(TREZOR))
+    .concat(signingTests(TREZOR));
