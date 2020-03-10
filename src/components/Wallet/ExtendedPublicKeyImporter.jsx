@@ -5,7 +5,6 @@ import {
   validateBIP32Path,
   convertExtendedPublicKey,
   validateExtendedPublicKey,
-  validateExtendedPublicKeyForNetwork,
   NETWORKS,
 } from 'unchained-bitcoin';
 import {
@@ -297,7 +296,6 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   validateAndSetExtendedPublicKey = (extendedPublicKey, errback, callback) => {
     const {number, network, extendedPublicKeyImporters, setExtendedPublicKey} = this.props;
-    console.log('validateExtendedPublicKey', validateExtendedPublicKeyForNetwork)
     const networkError = validateExtendedPublicKey(extendedPublicKey, network);
     let actualExtendedPublicKey = extendedPublicKey;
     if (networkError !== "") {

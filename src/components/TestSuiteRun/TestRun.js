@@ -215,8 +215,11 @@ class TestRunBase extends React.Component {
     switch (typeof(output)) {
     case "object":
       return JSON.stringify(output);
+    case "string":
+    case "number":  
+      return output
     default:
-      return output.toString();
+      return 'Did not recognize output type';
     }
   }
 
