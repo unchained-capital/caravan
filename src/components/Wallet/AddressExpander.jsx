@@ -10,7 +10,7 @@ import {
   Table, TableBody, TableRow, TableCell,
   Typography,
 } from '@material-ui/core';
-import UTXOSet from "../Spend/UTXOSet";
+import UTXOSet from "../ScriptExplorer/UTXOSet";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -24,7 +24,7 @@ import {
   Error as ErrorIcon,
 } from '@material-ui/icons';
 
-import styles from '../Spend//styles.module.scss';
+import styles from '../ScriptExplorer/styles.module.scss';
 import {
   blockExplorerAddressURL,
   multisigAddressType

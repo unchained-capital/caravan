@@ -25,7 +25,7 @@ import {
 
 // Components
 import NodeSet from "./NodeSet";
-import OutputsForm from '../Spend/OutputsForm';
+import OutputsForm from '../ScriptExplorer/OutputsForm';
 import WalletSign from './WalletSign';
 import TransactionPreview from './TransactionPreview';
 

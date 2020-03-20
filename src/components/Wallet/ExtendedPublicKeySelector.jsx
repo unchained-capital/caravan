@@ -14,7 +14,7 @@ import { setSigningKey } from "../../actions/transactionActions";
 import {
   deriveChildPublicKey,
 } from 'unchained-bitcoin';
-import SignatureImporter from '../Spend/SignatureImporter';
+import SignatureImporter from '../ScriptExplorer/SignatureImporter';
 
 import {
   Box,
