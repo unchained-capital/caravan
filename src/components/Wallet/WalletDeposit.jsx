@@ -50,11 +50,9 @@ class WalletDeposit extends React.Component {
 
   getDepositableNodes = () => {
     const { depositNodes } = this.props;
-    console.log('depositNodes', depositNodes)
-
     const nodes = Object.values(depositNodes.nodes)
-    console.log('depositable', nodes)
     const depositable = []
+
     for (let i=0; i < nodes.length; i++) {
       const node = nodes[i];
       if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {

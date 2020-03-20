@@ -86,17 +86,16 @@ class CreateWallet extends React.Component {
             <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
             <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
         </IconButton>
-        <FormHelperText style={{float: "right", padding: "11px"}} error>{walletLoadError}</FormHelperText>
-
-
+        {
+          walletLoadError.length ? <FormHelperText style={{ float: "right", padding: "11px" }} error>{walletLoadError}</FormHelperText> : ''
+        }
         <Box>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+              {this.renderWalletImporter()}
+          </Grid>
           <Grid item md={configuring ? 8 : 12}>
-
-            {this.renderWalletImporter()}
-
             {this.renderExtendedPublicKeyImporters()}
-
             <Box mt={2}><WalletGenerator 
               downloadWalletDetails={this.downloadWalletDetails}
               refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream

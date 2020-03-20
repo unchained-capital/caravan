@@ -6,7 +6,7 @@ import {
   Box, Typography, CardHeader, CardContent, Grid, Card, Button,
   List, ListItem, ListItemText, ListItemIcon, CardActions,
 } from "@material-ui/core";
-import {Description, GitHub, YouTube, BugReport} from "@material-ui/icons";
+import {Description, GitHub, YouTube, BugReport, Speed} from "@material-ui/icons";
 import Disclaimer from "./Disclaimer";
 
 const Help = () => (
@@ -122,7 +122,7 @@ const Help = () => (
           <Card>
             <CardHeader title="Supported Devices"></CardHeader>
             <CardContent>
-              Caravan has been <a href="#/test" target="_blank">tested</a> with the following hardware wallets:
+              Caravan has been <a href="#/test">tested</a> with the following hardware wallets:
               <ul>
                 <li>{externalLink("https://shop.trezor.io/product/trezor-one-white", "Trezor One")}</li>
                 <li>{externalLink("https://www.ledger.com/products/ledger-nano-s", "Ledger Nano S")}</li>
@@ -136,6 +136,7 @@ const Help = () => (
             </CardContent>
             <CardActions>
               <Button href="https://github.com/unchained-capital/caravan/issues"><BugReport /> &nbsp; Report Issue</Button>
+              <Button href="#/test" type="secondary"><Speed /> &nbsp; Run Tests</Button>
             </CardActions>
           </Card>
 

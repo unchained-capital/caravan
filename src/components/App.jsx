@@ -6,7 +6,7 @@ import Help from './Help';
 import Wallet from './Wallet';
 import CreateAddress from './CreateAddress';
 import {TestSuiteRun} from './TestSuiteRun';
-import Spend from './Spend';
+import ScriptExplorer from './ScriptExplorer';
 import Navbar from './Navbar';
 import Footer from "./Footer";
 import { CssBaseline, Container } from '@material-ui/core';
@@ -23,8 +23,8 @@ const App = () => (
         <Router>
           <Switch>
             <Route path="/test" component={TestSuiteRun} />
-            <Route path="/address" component={CreateAddress} />
-            <Route path="/spend" component={Spend} />
+            <Route path="/create" component={CreateAddress} />
+            <Route path="/script" component={ScriptExplorer} />
             <Route path="/help" component={Help} />
             <Route path="/" component={Wallet} />
           </Switch>

@@ -25,12 +25,12 @@ class CreateAddress extends React.Component {
     return (
       <Box mt={2}>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <h1>Address Generator</h1>
+          </Grid>
           <Grid item md={8}>
-
-            {this.renderPublicKeyImporters()}
-
+              {this.renderPublicKeyImporters()}
             <Box mt={2}><AddressGenerator /></Box>
-
           </Grid>
           <Grid item md={4}>
             <Box><QuorumPicker /></Box>
