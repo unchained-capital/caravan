@@ -23,13 +23,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NavItem = ({ href, title, classes, handleClose }) => (
-  <a href={href} className={classes.menuLink}>
-    <MenuItem className={classes.menuItem} onClick={handleClose}>
-      {title}
-    </MenuItem>
-  </a>
-)
+class NavItem extends React.Component {
+ render() {
+   const { href, title, classes, handleClose } = this.props
+   return (
+     <a href={href} className={classes.menuLink}>
+       <MenuItem className={classes.menuItem} onClick={handleClose}>
+         {title}
+       </MenuItem>
+     </a>
+   )} 
+}
 
 const Navbar = () => {
   const classes = useStyles();
