@@ -69,6 +69,12 @@ class CreateWallet extends React.Component {
     refreshing: false,
   }
 
+  componentDidMount() {
+    if (sessionStorage) {
+      const configJson = sessionStorage.getItem('caravan_config')
+      if (configJson) this.setConfigJson(configJson)
+    }
+  }
   render = () => {
     const {configuring, walletName, setName, deposits, change} = this.props;
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
@@ -181,22 +187,31 @@ class CreateWallet extends React.Component {
     return this.validateExtendedPublicKeys(config.extendedPublicKeys, config.network);
   }
 
+  setConfigJson(configJson) {
+    let configError
+    try {
+      const config = JSON.parse(configJson);
+      configError = this.validateConfig(config);
+    } catch (parseError) {
+      configError = "Invlaid JSON";
+    }
+
+    if (sessionStorage)
+      sessionStorage.setItem('caravan_config', configJson)
+    
+    // async since importDetails needs the updated state for it to work
+    this.setState({ configJson, configError }, () => {
+      if (configError === "") this.importDetails(); 
+    });
+  }
+  
   handleImport = ({ target }) => {
     const fileReader = new FileReader();
 
     fileReader.readAsText(target.files[0]);
     fileReader.onload = (event) => {
       const configJson = event.target.result;
-      let configError
-      try {
-        const config = JSON.parse(configJson);
-        configError = this.validateConfig(config);
-      } catch(parseError) {
-        configError = "Invlaid JSON";
-      }
-
-      this.setState({configJson, configError});
-      if (configError === "") this.importDetails();
+      this.setConfigJson(configJson)
     };
   };
 
