@@ -15,19 +15,19 @@ import {
 } from "../../actions/walletActions";
 
 // Components
-import { Grid, Box, Drawer, IconButton, Button, FormHelperText, Typography }
+import { Grid, Box, Drawer, IconButton, Button, FormHelperText }
   from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import WalletInfoCard from './WalletInfoCard';
 import NetworkPicker from '../NetworkPicker';
 import QuorumPicker from '../QuorumPicker';
 import AddressTypePicker from '../AddressTypePicker';
 import ClientPicker from '../ClientPicker';
 import WalletGenerator from './WalletGenerator';
 import ExtendedPublicKeyImporter from './ExtendedPublicKeyImporter';
-import EditableName from "../EditableName";
 import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
@@ -76,43 +76,54 @@ class CreateWallet extends React.Component {
     }
   }
   render = () => {
-    const {configuring, walletName, setName, deposits, change} = this.props;
+    const {configuring, walletName, setName, deposits, change, network} = this.props;
+    const balance = this.totalBalance()
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
       "Wallet loaded with errors" : "";
     return (
-      <div>
-        <h1 style={{marginBottom: 0}} >
-        {!Object.keys(deposits.nodes).length && <EditableName number={0} name={walletName} setName={setName} />}
-        {Object.keys(deposits.nodes).length > 0 && <span>{walletName}</span>}
-        </h1>
-        { this.totalBalance() }
-        <IconButton 
-          onClick={this.refesh} 
-          style={{float: "right", display: this.walletActivated() ? "block" : "none"}}>
-            <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
-            <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
-        </IconButton>
+      <React.Fragment>
+        <Box mt={3}>
+          <Grid container>
+            <Grid item xs={10} md={6}>
+              <WalletInfoCard 
+                editable={!Object.keys(deposits.nodes).length} 
+                walletName={walletName}
+                setName={setName}
+                balance={balance}
+                network={network}
+              />
+            </Grid>
+            <Grid item xs={1}>
+                <IconButton 
+                  onClick={this.refesh} 
+                  style={{float: "right", display: this.walletActivated() ? "block" : "none"}}>
+                    <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
+                    <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
+                </IconButton>
+            </Grid>
+          </Grid>
+        </Box>
         {
           walletLoadError.length ? <FormHelperText style={{ float: "right", padding: "11px" }} error>{walletLoadError}</FormHelperText> : ''
         }
         <Box>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-              {this.renderWalletImporter()}
-          </Grid>
-          <Grid item md={configuring ? 8 : 12}>
-            {this.renderExtendedPublicKeyImporters()}
-            <Box mt={2}><WalletGenerator 
-              downloadWalletDetails={this.downloadWalletDetails}
-              refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
-              />
-            </Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+                {this.renderWalletImporter()}
+            </Grid>
+            <Grid item md={configuring ? 8 : 12}>
+              {this.renderExtendedPublicKeyImporters()}
+              <Box mt={2}><WalletGenerator 
+                downloadWalletDetails={this.downloadWalletDetails}
+                refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
+                />
+              </Box>
 
+            </Grid>
+            {this.renderSettings()}
           </Grid>
-          {this.renderSettings()}
-        </Grid>
-      </Box>
-      </div>
+        </Box>
+      </React.Fragment>
     );
   }
 
@@ -130,8 +141,7 @@ class CreateWallet extends React.Component {
     const { deposits, change } = this.props;
     if (!Object.keys(deposits.nodes).length) return "";
     const btc = satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
-
-    return <Typography variant="caption">{btc} BTC</Typography>
+    return btc
   }
 
 
