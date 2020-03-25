@@ -25,7 +25,7 @@ const Footer = () => (
       </Grid>
 
       <Grid item  sm={6}>
-        <p>Copyright 2019 by Unchained Capital and released under an MIT license.</p>
+        <p>Copyright 2020 by Unchained Capital and released under an MIT license.</p>
       </Grid>
 
       <Grid item sm={1}>
