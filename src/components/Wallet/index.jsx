@@ -11,14 +11,12 @@ import BigNumber from "bignumber.js";
 import {
   updateDepositNodeAction,
   updateChangeNodeAction,
-  WALLET_MODES,
 } from "../../actions/walletActions";
 import { walletSelectors } from '../../selectors'
 
 // Components
-import { Grid, Box, Drawer, IconButton, Button, FormHelperText }
+import { Grid, Box, IconButton, Button, FormHelperText }
   from '@material-ui/core';
-import { Settings } from '@material-ui/icons';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -29,7 +27,6 @@ import AddressTypePicker from '../AddressTypePicker';
 import ClientPicker from '../ClientPicker';
 import WalletGenerator from './WalletGenerator';
 import ExtendedPublicKeyImporter from './ExtendedPublicKeyImporter';
-import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
 import {
@@ -65,7 +62,6 @@ class CreateWallet extends React.Component {
   }
 
   state = {
-    showSettings: false,
     configError: "",
     configJson: "",
     refreshing: false,
@@ -287,8 +283,7 @@ class CreateWallet extends React.Component {
   unknownAddresses = [];
 
   renderSettings = () => {
-    const {configuring, walletMode, client} = this.props;
-    const spending = walletMode === WALLET_MODES.SPEND;
+    const {configuring} = this.props;
     
     if (configuring)
     return (
@@ -299,42 +294,6 @@ class CreateWallet extends React.Component {
           <Box mt={2}><ClientPicker /></Box>
         </Grid>
       )
-      else {
-        const useAddressImporter = !spending && client.type === "private";
-        if (useAddressImporter) {
-          this.unknownAddresses = this.getUnknownAddressNodes()
-            .map(node => node.multisig.address) ;
-        }
-      return (
-        <div>
-        <Box position="fixed" right={10}>
-          <IconButton onClick={this.toggleDrawer}>
-            <Settings/>
-          </IconButton>
-        </Box>
-        <Drawer md={4} anchor="right" open={this.state.showSettings} onClose={this.toggleDrawer}>
-          <Box  width={400}>
-            <Box mt={2}>
-              <ClientPicker />
-              { useAddressImporter &&
-                <Box p={2}>
-                <BitcoindAddressImporter
-                  addresses={this.unknownAddresses}
-                  importCallback={this.addressesImported}
-                  /></Box>
-              }
-            </Box>
-            <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Export Wallet Details</Button></Box>
-          </Box>
-        </Drawer>
-
-        </div>
-      )
-    }
-  }
-
-  toggleDrawer = () => {
-    this.setState({showSettings: !this.state.showSettings})
   }
 
   getUnknownAddressNodes = () => {
