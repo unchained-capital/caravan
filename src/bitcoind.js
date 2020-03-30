@@ -41,7 +41,7 @@ export function bitcoindParams(client) {
 }
 
 /**
- * Fetch information for signing transactions from bitcoind RPC
+ * Fetch unspent outputs for a single or set of addresses
  * @param {Object} options - what is needed to communicate with the RPC
  * @param {string} options.url - where to connect
  * @param {AxiosBasicCredentials} options.auth - username and password

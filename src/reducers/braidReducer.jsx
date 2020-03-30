@@ -47,6 +47,10 @@ function updateNode(state, action) {
   };
 
   if (typeof action.value.spend !== 'undefined') {
+    // TODO (BUCK): I'm not sure this works. If you change
+    // the output value of a spend before spending, this will just
+    // add the new value to the previous value. We also can't just
+    // reset spendingSats because there might be multiple outputs
     updatedState.spendingSats = action.value.spend ?
       state.spendingSats.plus(node.balanceSats) :
       state.spendingSats.minus(node.balanceSats);
@@ -108,7 +112,6 @@ function spendNodes(state) {
     }
   })
   return updatedState;
-
 }
 
 function resetSpend(state) {

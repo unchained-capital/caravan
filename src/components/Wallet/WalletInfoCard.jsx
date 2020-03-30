@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const WalletInfoCard = ({ walletName, setName, balance=0, pending, editable, network, children }) => {
+const WalletInfoCard = ({ walletName, setName, balance=0, pendingBalance, editable, network, children }) => {
   const classes = useStyles();
   return (
     <Card>
@@ -50,7 +50,22 @@ const WalletInfoCard = ({ walletName, setName, balance=0, pending, editable, net
               </Grid>
               <Grid container className={classes.gutter}>
                 <Grid item xs={12} mt={5}>
-                  <Typography variant="subtitle" className={classes.balance}>{balance} BTC</Typography>
+                  <Typography variant="subtitle1" className={classes.balance}>
+                    {balance} BTC
+                    { pendingBalance !== 0 ?
+                        <span 
+                          style={{ 
+                            color: pendingBalance > 0 ? 'green' : 'red',
+                            margin: '21px',
+                            fontSize: '1rem'
+                           }}
+                        >
+                          {pendingBalance > 0 ? '+' : ''}
+                          {pendingBalance} BTC
+                         </span>
+                      : ''
+                    }
+                  </Typography>
                 </Grid>
                 <Grid item>
                   <Typography variant="caption">Confirmed balance</Typography>
@@ -70,7 +85,7 @@ WalletInfoCard.propTypes = {
   walletName: PropTypes.string.isRequired,
   network: PropTypes.string,
   balance: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  pending: PropTypes.number,
+  pendingBalance: PropTypes.number,
   editable: PropTypes.bool.isRequired,
   setName: PropTypes.func.isRequired,
   children: PropTypes.node,

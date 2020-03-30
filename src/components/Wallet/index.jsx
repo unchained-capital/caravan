@@ -13,6 +13,7 @@ import {
   updateChangeNodeAction,
   WALLET_MODES,
 } from "../../actions/walletActions";
+import { walletSelectors } from '../../selectors'
 
 // Components
 import { Grid, Box, Drawer, IconButton, Button, FormHelperText }
@@ -56,6 +57,7 @@ class CreateWallet extends React.Component {
 
   static propTypes = {
     totalSigners: PropTypes.number.isRequired,
+    pendingBalance: PropTypes.number,
   };
 
   static defaultProps = {
@@ -76,7 +78,7 @@ class CreateWallet extends React.Component {
     }
   }
   render = () => {
-    const {configuring, walletName, setName, deposits, change, network} = this.props;
+    const {configuring, walletName, setName, deposits, change, network, pendingBalance} = this.props;
     const balance = this.totalBalance()
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
       "Wallet loaded with errors" : "";
@@ -90,6 +92,7 @@ class CreateWallet extends React.Component {
                 walletName={walletName}
                 setName={setName}
                 balance={balance}
+                pendingBalance={+satoshisToBitcoins(pendingBalance).toFixed()}
                 network={network}
               />
             </Grid>
@@ -470,6 +473,7 @@ function mapStateToProps(state) {
       nodesLoaded: state.wallet.common.nodesLoaded,
       walletMode: state.wallet.common.walletMode,
     },
+    pendingBalance: walletSelectors.getPendingBalance(state),
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
     ...state.wallet,
