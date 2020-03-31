@@ -11,24 +11,22 @@ import BigNumber from "bignumber.js";
 import {
   updateDepositNodeAction,
   updateChangeNodeAction,
-  WALLET_MODES,
 } from "../../actions/walletActions";
+import { walletSelectors } from '../../selectors'
 
 // Components
-import { Grid, Box, Drawer, IconButton, Button, FormHelperText, Typography }
+import { Grid, Box, IconButton, Button, FormHelperText }
   from '@material-ui/core';
-import { Settings } from '@material-ui/icons';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import WalletInfoCard from './WalletInfoCard';
 import NetworkPicker from '../NetworkPicker';
 import QuorumPicker from '../QuorumPicker';
 import AddressTypePicker from '../AddressTypePicker';
 import ClientPicker from '../ClientPicker';
 import WalletGenerator from './WalletGenerator';
 import ExtendedPublicKeyImporter from './ExtendedPublicKeyImporter';
-import EditableName from "../EditableName";
-import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
 import {
@@ -56,6 +54,7 @@ class CreateWallet extends React.Component {
 
   static propTypes = {
     totalSigners: PropTypes.number.isRequired,
+    pendingBalance: PropTypes.number,
   };
 
   static defaultProps = {
@@ -63,50 +62,67 @@ class CreateWallet extends React.Component {
   }
 
   state = {
-    showSettings: false,
     configError: "",
     configJson: "",
     refreshing: false,
   }
 
+  componentDidMount() {
+    if (sessionStorage) {
+      const configJson = sessionStorage.getItem('caravan_config')
+      if (configJson) this.setConfigJson(configJson)
+    }
+  }
   render = () => {
-    const {configuring, walletName, setName, deposits, change} = this.props;
+    const {configuring, walletName, setName, deposits, change, network, pendingBalance} = this.props;
+    const balance = this.totalBalance()
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
       "Wallet loaded with errors" : "";
     return (
-      <div>
-        <h1 style={{marginBottom: 0}} >
-        {!Object.keys(deposits.nodes).length && <EditableName number={0} name={walletName} setName={setName} />}
-        {Object.keys(deposits.nodes).length > 0 && <span>{walletName}</span>}
-        </h1>
-        { this.totalBalance() }
-        <IconButton 
-          onClick={this.refesh} 
-          style={{float: "right", display: this.walletActivated() ? "block" : "none"}}>
-            <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
-            <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
-        </IconButton>
+      <React.Fragment>
+        <Box mt={3}>
+          <Grid container>
+            <Grid item xs={10} md={6}>
+              <WalletInfoCard 
+                editable={!Object.keys(deposits.nodes).length} 
+                walletName={walletName}
+                setName={setName}
+                balance={balance}
+                pendingBalance={+satoshisToBitcoins(pendingBalance).toFixed()}
+                network={network}
+              />
+            </Grid>
+            <Grid item xs={1}>
+                <IconButton 
+                  onClick={this.refesh} 
+                  style={{float: "right", display: this.walletActivated() ? "block" : "none"}}>
+                    <RefreshIcon  style={{display: this.state.refreshing ? 'none' : 'block'}}/>
+                    <CircularProgress size={24} style={{display: this.state.refreshing ? 'block' : 'none'}} />
+                </IconButton>
+            </Grid>
+          </Grid>
+        </Box>
         {
           walletLoadError.length ? <FormHelperText style={{ float: "right", padding: "11px" }} error>{walletLoadError}</FormHelperText> : ''
         }
         <Box>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-              {this.renderWalletImporter()}
-          </Grid>
-          <Grid item md={configuring ? 8 : 12}>
-            {this.renderExtendedPublicKeyImporters()}
-            <Box mt={2}><WalletGenerator 
-              downloadWalletDetails={this.downloadWalletDetails}
-              refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
-              />
-            </Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+                {this.renderWalletImporter()}
+            </Grid>
+            <Grid item md={configuring ? 8 : 12}>
+              {this.renderExtendedPublicKeyImporters()}
+              <Box mt={2}><WalletGenerator 
+                downloadWalletDetails={this.downloadWalletDetails}
+                refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
+                />
+              </Box>
 
+            </Grid>
+            {this.renderSettings()}
           </Grid>
-          {this.renderSettings()}
-        </Grid>
-      </Box>
-      </div>
+        </Box>
+      </React.Fragment>
     );
   }
 
@@ -124,8 +140,7 @@ class CreateWallet extends React.Component {
     const { deposits, change } = this.props;
     if (!Object.keys(deposits.nodes).length) return "";
     const btc = satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
-
-    return <Typography variant="caption">{btc} BTC</Typography>
+    return btc
   }
 
 
@@ -181,22 +196,31 @@ class CreateWallet extends React.Component {
     return this.validateExtendedPublicKeys(config.extendedPublicKeys, config.network);
   }
 
+  setConfigJson(configJson) {
+    let configError
+    try {
+      const config = JSON.parse(configJson);
+      configError = this.validateConfig(config);
+    } catch (parseError) {
+      configError = "Invlaid JSON";
+    }
+
+    if (sessionStorage)
+      sessionStorage.setItem('caravan_config', configJson)
+    
+    // async since importDetails needs the updated state for it to work
+    this.setState({ configJson, configError }, () => {
+      if (configError === "") this.importDetails(); 
+    });
+  }
+  
   handleImport = ({ target }) => {
     const fileReader = new FileReader();
 
     fileReader.readAsText(target.files[0]);
     fileReader.onload = (event) => {
       const configJson = event.target.result;
-      let configError
-      try {
-        const config = JSON.parse(configJson);
-        configError = this.validateConfig(config);
-      } catch(parseError) {
-        configError = "Invlaid JSON";
-      }
-
-      this.setState({configJson, configError});
-      if (configError === "") this.importDetails();
+      this.setConfigJson(configJson)
     };
   };
 
@@ -259,8 +283,7 @@ class CreateWallet extends React.Component {
   unknownAddresses = [];
 
   renderSettings = () => {
-    const {configuring, walletMode, client} = this.props;
-    const spending = walletMode === WALLET_MODES.SPEND;
+    const {configuring} = this.props;
     
     if (configuring)
     return (
@@ -271,42 +294,6 @@ class CreateWallet extends React.Component {
           <Box mt={2}><ClientPicker /></Box>
         </Grid>
       )
-      else {
-        const useAddressImporter = !spending && client.type === "private";
-        if (useAddressImporter) {
-          this.unknownAddresses = this.getUnknownAddressNodes()
-            .map(node => node.multisig.address) ;
-        }
-      return (
-        <div>
-        <Box position="fixed" right={10}>
-          <IconButton onClick={this.toggleDrawer}>
-            <Settings/>
-          </IconButton>
-        </Box>
-        <Drawer md={4} anchor="right" open={this.state.showSettings} onClose={this.toggleDrawer}>
-          <Box  width={400}>
-            <Box mt={2}>
-              <ClientPicker />
-              { useAddressImporter &&
-                <Box p={2}>
-                <BitcoindAddressImporter
-                  addresses={this.unknownAddresses}
-                  importCallback={this.addressesImported}
-                  /></Box>
-              }
-            </Box>
-            <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={this.downloadWalletDetails}>Export Wallet Details</Button></Box>
-          </Box>
-        </Drawer>
-
-        </div>
-      )
-    }
-  }
-
-  toggleDrawer = () => {
-    this.setState({showSettings: !this.state.showSettings})
   }
 
   getUnknownAddressNodes = () => {
@@ -445,6 +432,7 @@ function mapStateToProps(state) {
       nodesLoaded: state.wallet.common.nodesLoaded,
       walletMode: state.wallet.common.walletMode,
     },
+    pendingBalance: walletSelectors.getPendingBalance(state),
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
     ...state.wallet,

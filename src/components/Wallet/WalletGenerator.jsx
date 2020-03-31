@@ -13,8 +13,12 @@ import {
 import { isWalletAddressNotFoundError } from '../../bitcoind'
 // Components
 import {
-  Button, Card, CardHeader,
-  CardContent, Link
+  Button, 
+  Card, 
+  CardHeader,
+  CardContent, 
+  Link,
+  Box,
 } from '@material-ui/core';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
@@ -89,7 +93,8 @@ class WalletGenerator extends React.Component {
       if (generating) {
         return (
           <div>
-            {<WalletControl addNode={this.addNode} updateNode={this.updateNode}/>}
+            <WalletControl addNode={this.addNode} updateNode={this.updateNode}/>
+            <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={downloadWalletDetails}>Export Wallet Details</Button></Box>
           </div>
         );
       } else {
