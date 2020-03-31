@@ -344,13 +344,12 @@ function finalizeOutputs(state, action) {
 }
 
 function updateRequiredSigners(state, action) {
-  let newState = updateState(state, { requiredSigners: action.value });
-  if (action.value > state.signingKeys.length) {
-    for(var i=0; i < action.value - state.signingKeys.length; i++) newState.signingKeys.push(0);
-  } else if (action.value < state.signingKeys.length) {
-    newState.signingKeys = state.signingKeys.slice(0, state.signingKeys.length - action.value)
-  }
-  return newState;
+  return updateState(
+    state, 
+    { 
+      requiredSigners: action.value, 
+      signingKeys: Array(action.value).fill(0) 
+  });
 }
 
 function updateSigningKey(state, action) {

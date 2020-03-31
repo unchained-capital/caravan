@@ -42,7 +42,8 @@ describe('Test transactionReducer', () => {
       [1, 2, 3, 4, 5, 6, 7].forEach(m => {
         const r = reducer(
           {
-            requiredSigners: 2
+            requiredSigners: 2,
+            signingKeys: [0,0]
           },
           {
             type: SET_REQUIRED_SIGNERS,
@@ -50,6 +51,7 @@ describe('Test transactionReducer', () => {
           },
         )
         expect(r.requiredSigners).toEqual(m);
+        expect(r.signingKeys).toHaveLength(m)
       });
     });
   });
