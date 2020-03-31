@@ -112,9 +112,10 @@ class CreateWallet extends React.Component {
             </Grid>
             <Grid item md={configuring ? 8 : 12}>
               {this.renderExtendedPublicKeyImporters()}
-              <Box mt={2}><WalletGenerator 
-                downloadWalletDetails={this.downloadWalletDetails}
-                refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
+              <Box mt={2}>
+                <WalletGenerator 
+                  downloadWalletDetails={this.downloadWalletDetails}
+                  refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
                 />
               </Box>
 

@@ -67,15 +67,13 @@ class BitcoindAddressImporter extends React.Component {
       }
       {
         !addressPresent && !autoImport &&
-        <FormHelperText>To get accurate information from your node your {this.pluralOrSingularAddress()}
+        <FormHelperText>To get accurate information from your node your {this.pluralOrSingularAddress()}{' '}
           will need to be imported to your node.  Importing will give you accurate balance information
           however to know if an address hase been used previously, a rescan needs to take place.
         </FormHelperText>
       }
       <FormHelperText error>{addressesError}</FormHelperText>
-        {/* <FormHelperText>Addresses used with bitcoind node must be imported to your node.  If you have not already, you can import now.</FormHelperText> */}
         <p>
-          {/* Import {this.pluralOrSingularAddress()} to your node? */}
           <Box component="span" ml={2}>
             <Button
               variant="contained"
@@ -104,7 +102,7 @@ class BitcoindAddressImporter extends React.Component {
 
   pluralOrSingularAddress() {
     const { addresses } = this.props;
-    return `address${addresses.length > 1 ? 'es' : ''}`
+    return `address${addresses && addresses.length > 1 ? 'es' : ''}`
   }
 
   handleRescan = (e) => {

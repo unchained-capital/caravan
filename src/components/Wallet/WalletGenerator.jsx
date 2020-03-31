@@ -22,6 +22,7 @@ import {
 } from '@material-ui/core';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
+// import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -94,7 +95,11 @@ class WalletGenerator extends React.Component {
         return (
           <div>
             <WalletControl addNode={this.addNode} updateNode={this.updateNode}/>
-            <Box mt={2} textAlign={"center"}><Button variant="contained" color="primary" onClick={downloadWalletDetails}>Export Wallet Details</Button></Box>
+            <Box mt={2} textAlign={"center"}>
+              <Button variant="contained" color="primary" onClick={downloadWalletDetails}>
+                Export Wallet Details
+              </Button>
+            </Box>
           </div>
         );
       } else {
