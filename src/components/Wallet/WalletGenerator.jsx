@@ -32,7 +32,7 @@ import {
   resetNodesFetchErrors,
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
-import { setIsWallet,   updateAutoSpendAction,} from "../../actions/transactionActions";
+import { setIsWallet } from "../../actions/transactionActions";
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 25;
@@ -88,7 +88,7 @@ class WalletGenerator extends React.Component {
   }
 
   body() {
-    const {totalSigners, configuring, downloadWalletDetails} = this.props;
+    const {totalSigners, configuring, downloadWalletDetails, client} = this.props;
     const {generating} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating) {
@@ -103,15 +103,11 @@ class WalletGenerator extends React.Component {
           </div>
         );
       } else {
-
-        // add download details button.
-
         return (
         <Card>
           <CardHeader title={this.title()}/>
           <CardContent>
             <Link href="#" onClick={this.toggleImporters}>
-
               {configuring ? 'Hide Key Selection' : 'Edit Details'}
             </Link>
             <ConfirmWallet/>
@@ -119,6 +115,13 @@ class WalletGenerator extends React.Component {
             <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
             <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
             <Button id="confirm-wallet" type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
+            { 
+              client.type==='private' && !client.password.length ? 
+              (
+                <div></div>
+              )
+              : ''
+            }
           </CardContent>
         </Card>
         );
@@ -277,7 +280,6 @@ const mapDispatchToProps = {
   freeze: setFrozen,
   updateDepositNode: updateDepositNodeAction,
   updateChangeNode: updateChangeNodeAction,
-  updateAutoSpned: updateAutoSpendAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
   resetNodesFetchErrors,

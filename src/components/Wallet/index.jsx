@@ -116,6 +116,8 @@ class CreateWallet extends React.Component {
                 <WalletGenerator 
                   downloadWalletDetails={this.downloadWalletDetails}
                   refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
+                  unknownAddresses={this.unknownAddresses}
+                  addressesImported={result => this.addressesImported(result)}
                 />
               </Box>
 
