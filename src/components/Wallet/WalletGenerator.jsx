@@ -2,6 +2,7 @@ import React from 'react';
 import BigNumber from "bignumber.js";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { debounce } from 'lodash';
 import {
   deriveChildPublicKey,
   generateMultisigFromPublicKeys,
@@ -9,6 +10,7 @@ import {
 import {
   fetchAddressUTXOs,
   getAddressStatus,
+  fetchFeeEstimate,
 } from "../../blockchain";
 import { isWalletAddressNotFoundError } from '../../bitcoind'
 // Components
@@ -16,10 +18,16 @@ import {
   Button, 
   Card, 
   CardHeader,
-  CardContent, 
+  CardContent,
+  InputAdornment,
+  Grid,
   Link,
+  TextField,
+  FormHelperText,
+  Typography,
   Box,
 } from '@material-ui/core';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
 // import BitcoindAddressImporter from '../BitcoindAddressImporter';
@@ -33,6 +41,8 @@ import {
 } from "../../actions/walletActions";
 import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
+import { wrappedActions } from '../../actions/utils';
+import { SET_CLIENT_PASSWORD, SET_CLIENT_PASSWORD_ERROR } from '../../actions/clientActions';
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 25;
@@ -67,9 +77,14 @@ class WalletGenerator extends React.Component {
   }
 
   componentDidMount() {
-    const { setIsWallet, refreshNodes } = this.props;
+    console.log('generator mounted!')
+    const { setIsWallet, refreshNodes, client } = this.props;
+    this.throttleTestConnection = debounce(args => this.testConnection(args), 500, { trailing: true, leading: false })
     setIsWallet();
     refreshNodes(this.refreshNodes);
+    // if no password present on mount, then the generator settings are from a config
+    // and the password is required again
+    if (!client.password.length) this.setState({ passwordRequired: true })
   }
 
   title = () => {
@@ -82,6 +97,41 @@ class WalletGenerator extends React.Component {
     );
   }
 
+  async componentDidUpdate(prevProps) {
+    const prevPassword = prevProps.client.password
+    const { setPasswordError, network, client } = this.props;
+    // if the password was updated
+    if (prevPassword !== client.password && client.password.length) {
+      // test the connection using the set password
+      // but only if the password field hasn't been changed for 500ms
+      this.throttleTestConnection({ network, client, setPasswordError })
+    }
+  }
+
+  async handlePasswordChange(event) {
+    event.preventDefault()
+    const { setPassword, setPasswordError } = this.props;
+    const password = event.target.value;
+    this.setState({ connectSuccess: false }, () => {
+      setPassword(password);
+      setPasswordError('')
+    });
+  };
+
+  testConnection = async ({network, client, setPasswordError}) => {
+    try {
+      await fetchFeeEstimate(network, client);
+      setPasswordError('')
+      this.setState({ connectSuccess: true });
+    } catch (e) {
+      this.setState({ connectSuccess: false })
+      if (e.response && e.response.status === 401)
+        setPasswordError('Unauthorized: Incorrect username and password combination')
+      else
+        setPasswordError(e.message)
+    }
+  }
+
   extendedPublicKeyCount = () => {
     const { extendedPublicKeyImporters } = this.props;
     return Object.values(extendedPublicKeyImporters).filter(extendedPublicKeyImporter => (extendedPublicKeyImporter.finalized)).length;
@@ -89,7 +139,7 @@ class WalletGenerator extends React.Component {
 
   body() {
     const {totalSigners, configuring, downloadWalletDetails, client} = this.props;
-    const {generating} = this.state;
+    const {generating, connectSuccess, passwordRequired} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating) {
         return (
@@ -113,15 +163,63 @@ class WalletGenerator extends React.Component {
             <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
             <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
+              {
+                client.type === 'private' && passwordRequired ?
+                (
+                  <Box my={5}>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12}>
+                        <Typography variant="subtitle1">This config uses a private client. Please enter password if not set.</Typography>
+                      </Grid>
+                      <Grid item>
+                          <TextField
+                            id="client-username"
+                            label="Username"
+                            defaultValue={client.username}
+                            InputProps={{
+                              readOnly: true,
+                              disabled: true,
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <AccountCircleIcon />
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                      </Grid>
+                      <Grid item md={4} xs={10}>
+                        <form>
+                          <TextField
+                            id="bitcoind-password"
+                            fullWidth
+                            type="password"
+                            label="Password"
+                            placeholder="Enter bitcoind password"
+                            value={client.password}
+                            onChange={event => this.handlePasswordChange(event)}
+                            error={client.password_error.length > 0}
+                            helperText={client.password_error}
+                            />
+                          {connectSuccess && <FormHelperText>Connection confirmed with password!</FormHelperText>}
+                        </form>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )
+                : ''
+              }
+            
             <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
-            <Button id="confirm-wallet" type="button" variant="contained" color="primary" onClick={this.generate}>Confirm</Button>
-            { 
-              client.type==='private' && !client.password.length ? 
-              (
-                <div></div>
-              )
-              : ''
-            }
+            <Button 
+              id="confirm-wallet" 
+              type="button" 
+              variant="contained" 
+              color="primary" 
+              onClick={this.generate} 
+              disabled={client.type === 'private' && !connectSuccess}
+             >
+               Confirm
+            </Button>
           </CardContent>
         </Card>
         );
@@ -283,6 +381,10 @@ const mapDispatchToProps = {
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
   resetNodesFetchErrors,
+  ...wrappedActions({
+    setPassword: SET_CLIENT_PASSWORD,
+    setPasswordError: SET_CLIENT_PASSWORD_ERROR,
+  })
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);
