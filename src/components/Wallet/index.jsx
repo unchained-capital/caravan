@@ -79,10 +79,21 @@ class CreateWallet extends React.Component {
   }
 
   render = () => {
-    const {configuring, walletName, setName, deposits, change, network, pendingBalance} = this.props;
+
+    const {
+      configuring, 
+      walletName, 
+      setName, 
+      deposits, 
+      change, 
+      network, 
+      pendingBalance, 
+      unknownAddresses = []
+    } = this.props;
     const balance = this.totalBalance()
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
       "Wallet loaded with errors" : "";
+
     return (
       <React.Fragment>
         <Box mt={3}>
@@ -121,7 +132,7 @@ class CreateWallet extends React.Component {
                 <WalletGenerator 
                   downloadWalletDetails={this.downloadWalletDetails}
                   refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
-                  unknownAddresses={this.unknownAddresses}
+                  unknownAddresses={unknownAddresses}
                   addressesImported={result => this.addressesImported(result)}
                 />
               </Box>
@@ -288,8 +299,6 @@ class CreateWallet extends React.Component {
     return "";
   }
 
-  unknownAddresses = [];
-
   renderSettings = () => {
     const {configuring} = this.props;
     
@@ -304,21 +313,14 @@ class CreateWallet extends React.Component {
       )
   }
 
-  getUnknownAddressNodes = () => {
-    const {changeNodes, depositNodes} = this.props
-    return Object.values(depositNodes).concat(Object.values(changeNodes))
-    .filter(node => !node.addressKnown);
-  }
-
   addressesImported = async result => {
     // this will give me an array [{success: true/false}...]
     // need to loop through and mark nodes as addressKnown
-    const { client, network, updateChangeNode, updateDepositNode} = this.props;
+    const { client, network, updateChangeNode, updateDepositNode, unknownAddressNodes} = this.props;
 
     const nodes = []
-    const unknown = this.getUnknownAddressNodes();
     result.forEach((addr, i) => {
-      if (addr.success) nodes.push(unknown[i]); // can now set to known and refresh status
+      if (addr.success) nodes.push(unknownAddressNodes[i]); // can now set to known and refresh status
     });
 
     nodes.forEach(async node => {
@@ -441,6 +443,8 @@ function mapStateToProps(state) {
       walletMode: state.wallet.common.walletMode,
     },
     pendingBalance: walletSelectors.getPendingBalance(state),
+    unknownAddresses: walletSelectors.getUnknownAddresses(state),
+    unknownAddressNodes: walletSelectors.getUnknownAddressSlices(state),
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
     ...state.wallet,

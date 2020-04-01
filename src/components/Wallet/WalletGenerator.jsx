@@ -32,7 +32,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
 import WalletConfigInteractionButtons from './WalletConfigInteractionButtons';
-// import BitcoindAddressImporter from '../BitcoindAddressImporter';
+import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -83,8 +83,7 @@ class WalletGenerator extends React.Component {
   }
 
   componentDidMount() {
-    console.log('generator mounted!')
-    const { setIsWallet, refreshNodes, client } = this.props;
+    const { setIsWallet, refreshNodes } = this.props;
     this.throttleTestConnection = debounce(args => this.testConnection(args), 500, { trailing: true, leading: false })
     setIsWallet();
     refreshNodes(this.refreshNodes);
@@ -121,6 +120,12 @@ class WalletGenerator extends React.Component {
     });
   };
 
+  async handlePasswordEnter(event) {
+    event.preventDefault()
+    this.throttleTestConnection.cancel()
+    await this.testConnection(this.props)
+  }
+
   testConnection = async ({network, client, setPasswordError}) => {
     try {
       await fetchFeeEstimate(network, client);
@@ -154,6 +159,7 @@ class WalletGenerator extends React.Component {
                 onDownloadFn={downloadWalletDetails}
               />
             </Box>
+            {/* { client.type === 'private' && <BitcoindAddressImporter />} */}
           </div>
         );
       } else if (!configuring) {
@@ -204,6 +210,7 @@ class WalletGenerator extends React.Component {
                           placeholder="Enter bitcoind password"
                           value={client.password}
                           onChange={event => this.handlePasswordChange(event)}
+                          onSubmit={event => this.handlePasswordEnter(event)}
                           error={client.password_error.length > 0}
                           helperText={client.password_error}
                           />
