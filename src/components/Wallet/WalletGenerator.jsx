@@ -14,8 +14,6 @@ import {
 } from "../../blockchain";
 import { isWalletAddressNotFoundError } from '../../bitcoind'
 
-import { CARAVAN_CONFIG } from './constants'
-
 // Components
 import {
   Button, 
@@ -33,7 +31,7 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
-import ClearConfigButton from './ClearConfigButton';
+import WalletConfigInteractionButtons from './WalletConfigInteractionButtons';
 // import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
@@ -42,11 +40,15 @@ import {
   updateDepositNodeAction,
   updateChangeNodeAction,
   resetNodesFetchErrors,
+  resetWallet, 
 } from "../../actions/walletActions";
-import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
+import {setExtendedPublicKeyImporterVisible, resetExtendedPublicKeyImporter} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
 import { wrappedActions } from '../../actions/utils';
-import { SET_CLIENT_PASSWORD, SET_CLIENT_PASSWORD_ERROR } from '../../actions/clientActions';
+import { 
+  SET_CLIENT_PASSWORD, 
+  SET_CLIENT_PASSWORD_ERROR,
+} from '../../actions/clientActions';
 
 const MAX_TRAILING_EMPTY_NODES = 20;
 const MAX_FETCH_UTXOS_ERRORS = 25;
@@ -109,11 +111,6 @@ class WalletGenerator extends React.Component {
     }
   }
 
-  handleClearConfig(event) {
-    if (sessionStorage) sessionStorage.removeItem(CARAVAN_CONFIG)
-    this.toggleImporters(event)
-  }
-
   async handlePasswordChange(event) {
     event.preventDefault()
     const { setPassword, setPasswordError } = this.props;
@@ -147,14 +144,15 @@ class WalletGenerator extends React.Component {
     const {totalSigners, configuring, downloadWalletDetails, client} = this.props;
     const {generating, connectSuccess} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
-      if (generating) {
+      if (generating && !configuring) {
         return (
           <div>
             <WalletControl addNode={this.addNode} updateNode={this.updateNode}/>
             <Box mt={2} textAlign={"center"}>
-              <Button variant="contained" color="primary" onClick={downloadWalletDetails}>
-                Export Wallet Details
-              </Button>
+              <WalletConfigInteractionButtons
+                onClearFn={e => this.toggleImporters(e)}
+                onDownloadFn={downloadWalletDetails}
+              />
             </Box>
           </div>
         );
@@ -168,14 +166,10 @@ class WalletGenerator extends React.Component {
             </Link>
             <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
-            <Grid container spacing={2}>
-              <Grid item>
-                <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
-              </Grid>
-              <Grid item>
-                <ClearConfigButton variant="contained" color="secondary" onClearFn={e => this.toggleImporters(e)} />
-              </Grid>
-            </Grid>
+            <WalletConfigInteractionButtons 
+              onClearFn={e => this.toggleImporters(e)} 
+              onDownloadFn={downloadWalletDetails} 
+            />
             {
               client.type === 'private' &&
               (
@@ -247,7 +241,21 @@ class WalletGenerator extends React.Component {
   toggleImporters = (event) => {
     event.preventDefault();
     const { setImportersVisible, configuring } = this.props;
+    
+    if (!configuring) this.resetWallet()
+  
     setImportersVisible(!configuring);
+  }
+
+  resetWallet = () => {
+    const {
+      resetWallet,
+      freeze,
+      resetExtendedPublicKeyImporter
+    } = this.props;
+    resetWallet();
+    freeze(false);
+    resetExtendedPublicKeyImporter();
   }
 
   generate = () => {
@@ -391,6 +399,8 @@ const mapDispatchToProps = {
   updateChangeNode: updateChangeNodeAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
+  resetWallet,
+  resetExtendedPublicKeyImporter,
   resetNodesFetchErrors,
   ...wrappedActions({
     setPassword: SET_CLIENT_PASSWORD,

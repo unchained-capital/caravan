@@ -15,6 +15,7 @@ import {
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE,
+  RESET_EXTENDED_PUBLIC_KEY_IMPORTER,
 } from '../actions/extendedPublicKeyImporterActions';
 import {
   SET_NETWORK,
@@ -169,6 +170,8 @@ export default (state = initialState, action) => {
     return updateExtendedPublicKeyImporterState(updateFinalizedSettings(state, action), action, 'finalized');
   case SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE:
     return {...state, ...{configuring: action.value}};
+  case RESET_EXTENDED_PUBLIC_KEY_IMPORTER:
+    return initialState;
   default:
     return state;
   }

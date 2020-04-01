@@ -37,8 +37,11 @@ import {
   setNetwork,
 } from "../../actions/settingsActions";
 import { updateWalletNameAction } from '../../actions/walletActions';
-import { setExtendedPublicKeyImporterMethod, setExtendedPublicKeyImporterExtendedPublicKey,
-  setExtendedPublicKeyImporterBIP32Path, setExtendedPublicKeyImporterName,
+import { 
+  setExtendedPublicKeyImporterMethod, 
+  setExtendedPublicKeyImporterExtendedPublicKey,
+  setExtendedPublicKeyImporterBIP32Path, 
+  setExtendedPublicKeyImporterName,
   setExtendedPublicKeyImporterFinalized
 } from '../../actions/extendedPublicKeyImporterActions';
 import { wrappedActions } from '../../actions/utils';
@@ -74,6 +77,7 @@ class CreateWallet extends React.Component {
       if (configJson) this.setConfigJson(configJson)
     }
   }
+
   render = () => {
     const {configuring, walletName, setName, deposits, change, network, pendingBalance} = this.props;
     const balance = this.totalBalance()
@@ -85,7 +89,7 @@ class CreateWallet extends React.Component {
           <Grid container>
             <Grid item xs={10} md={6}>
               <WalletInfoCard 
-                editable={!Object.keys(deposits.nodes).length} 
+                editable={!Object.keys(deposits.nodes).length || !Object.keys(change.nodes).length} 
                 walletName={walletName}
                 setName={setName}
                 balance={balance}

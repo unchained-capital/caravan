@@ -7,6 +7,7 @@ export const SET_EXTENDED_PUBLIC_KEY_IMPORTER_METHOD = "SET_EXTENDED_PUBLIC_KEY_
 export const SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY  = "SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY";
 export const SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED   = "SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED";
 export const SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE   = "SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE";
+export const RESET_EXTENDED_PUBLIC_KEY_IMPORTER = "RESET_PUBLIC_KEY_IMPORTER";
 
 export const {
   setExtendedPublicKeyImporterName,
@@ -23,6 +24,12 @@ export const {
   setExtendedPublicKeyImporterExtendedPublicKey: SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY,
   setExtendedPublicKeyImporterFinalized: SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED,
 });
+
+export function resetExtendedPublicKeyImporter() {
+  return {
+    type: RESET_EXTENDED_PUBLIC_KEY_IMPORTER,
+  }
+}
 
 export function setExtendedPublicKeyImporterVisible(value) {
   return {

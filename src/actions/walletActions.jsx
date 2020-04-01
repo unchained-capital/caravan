@@ -4,6 +4,7 @@ export const RESET_NODES_SPEND = "RESET_NODES_SPEND";
 export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
 export const UPDATE_WALLET_MODE = "UPDATE_WALLET_MODE";
 export const RESET_WALLET_VIEW = "RESET_WALLET_VIEW";
+export const RESET_WALLET = "RESET_WALLET";
 export const SPEND_NODES = "SPEND_NODES";
 export const INITIAL_LOAD_COMPLETE = "INITIAL_LOAD_COMPLETE";
 export const RESET_NODES_FETCH_ERRORS = "RESET_NODES_FETCH_ERRORS";
@@ -66,6 +67,13 @@ export function resetWalletView() {
     type: RESET_WALLET_VIEW
   }
 }
+
+export function resetWallet() {
+  return {
+    type: RESET_WALLET
+  }
+}
+
 
 export function initialLoadComplete() {
   return {
