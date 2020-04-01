@@ -3,7 +3,6 @@ import {
   RESET_NODES_SPEND, 
   SPEND_NODES, 
   RESET_NODES_FETCH_ERRORS, 
-  RESET_WALLET 
 } from "../actions/walletActions";
 import { updateState } from './utils';
 
@@ -131,8 +130,6 @@ function resetSpend(state) {
 
 export default (actionType) => (state = initialState, action) => {
   switch (action.type) {
-  case RESET_WALLET:
-    return initialState
   case RESET_NODES_SPEND:
     return resetSpend(state);
   case SPEND_NODES:

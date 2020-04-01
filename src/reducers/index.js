@@ -17,6 +17,7 @@ import errorNotificationReducer from "./errorNotificationReducer";
 import {
   UPDATE_DEPOSIT_NODE,
   UPDATE_CHANGE_NODE,
+  RESET_WALLET,
 } from '../actions/walletActions';
 
 const spendReducers = combineReducers({
@@ -31,7 +32,7 @@ const walletReducers = combineReducers({
   common: walletReducer
 });
 
-const rootReducers = combineReducers({
+const appReducer = combineReducers({
   settings: settingsReducer,
   client: clientReducer,
   address: addressReducer,
@@ -43,4 +44,11 @@ const rootReducers = combineReducers({
   errorNotification: errorNotificationReducer,
 });
 
-export default rootReducers;
+const rootReducer = (state, action) => {
+  if (action.type === RESET_WALLET)
+    state = undefined
+  
+  return appReducer(state, action);
+}
+
+export default rootReducer;

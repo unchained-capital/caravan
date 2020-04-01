@@ -83,10 +83,11 @@ class WalletGenerator extends React.Component {
   }
 
   componentDidMount() {
-    const { setIsWallet, refreshNodes } = this.props;
+    const { setIsWallet, refreshNodes, common: {nodesLoaded} } = this.props;
     this.throttleTestConnection = debounce(args => this.testConnection(args), 500, { trailing: true, leading: false })
     setIsWallet();
     refreshNodes(this.refreshNodes);
+    if (nodesLoaded) this.setState({ generating: true })
   }
 
   title = () => {
@@ -123,14 +124,19 @@ class WalletGenerator extends React.Component {
   async handlePasswordEnter(event) {
     event.preventDefault()
     this.throttleTestConnection.cancel()
-    await this.testConnection(this.props)
+    await this.testConnection(this.props, this.generate)
   }
 
-  testConnection = async ({network, client, setPasswordError}) => {
+  testConnection = async ({network, client, setPasswordError}, cb) => {
     try {
       await fetchFeeEstimate(network, client);
       setPasswordError('')
-      this.setState({ connectSuccess: true });
+      this.setState({ connectSuccess: true }, () => {
+        // if testConnection was passed a callback
+        // we call that after a successful test, which 
+        // in this case generates the wallet
+        if (cb) setTimeout(cb, 750)
+      });
     } catch (e) {
       this.setState({ connectSuccess: false })
       if (e.response && e.response.status === 401)
@@ -162,7 +168,7 @@ class WalletGenerator extends React.Component {
             {/* { client.type === 'private' && <BitcoindAddressImporter />} */}
           </div>
         );
-      } else if (!configuring) {
+      } else {
         return (
         <Card>
           <CardHeader title={this.title()}/>
@@ -201,7 +207,7 @@ class WalletGenerator extends React.Component {
                         />
                     </Grid>
                     <Grid item md={4} xs={10}>
-                      <form>
+                      <form onSubmit={event => this.handlePasswordEnter(event)}>
                         <TextField
                           id="bitcoind-password"
                           fullWidth
@@ -210,7 +216,6 @@ class WalletGenerator extends React.Component {
                           placeholder="Enter bitcoind password"
                           value={client.password}
                           onChange={event => this.handlePasswordChange(event)}
-                          onSubmit={event => this.handlePasswordEnter(event)}
                           error={client.password_error.length > 0}
                           helperText={client.password_error}
                           />
@@ -247,31 +252,24 @@ class WalletGenerator extends React.Component {
 
   toggleImporters = (event) => {
     event.preventDefault();
-    const { setImportersVisible, configuring } = this.props;
+    const { setImportersVisible, configuring, resetWallet } = this.props;
     
-    if (!configuring) this.resetWallet()
-  
+    if (!configuring) {
+      this.setState({ generating: false }, () => {
+        resetWallet()
+      })
+    }
     setImportersVisible(!configuring);
-  }
-
-  resetWallet = () => {
-    const {
-      resetWallet,
-      freeze,
-      resetExtendedPublicKeyImporter
-    } = this.props;
-    resetWallet();
-    freeze(false);
-    resetExtendedPublicKeyImporter();
   }
 
   generate = () => {
     const {setImportersVisible, freeze} = this.props;
     freeze(true);
     setImportersVisible(false);
-    this.setState({generating: true});
-    this.addNode(false, "m/0/0", true);
-    this.addNode(true, "m/1/0", true);
+    this.setState({generating: true, connectSuccess: false}, () => {
+      this.addNode(false, "m/0/0", true);
+      this.addNode(true, "m/1/0", true);
+    });
   }
 
   updateNode = (isChange, update) => {

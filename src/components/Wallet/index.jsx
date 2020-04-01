@@ -79,7 +79,6 @@ class CreateWallet extends React.Component {
   }
 
   render = () => {
-
     const {
       configuring, 
       walletName, 
@@ -162,7 +161,6 @@ class CreateWallet extends React.Component {
     return btc
   }
 
-
   validateProperties(config, properties, key) {
     for(let index = 0; index < properties.length; index++) {
       const property = properties[index];
@@ -215,6 +213,16 @@ class CreateWallet extends React.Component {
     return this.validateExtendedPublicKeys(config.extendedPublicKeys, config.network);
   }
 
+  handleImport = ({ target }) => {
+    const fileReader = new FileReader();
+    
+    fileReader.readAsText(target.files[0]);
+    fileReader.onload = (event) => {
+      const configJson = event.target.result;
+      this.setConfigJson(configJson)
+    };
+  };
+
   setConfigJson(configJson) {
     let configError
     try {
@@ -226,22 +234,12 @@ class CreateWallet extends React.Component {
 
     if (sessionStorage)
       sessionStorage.setItem(CARAVAN_CONFIG, configJson)
-    
+
     // async since importDetails needs the updated state for it to work
     this.setState({ configJson, configError }, () => {
-      if (configError === "") this.importDetails(); 
+      if (configError === "") this.importDetails();
     });
   }
-  
-  handleImport = ({ target }) => {
-    const fileReader = new FileReader();
-
-    fileReader.readAsText(target.files[0]);
-    fileReader.onload = (event) => {
-      const configJson = event.target.result;
-      this.setConfigJson(configJson)
-    };
-  };
 
   importDetails = () => {
     const { configJson } = this.state;
