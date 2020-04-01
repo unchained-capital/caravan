@@ -13,6 +13,9 @@ import {
   fetchFeeEstimate,
 } from "../../blockchain";
 import { isWalletAddressNotFoundError } from '../../bitcoind'
+
+import { CARAVAN_CONFIG } from './constants'
+
 // Components
 import {
   Button, 
@@ -30,6 +33,7 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
+import ClearConfigButton from './ClearConfigButton';
 // import BitcoindAddressImporter from '../BitcoindAddressImporter';
 
 // Actions
@@ -82,9 +86,6 @@ class WalletGenerator extends React.Component {
     this.throttleTestConnection = debounce(args => this.testConnection(args), 500, { trailing: true, leading: false })
     setIsWallet();
     refreshNodes(this.refreshNodes);
-    // if no password present on mount, then the generator settings are from a config
-    // and the password is required again
-    if (!client.password.length) this.setState({ passwordRequired: true })
   }
 
   title = () => {
@@ -106,6 +107,11 @@ class WalletGenerator extends React.Component {
       // but only if the password field hasn't been changed for 500ms
       this.throttleTestConnection({ network, client, setPasswordError })
     }
+  }
+
+  handleClearConfig(event) {
+    if (sessionStorage) sessionStorage.removeItem(CARAVAN_CONFIG)
+    this.toggleImporters(event)
   }
 
   async handlePasswordChange(event) {
@@ -139,7 +145,7 @@ class WalletGenerator extends React.Component {
 
   body() {
     const {totalSigners, configuring, downloadWalletDetails, client} = this.props;
-    const {generating, connectSuccess, passwordRequired} = this.state;
+    const {generating, connectSuccess} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating) {
         return (
@@ -152,7 +158,7 @@ class WalletGenerator extends React.Component {
             </Box>
           </div>
         );
-      } else {
+      } else if (!configuring) {
         return (
         <Card>
           <CardHeader title={this.title()}/>
@@ -162,53 +168,58 @@ class WalletGenerator extends React.Component {
             </Link>
             <ConfirmWallet/>
             <p>You have imported all {totalSigners} extended public keys.  You will need to save this information.</p>
-            <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
-              {
-                client.type === 'private' && passwordRequired ?
-                (
-                  <Box my={5}>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12}>
-                        <Typography variant="subtitle1">This config uses a private client. Please enter password if not set.</Typography>
-                      </Grid>
-                      <Grid item>
-                          <TextField
-                            id="client-username"
-                            label="Username"
-                            defaultValue={client.username}
-                            InputProps={{
-                              readOnly: true,
-                              disabled: true,
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <AccountCircleIcon />
-                                </InputAdornment>
-                              ),
-                            }}
-                          />
-                      </Grid>
-                      <Grid item md={4} xs={10}>
-                        <form>
-                          <TextField
-                            id="bitcoind-password"
-                            fullWidth
-                            type="password"
-                            label="Password"
-                            placeholder="Enter bitcoind password"
-                            value={client.password}
-                            onChange={event => this.handlePasswordChange(event)}
-                            error={client.password_error.length > 0}
-                            helperText={client.password_error}
-                            />
-                          {connectSuccess && <FormHelperText>Connection confirmed with password!</FormHelperText>}
-                        </form>
-                      </Grid>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Button variant="contained" color="primary" onClick={downloadWalletDetails}>Download Wallet Details</Button>
+              </Grid>
+              <Grid item>
+                <ClearConfigButton variant="contained" color="secondary" onClearFn={e => this.toggleImporters(e)} />
+              </Grid>
+            </Grid>
+            {
+              client.type === 'private' &&
+              (
+                <Box my={5}>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle1">This config uses a private client. Please enter password if not set.</Typography>
                     </Grid>
-                  </Box>
-                )
-                : ''
-              }
-            
+                    <Grid item>
+                        <TextField
+                          id="client-username"
+                          label="Username"
+                          defaultValue={client.username}
+                          InputProps={{
+                            readOnly: true,
+                            disabled: true,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <AccountCircleIcon />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                    </Grid>
+                    <Grid item md={4} xs={10}>
+                      <form>
+                        <TextField
+                          id="bitcoind-password"
+                          fullWidth
+                          type="password"
+                          label="Password"
+                          placeholder="Enter bitcoind password"
+                          value={client.password}
+                          onChange={event => this.handlePasswordChange(event)}
+                          error={client.password_error.length > 0}
+                          helperText={client.password_error}
+                          />
+                        {connectSuccess && <FormHelperText>Connection confirmed with password!</FormHelperText>}
+                      </form>
+                    </Grid>
+                  </Grid>
+                </Box>
+              )
+            }
             <p>Please confirm that the above information is correct and you wish to generate your wallet.</p>
             <Button 
               id="confirm-wallet" 

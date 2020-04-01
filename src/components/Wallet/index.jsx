@@ -13,6 +13,7 @@ import {
   updateChangeNodeAction,
 } from "../../actions/walletActions";
 import { walletSelectors } from '../../selectors'
+import { CARAVAN_CONFIG } from './constants'
 
 // Components
 import { Grid, Box, IconButton, Button, FormHelperText }
@@ -69,7 +70,7 @@ class CreateWallet extends React.Component {
 
   componentDidMount() {
     if (sessionStorage) {
-      const configJson = sessionStorage.getItem('caravan_config')
+      const configJson = sessionStorage.getItem(CARAVAN_CONFIG)
       if (configJson) this.setConfigJson(configJson)
     }
   }
@@ -209,7 +210,7 @@ class CreateWallet extends React.Component {
     }
 
     if (sessionStorage)
-      sessionStorage.setItem('caravan_config', configJson)
+      sessionStorage.setItem(CARAVAN_CONFIG, configJson)
     
     // async since importDetails needs the updated state for it to work
     this.setState({ configJson, configError }, () => {
