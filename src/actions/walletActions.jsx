@@ -16,7 +16,7 @@ export const WALLET_MODES = {
 }
 
 
-export function updateDepositNodeAction(value) {
+export function updateDepositSliceAction(value) {
   return {
     type: UPDATE_DEPOSIT_NODE,
     value: {
@@ -26,7 +26,7 @@ export function updateDepositNodeAction(value) {
   };
 }
 
-export function updateChangeNodeAction(value) {
+export function updateChangeSliceAction(value) {
   return {
     type: UPDATE_CHANGE_NODE,
     value: {

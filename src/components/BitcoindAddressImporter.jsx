@@ -2,16 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { bitcoindImportMulti, bitcoindGetAddressStatus } from '../bitcoind';
-import { bitcoindParams, isWalletAddressNotFoundError } from '../bitcoind'
+import { 
+  bitcoindImportMulti,
+  bitcoindGetAddressStatus,
+  bitcoindParams,
+  isWalletAddressNotFoundError 
+} from '../bitcoind';
+
+import { fetchSliceData } from '../actions/braidActions'
+import { getUnknownAddresses, getUnknownAddressSlices } from '../selectors/wallet'
+
+// Components
 import { FormHelperText, Button, Box, Switch, FormControlLabel } from '@material-ui/core'
 
 let interval;
 class BitcoindAddressImporter extends React.Component {
   static propTypes = {
     addresses: PropTypes.array.isRequired,
+    unknownSlices: PropTypes.array.isRequired,
     client: PropTypes.object.isRequired,
-    autoImport: PropTypes.bool
+    fetchSliceData: PropTypes.func.isRequired,
+    autoImport: PropTypes.bool,
   };
 
   state = {
@@ -43,13 +54,20 @@ class BitcoindAddressImporter extends React.Component {
 
      return (
       <Box>
-        {
-          imported && rescan && <FormHelperText>{this.pluralOrSingularAddress()} imported, rescan of your node may take some time.</FormHelperText>
-        }
-        {
-          imported && !rescan && <FormHelperText>{this.pluralOrSingularAddress()} imported.</FormHelperText>
-        }
-      { addressPresent &&
+      {
+        imported && rescan && 
+        <FormHelperText>
+          {this.pluralOrSingularAddress()} imported, rescan of your node may take some time.
+        </FormHelperText>
+      }
+      {
+        imported && !rescan && 
+        <FormHelperText>
+          {this.pluralOrSingularAddress()} imported.
+        </FormHelperText>
+      }
+      { 
+        addressPresent &&
         <div>
           <FormHelperText>Address {imported ? 'imported to' : 'found in'} your wallet!</FormHelperText>
           <FormHelperText>You can properly determine your addresses current balance.</FormHelperText>
@@ -95,7 +113,6 @@ class BitcoindAddressImporter extends React.Component {
           </Box>
         </p>
         <FormHelperText error>{importError}</FormHelperText>
-
       </Box>
     )
   }
@@ -109,6 +126,8 @@ class BitcoindAddressImporter extends React.Component {
     this.setState({rescan: e.target.checked})
   }
 
+  // TODO (Buck): Determine if this method is necessary in this component.
+  // This feels like something that should be done at the wallet level.
   checkAddress = async () => {
     const { client, addresses, autoImport } = this.props;
     const address = addresses[0] // TODO: loop, or maybe just check one
@@ -140,15 +159,16 @@ class BitcoindAddressImporter extends React.Component {
 
   }
 
-  import = () => {
-    const { addresses, client, importCallback } = this.props;
+  import = async () => {
+    const { addresses, client, fetchSliceData, unknownSlices } = this.props;
     const { rescan } = this.state;
     const label = ""; // TODO: do we want to allow to set? or set to "caravan"?
-    bitcoindImportMulti({
-      ...bitcoindParams(client),
-      ...{addresses, label, rescan}
-    })
-    .then(response => {
+    try {
+      const response = await bitcoindImportMulti({
+        ...bitcoindParams(client),
+        ...{ addresses, label, rescan }
+      })
+      
       const responseError = response.result.reduce((e, c) => {
         return (c.error && c.error.message) || e
       }, "")
@@ -156,25 +176,30 @@ class BitcoindAddressImporter extends React.Component {
         importError: responseError,
         imported: responseError === ""
       });
-      if (typeof importCallback !== 'undefined') {
-        importCallback(response.result)
-      }
-    })
-    .catch(e => {
+      
+      // only fetch data for addresses we were able to import
+      const slices = response.result.map((addr, i) => {
+        if (addr.success) slices.push(unknownSlices[i]);
+      })
+    
+      await fetchSliceData(slices)
+    } catch (e) {
       this.setState({
         importError: "Unable to import, check your settings and try again",
         imported: false
-      });
-    });
+      }); 
+    }
   }
 }
 
 function mapStateToProps(state) {
   return {
     client: state.client,
+    addresses: getUnknownAddresses(state),
+    unknownSlices: getUnknownAddressSlices(state),
   };
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = { fetchSliceData };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BitcoindAddressImporter);

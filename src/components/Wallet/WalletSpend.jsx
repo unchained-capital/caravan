@@ -5,8 +5,8 @@ import BigNumber from 'bignumber.js'
 
 // Actions
 import {
-  updateDepositNodeAction,
-  updateChangeNodeAction,
+  updateDepositSliceAction,
+  updateChangeSliceAction,
   resetNodesSpend,
 } from "../../actions/walletActions";
 import {
@@ -223,8 +223,8 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   updateAutoSpend: updateAutoSpendAction,
   setInputs,
-  updateChangeNode: updateChangeNodeAction,
-  updateDepositNode: updateDepositNodeAction,
+  updateChangeNode: updateChangeSliceAction,
+  updateDepositNode: updateDepositSliceAction,
   setAddress: setOutputAddress,
   resetNodesSpend,
   setFeeRate,

@@ -37,8 +37,8 @@ import BitcoindAddressImporter from '../BitcoindAddressImporter';
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
 import {
-  updateDepositNodeAction,
-  updateChangeNodeAction,
+  updateDepositSliceAction,
+  updateChangeSliceAction,
   resetNodesFetchErrors,
   resetWallet, 
 } from "../../actions/walletActions";
@@ -65,8 +65,8 @@ class WalletGenerator extends React.Component {
     deposits: PropTypes.object.isRequired,
     change: PropTypes.object.isRequired,
     freeze: PropTypes.func.isRequired,
-    updateDepositNode: PropTypes.func.isRequired,
-    updateChangeNode: PropTypes.func.isRequired,
+    updateDepositSlice: PropTypes.func.isRequired,
+    updateChangeSlice: PropTypes.func.isRequired,
     setIsWallet: PropTypes.func.isRequired,
   };
 
@@ -165,7 +165,10 @@ class WalletGenerator extends React.Component {
                 onDownloadFn={downloadWalletDetails}
               />
             </Box>
-            {/* { client.type === 'private' && <BitcoindAddressImporter />} */}
+            { 
+              client.type === 'private' && 
+              <BitcoindAddressImporter />
+            }
           </div>
         );
       } else {
@@ -273,8 +276,8 @@ class WalletGenerator extends React.Component {
   }
 
   updateNode = (isChange, update) => {
-    const {updateChangeNode, updateDepositNode} = this.props;
-    const updater = (isChange ? updateChangeNode : updateDepositNode);
+    const {updateChangeSlice, updateDepositSlice} = this.props;
+    const updater = (isChange ? updateChangeSlice : updateDepositSlice);
     updater(update);
   }
 
@@ -307,7 +310,6 @@ class WalletGenerator extends React.Component {
       utxos = await fetchAddressUTXOs(multisig.address, network, client);
       addressStatus = await getAddressStatus(multisig.address, network, client);
     } catch(e) {
-      console.error(e, e.response);
       if (client.type === 'private' &&
         isWalletAddressNotFoundError(e)) {
           // address not found in wallet, just mark as unused/used/other?
@@ -380,8 +382,7 @@ class WalletGenerator extends React.Component {
       const {change, deposits} = this.props;
       const currentFetchErrors = Math.max(change.fetchUTXOsErrors, deposits.fetchUTXOsErrors);
       if (currentFetchErrors < 5) {
-        console.log("we had errors but now looks good, try to build more"); // TODO:
-
+        console.log("we had errors but now looks good, try to build more");
       }
     }
   }
@@ -400,8 +401,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   freeze: setFrozen,
-  updateDepositNode: updateDepositNodeAction,
-  updateChangeNode: updateChangeNodeAction,
+  updateDepositSlice: updateDepositSliceAction,
+  updateChangeSlice: updateChangeSliceAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
   resetWallet,

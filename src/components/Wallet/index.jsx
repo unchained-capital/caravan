@@ -9,8 +9,8 @@ import {
 } from "../../blockchain";
 import BigNumber from "bignumber.js";
 import {
-  updateDepositNodeAction,
-  updateChangeNodeAction,
+  updateDepositSliceAction,
+  updateChangeSliceAction,
 } from "../../actions/walletActions";
 import { walletSelectors } from '../../selectors'
 import { CARAVAN_CONFIG } from './constants'
@@ -131,8 +131,6 @@ class CreateWallet extends React.Component {
                 <WalletGenerator 
                   downloadWalletDetails={this.downloadWalletDetails}
                   refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
-                  unknownAddresses={unknownAddresses}
-                  addressesImported={result => this.addressesImported(result)}
                 />
               </Box>
 
@@ -311,40 +309,6 @@ class CreateWallet extends React.Component {
       )
   }
 
-  addressesImported = async result => {
-    // this will give me an array [{success: true/false}...]
-    // need to loop through and mark nodes as addressKnown
-    const { client, network, updateChangeNode, updateDepositNode, unknownAddressNodes} = this.props;
-
-    const nodes = []
-    result.forEach((addr, i) => {
-      if (addr.success) nodes.push(unknownAddressNodes[i]); // can now set to known and refresh status
-    });
-
-    nodes.forEach(async node => {
-      const utxos = await fetchAddressUTXOs(node.multisig.address, network, client);
-      const addressStatus = await getAddressStatus(node.multisig.address, network, client);
-      let updates;
-      if (utxos) {
-        const balanceSats = utxos
-              .map((utxo) => utxo.amountSats)
-              .reduce(
-                (accumulator, currentValue) => accumulator.plus(currentValue),
-                new BigNumber(0));
-        updates = {balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''}
-      }
-
-      const updater = (node.change ? updateChangeNode : updateDepositNode);
-      updater({
-        bip32Path: node.bip32Path,
-        addressKnown: true,
-        ...updates,
-        addressStatus,
-      });
-  
-    });
-  }
-
   renderExtendedPublicKeyImporters = () => {
     const {totalSigners, configuring} = this.props;
     const extendedPublicKeyImporters = [];
@@ -442,7 +406,7 @@ function mapStateToProps(state) {
     },
     pendingBalance: walletSelectors.getPendingBalance(state),
     unknownAddresses: walletSelectors.getUnknownAddresses(state),
-    unknownAddressNodes: walletSelectors.getUnknownAddressSlices(state),
+    unknownAddressSlices: walletSelectors.getUnknownAddressSlices(state),
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
     ...state.wallet,
@@ -468,8 +432,8 @@ const mapDispatchToProps = {
     setClientUsername: SET_CLIENT_USERNAME,
     setClientPassword: SET_CLIENT_PASSWORD,
   }),
-  updateDepositNode: updateDepositNodeAction,
-  updateChangeNode: updateChangeNodeAction,
+  updateDepositNode: updateDepositSliceAction,
+  updateChangeNode: updateChangeSliceAction,
 
 }
 

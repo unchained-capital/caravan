@@ -51,10 +51,10 @@ export function bitcoindParams(client) {
 export async function bitcoindListUnspent({url, auth, address, addresses}) {
   try {
     const addressParam = addresses || [address]
-    const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, addressParam], );
+    const resp = await callBitcoind(url, auth, 'listunspent', [0, 9999999, addressParam]);
     const promises = [];
     resp.result.forEach(utxo => {
-      promises.push(callBitcoind(url, auth, 'getrawtransaction', [utxo.txid, 1]))
+      promises.push(callBitcoind(url, auth, 'gettransaction', [utxo.txid]))
     })
     const previousTransactions = await Promise.all(promises)
     return resp.result.map((utxo, mapindex) => {
@@ -69,8 +69,9 @@ export async function bitcoindListUnspent({url, auth, address, addresses}) {
         time: previousTransactions[mapindex].result.blocktime,
       };
     });
-
-  } catch(e) {throw(e)}
+  } catch(e) {
+    console.error('There was a problem:', e.message)
+  }
 }
 
 export async function bitcoindGetAddressStatus({url, auth, address}) {
@@ -83,7 +84,10 @@ export async function bitcoindGetAddressStatus({url, auth, address}) {
       used: resp.result > 0
     }
   } catch(e) {
-    throw(e);
+    if (isWalletAddressNotFoundError(e))
+      console.warn(`Address ${address} not found in bitcoind's wallet. Query failed.`)
+    else
+      console.error(e.message)
   }
 }
 

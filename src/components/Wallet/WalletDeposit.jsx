@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { fetchAddressUTXOs } from "../../blockchain"
 import {
-  updateDepositNodeAction,
+  updateDepositSliceAction,
   resetWalletView,
 } from "../../actions/walletActions";
 import BigNumber from "bignumber.js";
@@ -199,7 +199,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  updateDepositNode: updateDepositNodeAction,
+  updateDepositNode: updateDepositSliceAction,
   resetWalletView,
 };
 
