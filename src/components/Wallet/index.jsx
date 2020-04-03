@@ -4,11 +4,6 @@ import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
 import {validateBIP32Path, validateExtendedPublicKey, satoshisToBitcoins} from "unchained-bitcoin"
 import {
-  fetchAddressUTXOs,
-  getAddressStatus,
-} from "../../blockchain";
-import BigNumber from "bignumber.js";
-import {
   updateDepositSliceAction,
   updateChangeSliceAction,
 } from "../../actions/walletActions";
@@ -87,7 +82,6 @@ class CreateWallet extends React.Component {
       change, 
       network, 
       pendingBalance, 
-      unknownAddresses = []
     } = this.props;
     const balance = this.totalBalance()
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
@@ -405,8 +399,6 @@ function mapStateToProps(state) {
       walletMode: state.wallet.common.walletMode,
     },
     pendingBalance: walletSelectors.getPendingBalance(state),
-    unknownAddresses: walletSelectors.getUnknownAddresses(state),
-    unknownAddressSlices: walletSelectors.getUnknownAddressSlices(state),
     changeNodes: state.wallet.change.nodes,
     depositNodes: state.wallet.deposits.nodes,
     ...state.wallet,

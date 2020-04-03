@@ -7,7 +7,6 @@ import {
   updateDepositSliceAction,
   resetWalletView,
 } from "../../actions/walletActions";
-import BigNumber from "bignumber.js";
 
 // Components
 import QRCode from "qrcode.react";
@@ -76,24 +75,12 @@ class WalletDeposit extends React.Component {
 
     clearInterval(depositTimer);
     depositTimer = setInterval(async () => {
-      let utxos;
+      let updates;
       try {
-        utxos = await fetchAddressUTXOs(this.state.address, network, client);
-        if (utxos.length) {
+        updates = await fetchAddressUTXOs(this.state.address, network, client);
+        if (updates && updates.utxos && updates.utxos.length) {
           clearInterval(depositTimer)
-          const balanceSats = utxos
-          .reduce(
-            (accumulator, currentValue) => accumulator.plus(currentValue.amountSats),
-            new BigNumber(0));
-
-          updateDepositNode({
-            change: false,
-            bip32Path: this.state.bip32Path,
-            utxos,
-            balanceSats,
-            fetchedUTXOs: true,
-            fetchUTXOsError: ''
-          })
+          updateDepositNode(updates)
           this.setState({showReceived: true});
         }
       } catch(e) {

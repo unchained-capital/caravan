@@ -1,4 +1,5 @@
 import {sortInputs} from "unchained-bitcoin";
+import BigNumber from "bignumber.js";
 import {
   blockExplorerGetAddresesUTXOs,
   blockExplorerGetFeeEstimate,
@@ -11,14 +12,67 @@ import {
   bitcoindSendRawTransaction,
   bitcoindParams,
   bitcoindGetAddressStatus,
+  isWalletAddressNotFoundError
 } from "./bitcoind";
 
 export const BLOCK_EXPLORER = 'public';
 export const BITCOIND = 'private';
 
+/**
+ * Fetch utxos for an address, calculate total balances
+ * and return an object describing the addresses state
+ * @param {string} address 
+ * @param {string} network 
+ * @param {object} client 
+ * @returns {object} slice object with information gathered for that address
+ */
 export async function fetchAddressUTXOs(address, network, client) {
-  const unsortedUTXOs = await fetchAddressUTXOsUnsorted(address, network, client);
-  return sortInputs(unsortedUTXOs);
+  let unsortedUTXOs, 
+    updates = {
+      utxos: [],
+      balanceSats: BigNumber(0),
+      fetchedUTXOs: false,
+      fetchUTXOsError: ''
+    }
+  try {
+    unsortedUTXOs = await fetchAddressUTXOsUnsorted(address, network, client);
+    // const utxos = sortInputs(unsortedUTXOs);
+    // return utxos
+  } catch (e) {
+    if (client.type === 'private' &&
+      isWalletAddressNotFoundError(e)) {
+      updates = {
+        utxos: [],
+        balanceSats: BigNumber(0),
+        addressKnown: false,
+        fetchedUTXOs: true,
+        fetchUTXOsError: ''
+      }
+    } else {
+      updates = { fetchUTXOsError: e.toString() }
+    }
+  }
+
+  // if no utxos then return updates object as is
+  if (!unsortedUTXOs) return updates
+  
+  // sort utxos
+  const utxos = sortInputs(unsortedUTXOs);
+  
+  // calculate the total balance from all utxos
+  const balanceSats = utxos
+    .map((utxo) => utxo.amountSats)
+    .reduce(
+      (accumulator, currentValue) => accumulator.plus(currentValue),
+      new BigNumber(0));
+
+  return {
+    ...updates, 
+    balanceSats, 
+    utxos, 
+    fetchedUTXOs: true,
+    fetchUTXOsError: ''
+  }
 }
 
 function fetchAddressUTXOsUnsorted(address, network, client) {

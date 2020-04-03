@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import BigNumber from 'bignumber.js';
 import {
   P2SH,
   P2SH_P2WSH,
@@ -187,28 +186,25 @@ class ScriptEntry extends React.Component {
     return (
       <div>
         <MultisigDetails multisig={multisig} />
-
         <Box mt={2}>
-
           <Grid container spacing={3}>
-
             <Grid item>
-              <Button variant="contained" color="primary" size="large" onClick={this.performSpend} disabled={buttonsDisabled}>Spend from this address</Button>
+              <Button variant="contained" color="primary" size="large" onClick={this.performSpend} disabled={buttonsDisabled}>
+                Spend from this address
+              </Button>
             </Grid>
-
             <Grid item>
-              <Button variant="contained" size="large" onClick={this.confirmOwnership} disabled={buttonsDisabled}>Confirm ownership</Button>
+              <Button variant="contained" size="large" onClick={this.confirmOwnership} disabled={buttonsDisabled}>
+                Confirm ownership
+              </Button>
             </Grid>
-
           </Grid>
-
           <FormHelperText error>{fetchUTXOsError}</FormHelperText>
-
         </Box>
         {
           client.type === "private" &&
           <Box mt={2}>
-            <BitcoindAddressImporter addresses={[multisig.address]} autoImport={true}/>
+            <BitcoindAddressImporter addresses={[multisig.address]} />
           </Box>
         }
       </div>
@@ -224,9 +220,9 @@ class ScriptEntry extends React.Component {
     const multisig = this.generateMultisig();
     const fetchUTXOsResult = await this.fetchUTXOs(multisig);
     if (fetchUTXOsResult) {
-      const {utxos, inputsTotalSats} = fetchUTXOsResult;
+      const {utxos, balanceSats} = fetchUTXOsResult;
       let fetchUTXOsError = '';
-      if (inputsTotalSats.isLessThanOrEqualTo(0)) {
+      if (balanceSats.isLessThanOrEqualTo(0)) {
         fetchUTXOsError = "This address has a zero balance.";
       }
       this.setState({
@@ -250,23 +246,12 @@ class ScriptEntry extends React.Component {
 
   fetchUTXOs = async (multisig) => {
     const {network, client} = this.props;
-    let utxos = null;
-    try {
-      utxos = await fetchAddressUTXOs(multisig.address, network, client);
-    } catch(e) {
-      console.error(e);
-      return false;
-    }
-    if (utxos !== null) {
-      return {
-        utxos: utxos.map((utxo) => ({...utxo, multisig})),
-        inputsTotalSats: utxos
-          .map((utxo) => utxo.amount)
-          .reduce(
-            (accumulator, currentValue) => accumulator.plus(currentValue),
-            new BigNumber(0)),
-      };
-    }
+    let addressData = 
+      await fetchAddressUTXOs(multisig.address, network, client);
+
+    if (addressData && addressData.utxos && addressData.utxos.length) 
+      return addressData
+    
     return false;
   }
 

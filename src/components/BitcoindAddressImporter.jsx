@@ -10,7 +10,7 @@ import {
 } from '../bitcoind';
 
 import { fetchSliceData } from '../actions/braidActions'
-import { getUnknownAddresses, getUnknownAddressSlices } from '../selectors/wallet'
+import { getUnknownAddressSlices } from '../selectors/wallet'
 
 // Components
 import { FormHelperText, Button, Box, Switch, FormControlLabel } from '@material-ui/core'
@@ -22,7 +22,6 @@ class BitcoindAddressImporter extends React.Component {
     unknownSlices: PropTypes.array.isRequired,
     client: PropTypes.object.isRequired,
     fetchSliceData: PropTypes.func.isRequired,
-    autoImport: PropTypes.bool,
   };
 
   state = {
@@ -34,17 +33,12 @@ class BitcoindAddressImporter extends React.Component {
   };
 
   componentDidMount = () => {
-    if (this.props.autoImport) interval = setInterval(this.checkAddress, 5000);
-  }
-
-  componentWillUnmount = () => {
-    clearInterval(interval);
+    this.checkAddress()
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.autoImport && prevProps.addresses.length && prevProps.addresses[0] !== this.props.addresses[0]) {
-      clearInterval(interval);
-      interval = setInterval(this.checkAddress, 5000);
+    if (prevProps.addresses.length && prevProps.addresses[0] !== this.props.addresses[0]) {
+      this.checkAddress()
     }
   }
 
@@ -126,8 +120,8 @@ class BitcoindAddressImporter extends React.Component {
     this.setState({rescan: e.target.checked})
   }
 
-  // TODO (Buck): Determine if this method is necessary in this component.
-  // This feels like something that should be done at the wallet level.
+  // TODO (Buck): Determine if this method should be in this component.
+  // This feels like something that should be done at the wallet/script level.
   checkAddress = async () => {
     const { client, addresses, autoImport } = this.props;
     const address = addresses[0] // TODO: loop, or maybe just check one
@@ -156,7 +150,6 @@ class BitcoindAddressImporter extends React.Component {
         e.message || "An unknown address error occured"})
       console.log(status, e.response)
     }
-
   }
 
   import = async () => {
@@ -179,7 +172,8 @@ class BitcoindAddressImporter extends React.Component {
       
       // only fetch data for addresses we were able to import
       const slices = response.result.map((addr, i) => {
-        if (addr.success) slices.push(unknownSlices[i]);
+        if (addr.success) return unknownSlices[i];
+        return 
       })
     
       await fetchSliceData(slices)
@@ -195,7 +189,6 @@ class BitcoindAddressImporter extends React.Component {
 function mapStateToProps(state) {
   return {
     client: state.client,
-    addresses: getUnknownAddresses(state),
     unknownSlices: getUnknownAddressSlices(state),
   };
 }

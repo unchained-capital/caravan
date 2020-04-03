@@ -1,5 +1,4 @@
 import React from 'react';
-import BigNumber from "bignumber.js";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
@@ -12,7 +11,7 @@ import {
   getAddressStatus,
   fetchFeeEstimate,
 } from "../../blockchain";
-import { isWalletAddressNotFoundError } from '../../bitcoind'
+import { getUnknownAddresses } from '../../selectors/wallet'
 
 // Components
 import {
@@ -67,6 +66,7 @@ class WalletGenerator extends React.Component {
     freeze: PropTypes.func.isRequired,
     updateDepositSlice: PropTypes.func.isRequired,
     updateChangeSlice: PropTypes.func.isRequired,
+    unknownAddresses: PropTypes.array,
     setIsWallet: PropTypes.func.isRequired,
   };
 
@@ -152,7 +152,7 @@ class WalletGenerator extends React.Component {
   }
 
   body() {
-    const {totalSigners, configuring, downloadWalletDetails, client} = this.props;
+    const {totalSigners, configuring, downloadWalletDetails, client, unknownAddresses} = this.props;
     const {generating, connectSuccess} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating && !configuring) {
@@ -165,10 +165,10 @@ class WalletGenerator extends React.Component {
                 onDownloadFn={downloadWalletDetails}
               />
             </Box>
-            { 
+            {/* { 
               client.type === 'private' && 
-              <BitcoindAddressImporter />
-            }
+              <BitcoindAddressImporter addresses={unknownAddresses} />
+            } */}
           </div>
         );
       } else {
@@ -304,34 +304,14 @@ class WalletGenerator extends React.Component {
 
   fetchUTXOs = async (isChange, multisig, attemptToKeepGenerating) => {
     const {network, client} = this.props;
-    let utxos, addressStatus;
-    let updates = {};
-    try {
-      utxos = await fetchAddressUTXOs(multisig.address, network, client);
+    let addressStatus;
+    let updates = await fetchAddressUTXOs(multisig.address, network, client);
+    
+    // only check for address status if there weren't any errors
+    // fetching the utxos for the address
+    if (updates && !updates.fetchUTXOsError.length)
       addressStatus = await getAddressStatus(multisig.address, network, client);
-    } catch(e) {
-      if (client.type === 'private' &&
-        isWalletAddressNotFoundError(e)) {
-          // address not found in wallet, just mark as unused/used/other?
-          addressStatus = {used: false}
-          updates = {
-            utxos: [],
-            balanceSats: BigNumber(0),
-            addressKnown: false,
-            fetchedUTXOs: true,
-            fetchUTXOsError: ''}
-      } else {
-        updates =  {fetchUTXOsError: e.toString()}
-      }
-    }
-    if (utxos) {
-      const balanceSats = utxos
-            .map((utxo) => utxo.amountSats)
-            .reduce(
-              (accumulator, currentValue) => accumulator.plus(currentValue),
-              new BigNumber(0));
-      updates = {...updates, balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''}
-    }
+
     if (addressStatus) {
       updates = {...updates, addressUsed: addressStatus.used};
     }
@@ -396,6 +376,7 @@ function mapStateToProps(state) {
     ...state.quorum,
     ...state.wallet,
     ...state.wallet.common,
+    unknownAddresses: getUnknownAddresses(state),
   };
 }
 

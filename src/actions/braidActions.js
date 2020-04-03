@@ -1,5 +1,3 @@
-import BigNumber from "bignumber.js";
-
 import { updateDepositSliceAction, updateChangeSliceAction } from './walletActions'
 import { fetchAddressUTXOs, getAddressStatus } from '../blockchain'
 import { setErrorNotification } from './errorNotificationActions'
@@ -35,31 +33,20 @@ export const fetchSliceData = async slices => {
       const queriedSlices = await Promise.all(sliceDataPromises)
   
       // each slice had two queries and should be in a tuple
-      queriedSlices.forEach(([utxos, sliceStatus], index) => {
+      queriedSlices.forEach(([addressData, addressStatus], index) => {
         // reference to the original slice object passed into action creator
         const slice = slices[index]
 
         // for each queried slice, we need to check if there are utxos
         // skip if no updates
-        if (!utxos || !utxos.length) return
-        // and create updated slice data for each 
-        const balanceSats = utxos
-          .map((utxo) => utxo.amountSats)
-          .reduce(
-            (accumulator, currentValue) => accumulator.plus(currentValue),
-            new BigNumber(0));
-        const updates = { 
-          balanceSats, 
-          utxos, 
-          fetchedUTXOs: true, 
-          fetchUTXOsError: '' 
-        }
+        if (!addressData || !addressData.utxos.length) return
+        
         const updater = (slice.change ? updateChangeSliceAction : updateDepositSliceAction);
         const updatedSlice = {
           bip32Path: slice.bip32Path,
           addressKnown: true,
-          ...updates,
-          sliceStatus,
+          ...addressData,
+          addressStatus,
         }
         dispatch(updater(updatedSlice));
       })
