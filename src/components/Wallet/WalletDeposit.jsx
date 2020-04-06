@@ -36,7 +36,7 @@ class WalletDeposit extends React.Component {
   static propTypes = {
     deposits: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
-    updateDepositNode: PropTypes.func.isRequired,
+    updateDepositSlice: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
@@ -67,7 +67,7 @@ class WalletDeposit extends React.Component {
   }
 
   getDepositAddress = () => {
-    const { network, client, updateDepositNode } = this.props;
+    const { network, client, updateDepositSlice } = this.props;
     const { depositIndex } = this.state;
     const depositableNodes = this.getDepositableNodes();
     if (depositIndex < depositableNodes.length)
@@ -80,7 +80,7 @@ class WalletDeposit extends React.Component {
         updates = await fetchAddressUTXOs(this.state.address, network, client);
         if (updates && updates.utxos && updates.utxos.length) {
           clearInterval(depositTimer)
-          updateDepositNode(updates)
+          updateDepositSlice(updates)
           this.setState({showReceived: true});
         }
       } catch(e) {
@@ -186,7 +186,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  updateDepositNode: updateDepositSliceAction,
+  updateDepositSlice: updateDepositSliceAction,
   resetWalletView,
 };
 

@@ -36,8 +36,6 @@ export async function fetchAddressUTXOs(address, network, client) {
     }
   try {
     unsortedUTXOs = await fetchAddressUTXOsUnsorted(address, network, client);
-    // const utxos = sortInputs(unsortedUTXOs);
-    // return utxos
   } catch (e) {
     if (client.type === 'private' &&
       isWalletAddressNotFoundError(e)) {

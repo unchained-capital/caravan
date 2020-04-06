@@ -26,7 +26,7 @@ function ImportAddressesButton({
   importCallback 
 }) {
   const [imported, setImported] = useState(false)
-  const [importError, setImportError] = useState('fooey! import error')
+  const [importError, setImportError] = useState('')
   const [rescan, setRescanPreference] = useState(false)
   const [addressesError, setAddressesError] = useState('')
   const [enableImport, setEnableImport] = useState(false)

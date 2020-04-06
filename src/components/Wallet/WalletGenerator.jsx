@@ -42,7 +42,7 @@ import {
   resetWallet, 
 } from "../../actions/walletActions";
 import { fetchSliceData } from '../../actions/braidActions'
-import {setExtendedPublicKeyImporterVisible, resetExtendedPublicKeyImporter} from "../../actions/extendedPublicKeyImporterActions";
+import {setExtendedPublicKeyImporterVisible} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
 import { wrappedActions } from '../../actions/utils';
 import { 
@@ -85,7 +85,7 @@ class WalletGenerator extends React.Component {
 
   componentDidMount() {
     const { setIsWallet, refreshNodes, common: {nodesLoaded} } = this.props;
-    this.throttleTestConnection = debounce(args => this.testConnection(args), 500, { trailing: true, leading: false })
+    this.debouncedTestConnection = debounce(args => this.testConnection(args), 500, { trailing: true, leading: false })
     setIsWallet();
     refreshNodes(this.refreshNodes);
     if (nodesLoaded) this.setState({ generating: true })
@@ -108,7 +108,7 @@ class WalletGenerator extends React.Component {
     if (prevPassword !== client.password && client.password.length) {
       // test the connection using the set password
       // but only if the password field hasn't been changed for 500ms
-      this.throttleTestConnection({ network, client, setPasswordError })
+      this.debouncedTestConnection({ network, client, setPasswordError })
     }
   }
 
@@ -124,7 +124,7 @@ class WalletGenerator extends React.Component {
 
   async handlePasswordEnter(event) {
     event.preventDefault()
-    this.throttleTestConnection.cancel()
+    this.debouncedTestConnection.cancel()
     await this.testConnection(this.props, this.generate)
   }
 
@@ -429,7 +429,6 @@ const mapDispatchToProps = {
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
   resetWallet,
-  resetExtendedPublicKeyImporter,
   resetNodesFetchErrors,
   ...wrappedActions({
     setPassword: SET_CLIENT_PASSWORD,
