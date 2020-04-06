@@ -24,7 +24,7 @@ import {
   FormHelperText,
 } from '@material-ui/core';
 import MultisigDetails from "../MultisigDetails";
-import BitcoindAddressImporter from "../BitcoindAddressImporter";
+import ImportAddressesButton from "../ImportAddressesButton";
 
 // Actions
 import {
@@ -204,7 +204,7 @@ class ScriptEntry extends React.Component {
         {
           client.type === "private" &&
           <Box mt={2}>
-            <BitcoindAddressImporter addresses={[multisig.address]} />
+            <ImportAddressesButton addresses={[multisig.address]} client={client} />
           </Box>
         }
       </div>

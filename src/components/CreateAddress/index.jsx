@@ -10,7 +10,7 @@ import AddressTypePicker from '../AddressTypePicker';
 import AddressGenerator from './AddressGenerator';
 import PublicKeyImporter from './PublicKeyImporter';
 import ClientPicker from '../ClientPicker';
-import BitcoindAddressImporter from '../BitcoindAddressImporter';
+import ImportAddressesButton from '../ImportAddressesButton';
 
 import '../styles.css';
 
@@ -51,7 +51,7 @@ class CreateAddress extends React.Component {
           you can import the address created here by switching for "Public" to "Private".
           Otherwise no action is needed here.
         </span>}
-        privateNotes={<div><BitcoindAddressImporter
+        privateNotes={<div><ImportAddressesButton
           addresses={[address]}/></div>}
       /></Box>
 

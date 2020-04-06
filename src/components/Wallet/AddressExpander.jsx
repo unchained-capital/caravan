@@ -15,7 +15,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MultisigDetails from "../MultisigDetails";
-import BitcoindAddressImporter from "../BitcoindAddressImporter";
+import ImportAddressesButton from "../ImportAddressesButton";
 import Copyable from "../Copyable";
 import InteractionMessages from "../InteractionMessages";
 import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
@@ -175,7 +175,7 @@ class AddressExpander extends React.Component {
         case MODE_WATCH:
           return (
             <Grid item md={12}>
-              <BitcoindAddressImporter addresses={[multisig.address]}/>
+              <ImportAddressesButton addresses={[multisig.address]}/>
             </Grid>    
           )        
         default:

@@ -11,7 +11,7 @@ import {
   getAddressStatus,
   fetchFeeEstimate,
 } from "../../blockchain";
-import { getUnknownAddresses } from '../../selectors/wallet'
+import { getUnknownAddresses, getUnknownAddressSlices } from '../../selectors/wallet'
 
 // Components
 import {
@@ -31,7 +31,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ConfirmWallet from './ConfirmWallet';
 import WalletControl from './WalletControl';
 import WalletConfigInteractionButtons from './WalletConfigInteractionButtons';
-import BitcoindAddressImporter from '../BitcoindAddressImporter';
+import ImportAddressesButton from '../ImportAddressesButton';
 
 // Actions
 import {setFrozen} from "../../actions/settingsActions";
@@ -41,6 +41,7 @@ import {
   resetNodesFetchErrors,
   resetWallet, 
 } from "../../actions/walletActions";
+import { fetchSliceData } from '../../actions/braidActions'
 import {setExtendedPublicKeyImporterVisible, resetExtendedPublicKeyImporter} from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet } from "../../actions/transactionActions";
 import { wrappedActions } from '../../actions/utils';
@@ -127,6 +128,28 @@ class WalletGenerator extends React.Component {
     await this.testConnection(this.props, this.generate)
   }
 
+  /**
+   * Callback function to pass to the address importer
+   * after addresses have been imported we want
+   * @param {Array<string>} importedAddresses 
+   * @param {boolean} rescan - whether or not a rescan is being performed
+   */
+  async afterImportAddresses(importedAddresses, rescan) {
+    // if rescan is true then there's no point in fetching 
+    // the slice data yet since we likely won't get anything
+    // until the rescan is complete
+    if (rescan) return
+
+    const { unknownSlices, fetchSliceData } = this.props
+    const importedSlices = unknownSlices.reduce((slices, slice) => {
+      if (importedAddresses.indexOf(slice.multisig.address) > -1)
+        slices.push(slice)
+      return slice
+    }, [])
+
+    await fetchSliceData(importedSlices)
+  }
+
   testConnection = async ({network, client, setPasswordError}, cb) => {
     try {
       await fetchFeeEstimate(network, client);
@@ -152,7 +175,13 @@ class WalletGenerator extends React.Component {
   }
 
   body() {
-    const {totalSigners, configuring, downloadWalletDetails, client, unknownAddresses} = this.props;
+    const {
+      totalSigners, 
+      configuring, 
+      downloadWalletDetails, 
+      client, 
+      unknownAddresses
+    } = this.props;
     const {generating, connectSuccess} = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating && !configuring) {
@@ -160,15 +189,26 @@ class WalletGenerator extends React.Component {
           <div>
             <WalletControl addNode={this.addNode} updateNode={this.updateNode}/>
             <Box mt={2} textAlign={"center"}>
-              <WalletConfigInteractionButtons
-                onClearFn={e => this.toggleImporters(e)}
-                onDownloadFn={downloadWalletDetails}
-              />
+              <Grid container>
+                <Grid item>
+                  <WalletConfigInteractionButtons
+                    onClearFn={e => this.toggleImporters(e)}
+                    onDownloadFn={downloadWalletDetails}
+                  />
+                </Grid>
+              { 
+                client.type === 'private' && 
+                <Grid item>
+                  <ImportAddressesButton 
+                    addresses={unknownAddresses}
+                    client={client}
+                    importCallback={addresses => this.afterImportAddresses(addresses)}
+                    />
+                </Grid>
+              }
+
+              </Grid>
             </Box>
-            {/* { 
-              client.type === 'private' && 
-              <BitcoindAddressImporter addresses={unknownAddresses} />
-            } */}
           </div>
         );
       } else {
@@ -377,6 +417,7 @@ function mapStateToProps(state) {
     ...state.wallet,
     ...state.wallet.common,
     unknownAddresses: getUnknownAddresses(state),
+    unknownSlices: getUnknownAddressSlices(state),
   };
 }
 
@@ -384,6 +425,7 @@ const mapDispatchToProps = {
   freeze: setFrozen,
   updateDepositSlice: updateDepositSliceAction,
   updateChangeSlice: updateChangeSliceAction,
+  fetchSliceData: fetchSliceData,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet,
   resetWallet,
