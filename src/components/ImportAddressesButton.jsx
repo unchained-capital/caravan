@@ -8,12 +8,15 @@ import {
 } from '../bitcoind';
 
 // Components
-import { FormHelperText, Button, Box, Switch, FormControlLabel, Tooltip, makeStyles } from '@material-ui/core'
+import { FormHelperText, Button, Box, Switch, FormControlLabel, Tooltip, makeStyles, Grid } from '@material-ui/core'
 import InfoIcon from '@material-ui/icons/Info';
 
 const useStyles = makeStyles(() => ({
   tooltip: {
     fontSize: '.8rem'
+  },
+  container: {
+    textAlign: 'left'
   }
 }))
 /**
@@ -79,8 +82,8 @@ function ImportAddressesButton({
   }, [addresses])
 
   // return "addresses" or "address"
-  const pluralOrSingularAddress = () => 
-    `address${addresses && addresses.length > 1 ? 'es' : ''}`
+  const pluralOrSingularAddress = (capitalize = false) => 
+    `${capitalize ? 'A' : 'a'}ddress${addresses && addresses.length > 1 ? 'es' : ''}`
 
   async function importAddresses() {
     const label = ""; // TODO: do we want to allow to set? or set to "caravan"?
@@ -114,51 +117,51 @@ will need to be imported to your node. Importing will give you accurate balance 
 however to know if an address has been used prior to import, a rescan needs to take place.`
 
   return(
-    <React.Fragment>
-        <Box component="span" ml={2}>
-          <Button
-            variant="contained"
-            disabled={(!enableImport && !rescan) || !addresses.length}
-            onClick={importAddresses}>Import</Button>
-        </Box>
-        <Box component="span" ml={2}>
-          <FormControlLabel
-            control={
-              <Switch
-              checked={rescan}
-              onChange={e => setRescanPreference(e.target.checked)}
-              color="secondary"
-              />
-            }
-            label="Rescan"
-          />
-          <Tooltip title={rescanTooltip} classes={{ tooltip: classes.tooltip }}>
-            <InfoIcon fontSize="small" color="disabled"/>
-          </Tooltip>
-        </Box>
-        <Box>
-          {
-            addressesError.length > 0 && 
-            <FormHelperText error>{addressesError}</FormHelperText>
+    <Grid className={classes.container}>
+      <Box component="span" ml={2}>
+        <Button
+          variant="contained"
+          disabled={(!enableImport && !rescan) || !addresses.length}
+          onClick={importAddresses}>Import</Button>
+      </Box>
+      <Box component="span" ml={2}>
+        <FormControlLabel
+          control={
+            <Switch
+            checked={rescan}
+            onChange={e => setRescanPreference(e.target.checked)}
+            color="secondary"
+            />
           }
-          {
-            importError.length > 0 && 
-            <FormHelperText error>{importError}</FormHelperText>
-          }
-          {
-            imported && rescan &&
-            <FormHelperText>
-              {pluralOrSingularAddress()} imported, rescan of your node may take some time.
-            </FormHelperText>
-          }
-          {
-            imported && !rescan &&
-            <FormHelperText>
-              {pluralOrSingularAddress()} imported.
-            </FormHelperText>
-          }
-        </Box>
-    </React.Fragment>
+          label="Rescan"
+        />
+        <Tooltip title={rescanTooltip} classes={{ tooltip: classes.tooltip }}>
+          <InfoIcon fontSize="small" color="disabled"/>
+        </Tooltip>
+      </Box>
+      <Box>
+        {
+          addressesError.length > 0 && 
+          <FormHelperText error>{addressesError}</FormHelperText>
+        }
+        {
+          importError.length > 0 && 
+          <FormHelperText error>{importError}</FormHelperText>
+        }
+        {
+          imported && rescan &&
+          <FormHelperText>
+            {pluralOrSingularAddress(true)} imported, rescan of your node may take some time.
+          </FormHelperText>
+        }
+        {
+          imported && !rescan &&
+          <FormHelperText>
+            {pluralOrSingularAddress(true)} imported.
+          </FormHelperText>
+        }
+      </Box>
+    </Grid>
   )
 }
 
