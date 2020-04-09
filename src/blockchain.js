@@ -1,4 +1,4 @@
-import {sortInputs} from "unchained-bitcoin";
+import { sortInputs } from "unchained-bitcoin";
 import BigNumber from "bignumber.js";
 import {
   blockExplorerGetAddresesUTXOs,
@@ -12,107 +12,104 @@ import {
   bitcoindSendRawTransaction,
   bitcoindParams,
   bitcoindGetAddressStatus,
-  isWalletAddressNotFoundError
+  isWalletAddressNotFoundError,
 } from "./bitcoind";
 
-export const BLOCK_EXPLORER = 'public';
-export const BITCOIND = 'private';
+export const BLOCK_EXPLORER = "public";
+export const BITCOIND = "private";
 
 /**
  * Fetch utxos for an address, calculate total balances
  * and return an object describing the addresses state
- * @param {string} address 
- * @param {string} network 
- * @param {object} client 
+ * @param {string} address
+ * @param {string} network
+ * @param {object} client
  * @returns {object} slice object with information gathered for that address
  */
 export async function fetchAddressUTXOs(address, network, client) {
-  let unsortedUTXOs, 
-    updates = {
-      utxos: [],
-      balanceSats: BigNumber(0),
-      fetchedUTXOs: false,
-      fetchUTXOsError: ''
-    }
+  let unsortedUTXOs;
+
+  let updates = {
+    utxos: [],
+    balanceSats: BigNumber(0),
+    fetchedUTXOs: false,
+    fetchUTXOsError: "",
+  };
   try {
     unsortedUTXOs = await fetchAddressUTXOsUnsorted(address, network, client);
   } catch (e) {
-    if (client.type === 'private' &&
-      isWalletAddressNotFoundError(e)) {
+    if (client.type === "private" && isWalletAddressNotFoundError(e)) {
       updates = {
         utxos: [],
         balanceSats: BigNumber(0),
         addressKnown: false,
         fetchedUTXOs: true,
-        fetchUTXOsError: ''
-      }
+        fetchUTXOsError: "",
+      };
     } else {
-      updates = { fetchUTXOsError: e.toString() }
+      updates = { fetchUTXOsError: e.toString() };
     }
   }
 
   // if no utxos then return updates object as is
-  if (!unsortedUTXOs) return updates
-  
+  if (!unsortedUTXOs) return updates;
+
   // sort utxos
   const utxos = sortInputs(unsortedUTXOs);
-  
+
   // calculate the total balance from all utxos
   const balanceSats = utxos
     .map((utxo) => utxo.amountSats)
     .reduce(
       (accumulator, currentValue) => accumulator.plus(currentValue),
-      new BigNumber(0));
+      new BigNumber(0)
+    );
 
   return {
-    ...updates, 
-    balanceSats, 
-    utxos, 
+    ...updates,
+    balanceSats,
+    utxos,
     fetchedUTXOs: true,
-    fetchUTXOsError: ''
-  }
+    fetchUTXOsError: "",
+  };
 }
 
 function fetchAddressUTXOsUnsorted(address, network, client) {
   if (client.type === BLOCK_EXPLORER) {
     return blockExplorerGetAddresesUTXOs(address, network);
-  } else {
-    return bitcoindListUnspent({
-      ...bitcoindParams(client),
-      ...{address}
-    });
   }
+  return bitcoindListUnspent({
+    ...bitcoindParams(client),
+    ...{ address },
+  });
 }
 
 export function getAddressStatus(address, network, client) {
   if (client.type === BLOCK_EXPLORER) {
     return blockExplorerGetAddressStatus(address, network);
-  } else {
-    return bitcoindGetAddressStatus({
-      ...bitcoindParams(client),
-      ...{address}
-    });
   }
+  return bitcoindGetAddressStatus({
+    ...bitcoindParams(client),
+    ...{ address },
+  });
 }
 
 export function fetchFeeEstimate(network, client) {
   if (client.type === BLOCK_EXPLORER) {
     return blockExplorerGetFeeEstimate(network);
-  } else {
-    return bitcoindEstimateSmartFee({
-      ...bitcoindParams(client),
-      ...{numBlocks: 1}
-    });
   }
+  return bitcoindEstimateSmartFee({
+    ...bitcoindParams(client),
+    ...{ numBlocks: 1 },
+  });
 }
 
 export function broadcastTransaction(transactionHex, network, client) {
   if (client.type === BLOCK_EXPLORER) {
     return blockExplorerBroadcastTransaction(transactionHex, network);
-  } else {
-    return bitcoindSendRawTransaction({
-      ...bitcoindParams(client),
-      ...{hex: transactionHex}
-    });
   }
+  return bitcoindSendRawTransaction({
+    ...bitcoindParams(client),
+    ...{ hex: transactionHex },
+  });
 }

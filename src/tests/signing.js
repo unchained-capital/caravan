@@ -5,61 +5,68 @@ import {
   unsignedMultisigTransaction,
   TEST_FIXTURES,
 } from "unchained-bitcoin";
-import {SignMultisigTransaction} from "unchained-wallets";
-import {externalLink} from "../utils";
+import { SignMultisigTransaction } from "unchained-wallets";
+import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { externalLink } from "../utils";
 
 import Test from "./Test";
 
-import {
-  Box,
-  Table, TableBody, TableRow, TableCell
-} from "@material-ui/core";
-
 class SignMultisigTransactionTest extends Test {
-
   description() {
     return (
       <Box>
-        <p>Sign a transaction which {this.params.description}.</p>
-        <p><small>This transaction is not meant to be broadcast, but just in case, the output address is fixed and owned by Unchained Capital.</small></p>
+        <p>
+Sign a transaction which{this.params.description}
+.
+</p>
+        <p>
+          <small>
+            This transaction is not meant to be broadcast, but just in case, the
+            output address is fixed and owned by Unchained Capital.
+          </small>
+        </p>
         <Table>
           <TableBody>
+            <TableRow>
+              <TableCell>Output Address:</TableCell>
+              <TableCell>
+                {externalLink(
+                  blockExplorerAddressURL(
+                    this.outputAddress(),
+                    this.params.network
+                  ),
+                  <code>{this.outputAddress()}</code>
+                )}
+              </TableCell>
+            </TableRow>
 
-          <TableRow>
-            <TableCell>
-              Output Address:
-            </TableCell>
-            <TableCell>
-              {externalLink(blockExplorerAddressURL(this.outputAddress(), this.params.network), <code>{this.outputAddress()}</code>)}
-            </TableCell>
-          </TableRow>
+            <TableRow>
+              <TableCell>Output Amount:</TableCell>
+              <TableCell>
+                {satoshisToBitcoins(this.outputAmountSats()).toString()}
+{' '}
+BTC
+</TableCell>
+            </TableRow>
 
-          <TableRow>
-            <TableCell>
-              Output Amount:
-            </TableCell>
-            <TableCell>
-              {satoshisToBitcoins(this.outputAmountSats()).toString()} BTC
-            </TableCell>
-          </TableRow>
-
-          <TableRow>
-            <TableCell>
-              Fees:
-            </TableCell>
-            <TableCell>
-              {satoshisToBitcoins(this.feeSats()).toString()} BTC
-            </TableCell>
-          </TableRow>
-
+            <TableRow>
+              <TableCell>Fees:</TableCell>
+              <TableCell>
+                {satoshisToBitcoins(this.feeSats()).toString()}
+{' '}
+BTC
+</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-
-      </Box>);
+      </Box>
+    );
   }
 
   inputsTotalSats() {
-    return this.params.inputs.reduce((total, input) => {return total  + input.amountSats.toNumber();}, 0);
+    return this.params.inputs.reduce((total, input) => {
+      return total + input.amountSats.toNumber();
+    }, 0);
   }
 
   outputAddress() {
@@ -75,7 +82,11 @@ class SignMultisigTransactionTest extends Test {
   }
 
   unsignedTransaction() {
-    return unsignedMultisigTransaction(this.params.network, this.params.inputs, this.params.outputs);
+    return unsignedMultisigTransaction(
+      this.params.network,
+      this.params.inputs,
+      this.params.outputs
+    );
   }
 
   interaction() {
@@ -89,7 +100,7 @@ class SignMultisigTransactionTest extends Test {
   }
 
   postprocess(result) {
-    return (result.signatures ? result.signatures : result);
+    return result.signatures ? result.signatures : result;
   }
 
   expected() {
@@ -99,14 +110,13 @@ class SignMultisigTransactionTest extends Test {
   matches(expected, actual) {
     return JSON.stringify(expected) === JSON.stringify(actual);
   }
-
 }
 
 export function signingTests(keystore) {
   return TEST_FIXTURES.transactions.map((fixture) => {
     return new SignMultisigTransactionTest({
       ...fixture,
-      ...{keystore},
+      ...{ keystore },
     });
   });
 }

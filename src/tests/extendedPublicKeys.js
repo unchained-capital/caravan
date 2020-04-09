@@ -1,24 +1,23 @@
 import React from "react";
-import {
-  MAINNET,
-  TESTNET,
-  TEST_FIXTURES,
-} from "unchained-bitcoin";
-import {
-  ExportExtendedPublicKey,
-} from "unchained-wallets";
+import { MAINNET, TESTNET, TEST_FIXTURES } from "unchained-bitcoin";
+import { ExportExtendedPublicKey } from "unchained-wallets";
 
 import Test from "./Test";
 
 class ExportExtendedPublicKeyTest extends Test {
-
   name() {
     return `Export ${this.params.network} xpub at ${this.params.bip32Path}`;
-
   }
 
   description() {
-    return (<p>Export an extended public key at BIP32 path <code>{this.params.bip32Path}</code>.</p>);
+    return (
+      <p>
+        Export an extended public key at BIP32 path
+{" "}
+        <code>{this.params.bip32Path}</code>
+.
+</p>
+    );
   }
 
   interaction() {
@@ -30,7 +29,7 @@ class ExportExtendedPublicKeyTest extends Test {
   }
 
   postprocess(result) {
-    return (result.pubkey ? result.pubkey : result);
+    return result.pubkey ? result.pubkey : result;
   }
 
   expected() {
@@ -40,7 +39,7 @@ class ExportExtendedPublicKeyTest extends Test {
   }
 }
 
-const extendedPublicKeyTests = (keystore) => ([
+const extendedPublicKeyTests = (keystore) => [
   new ExportExtendedPublicKeyTest({
     keystore,
     network: TESTNET,
@@ -131,6 +130,6 @@ const extendedPublicKeyTests = (keystore) => ([
     network: MAINNET,
     bip32Path: "m/45'/0'/4'/99'/2147483647/3/1",
   }),
-]);
+];
 
 export default extendedPublicKeyTests;

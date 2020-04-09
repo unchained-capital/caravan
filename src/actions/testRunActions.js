@@ -19,14 +19,12 @@ export function endTestRun(testRunIndex, status, message) {
   };
 }
 
-
 export function resetTestRun(testRunIndex) {
   return {
     type: RESET_TEST_RUN,
     testRunIndex,
   };
 }
-
 
 export function setTestRunNote(testRunIndex, text) {
   return {

@@ -1,15 +1,15 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
-import settingsReducer from './settingsReducer';
-import clientReducer from './clientReducer';
-import braidReducer from './braidReducer';
-import quorumReducer from './quorumReducer';
-import addressReducer from './addressReducer';
-import walletReducer from './walletReducer';
+import settingsReducer from "./settingsReducer";
+import clientReducer from "./clientReducer";
+import braidReducer from "./braidReducer";
+import quorumReducer from "./quorumReducer";
+import addressReducer from "./addressReducer";
+import walletReducer from "./walletReducer";
 
-import ownershipReducer from './ownershipReducer';
-import signatureImportersReducer from './signatureImportersReducer';
-import transactionReducer from './transactionReducer';
+import ownershipReducer from "./ownershipReducer";
+import signatureImportersReducer from "./signatureImportersReducer";
+import transactionReducer from "./transactionReducer";
 import keystoreReducer from "./keystoreReducer";
 import testSuiteRunReducer from "./testSuiteRunReducer";
 import errorNotificationReducer from "./errorNotificationReducer";
@@ -18,7 +18,7 @@ import {
   UPDATE_DEPOSIT_NODE,
   UPDATE_CHANGE_NODE,
   RESET_WALLET,
-} from '../actions/walletActions';
+} from "../actions/walletActions";
 
 const spendReducers = combineReducers({
   ownership: ownershipReducer,
@@ -29,7 +29,7 @@ const spendReducers = combineReducers({
 const walletReducers = combineReducers({
   deposits: braidReducer(UPDATE_DEPOSIT_NODE),
   change: braidReducer(UPDATE_CHANGE_NODE),
-  common: walletReducer
+  common: walletReducer,
 });
 
 const appReducer = combineReducers({
@@ -45,10 +45,9 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  if (action.type === RESET_WALLET)
-    state = undefined
-  
+  if (action.type === RESET_WALLET) state = undefined;
+
   return appReducer(state, action);
-}
+};
 
 export default rootReducer;

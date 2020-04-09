@@ -1,1 +1,1 @@
-export const CARAVAN_CONFIG = 'caravan_config'
+export const CARAVAN_CONFIG = "caravan_config";

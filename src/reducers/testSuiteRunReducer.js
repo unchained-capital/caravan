@@ -1,14 +1,9 @@
 import moment from "moment";
-import {
-  PENDING,
-  ACTIVE,
-} from "unchained-wallets";
+import { PENDING, ACTIVE } from "unchained-wallets";
 
-import {SUITE} from "../tests";
+import { SUITE } from "../tests";
 
-import {
-  SET_KEYSTORE,
-} from "../actions/keystoreActions";
+import { SET_KEYSTORE } from "../actions/keystoreActions";
 import {
   START_TEST_SUITE_RUN,
   SET_CURRENT_TEST_RUN,
@@ -21,23 +16,23 @@ import {
 } from "../actions/testRunActions";
 
 const initialTestRunState = {
-  startedAt: '',
-  endedAt: '',
+  startedAt: "",
+  endedAt: "",
   status: PENDING,
-  message: '',
-  note: '',
+  message: "",
+  note: "",
 };
 
 const initialState = {
   started: false,
-  startedAt: '',
-  endedAt: '',
+  startedAt: "",
+  endedAt: "",
   testRuns: [],
   currentTestRunIndex: -1,
 };
 
 const testRunsForKeystore = (action) => {
-  if (action.keystoreType === '') {
+  if (action.keystoreType === "") {
     return [];
   }
   return (SUITE[action.keystoreType] || [])
@@ -45,7 +40,7 @@ const testRunsForKeystore = (action) => {
     .map((test, i) => {
       return {
         ...initialTestRunState,
-        ...{test},
+        ...{ test },
       };
     });
 };
@@ -53,56 +48,57 @@ const testRunsForKeystore = (action) => {
 const updatedTestRun = (state, testRunIndex, update) => {
   return {
     ...state,
-    ...{testRuns: state.testRuns.map((testRun, i) => {
-      if (i === testRunIndex) {
-        return {
-          ...testRun,
-          ...update,
-        };
-      } else {
+    ...{
+      testRuns: state.testRuns.map((testRun, i) => {
+        if (i === testRunIndex) {
+          return {
+            ...testRun,
+            ...update,
+          };
+        }
         return testRun;
-      }
-    })},
+      }),
+    },
   };
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-  case SET_KEYSTORE:
-    return {
-      ...state,
-      ...{testRuns: testRunsForKeystore(action)},
-    };
-  case START_TEST_SUITE_RUN:
-    return {
-      ...state,
-      ...{
-        started: true,
+    case SET_KEYSTORE:
+      return {
+        ...state,
+        ...{ testRuns: testRunsForKeystore(action) },
+      };
+    case START_TEST_SUITE_RUN:
+      return {
+        ...state,
+        ...{
+          started: true,
+          startedAt: moment(),
+          currentTestRunIndex: 0,
+        },
+      };
+    case SET_CURRENT_TEST_RUN:
+      return {
+        ...state,
+        ...{ currentTestRunIndex: action.value },
+      };
+    case START_TEST_RUN:
+      return updatedTestRun(state, action.testRunIndex, {
         startedAt: moment(),
-        currentTestRunIndex: 0,
-      },
-    };
-  case SET_CURRENT_TEST_RUN:
-    return {
-      ...state,
-      ...{currentTestRunIndex: action.value},
-    };
-  case START_TEST_RUN:
-    return updatedTestRun(state, action.testRunIndex, {
-      startedAt: moment(), 
-      status: ACTIVE,
-    });
-  case END_TEST_RUN:
-    return updatedTestRun(state, action.testRunIndex, {
-      endedAt: moment(), 
-      status: action.status, 
-      message: action.message,
-    });
-  case RESET_TEST_RUN:
-    return updatedTestRun(state, action.testRunIndex, initialTestRunState);
-  case SET_TEST_RUN_NOTE:
-    return updatedTestRun(state, action.testRunIndex, {note: action.note});
-  default:
-    return state;
+        status: ACTIVE,
+      });
+    case END_TEST_RUN:
+      return updatedTestRun(state, action.testRunIndex, {
+        endedAt: moment(),
+        status: action.status,
+        message: action.message,
+      });
+    case RESET_TEST_RUN:
+      return updatedTestRun(state, action.testRunIndex, initialTestRunState);
+    case SET_TEST_RUN_NOTE:
+      return updatedTestRun(state, action.testRunIndex, { note: action.note });
+    default:
+      return state;
   }
 };

@@ -1,30 +1,24 @@
-import React from 'react';
-import {connect} from "react-redux";
+import React from "react";
+import { connect } from "react-redux";
 
-import {
-  clearErrorNotification,
-} from "../actions/errorNotificationActions";
-
-import {
-  Snackbar, IconButton
-} from '@material-ui/core';
-import { Close } from '@material-ui/icons';
+import { Snackbar, IconButton } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
+import { clearErrorNotification } from "../actions/errorNotificationActions";
 
 class ErrorNotificationBase extends React.Component {
-
   render() {
-    const {open, message, clearErrorNotification} = this.props;
+    const { open, message, clearErrorNotification } = this.props;
     return (
       <Snackbar
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
+          vertical: "bottom",
+          horizontal: "left",
         }}
         open={open}
         /* autoHideDuration={6000} */
         onClose={clearErrorNotification}
         ContentProps={{
-          'aria-describedby': 'error-notification',
+          "aria-describedby": "error-notification",
         }}
         message={<span id="error-notification">{message}</span>}
         action={[
@@ -40,7 +34,6 @@ class ErrorNotificationBase extends React.Component {
       />
     );
   }
-
 }
 
 const mapStateToProps = (state) => {
@@ -51,6 +44,9 @@ const mapDispatchToProps = {
   clearErrorNotification,
 };
 
-const ErrorNotification = connect(mapStateToProps, mapDispatchToProps)(ErrorNotificationBase);
+const ErrorNotification = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ErrorNotificationBase);
 
-export {ErrorNotification};
+export { ErrorNotification };

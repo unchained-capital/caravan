@@ -1,17 +1,18 @@
-import {diffChars, diffArrays, diffJSON} from "diff";
+import { diffChars, diffArrays, diffJSON } from "diff";
 
 const SUCCESS = "success";
 const FAILURE = "failure";
 const ERROR = "error";
 
 export class Test {
-
   static SUCCESS = SUCCESS;
+
   static FAILURE = FAILURE;
+
   static ERROR = ERROR;
 
   constructor(params) {
-    this.params = (params || {});
+    this.params = params || {};
   }
 
   name() {
@@ -47,13 +48,13 @@ export class Test {
   }
 
   diff(expected, actual) {
-    if (typeof(expected) === "string" && typeof(actual) === "string") {
+    if (typeof expected === "string" && typeof actual === "string") {
       return diffChars(expected, actual);
     }
-    if (typeof(expected) === "object" && typeof(actual) === "object") {
+    if (typeof expected === "object" && typeof actual === "object") {
       if (expected.length !== undefined && actual.length !== undefined) {
         return diffArrays(expected, actual);
-      } 
+      }
       if (expected.length === undefined && actual.length === undefined) {
         return diffJSON(expected, actual);
       }
@@ -65,21 +66,24 @@ export class Test {
     try {
       const actual = await this.actual();
       return this.resolve(actual);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
-      return {status: ERROR, message: e.message};
+      return { status: ERROR, message: e.message };
     }
   }
 
   resolve(actual) {
     const expected = this.expected();
     if (this.matches(expected, actual)) {
-      return {status: SUCCESS};
-    } else {
-      return {status: FAILURE, expected, actual, diff: this.diff(expected, actual)};
+      return { status: SUCCESS };
     }
+    return {
+      status: FAILURE,
+      expected,
+      actual,
+      diff: this.diff(expected, actual),
+    };
   }
-
 }
 
 export default Test;

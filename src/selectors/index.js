@@ -1,5 +1,3 @@
-import * as walletSelectors from './wallet'
+import * as walletSelectors from "./wallet";
 
-export {
-  walletSelectors
-}
+export { walletSelectors };
