@@ -18,6 +18,16 @@ import {
 export const BLOCK_EXPLORER = "public";
 export const BITCOIND = "private";
 
+function fetchAddressUTXOsUnsorted(address, network, client) {
+  if (client.type === BLOCK_EXPLORER) {
+    return blockExplorerGetAddresesUTXOs(address, network);
+  }
+  return bitcoindListUnspent({
+    ...bitcoindParams(client),
+    ...{ address },
+  });
+}
+
 /**
  * Fetch utxos for an address, calculate total balances
  * and return an object describing the addresses state
@@ -72,16 +82,6 @@ export async function fetchAddressUTXOs(address, network, client) {
     fetchedUTXOs: true,
     fetchUTXOsError: "",
   };
-}
-
-function fetchAddressUTXOsUnsorted(address, network, client) {
-  if (client.type === BLOCK_EXPLORER) {
-    return blockExplorerGetAddresesUTXOs(address, network);
-  }
-  return bitcoindListUnspent({
-    ...bitcoindParams(client),
-    ...{ address },
-  });
 }
 
 export function getAddressStatus(address, network, client) {

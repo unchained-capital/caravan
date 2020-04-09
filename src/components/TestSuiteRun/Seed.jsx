@@ -4,9 +4,17 @@ import { TEST_FIXTURES } from "unchained-bitcoin";
 
 import { Grid } from "@material-ui/core";
 
-const bip39Phrase = TEST_FIXTURES.bip39Phrase;
+const { bip39Phrase } = TEST_FIXTURES;
 
 class SeedBase extends React.Component {
+  static renderSeedWord(word, i) {
+    return (
+      <li key={i}>
+        <code>{word}</code>
+      </li>
+    );
+  }
+
   render() {
     return (
       <Grid container>
@@ -29,17 +37,9 @@ class SeedBase extends React.Component {
       </Grid>
     );
   }
-
-  renderSeedWord(word, i) {
-    return (
-      <li key={i}>
-        <code>{word}</code>
-      </li>
-    );
-  }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
   return {};
 };
 

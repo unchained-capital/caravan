@@ -45,9 +45,10 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  if (action.type === RESET_WALLET) state = undefined;
+  let newState = state;
+  if (action.type === RESET_WALLET) newState = undefined;
 
-  return appReducer(state, action);
+  return appReducer(newState, action);
 };
 
 export default rootReducer;

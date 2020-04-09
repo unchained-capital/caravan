@@ -1,25 +1,23 @@
-import { updateState } from './utils';
+import updateState from "./utils";
 import {
   SET_CLIENT_TYPE,
   SET_CLIENT_URL,
   SET_CLIENT_USERNAME,
   SET_CLIENT_PASSWORD,
-
   SET_CLIENT_URL_ERROR,
   SET_CLIENT_USERNAME_ERROR,
   SET_CLIENT_PASSWORD_ERROR,
-
-} from '../actions/clientActions';
+} from "../actions/clientActions";
 
 const initialState = {
-  type: 'public',
-  url: '',
-  username: '',
-  password: '',
-  url_error: '',
-  username_error: '',
-  password_error: '',
-  status: 'unknown',
+  type: "public",
+  url: "",
+  username: "",
+  password: "",
+  url_error: "",
+  username_error: "",
+  password_error: "",
+  status: "unknown",
 };
 
 export default (state = initialState, action) => {
@@ -38,7 +36,7 @@ export default (state = initialState, action) => {
       return updateState(state, { username_error: action.value });
     case SET_CLIENT_PASSWORD_ERROR:
       return updateState(state, { password_error: action.value });
-      
+
     default:
       return state;
   }

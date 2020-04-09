@@ -12,13 +12,18 @@ import { externalLink } from "../utils";
 import Test from "./Test";
 
 class SignMultisigTransactionTest extends Test {
+  static postprocess(result) {
+    return result.signatures ? result.signatures : result;
+  }
+
+  static matches(expected, actual) {
+    return JSON.stringify(expected) === JSON.stringify(actual);
+  }
+
   description() {
     return (
       <Box>
-        <p>
-Sign a transaction which{this.params.description}
-.
-</p>
+        <p>Sign a transaction which{this.params.description}.</p>
         <p>
           <small>
             This transaction is not meant to be broadcast, but just in case, the
@@ -43,19 +48,15 @@ Sign a transaction which{this.params.description}
             <TableRow>
               <TableCell>Output Amount:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.outputAmountSats()).toString()}
-{' '}
-BTC
-</TableCell>
+                {satoshisToBitcoins(this.outputAmountSats()).toString()} BTC
+              </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell>Fees:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.feeSats()).toString()}
-{' '}
-BTC
-</TableCell>
+                {satoshisToBitcoins(this.feeSats()).toString()} BTC
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -99,16 +100,8 @@ BTC
     });
   }
 
-  postprocess(result) {
-    return result.signatures ? result.signatures : result;
-  }
-
   expected() {
     return this.params.signature;
-  }
-
-  matches(expected, actual) {
-    return JSON.stringify(expected) === JSON.stringify(actual);
   }
 }
 

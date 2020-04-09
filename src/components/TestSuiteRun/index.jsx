@@ -18,7 +18,7 @@ import {
 } from "../../actions/testSuiteRunActions";
 import { KeystorePicker } from "./KeystorePicker";
 import { TestSuiteRunSummary } from "./TestSuiteRunSummary";
-import { TestRun } from "./TestRun";
+import TestRun from "./TestRun";
 import { Seed } from "./Seed";
 
 const SPACEBAR_CODE = 32;

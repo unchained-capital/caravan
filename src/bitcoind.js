@@ -78,7 +78,9 @@ export async function bitcoindListUnspent({ url, auth, address, addresses }) {
       };
     });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error("There was a problem:", e.message);
+    return e;
   }
 }
 
@@ -95,10 +97,12 @@ export async function bitcoindGetAddressStatus({ url, auth, address }) {
     };
   } catch (e) {
     if (isWalletAddressNotFoundError(e))
+      // eslint-disable-next-line no-console
       console.warn(
         `Address ${address} not found in bitcoind's wallet. Query failed.`
       );
-    else console.error(e.message);
+    else console.error(e.message); // eslint-disable-line no-console
+    return e;
   }
 }
 
@@ -113,6 +117,7 @@ export async function bitcoindSendRawTransaction({ url, auth, hex }) {
     const resp = await callBitcoind(url, auth, "sendrawtransaction", [hex]);
     return resp.result;
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log("send tx error", e);
     throw (e.response && e.response.data.error.message) || e;
   }

@@ -52,14 +52,11 @@ class TestSuiteRunSummaryBase extends React.Component {
               <dl>
                 <dt>OS:</dt>
                 <dd>
-                  {environment.getOSName()} 
-{' '}
-{environment.getOSVersion()}
+                  {environment.getOSName()} {environment.getOSVersion()}
                 </dd>
                 <dt>Browser:</dt>
                 <dd>
-                  {environment.getBrowserName()}
-{" "}
+                  {environment.getBrowserName()}{" "}
                   {environment.getBrowserVersion()}
                 </dd>
                 <dt>unchained-wallets:</dt>
@@ -71,9 +68,7 @@ class TestSuiteRunSummaryBase extends React.Component {
                   <Box>
                     <dt>Keystore:</dt>
                     <dd>
-                      {this.keystoreName(keystore.type)} 
-{' '}
-{keystore.version}
+                      {this.keystoreName(keystore.type)} {keystore.version}
                     </dd>
                   </Box>
                 )}

@@ -37,7 +37,7 @@ const testRunsForKeystore = (action) => {
   }
   return (SUITE[action.keystoreType] || [])
     .filter((test) => test.supports(action.keystoreVersion))
-    .map((test, i) => {
+    .map((test) => {
       return {
         ...initialTestRunState,
         ...{ test },

@@ -4,50 +4,30 @@ const SUCCESS = "success";
 const FAILURE = "failure";
 const ERROR = "error";
 
-export class Test {
+class Test {
   static SUCCESS = SUCCESS;
 
   static FAILURE = FAILURE;
 
   static ERROR = ERROR;
 
-  constructor(params) {
-    this.params = params || {};
-  }
-
-  name() {
-    return this.params.name;
-  }
-
-  description() {
-    return this.params.description;
-  }
-
-  interaction() {
+  static interaction() {
     throw Error("Define the `interaction` method in your subclass of `Test`.");
   }
 
-  supports(version) {
+  static supports() {
     return true;
   }
 
-  expected() {
-    return this.params.expected;
-  }
-
-  async actual() {
-    return await this.postprocess(this.interaction().run());
-  }
-
-  postprocess(thing) {
+  static postprocess(thing) {
     return thing;
   }
 
-  matches(expected, actual) {
+  static matches(expected, actual) {
     return expected === actual;
   }
 
-  diff(expected, actual) {
+  static diff(expected, actual) {
     if (typeof expected === "string" && typeof actual === "string") {
       return diffChars(expected, actual);
     }
@@ -62,11 +42,32 @@ export class Test {
     return null;
   }
 
+  constructor(params) {
+    this.params = params || {};
+  }
+
+  name() {
+    return this.params.name;
+  }
+
+  description() {
+    return this.params.description;
+  }
+
+  expected() {
+    return this.params.expected;
+  }
+
+  async actual() {
+    return this.postprocess(this.interaction().run());
+  }
+
   async run() {
     try {
       const actual = await this.actual();
       return this.resolve(actual);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       return { status: ERROR, message: e.message };
     }

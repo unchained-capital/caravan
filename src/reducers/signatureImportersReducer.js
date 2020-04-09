@@ -1,4 +1,4 @@
-import { updateState } from "./utils";
+import updateState from "./utils";
 import {
   SET_SIGNATURE_IMPORTER_NAME,
   SET_SIGNATURE_IMPORTER_METHOD,
@@ -29,7 +29,7 @@ function setRequiredSigners(state, action) {
   for (
     let signatureImporterNum = 1;
     signatureImporterNum <= action.value;
-    signatureImporterNum++
+    signatureImporterNum += 1
   ) {
     signatureImporters[signatureImporterNum] = {
       ...initialSignatureImporterState,

@@ -1,5 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+
 import { PENDING, ACTIVE, HERMIT } from "unchained-wallets";
 import {
   Box,
@@ -18,14 +20,8 @@ import {
 } from "@material-ui/icons";
 import Test from "../../tests/Test";
 
-import {
-  startTestRun,
-  endTestRun,
-  resetTestRun,
-} from "../../actions/testRunActions";
-import {
-  setErrorNotification,
-} from "../../actions/errorNotificationActions";
+import * as testRunActions from "../../actions/testRunActions";
+import * as errorNotificationActions from "../../actions/errorNotificationActions";
 
 import InteractionMessages from "../InteractionMessages";
 import { TestRunNote } from "./Note";
@@ -150,9 +146,10 @@ class TestRunBase extends React.Component {
     if (status === PENDING || status === ACTIVE) {
       return (
         <InteractionMessages
-        excludeCodes={['hermit.command']}
-        messages={test.interaction().messagesFor({state: status})}
-      />;
+          excludeCodes={["hermit.command"]}
+          messages={test.interaction().messagesFor({ state: status })}
+        />
+      );
     }
     return null;
   };
@@ -308,12 +305,37 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  startTestRun,
-  endTestRun,
-  resetTestRun,
-  setErrorNotification,
+  ...testRunActions,
+  ...errorNotificationActions,
 };
 
 const TestRun = connect(mapStateToProps, mapDispatchToProps)(TestRunBase);
 
-export { TestRun };
+TestRunBase.propTypes = {
+  endTestRun: PropTypes.func.isRequired,
+  isLastTest: PropTypes.bool.isRequired,
+  keystore: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+  }).isRequired,
+  message: PropTypes.string.isRequired,
+  nextTest: PropTypes.func.isRequired,
+  resetTestRun: PropTypes.func.isRequired,
+  testRunIndex: PropTypes.number.isRequired,
+  test: PropTypes.shape({
+    name: PropTypes.func.isRequired,
+    description: PropTypes.func.isRequired,
+    interaction: PropTypes.func.isRequired,
+    run: PropTypes.func.isRequired,
+    resolve: PropTypes.func.isRequired,
+    postprocess: PropTypes.func.isRequired,
+  }),
+  setErrorNotification: PropTypes.func.isRequired,
+  startTestRun: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
+};
+
+TestRunBase.defaultProps = {
+  test: {},
+};
+
+export default TestRun;

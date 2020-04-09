@@ -1,3 +1,6 @@
+// TODO: FIXME
+/* eslint no-param-reassign: "warn", no-use-before-define: "warn" */
+
 import BigNumber from "bignumber.js";
 import {
   MAINNET,
@@ -12,7 +15,7 @@ import {
   validateAddress,
   unsignedMultisigTransaction,
 } from "unchained-bitcoin";
-import { updateState } from "./utils";
+import updateState from "./utils";
 
 import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
 import {
@@ -295,7 +298,7 @@ function updateFee(state, action) {
   });
 }
 
-function addOutput(state, action) {
+function addOutput(state) {
   const newOutputs = state.outputs.concat({ ...initialOutputState });
   return {
     ...state,
@@ -311,7 +314,11 @@ function updateOutputAddress(state, action) {
   const address = action.value;
   let error = validateAddress(address, state.network);
   if (error === "") {
-    for (let inputIndex = 0; inputIndex < state.inputs.length; inputIndex++) {
+    for (
+      let inputIndex = 0;
+      inputIndex < state.inputs.length;
+      inputIndex += 1
+    ) {
       const input = state.inputs[inputIndex];
       if (address === input.multisig.address) {
         error = "Output address cannot equal input address.";
@@ -323,7 +330,7 @@ function updateOutputAddress(state, action) {
     for (
       let outputIndex = 0;
       outputIndex < state.outputs.length;
-      outputIndex++
+      outputIndex += 1
     ) {
       if (outputIndex !== action.number - 1) {
         if (state.outputs[outputIndex].address === address) {
@@ -365,13 +372,13 @@ function updateOutputAmount(state, action) {
 
 function deleteOutput(state, action) {
   const newOutputs = [];
-  for (let i = 0; i < state.outputs.length; i++) {
+  for (let i = 0; i < state.outputs.length; i += 1) {
     if (i !== action.number - 1) {
       newOutputs.push(state.outputs[i]);
     } else if (action.number === state.changeOutputIndex) {
       state.changeOutputIndex = 0;
     }
-    if (action.number < state.changeOutputIndex) state.changeOutputIndex--;
+    if (action.number < state.changeOutputIndex) state.changeOutputIndex -= 1;
   }
   return {
     ...state,

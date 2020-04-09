@@ -1,18 +1,17 @@
-import React from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import React from "react";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
 
 // Components
-import Help from './Help';
-import Wallet from './Wallet';
-import CreateAddress from './CreateAddress';
-import {TestSuiteRun} from './TestSuiteRun';
-import ScriptExplorer from './ScriptExplorer';
-import Navbar from './Navbar';
+import { CssBaseline, Container } from "@material-ui/core";
+import Help from "./Help";
+import Wallet from "./Wallet";
+import CreateAddress from "./CreateAddress";
+import { TestSuiteRun } from "./TestSuiteRun";
+import ScriptExplorer from "./ScriptExplorer";
+import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { CssBaseline, Container } from '@material-ui/core';
-import {ErrorBoundary} from './ErrorBoundary';
-import {ErrorNotification} from './ErrorNotification';
-
+import ErrorBoundary from "./ErrorBoundary";
+import { ErrorNotification } from "./ErrorNotification";
 
 const App = () => (
   <div className="App">

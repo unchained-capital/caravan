@@ -66,7 +66,11 @@ export function downloadFile(body, filename) {
 export function naiveCoinSelection(spendableInputs, outputTotal) {
   const selectedUtxos = [];
   let inputTotal = new BigNumber(0);
-  for (let inputIndex = 0; inputIndex < spendableInputs.length; inputIndex++) {
+  for (
+    let inputIndex = 0;
+    inputIndex < spendableInputs.length;
+    inputIndex += 1
+  ) {
     const spendableInput = spendableInputs[inputIndex];
     spendableInput.utxos.forEach((utxo) => {
       selectedUtxos.push({

@@ -1,3 +1,3 @@
 import * as walletSelectors from "./wallet";
 
-export { walletSelectors };
+export { walletSelectors as default };

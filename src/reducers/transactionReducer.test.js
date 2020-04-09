@@ -224,7 +224,6 @@ describe("Test transactionReducer", () => {
         {
           inputs: [{}],
           outputs: [{}],
-          feeRate: "",
           addressType: P2WSH,
           requiredSigners: 2,
           totalSigners: 3,
@@ -289,7 +288,6 @@ describe("Test transactionReducer", () => {
               amountSats: BigNumber(111892),
             },
           ],
-          feeRate: "",
           addressType: P2WSH,
           requiredSigners: 2,
           totalSigners: 3,

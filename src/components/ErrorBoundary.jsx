@@ -28,8 +28,7 @@ class ErrorBoundary extends React.Component {
           </Box>
           <Box m={2}>
             <Typography variant="body1">
-              Let us know what happened on
-{" "}
+              Let us know what happened on{" "}
               <a href={reportingURL} target="_blank">
                 github
               </a>
@@ -51,4 +50,4 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export { ErrorBoundary };
+export default ErrorBoundary;

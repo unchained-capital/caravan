@@ -17,13 +17,13 @@ export const UPDATE_BRAID_SLICE = "UPDATE_BRAID_SLICE";
 export const fetchSliceData = async (slices) => {
   return async (dispatch, getState) => {
     const { network } = getState().settings;
-    const client = getState().client;
+    const { client } = getState();
 
     try {
       // Create a list of the async calls for updating the slice data.
       // This lets us run these requests in parallel with a Promise.all
       const sliceDataPromises = slices.map((slice) => {
-        const address = slice.multisig.address;
+        const { address } = slice.multisig;
         // creating a tuple of async calls that will need to be resolved
         // for each slice we're querying for
         return Promise.all([
@@ -56,6 +56,7 @@ export const fetchSliceData = async (slices) => {
         dispatch(updater(updatedSlice));
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(
         "There was a problem getting updated braid data:",
         e.message

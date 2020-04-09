@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { PropTypes } from "prop-types";
 
 import { TextField } from "@material-ui/core";
 import { setKeystoreNote } from "../../actions/keystoreActions";
@@ -9,6 +10,16 @@ const KEYSTORE_MODE = "keystore";
 const TEST_RUN_MODE = "testRun";
 
 class NoteBase extends React.Component {
+  handleChange = (event) => {
+    const { setNote, mode, testRunIndex } = this.props;
+    const newNote = event.target.value;
+    if (mode === TEST_RUN_MODE) {
+      setNote(testRunIndex, newNote);
+    } else {
+      setNote(newNote);
+    }
+  };
+
   render() {
     const { note } = this.props;
     return (
@@ -23,17 +34,14 @@ class NoteBase extends React.Component {
       />
     );
   }
-
-  handleChange = (event) => {
-    const { setNote, mode, testRunIndex } = this.props;
-    const newNote = event.target.value;
-    if (mode === TEST_RUN_MODE) {
-      setNote(testRunIndex, newNote);
-    } else {
-      setNote(newNote);
-    }
-  };
 }
+
+NoteBase.propTypes = {
+  note: PropTypes.string.isRequired,
+  mode: PropTypes.string.isRequired,
+  setNote: PropTypes.func.isRequired,
+  testRunIndex: PropTypes.number.isRequired,
+};
 
 const mapStateToKeystoreNoteProps = (state) => {
   return {

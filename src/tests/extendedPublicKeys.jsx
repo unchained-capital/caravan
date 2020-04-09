@@ -5,6 +5,10 @@ import { ExportExtendedPublicKey } from "unchained-wallets";
 import Test from "./Test";
 
 class ExportExtendedPublicKeyTest extends Test {
+  static postprocess(result) {
+    return result.pubkey ? result.pubkey : result;
+  }
+
   name() {
     return `Export ${this.params.network} xpub at ${this.params.bip32Path}`;
   }
@@ -12,11 +16,9 @@ class ExportExtendedPublicKeyTest extends Test {
   description() {
     return (
       <p>
-        Export an extended public key at BIP32 path
-{" "}
+        Export an extended public key at BIP32 path{" "}
         <code>{this.params.bip32Path}</code>
-.
-</p>
+      </p>
     );
   }
 
@@ -26,10 +28,6 @@ class ExportExtendedPublicKeyTest extends Test {
       network: this.params.network,
       bip32Path: this.params.bip32Path,
     });
-  }
-
-  postprocess(result) {
-    return result.pubkey ? result.pubkey : result;
   }
 
   expected() {

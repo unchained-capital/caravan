@@ -26,6 +26,43 @@ import { KeystoreNote } from "./Note";
 import InteractionMessages from "../InteractionMessages";
 
 class KeystorePickerBase extends React.Component {
+  detectVersion = async () => {
+    const {
+      type,
+      setKeystore,
+      setKeystoreStatus,
+      setErrorNotification,
+    } = this.props;
+    setKeystoreStatus(ACTIVE);
+    try {
+      const result = await this.interaction().run();
+      if (result) {
+        setKeystore(type, result.spec);
+      }
+    } catch (e) {
+      console.error(e);
+      setErrorNotification(e.message);
+    }
+    setKeystoreStatus(PENDING);
+  };
+
+  interaction = () => {
+    const { type } = this.props;
+    return GetMetadata({ keystore: type });
+  };
+
+  handleTypeChange = (event) => {
+    const { version, setKeystore } = this.props;
+    const newType = event.target.value;
+    setKeystore(newType, version);
+  };
+
+  handleVersionChange = (event) => {
+    const { type, setKeystore } = this.props;
+    const newVersion = event.target.value;
+    setKeystore(type, newVersion);
+  };
+
   render() {
     const { type, status, version } = this.props;
     return (
@@ -79,43 +116,6 @@ class KeystorePickerBase extends React.Component {
       </Box>
     );
   }
-
-  handleTypeChange = (event) => {
-    const { version, setKeystore } = this.props;
-    const newType = event.target.value;
-    setKeystore(newType, version);
-  };
-
-  handleVersionChange = (event) => {
-    const { type, setKeystore } = this.props;
-    const newVersion = event.target.value;
-    setKeystore(type, newVersion);
-  };
-
-  interaction = () => {
-    const { type } = this.props;
-    return GetMetadata({ keystore: type });
-  };
-
-  detectVersion = async () => {
-    const {
-      type,
-      setKeystore,
-      setKeystoreStatus,
-      setErrorNotification,
-    } = this.props;
-    setKeystoreStatus(ACTIVE);
-    try {
-      const result = await this.interaction().run();
-      if (result) {
-        setKeystore(type, result.spec);
-      }
-    } catch (e) {
-      console.error(e);
-      setErrorNotification(e.message);
-    }
-    setKeystoreStatus(PENDING);
-  };
 }
 
 const mapStateToProps = (state) => {

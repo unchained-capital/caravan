@@ -1,16 +1,13 @@
-import {
-  MAINNET, 
-  P2SH,
-} from "unchained-bitcoin";
+import { MAINNET, P2SH } from "unchained-bitcoin";
 
-import { updateState } from './utils';
+import updateState from "./utils";
 import {
   SET_NETWORK,
   SET_TOTAL_SIGNERS,
   SET_REQUIRED_SIGNERS,
   SET_ADDRESS_TYPE,
   SET_FROZEN,
-} from '../actions/settingsActions';
+} from "../actions/settingsActions";
 
 const initialState = {
   network: MAINNET,
