@@ -25,8 +25,9 @@ const App = () => (
             <Route path="/test" component={TestSuiteRun} />
             <Route path="/create" component={CreateAddress} />
             <Route path="/script" component={ScriptExplorer} />
+            <Route path="/wallet" component={Wallet} />
             <Route path="/help" component={Help} />
-            <Route path="/" component={Wallet} />
+            <Route path="/" component={Help} />
           </Switch>
         </Router>
         <ErrorNotification />
