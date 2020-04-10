@@ -64,7 +64,8 @@ function sortInputs(a, b) {
   return 0;
 };
 
-const initialOutputState  = {
+
+export const initialOutputState = {
   address: '',
   amount: '',
   amountSats: '',
@@ -72,11 +73,12 @@ const initialOutputState  = {
   amountError: '',
 };
 
+
 const initialOutputsState = () => [
   {...initialOutputState}
 ];
 
-const initialState = {
+export const initialState = {
   chosen: false,
   network: MAINNET,
   inputs: [],
@@ -275,7 +277,7 @@ function updateOutputAddress(state, action) {
   if (error === '') {
     for (var inputIndex=0; inputIndex < state.inputs.length; inputIndex++) {
       const input = state.inputs[inputIndex];
-      if (address === input.address) {
+      if (address === input.multisig.address) {
         error = "Output address cannot equal input address.";
         break;
       }
@@ -344,13 +346,12 @@ function finalizeOutputs(state, action) {
 }
 
 function updateRequiredSigners(state, action) {
-  let newState = updateState(state, { requiredSigners: action.value });
-  if (action.value > state.signingKeys.length) {
-    for(var i=0; i < action.value - state.signingKeys.length; i++) newState.signingKeys.push(0);
-  } else if (action.value < state.signingKeys.length) {
-    newState.signingKeys = state.signingKeys.slice(0, state.signingKeys.length - action.value)
-  }
-  return newState;
+  return updateState(
+    state, 
+    { 
+      requiredSigners: action.value, 
+      signingKeys: Array(action.value).fill(0) 
+  });
 }
 
 function updateSigningKey(state, action) {

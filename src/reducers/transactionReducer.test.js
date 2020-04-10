@@ -17,10 +17,9 @@ import {
   RESET_OUTPUTS,
   SET_TXID,
 } from '../actions/transactionActions';
-import reducer, { initialOutputState } from './transactionReducer';
+import reducer, { initialOutputState, initialState } from './transactionReducer';
 import BigNumber from 'bignumber.js';
-import { P2WSH } from "unchained-bitcoin/lib/multisig";
-import { TESTNET } from "unchained-bitcoin/lib/networks";
+import { P2WSH, TESTNET } from "unchained-bitcoin";
 
 describe('Test transactionReducer', () => {
   describe('Test CHOOSE_PERFORM_SPEND action', () => {
@@ -42,7 +41,8 @@ describe('Test transactionReducer', () => {
       [1, 2, 3, 4, 5, 6, 7].forEach(m => {
         const r = reducer(
           {
-            requiredSigners: 2
+            requiredSigners: 2,
+            signingKeys: [0,0]
           },
           {
             type: SET_REQUIRED_SIGNERS,
@@ -50,6 +50,7 @@ describe('Test transactionReducer', () => {
           },
         )
         expect(r.requiredSigners).toEqual(m);
+        expect(r.signingKeys).toHaveLength(m)
       });
     });
   });
@@ -83,6 +84,7 @@ describe('Test transactionReducer', () => {
         {
           inputs: [],
           inputsTotalSats: new BigNumber(0),
+          outputs: [],
         },
         {
           type: SET_INPUTS,
@@ -157,9 +159,10 @@ describe('Test transactionReducer', () => {
       let initial = { ...initialOutputState }
       const address = "2MzZgrQq6Qa7U1p24eNx6N2wrpCr8bEpdeH";
       initial.address = address;
+      const input = { multisig: { address }}
       const r = reducer(
         {
-          inputs: [{address: address}],
+          inputs: [input],
           outputs: [{ ...initialOutputState }],
           network: TESTNET
         },
@@ -198,11 +201,10 @@ describe('Test transactionReducer', () => {
         {
           inputs: [{}],
           outputs: initial,
-          feeRate: '',
+          feeRate: '1',
           addressType: P2WSH,
           requiredSigners: 2,
           totalSigners: 3,
-          feeRate: 1,
         },
         {
           type: DELETE_OUTPUT,
@@ -240,13 +242,13 @@ describe('Test transactionReducer', () => {
     it('should properly set fee and update fee rate', () => {
       const r = reducer(
         {
+          ...initialState,
           inputs: [{}],
           outputs: [{}],
-          feeRate: '',
           addressType: P2WSH,
           requiredSigners: 2,
           totalSigners: 3,
-          feeRate: 1,
+          inputsTotalSats: "929572",
         },
         {
           type: SET_FEE,
@@ -260,18 +262,26 @@ describe('Test transactionReducer', () => {
 
   describe('Test FINALIZE_OUTPUTS action', () => {
     it('should properly finalize outputs', () => {
+      const action = {
+        type: FINALIZE_OUTPUTS,
+        value: true
+      }
       const r = reducer(
         {
+          ...initialState,
           inputs: [
             {
               txid: "19e354df0b3d98071ec70b2035aa376727021e7f6befe569c4a648d25215f263",
               index: 0,
-              amountSats: BigNumber(112233)
+              amountSats: BigNumber(112233),
+              multisig: {
+                address: 'bc1qxkl8fcuas3fv6mk79tk7d0nsug0909qcgvpjuj2asgltnafp46nsn4jnrh',
+              }
             }
           ],
           outputs: [
             {
-              address: "2N64Na46fGcbdbSso9aCoyE6Ruc5hvoGagP",
+              address: "3DRVz9YUhoXSMgBngvv2JkNReBHvkeJwLs",
               amountSats: BigNumber(111892)
             }
           ],
@@ -281,12 +291,10 @@ describe('Test transactionReducer', () => {
           totalSigners: 3,
           feeRate: 1,
           finalizedOutputs: false
-        },
-        {
-          type: FINALIZE_OUTPUTS,
-        },
+        },       
+        action
       )
-      expect(r.finalizedOutputs).toBe(true);
+      expect(r.finalizedOutputs).toBe(action.value);
     });
   });
 

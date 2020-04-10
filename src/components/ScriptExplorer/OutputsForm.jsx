@@ -175,20 +175,21 @@ class OutputsForm extends React.Component {
               <Grid item xs={4}><Box mt={feeMt}>&nbsp;</Box></Grid>
 
               <Grid item xs={3}>
-              <Box mt={feeMt}>
-              <Typography variant="caption" className={styles.outputsFormLabel}>
-              Estimated Fees
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="fee_total"
-                  disabled={finalizedOutputs}
-                  value={feeDisplay}
-                  onChange={this.handleFeeChange}
-                  error={this.hasFeeError()}
-                  helperText={feeError}
-                  InputProps={this.unitLabel('BTC', {readOnly: true, disableUnderline: true, style: {color: "gray"}})}
-                /></Box>
+                <Box mt={feeMt}>
+                  <Typography variant="caption" className={styles.outputsFormLabel}>
+                  Estimated Fees
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="fee_total"
+                    disabled={finalizedOutputs}
+                    value={feeDisplay}
+                    onChange={this.handleFeeChange}
+                    error={this.hasFeeError()}
+                    helperText={feeError}
+                    InputProps={this.unitLabel('BTC', {readOnly: true, disableUnderline: true, style: {color: "gray"}})}
+                  />
+                </Box>
               </Grid>
 
               <Grid item xs={2}/>
