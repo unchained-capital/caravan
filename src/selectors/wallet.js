@@ -3,6 +3,7 @@ import { createSelector } from 'reselect'
 // convert slice objects to array of slice values
 // only care about inbound to deposit account, not change
 const getDepositSlices = state => Object.values(state.wallet.deposits.nodes)
+const getWalletSlices = state => [...Object.values(state.wallet.deposits.nodes), ...Object.values(state.wallet.change.nodes)]
 
 export const getPendingBalance = createSelector(
   getDepositSlices,
@@ -24,3 +25,13 @@ export const getPendingBalance = createSelector(
       }, 0)
   }
 )
+
+export const getUnknownAddressSlices = createSelector(
+  getWalletSlices, 
+  slices => slices.filter(slice => !slice.addressKnown)
+);
+
+export const getUnknownAddresses = createSelector(
+  [getWalletSlices, getUnknownAddressSlices], 
+  nodes => nodes.map(slice => slice.multisig.address)
+);

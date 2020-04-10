@@ -4,15 +4,11 @@ import {connect} from "react-redux";
 import {downloadFile} from "../../utils"
 import {validateBIP32Path, validateExtendedPublicKey, satoshisToBitcoins} from "unchained-bitcoin"
 import {
-  fetchAddressUTXOs,
-  getAddressStatus,
-} from "../../blockchain";
-import BigNumber from "bignumber.js";
-import {
-  updateDepositNodeAction,
-  updateChangeNodeAction,
+  updateDepositSliceAction,
+  updateChangeSliceAction,
 } from "../../actions/walletActions";
 import { walletSelectors } from '../../selectors'
+import { CARAVAN_CONFIG } from './constants'
 
 // Components
 import { Grid, Box, IconButton, Button, FormHelperText }
@@ -36,8 +32,11 @@ import {
   setNetwork,
 } from "../../actions/settingsActions";
 import { updateWalletNameAction } from '../../actions/walletActions';
-import { setExtendedPublicKeyImporterMethod, setExtendedPublicKeyImporterExtendedPublicKey,
-  setExtendedPublicKeyImporterBIP32Path, setExtendedPublicKeyImporterName,
+import { 
+  setExtendedPublicKeyImporterMethod, 
+  setExtendedPublicKeyImporterExtendedPublicKey,
+  setExtendedPublicKeyImporterBIP32Path, 
+  setExtendedPublicKeyImporterName,
   setExtendedPublicKeyImporterFinalized
 } from '../../actions/extendedPublicKeyImporterActions';
 import { wrappedActions } from '../../actions/utils';
@@ -69,22 +68,32 @@ class CreateWallet extends React.Component {
 
   componentDidMount() {
     if (sessionStorage) {
-      const configJson = sessionStorage.getItem('caravan_config')
+      const configJson = sessionStorage.getItem(CARAVAN_CONFIG)
       if (configJson) this.setConfigJson(configJson)
     }
   }
+
   render = () => {
-    const {configuring, walletName, setName, deposits, change, network, pendingBalance} = this.props;
+    const {
+      configuring, 
+      walletName, 
+      setName, 
+      deposits, 
+      change, 
+      network, 
+      pendingBalance, 
+    } = this.props;
     const balance = this.totalBalance()
     const walletLoadError = change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0 ?
       "Wallet loaded with errors" : "";
+
     return (
       <React.Fragment>
         <Box mt={3}>
           <Grid container>
             <Grid item xs={10} md={6}>
               <WalletInfoCard 
-                editable={!Object.keys(deposits.nodes).length} 
+                editable={!Object.keys(deposits.nodes).length || !Object.keys(change.nodes).length} 
                 walletName={walletName}
                 setName={setName}
                 balance={balance}
@@ -112,9 +121,10 @@ class CreateWallet extends React.Component {
             </Grid>
             <Grid item md={configuring ? 8 : 12}>
               {this.renderExtendedPublicKeyImporters()}
-              <Box mt={2}><WalletGenerator 
-                downloadWalletDetails={this.downloadWalletDetails}
-                refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
+              <Box mt={2}>
+                <WalletGenerator 
+                  downloadWalletDetails={this.downloadWalletDetails}
+                  refreshNodes={click => this.generatorRefresh = click} // TIGHT COUPLING ALERT, this calls function downstream
                 />
               </Box>
 
@@ -142,7 +152,6 @@ class CreateWallet extends React.Component {
     const btc = satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats)).toFixed();
     return btc
   }
-
 
   validateProperties(config, properties, key) {
     for(let index = 0; index < properties.length; index++) {
@@ -196,6 +205,16 @@ class CreateWallet extends React.Component {
     return this.validateExtendedPublicKeys(config.extendedPublicKeys, config.network);
   }
 
+  handleImport = ({ target }) => {
+    const fileReader = new FileReader();
+    
+    fileReader.readAsText(target.files[0]);
+    fileReader.onload = (event) => {
+      const configJson = event.target.result;
+      this.setConfigJson(configJson)
+    };
+  };
+
   setConfigJson(configJson) {
     let configError
     try {
@@ -206,23 +225,13 @@ class CreateWallet extends React.Component {
     }
 
     if (sessionStorage)
-      sessionStorage.setItem('caravan_config', configJson)
-    
+      sessionStorage.setItem(CARAVAN_CONFIG, configJson)
+
     // async since importDetails needs the updated state for it to work
     this.setState({ configJson, configError }, () => {
-      if (configError === "") this.importDetails(); 
+      if (configError === "") this.importDetails();
     });
   }
-  
-  handleImport = ({ target }) => {
-    const fileReader = new FileReader();
-
-    fileReader.readAsText(target.files[0]);
-    fileReader.onload = (event) => {
-      const configJson = event.target.result;
-      this.setConfigJson(configJson)
-    };
-  };
 
   importDetails = () => {
     const { configJson } = this.state;
@@ -280,8 +289,6 @@ class CreateWallet extends React.Component {
     return "";
   }
 
-  unknownAddresses = [];
-
   renderSettings = () => {
     const {configuring} = this.props;
     
@@ -294,47 +301,6 @@ class CreateWallet extends React.Component {
           <Box mt={2}><ClientPicker /></Box>
         </Grid>
       )
-  }
-
-  getUnknownAddressNodes = () => {
-    const {changeNodes, depositNodes} = this.props
-    return Object.values(depositNodes).concat(Object.values(changeNodes))
-    .filter(node => !node.addressKnown);
-  }
-
-  addressesImported = async result => {
-    // this will give me an array [{success: true/false}...]
-    // need to loop through and mark nodes as addressKnown
-    const { client, network, updateChangeNode, updateDepositNode} = this.props;
-
-    const nodes = []
-    const unknown = this.getUnknownAddressNodes();
-    result.forEach((addr, i) => {
-      if (addr.success) nodes.push(unknown[i]); // can now set to known and refresh status
-    });
-
-    nodes.forEach(async node => {
-      const utxos = await fetchAddressUTXOs(node.multisig.address, network, client);
-      const addressStatus = await getAddressStatus(node.multisig.address, network, client);
-      let updates;
-      if (utxos) {
-        const balanceSats = utxos
-              .map((utxo) => utxo.amountSats)
-              .reduce(
-                (accumulator, currentValue) => accumulator.plus(currentValue),
-                new BigNumber(0));
-        updates = {balanceSats, utxos, fetchedUTXOs: true, fetchUTXOsError: ''}
-      }
-
-      const updater = (node.change ? updateChangeNode : updateDepositNode);
-      updater({
-        bip32Path: node.bip32Path,
-        addressKnown: true,
-        ...updates,
-        addressStatus,
-      });
-  
-    });
   }
 
   renderExtendedPublicKeyImporters = () => {
@@ -458,8 +424,8 @@ const mapDispatchToProps = {
     setClientUsername: SET_CLIENT_USERNAME,
     setClientPassword: SET_CLIENT_PASSWORD,
   }),
-  updateDepositNode: updateDepositNodeAction,
-  updateChangeNode: updateChangeNodeAction,
+  updateDepositNode: updateDepositSliceAction,
+  updateChangeNode: updateChangeSliceAction,
 
 }
 

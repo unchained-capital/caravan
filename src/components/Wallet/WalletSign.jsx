@@ -10,7 +10,7 @@ import {Box, Button, Link} from "@material-ui/core";
 // Actions
 import { finalizeOutputs, setRequiredSigners, 
   resetTransaction, setSpendStep, SPEND_STEP_CREATE} from '../../actions/transactionActions';
-import { spendNodes, resetWalletView,   updateChangeNodeAction } from "../../actions/walletActions";
+import { spendNodes, resetWalletView,   updateChangeSliceAction } from "../../actions/walletActions";
 import UnsignedTransaction from '../UnsignedTransaction';
 
 class WalletSign extends React.Component {
@@ -138,7 +138,7 @@ const mapDispatchToProps = {
   spendNodes,
   resetTransaction,
   resetWalletView,
-  updateChangeNode: updateChangeNodeAction,
+  updateChangeNode: updateChangeSliceAction,
   setSpendStep,
 };
 

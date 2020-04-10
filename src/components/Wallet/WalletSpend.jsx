@@ -5,8 +5,8 @@ import BigNumber from 'bignumber.js'
 
 // Actions
 import {
-  updateDepositNodeAction,
-  updateChangeNodeAction,
+  updateDepositSliceAction,
+  updateChangeSliceAction,
   resetNodesSpend,
 } from "../../actions/walletActions";
 import {
@@ -183,7 +183,7 @@ class WalletSpend extends React.Component {
 
   selectCoins = () => {
     const { outputs, setInputs, fee, depositNodes, changeNodes, feeRate, changeOutputIndex, autoSpend,
-      updateChangeNode, updateDepositNode, resetNodesSpend, setFeeRate, coinSelection } = this.props;
+      updateChangeSlice, updateDepositSlice, resetNodesSpend, setFeeRate, coinSelection } = this.props;
     const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
       return changeOutputIndex === outputIndex + 1 ? sum : sum.plus(output.amountSats)
     }, new BigNumber(0));
@@ -199,7 +199,7 @@ class WalletSpend extends React.Component {
     const selectedInputs = coinSelection(spendableInputs, outputTotal);
 
     selectedInputs.forEach(selectedUtxo => {
-      (selectedUtxo.change ? updateChangeNode : updateDepositNode)({bip32Path: selectedUtxo.bip32Path, spend: true})
+      (selectedUtxo.change ? updateChangeSlice : updateDepositSlice)({bip32Path: selectedUtxo.bip32Path, spend: true})
     })
 
     this.outputsAmount = outputsAmount;
@@ -223,8 +223,8 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   updateAutoSpend: updateAutoSpendAction,
   setInputs,
-  updateChangeNode: updateChangeNodeAction,
-  updateDepositNode: updateDepositNodeAction,
+  updateChangeSlice: updateChangeSliceAction,
+  updateDepositSlice: updateDepositSliceAction,
   setAddress: setOutputAddress,
   resetNodesSpend,
   setFeeRate,
