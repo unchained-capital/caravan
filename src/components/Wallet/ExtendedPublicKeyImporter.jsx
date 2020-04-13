@@ -42,7 +42,7 @@ const XPUB = "xpub";
 const TEXT = "text";
 
 class ExtendedPublicKeyImporter extends React.Component {
-
+    
   static propTypes =  {
     network: PropTypes.string.isRequired,
     number: PropTypes.number.isRequired,
