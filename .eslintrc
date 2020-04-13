@@ -5,9 +5,14 @@
     "node": true,
     "jasmine": true
   },
-  "extends": ["airbnb", "plugin:prettier/recommended"],
+  "plugins": ["prettier"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "prettier/react",
+
+  ],
   "rules": {
-    "prettier/prettier": "error",
-    "react/jsx-one-expression-per-line": "off"
+    "prettier/prettier": "error"
   }
 }
