@@ -4,8 +4,8 @@ import {
   WALLET_MODES,
   UPDATE_WALLET_MODE,
   INITIAL_LOAD_COMPLETE,
-} from "../actions/walletActions"
-import { updateState } from './utils';
+} from "../actions/walletActions";
+import updateState from "./utils";
 
 const initialState = {
   walletMode: WALLET_MODES.VIEW,
@@ -22,13 +22,13 @@ function resetWalletViews(state) {
 export default (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_WALLET_MODE:
-      return updateState(state, {walletMode: action.value});
+      return updateState(state, { walletMode: action.value });
     case UPDATE_WALLET_NAME:
       return updateState(state, { walletName: action.value });
     case RESET_WALLET_VIEW:
       return resetWalletViews(state);
     case INITIAL_LOAD_COMPLETE:
-      return updateState(state, {nodesLoaded: true});
+      return updateState(state, { nodesLoaded: true });
     default:
       return state;
   }

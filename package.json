@@ -23,15 +23,20 @@
     "enzyme": "3.8.0",
     "enzyme-adapter-react-16": "1.7.1",
     "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "gh-pages": "^2.0.1",
     "jest-junit": "^8.0.0",
-    "mocha": "5.2.0"
+    "mocha": "5.2.0",
+    "prettier": "^2.0.2"
   },
   "scripts": {
     "start": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test-ci": "react-scripts test --reporters ./node_modules/jest-junit --coverage --coverageReporters cobertura",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
@@ -57,6 +62,7 @@
     "bitcoinjs-lib": "^4.0.5",
     "bowser": "^2.6.1",
     "classnames": "^2.2.6",
+    "diff": "^4.0.2",
     "hi-base32": "^0.5.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",

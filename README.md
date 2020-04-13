@@ -1,6 +1,10 @@
 # Caravan - Stateless Multisig Coordinator
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Build Status](https://travis-ci.com/unchained-capital/caravan.svg?branch=master)](https://travis-ci.com/unchained-capital/caravan)
+[![dependencies Status](https://david-dm.org/unchained-capital/caravan/status.svg)](https://david-dm.org/unchained-capital/caravan)
+[![devDependencies Status](https://david-dm.org/unchained-capital/caravan/dev-status.svg)](https://david-dm.org/unchained-capital/caravan?type=dev)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 Caravan is making bitcoin multisig custody easier and safer through
 transparency and standards.
