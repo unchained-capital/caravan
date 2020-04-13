@@ -31,6 +31,17 @@ const initialState = {
   nextNode: null,
 };
 
+function getNextNode(state) {
+  const nodes = Object.values(state.nodes);
+  for (let i = 0; i < nodes.length; i += 1) {
+    const node = nodes[i];
+    if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
+      return node;
+    }
+  }
+  return null;
+}
+
 function updateNode(state, action) {
   const node = {
     ...initialNodeState,
@@ -80,7 +91,7 @@ function updateNode(state, action) {
     return p1Index - p2Index;
   });
   let nodeFoundWithValue = false;
-  for (let i = 0; i < allBIP32Paths.length; i++) {
+  for (let i = 0; i < allBIP32Paths.length; i += 1) {
     const bip32Path = allBIP32Paths[allBIP32Paths.length - (i + 1)];
     const otherNode = updatedState.nodes[bip32Path];
     if (otherNode.fetchedUTXOs) {
@@ -89,28 +100,17 @@ function updateNode(state, action) {
         !otherNode.addressUsed &&
         !nodeFoundWithValue
       ) {
-        trailingEmptyNodes++;
+        trailingEmptyNodes += 1;
       } else nodeFoundWithValue = true;
     }
     if (otherNode.fetchUTXOsError !== "") {
-      fetchUTXOsErrors++;
+      fetchUTXOsErrors += 1;
     }
   }
   updatedState.trailingEmptyNodes = trailingEmptyNodes;
   updatedState.fetchUTXOsErrors = fetchUTXOsErrors;
   updatedState.nextNode = getNextNode(updatedState);
   return updatedState;
-}
-
-function getNextNode(state) {
-  const nodes = Object.values(state.nodes);
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i];
-    if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
-      return node;
-    }
-  }
-  return null;
 }
 
 function spendNodes(state) {

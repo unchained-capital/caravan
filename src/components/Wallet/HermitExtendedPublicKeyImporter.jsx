@@ -1,18 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {
-  PENDING,
-  HermitExportExtendedPublicKey,
-} from "unchained-wallets";
+import React from "react";
+import PropTypes from "prop-types";
+import { PENDING, HermitExportExtendedPublicKey } from "unchained-wallets";
 
 // Components
-import { FormGroup, FormHelperText} from '@material-ui/core';
+import { FormGroup, FormHelperText } from "@material-ui/core";
 
 import HermitReader from "../Hermit/HermitReader";
 
 class HermitExtendedPublicKeyImporter extends React.Component {
-
-  static propTypes =  {
+  static propTypes = {
     extendedPublicKeyImporter: PropTypes.shape({}).isRequired,
     validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
@@ -23,23 +19,26 @@ class HermitExtendedPublicKeyImporter extends React.Component {
   };
 
   state = {
-    extendedPublicKeyError: '',
+    extendedPublicKeyError: "",
     walletState: PENDING,
   };
 
   componentDidMount = () => {
-    const {resetBIP32Path} = this.props;
+    const { resetBIP32Path } = this.props;
     resetBIP32Path();
-  }
+  };
 
   interaction = () => {
-    const {network, extendedPublicKeyImporter} = this.props;
-    return new HermitExportExtendedPublicKey({network, bip32Path: extendedPublicKeyImporter.bip32Path});
-  }
+    const { network, extendedPublicKeyImporter } = this.props;
+    return new HermitExportExtendedPublicKey({
+      network,
+      bip32Path: extendedPublicKeyImporter.bip32Path,
+    });
+  };
 
-  render  = () => {
-    const {disableChangeMethod} = this.props;
-    const {extendedPublicKeyError} = this.state;
+  render = () => {
+    const { disableChangeMethod } = this.props;
+    const { extendedPublicKeyError } = this.state;
     return (
       <FormGroup>
         <HermitReader
@@ -47,20 +46,27 @@ class HermitExtendedPublicKeyImporter extends React.Component {
           interaction={this.interaction()}
           onStart={disableChangeMethod}
           onSuccess={this.import}
-          onClear={this.onClear} />
-        <FormHelperText className="text-danger">{extendedPublicKeyError}</FormHelperText>
+          onClear={this.onClear}
+        />
+        <FormHelperText className="text-danger">
+          {extendedPublicKeyError}
+        </FormHelperText>
       </FormGroup>
     );
-  }
+  };
 
   setError = (value) => {
-    this.setState({error: value});
-  }
+    this.setState({ error: value });
+  };
 
   import = (data) => {
-    const { validateAndSetBIP32Path, validateAndSetExtendedPublicKey, enableChangeMethod } = this.props;
+    const {
+      validateAndSetBIP32Path,
+      validateAndSetExtendedPublicKey,
+      enableChangeMethod,
+    } = this.props;
     enableChangeMethod();
-    const {xpub, bip32_path} = data;
+    const { xpub, bip32_path } = data;
     validateAndSetBIP32Path(
       bip32_path,
       () => {
@@ -68,15 +74,14 @@ class HermitExtendedPublicKeyImporter extends React.Component {
       },
       this.setError
     );
-  }
+  };
 
   onClear = () => {
     const { reset, enableChangeMethod } = this.props;
-    reset(true);		// clear BIP32 path
-    this.setError('');
+    reset(true); // clear BIP32 path
+    this.setError("");
     enableChangeMethod();
-  }
-
+  };
 }
 
 export default HermitExtendedPublicKeyImporter;

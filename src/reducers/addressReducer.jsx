@@ -95,7 +95,7 @@ function sortPublicKeyImporters(state, action) {
   for (
     let publicKeyImporterNum = 1;
     publicKeyImporterNum <= sortedPublicKeyImporters.length;
-    publicKeyImporterNum++
+    publicKeyImporterNum += 1
   ) {
     publicKeyImportersChange[publicKeyImporterNum] =
       sortedPublicKeyImporters[publicKeyImporterNum - 1];
@@ -128,7 +128,7 @@ function updateTotalSigners(state, action) {
   for (
     let publicKeyImporterNum = 1;
     publicKeyImporterNum <= totalSigners;
-    publicKeyImporterNum++
+    publicKeyImporterNum += 1
   ) {
     publicKeyImporters[publicKeyImporterNum] = state.publicKeyImporters[
       publicKeyImporterNum
@@ -158,7 +158,7 @@ function updateImporterPaths(state, newState, bip32Path) {
   for (
     let publicKeyImporterNum = 1;
     publicKeyImporterNum <= Object.values(state.publicKeyImporters).length;
-    publicKeyImporterNum++
+    publicKeyImporterNum += 1
   ) {
     const publicKeyImporter = newState.publicKeyImporters[publicKeyImporterNum];
     if (!publicKeyImporter.bip32PathModified) {
@@ -170,7 +170,7 @@ function updateImporterPaths(state, newState, bip32Path) {
 
 function updateNetwork(state, action) {
   const network = action.value;
-  const addressType = state.addressType;
+  const { addressType } = state;
   const bip32Path = multisigBIP32Path(addressType, network);
   const newState = { ...state, ...{ network, defaultBIP32Path: bip32Path } };
   updateImporterPaths(state, newState, bip32Path);
@@ -178,7 +178,7 @@ function updateNetwork(state, action) {
 }
 
 function updateAddressType(state, action) {
-  const network = state.network;
+  const { network } = state;
   const addressType = action.value;
   const bip32Path = multisigBIP32Path(addressType, network);
   const newState = {

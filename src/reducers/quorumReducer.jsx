@@ -89,7 +89,7 @@ function updateTotalSigners(state, action) {
   for (
     let extendedPublicKeyImporterNum = 1;
     extendedPublicKeyImporterNum <= totalSigners;
-    extendedPublicKeyImporterNum++
+    extendedPublicKeyImporterNum += 1
   ) {
     extendedPublicKeyImporters[extendedPublicKeyImporterNum] = state
       .extendedPublicKeyImporters[extendedPublicKeyImporterNum] || {
@@ -119,7 +119,7 @@ function updateImporterPaths(state, newState, bip32Path) {
     let extendedPublicKeyImporterNum = 1;
     extendedPublicKeyImporterNum <=
     Object.values(state.extendedPublicKeyImporters).length;
-    extendedPublicKeyImporterNum++
+    extendedPublicKeyImporterNum += 1
   ) {
     const extendedPublicKeyImporter =
       newState.extendedPublicKeyImporters[extendedPublicKeyImporterNum];

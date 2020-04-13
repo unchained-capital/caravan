@@ -1,9 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { fetchFeeEstimate } from "../../blockchain";
-
-// Components
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import {
   Grid,
   Card,
@@ -14,10 +11,13 @@ import {
   Radio,
   RadioGroup,
   FormHelperText,
-} from '@material-ui/core';
+} from "@material-ui/core";
+import { fetchFeeEstimate } from "../../blockchain";
+
+// Components
 
 // Actions
-import { wrappedActions } from '../../actions/utils';
+import { wrappedActions } from "../../actions/utils";
 import {
   SET_CLIENT_TYPE,
   SET_CLIENT_URL,
@@ -26,9 +26,9 @@ import {
   SET_CLIENT_URL_ERROR,
   SET_CLIENT_USERNAME_ERROR,
   SET_CLIENT_PASSWORD_ERROR,
-} from '../../actions/clientActions';
+} from "../../actions/clientActions";
 
-import PrivateClientSettings from './PrivateClientSettings';
+import PrivateClientSettings from "./PrivateClientSettings";
 
 const propTypes = {
   client: PropTypes.shape({}).isRequired,
@@ -45,17 +45,17 @@ class ClientPicker extends React.Component {
   state = {
     url_edited: false,
     connectError: "",
-    connectSuccess: false
-  }
+    connectSuccess: false,
+  };
 
   handleTypeChange = (event) => {
     const { setType, network, setUrl } = this.props;
-    const type = event.target.value
-    if (type === 'private' && !this.state.url_edited) {
-      setUrl(`http://localhost:${network === 'mainnet' ? 8332 : 18332}`)
+    const type = event.target.value;
+    if (type === "private" && !this.state.url_edited) {
+      setUrl(`http://localhost:${network === "mainnet" ? 8332 : 18332}`);
     }
     setType(type);
-  }
+  };
 
   handleUrlChange = (event) => {
     const { setUrl, setUrlError } = this.props;
@@ -84,20 +84,20 @@ class ClientPicker extends React.Component {
 
   validateUrl(host) {
     const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
-    if (!validhost) return 'Must be a valid URL.'
-    return '';
+    if (!validhost) return "Must be a valid URL.";
+    return "";
   }
 
   validatePassword(pass) {
-    return '';
+    return "";
   }
 
   validateUsername(username) {
-    return '';
+    return "";
   }
 
   testConnection = async () => {
-    const { network, client } = this.props
+    const { network, client } = this.props;
     this.setState({ connectError: "", connectSuccess: false });
     try {
       await fetchFeeEstimate(network, client);
@@ -105,10 +105,16 @@ class ClientPicker extends React.Component {
     } catch (e) {
       this.setState({ connectError: e.message });
     }
-  }
+  };
 
   render() {
-    const { client, url_error, username_error, password_error, privateNotes } = this.props;
+    const {
+      client,
+      url_error,
+      username_error,
+      password_error,
+      privateNotes,
+    } = this.props;
     const { connectSuccess, connectError } = this.state;
     return (
       <Card>
@@ -124,9 +130,9 @@ class ClientPicker extends React.Component {
                   control={<Radio color="primary" />}
                   name="clientType"
                   value="public"
-                  label={(<strong>Public</strong>)}
+                  label={<strong>Public</strong>}
                   onChange={this.handleTypeChange}
-                  checked={client.type === 'public'}
+                  checked={client.type === "public"}
                 />
                 <FormControlLabel
                   id="private"
@@ -135,34 +141,36 @@ class ClientPicker extends React.Component {
                   value="private"
                   label="Private"
                   onChange={this.handleTypeChange}
-                  checked={client.type === 'private'}
+                  checked={client.type === "private"}
                 />
               </RadioGroup>
-              {
-                client.type === 'public' ? (
-                  <FormHelperText>
-                    {"'Public' uses the "}
-                    <code>blockstream.info</code>
-                    {' API. Switch to private to use a '}
-                    <code>bitcoind</code>
-                    {' node.'}
-                  </FormHelperText>
-                ) : (
-                  <PrivateClientSettings 
-                    handleUrlChange={(event) => this.handleUrlChange(event)}
-                    handleUsernameChange={(event) => this.handleUsernameChange(event)}
-                    handlePasswordChange={(event) => this.handlePasswordChange(event)}
-                    client={client}
-                    url_error={url_error}
-                    username_error={username_error}
-                    password_error={password_error}
-                    privateNotes={privateNotes}
-                    connectSuccess={connectSuccess}
-                    connectError={connectError}
-                    testConnection={() => this.testConnection()}
-                  />
-                )
-              }
+              {client.type === "public" ? (
+                <FormHelperText>
+                  {"'Public' uses the "}
+                  <code>blockstream.info</code>
+                  {" API. Switch to private to use a "}
+                  <code>bitcoind</code>
+                  {" node."}
+                </FormHelperText>
+              ) : (
+                <PrivateClientSettings
+                  handleUrlChange={(event) => this.handleUrlChange(event)}
+                  handleUsernameChange={(event) =>
+                    this.handleUsernameChange(event)
+                  }
+                  handlePasswordChange={(event) =>
+                    this.handlePasswordChange(event)
+                  }
+                  client={client}
+                  url_error={url_error}
+                  username_error={username_error}
+                  password_error={password_error}
+                  privateNotes={privateNotes}
+                  connectSuccess={connectSuccess}
+                  connectError={connectError}
+                  testConnection={() => this.testConnection()}
+                />
+              )}
             </FormControl>
           </Grid>
         </CardContent>
@@ -192,5 +200,5 @@ export default connect(
     setUrlError: SET_CLIENT_URL_ERROR,
     setUsernameError: SET_CLIENT_USERNAME_ERROR,
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
-  }),
+  })
 )(ClientPicker);

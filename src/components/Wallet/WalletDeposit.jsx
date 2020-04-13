@@ -1,23 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import { fetchAddressUTXOs } from "../../blockchain"
+import QRCode from "qrcode.react";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  TextField,
+  Snackbar,
+  Button,
+  Box,
+} from "@material-ui/core";
+import { fetchAddressUTXOs } from "../../blockchain";
 import {
   updateDepositSliceAction,
   resetWalletView,
 } from "../../actions/walletActions";
 
 // Components
-import QRCode from "qrcode.react";
 import Copyable from "../Copyable";
-import {
-  Card, CardHeader,
-  CardContent, TextField,
-  Snackbar,
-  Button,
-  Box,
-} from '@material-ui/core';
 import AddressExpander from "./AddressExpander";
 
 let depositTimer;
@@ -31,47 +33,52 @@ class WalletDeposit extends React.Component {
     showReceived: false,
     depositIndex: 0,
     node: null,
-  }
+  };
 
   static propTypes = {
     deposits: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
     updateDepositSlice: PropTypes.func.isRequired,
-  }
+  };
 
   componentDidMount() {
-    this.getDepositAddress()
+    this.getDepositAddress();
   }
 
   componentWillUnmount() {
-    clearInterval(depositTimer)
+    clearInterval(depositTimer);
   }
 
   getDepositableNodes = () => {
     const { depositNodes } = this.props;
-    const nodes = Object.values(depositNodes.nodes)
-    const depositable = []
+    const nodes = Object.values(depositNodes.nodes);
+    const depositable = [];
 
-    for (let i=0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes.length; i += 1) {
       const node = nodes[i];
       if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
         depositable.push(node);
       }
     }
     return depositable;
-  }
+  };
 
   getNextDepositAddress = () => {
-    this.setState({depositIndex: this.state.depositIndex + 1});
+    this.setState({ depositIndex: this.state.depositIndex + 1 });
     setTimeout(this.getDepositAddress, 0);
-  }
+  };
 
   getDepositAddress = () => {
     const { network, client, updateDepositSlice } = this.props;
     const { depositIndex } = this.state;
     const depositableNodes = this.getDepositableNodes();
     if (depositIndex < depositableNodes.length)
-      this.setState({node: depositableNodes[depositIndex], address: depositableNodes[depositIndex].multisig.address, bip32Path: depositableNodes[depositIndex].bip32Path, showReceived: false});
+      this.setState({
+        node: depositableNodes[depositIndex],
+        address: depositableNodes[depositIndex].multisig.address,
+        bip32Path: depositableNodes[depositIndex].bip32Path,
+        showReceived: false,
+      });
 
     clearInterval(depositTimer);
     depositTimer = setInterval(async () => {
@@ -79,31 +86,30 @@ class WalletDeposit extends React.Component {
       try {
         updates = await fetchAddressUTXOs(this.state.address, network, client);
         if (updates && updates.utxos && updates.utxos.length) {
-          clearInterval(depositTimer)
-          updateDepositSlice(updates)
-          this.setState({showReceived: true});
+          clearInterval(depositTimer);
+          updateDepositSlice(updates);
+          this.setState({ showReceived: true });
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
-
-    }, 2000)
-  }
+    }, 2000);
+  };
 
   renderAddress = () => {
-    return this.state.node ? <AddressExpander node={this.state.node} /> : ""
-  }
+    return this.state.node ? <AddressExpander node={this.state.node} /> : "";
+  };
 
   render() {
     const { amount, amountError, showReceived } = this.state;
     return (
       <div>
         <Card>
-          <CardHeader title="Deposit"/>
+          <CardHeader title="Deposit" />
           <CardContent>
-            <Copyable text={this.qrString()} newline={true}>
+            <Copyable text={this.qrString()} newline>
               {this.renderAddress()}
-              <QRCode size={300} value={this.qrString()} level={'L'} />
+              <QRCode size={300} value={this.qrString()} level="L" />
               <p>Scan QR code or click to copy address to clipboard.</p>
             </Copyable>
             <TextField
@@ -115,65 +121,72 @@ class WalletDeposit extends React.Component {
               error={amountError !== ""}
               helperText={amountError}
             />
-            { this.renderReceived() }
+            {this.renderReceived()}
           </CardContent>
         </Card>
         <Snackbar
           anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
+            vertical: "bottom",
+            horizontal: "left",
           }}
           open={showReceived}
           autoHideDuration={3000}
           ContentProps={{
-            'aria-describedby': 'message-id',
+            "aria-describedby": "message-id",
           }}
-          message={<span id="message-id">Deposit received, choose Next Address to make another deposit.</span>}
+          message={
+            <span id="message-id">
+              Deposit received, choose Next Address to make another deposit.
+            </span>
+          }
         />
       </div>
-    )
+    );
   }
 
   renderReceived = () => {
     const { resetWalletView } = this.props;
     const { depositIndex } = this.state;
-      return (
-        <Box mt={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.getNextDepositAddress}
-            disabled={depositIndex >= this.getDepositableNodes().length - 1}
-          >Next Address</Button>
-          <Box ml={2} component="span">
-            <Button variant="contained" onClick={resetWalletView}>Return</Button>
-          </Box>
+    return (
+      <Box mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.getNextDepositAddress}
+          disabled={depositIndex >= this.getDepositableNodes().length - 1}
+        >
+          Next Address
+        </Button>
+        <Box ml={2} component="span">
+          <Button variant="contained" onClick={resetWalletView}>
+            Return
+          </Button>
         </Box>
-      )
-  }
+      </Box>
+    );
+  };
 
-  handleAmountChange = (event)=> {
+  handleAmountChange = (event) => {
     const amount = event.target.value;
-    let error = ""
+    let error = "";
 
     if (amount.length && !amount.match(/^[0-9.]+$/)) {
       error = "Amount must be numeric";
     }
-    const decimal = amount.split('.');
+    const decimal = amount.split(".");
     if (decimal.length > 2) {
       error = "Amount must be numeric";
     } else if (decimal.length === 2 && decimal[1].length > 8) {
       error = "Amount must have maximum precision of 8 decimal places";
     }
 
-    this.setState({amount: event.target.value, amountError: error})
-  }
+    this.setState({ amount: event.target.value, amountError: error });
+  };
 
   qrString = () => {
-    const {address, amount} = this.state;
-    return `bitcoin:${address}${amount ? '?amount='+amount : ''}`
-  }
-
+    const { address, amount } = this.state;
+    return `bitcoin:${address}${amount ? `?amount=${amount}` : ""}`;
+  };
 }
 
 function mapStateToProps(state) {

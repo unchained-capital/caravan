@@ -101,7 +101,7 @@ class CreateWallet extends React.Component {
   }
 
   validateProperties(config, properties, key) {
-    for (let index = 0; index < properties.length; index++) {
+    for (let index = 0; index < properties.length; index += 1) {
       const property = properties[index];
       const configObj = key !== "" ? config[key] : config;
       if (!configObj.hasOwnProperty(property)) {
@@ -134,8 +134,8 @@ class CreateWallet extends React.Component {
     };
 
     const keys = Object.keys(xpubFields);
-    for (let xpubIndex = 0; xpubIndex < xpubs.length; xpubIndex++) {
-      for (let keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+    for (let xpubIndex = 0; xpubIndex < xpubs.length; xpubIndex += 1) {
+      for (let keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
         const key = keys[keyIndex];
         const value = xpubs[xpubIndex][key];
         const valueError = xpubFields[key](value, xpubIndex + 1);
@@ -318,7 +318,7 @@ class CreateWallet extends React.Component {
     for (
       let extendedPublicKeyImporterNum = 1;
       extendedPublicKeyImporterNum <= totalSigners;
-      extendedPublicKeyImporterNum++
+      extendedPublicKeyImporterNum += 1
     ) {
       extendedPublicKeyImporters.push(
         <Box
@@ -388,7 +388,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     for (
       let extendedPublicKeyImporterNum = 1;
       extendedPublicKeyImporterNum <= totalSigners;
-      extendedPublicKeyImporterNum++
+      extendedPublicKeyImporterNum += 1
     ) {
       extendedPublicKeyImporterBIP32Paths.push(
         `${this.extendedPublicKeyImporterBIP32Path(

@@ -1,17 +1,26 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 // Components
-import Transaction from '../ScriptExplorer/Transaction';
-import ExtendedPublicKeySelector from './ExtendedPublicKeySelector'
-import {Box, Button, Link} from "@material-ui/core";
+import { Box, Button, Link } from "@material-ui/core";
+import Transaction from "../ScriptExplorer/Transaction";
+import ExtendedPublicKeySelector from "./ExtendedPublicKeySelector";
 
 // Actions
-import { finalizeOutputs, setRequiredSigners, 
-  resetTransaction, setSpendStep, SPEND_STEP_CREATE} from '../../actions/transactionActions';
-import { spendNodes, resetWalletView,   updateChangeSliceAction } from "../../actions/walletActions";
-import UnsignedTransaction from '../UnsignedTransaction';
+import {
+  finalizeOutputs,
+  setRequiredSigners,
+  resetTransaction,
+  setSpendStep,
+  SPEND_STEP_CREATE,
+} from "../../actions/transactionActions";
+import {
+  spendNodes,
+  resetWalletView,
+  updateChangeSliceAction,
+} from "../../actions/walletActions";
+import UnsignedTransaction from "../UnsignedTransaction";
 
 class WalletSign extends React.Component {
   static propTypes = {
@@ -26,50 +35,59 @@ class WalletSign extends React.Component {
 
   state = {
     spent: false,
-  }
+  };
 
   render = () => {
     return (
       <Box>
+        <Link href="#" onClick={this.handleCancel}>
+          Edit Transaction
+        </Link>
 
-        <Link
-          href="#"
-          onClick={this.handleCancel}>Edit Transaction</Link>
-
-      <Box mt={2}>
-        <UnsignedTransaction/>
-      </Box>
-      {this.renderKeySelectors()}
+        <Box mt={2}>
+          <UnsignedTransaction />
+        </Box>
+        {this.renderKeySelectors()}
 
         <Box mt={2}>
           <Link
             href="#"
-            onClick={e => {e.preventDefault(); this.handleReturn();}}>Abandon Transaction</Link>
+            onClick={(e) => {
+              e.preventDefault();
+              this.handleReturn();
+            }}
+          >
+            Abandon Transaction
+          </Link>
         </Box>
 
-      {
-        this.signaturesFinalized() &&
-        <Box mt={2}>
-          <Transaction/>
-        </Box>
-      }
+        {this.signaturesFinalized() && (
+          <Box mt={2}>
+            <Transaction />
+          </Box>
+        )}
 
-      {
-        (this.transactionFinalized() || this.state.spent) &&
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.handleReturn}>Return</Button>
-      }
-  </Box>
-
-    )
-  }
+        {(this.transactionFinalized() || this.state.spent) && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.handleReturn}
+          >
+            Return
+          </Button>
+        )}
+      </Box>
+    );
+  };
 
   renderKeySelectors = () => {
-    const {requiredSigners} = this.props;
+    const { requiredSigners } = this.props;
     const keySelectors = [];
-    for (var keySelectorNum = 1; keySelectorNum <= requiredSigners; keySelectorNum++) {
+    for (
+      let keySelectorNum = 1;
+      keySelectorNum <= requiredSigners;
+      keySelectorNum += 1
+    ) {
       keySelectors.push(
         <Box key={keySelectorNum} mt={2}>
           <ExtendedPublicKeySelector number={keySelectorNum} />
@@ -77,23 +95,36 @@ class WalletSign extends React.Component {
       );
     }
     return keySelectors;
-  }
+  };
 
   signaturesFinalized = () => {
-    const {signatureImporters} = this.props;
-    return Object.values(signatureImporters).length > 0 && Object.values(signatureImporters).every((signatureImporter) => signatureImporter.finalized);
-  }
+    const { signatureImporters } = this.props;
+    return (
+      Object.values(signatureImporters).length > 0 &&
+      Object.values(signatureImporters).every(
+        (signatureImporter) => signatureImporter.finalized
+      )
+    );
+  };
 
   transactionFinalized = () => {
-    const { transaction, spendNodes, changeNode, updateChangeNode } = this.props;
+    const {
+      transaction,
+      spendNodes,
+      changeNode,
+      updateChangeNode,
+    } = this.props;
 
     const txid = transaction.txid;
     if (txid !== "" && !this.state.spent) {
-      this.setState({spent: true})
+      this.setState({ spent: true });
       const changeAddress = changeNode.multisig.address;
-      for (let i = 0; i < transaction.outputs.length; i++) {
+      for (let i = 0; i < transaction.outputs.length; i += 1) {
         if (changeAddress === transaction.outputs[i].address) {
-          updateChangeNode({bip32Path: changeNode.bip32Path, balanceSats: transaction.outputs[i].amountSats})
+          updateChangeNode({
+            bip32Path: changeNode.bip32Path,
+            balanceSats: transaction.outputs[i].amountSats,
+          });
           break;
         }
       }
@@ -102,24 +133,27 @@ class WalletSign extends React.Component {
     }
 
     return false;
-  }
+  };
 
   handleReturn = () => {
     const { resetTransaction, resetWalletView } = this.props;
     resetTransaction();
     resetWalletView();
-  }
+  };
 
   handleCancel = (event) => {
-    const { finalizeOutputs, requiredSigners, setRequiredSigners, setSpendStep } = this.props;
+    const {
+      finalizeOutputs,
+      requiredSigners,
+      setRequiredSigners,
+      setSpendStep,
+    } = this.props;
     event.preventDefault();
     setRequiredSigners(requiredSigners); // this will generate signature importers
     finalizeOutputs(false);
-    setSpendStep(SPEND_STEP_CREATE)
-
-  }
+    setSpendStep(SPEND_STEP_CREATE);
+  };
 }
-
 
 function mapStateToProps(state) {
   return {
@@ -128,7 +162,7 @@ function mapStateToProps(state) {
     ...state.quorum,
     requiredSigners: state.spend.transaction.requiredSigners,
     totalSigners: state.spend.transaction.totalSigners,
-    changeNode: state.wallet.change.nextNode
+    changeNode: state.wallet.change.nextNode,
   };
 }
 

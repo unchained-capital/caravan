@@ -17,9 +17,7 @@ class ConfirmMultisigAddressTest extends Test {
       <Box>
         <p>
           Confirm the following
-          {this.params.network} 
-{' '}
-{this.params.type} 2-of-2 multisig address on
+          {this.params.network} {this.params.type} 2-of-2 multisig address on
           your device:
         </p>
 

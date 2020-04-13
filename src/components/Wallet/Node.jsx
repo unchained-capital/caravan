@@ -1,25 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import {
-  satoshisToBitcoins,
-} from 'unchained-bitcoin';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { satoshisToBitcoins } from "unchained-bitcoin";
 
 // Components
-import {
-  TableRow, TableCell, Checkbox,
-} from '@material-ui/core';
+import { TableRow, TableCell, Checkbox } from "@material-ui/core";
 import AddressExpander from "./AddressExpander";
 
 // Actions
 import {
-  setInputs, setFeeRate, updateAutoSpendAction,
-} from '../../actions/transactionActions';
+  setInputs,
+  setFeeRate,
+  updateAutoSpendAction,
+} from "../../actions/transactionActions";
 import { WALLET_MODES } from "../../actions/walletActions";
 
-
 class Node extends React.Component {
-
   static propTypes = {
     network: PropTypes.string.isRequired,
     addressType: PropTypes.string.isRequired,
@@ -36,15 +32,23 @@ class Node extends React.Component {
 
   componentDidMount = () => {
     this.generate();
-  }
+  };
 
   render = () => {
-    const {bip32Path, spend, fetchedUTXOs, balanceSats,
-      multisig, utxos, walletMode, addressKnown} = this.props;
+    const {
+      bip32Path,
+      spend,
+      fetchedUTXOs,
+      balanceSats,
+      multisig,
+      utxos,
+      walletMode,
+      addressKnown,
+    } = this.props;
     const spending = walletMode === WALLET_MODES.SPEND;
     return (
       <TableRow key={bip32Path}>
-        { spending &&
+        {spending && (
           <TableCell>
             <Checkbox
               id={bip32Path}
@@ -54,80 +58,85 @@ class Node extends React.Component {
               disabled={!fetchedUTXOs || balanceSats.isEqualTo(0)}
             />
           </TableCell>
-        }
+        )}
         <TableCell>
           <code>{bip32Path}</code>
         </TableCell>
+        <TableCell>{utxos.length}</TableCell>
         <TableCell>
-          {utxos.length}
+          {fetchedUTXOs && addressKnown
+            ? satoshisToBitcoins(balanceSats).toFixed()
+            : ""}
         </TableCell>
-        <TableCell>
-          {fetchedUTXOs && addressKnown ? satoshisToBitcoins(balanceSats).toFixed() : ''}
-        </TableCell>
-        <TableCell>
-          {this.maxUtxoDate()}
-        </TableCell>
+        <TableCell>{this.maxUtxoDate()}</TableCell>
 
-        <TableCell>
-          {multisig ? this.renderAddress()
-           : '...'}
-        </TableCell>
+        <TableCell>{multisig ? this.renderAddress() : "..."}</TableCell>
       </TableRow>
-      );
-  }
+    );
+  };
 
   maxUtxoDate = () => {
-    const {utxos} = this.props;
-    if (!utxos.length) return ""
-    const maxtime = Math.max(...utxos.map(utxo => utxo.time));
+    const { utxos } = this.props;
+    if (!utxos.length) return "";
+    const maxtime = Math.max(...utxos.map((utxo) => utxo.time));
     if (isNaN(maxtime)) return "Pending";
-    return (new Date(1000 * maxtime).toLocaleDateString());
-  }
+    return new Date(1000 * maxtime).toLocaleDateString();
+  };
 
   renderAddress = () => {
-    return <AddressExpander node={this.props.braidNode} />
-  }
+    return <AddressExpander node={this.props.braidNode} />;
+  };
 
   generate = () => {
-    const {present, change, bip32Path, addNode} = this.props;
+    const { present, change, bip32Path, addNode } = this.props;
     if (!present) {
       addNode(change, bip32Path);
     }
-  }
+  };
 
   handleSpend = (e) => {
-    const {change, bip32Path, updateNode, inputs, utxos, multisig, setInputs,
-      updateAutoSpend, setFeeRate, feeRate} = this.props;
+    const {
+      change,
+      bip32Path,
+      updateNode,
+      inputs,
+      utxos,
+      multisig,
+      setInputs,
+      updateAutoSpend,
+      setFeeRate,
+      feeRate,
+    } = this.props;
     let newInputs;
     if (e.target.checked) {
-      newInputs = inputs.concat(utxos.map(utxo => ({...utxo, multisig, bip32Path: bip32Path})))
+      newInputs = inputs.concat(
+        utxos.map((utxo) => ({ ...utxo, multisig, bip32Path }))
+      );
     } else {
-      newInputs = inputs.filter(input => {
-        const newUtxos = utxos.filter(utxo => {
+      newInputs = inputs.filter((input) => {
+        const newUtxos = utxos.filter((utxo) => {
           return utxo.txid === input.txid && utxo.index === input.index;
-        })
+        });
         return newUtxos.length === 0;
-      })
+      });
     }
     setInputs(newInputs);
-    updateNode(change, {spend: e.target.checked, bip32Path});
+    updateNode(change, { spend: e.target.checked, bip32Path });
     updateAutoSpend(false);
     setFeeRate(feeRate);
-  }
-
+  };
 }
 
 function mapStateToProps(state, ownProps) {
-  const change = ((ownProps.bip32Path || '').split('/')[1] === '1'); // // m, 0, 1
-  const braid = state.wallet[change ? 'change' : 'deposits'];
+  const change = (ownProps.bip32Path || "").split("/")[1] === "1"; // // m, 0, 1
+  const braid = state.wallet[change ? "change" : "deposits"];
   return {
     ...state.settings,
-    ...{change},
+    ...{ change },
     ...braid.nodes[ownProps.bip32Path],
     ...state.spend.transaction,
     walletMode: state.wallet.common.walletMode,
     braidNode: braid.nodes[ownProps.bip32Path],
-
   };
 }
 
