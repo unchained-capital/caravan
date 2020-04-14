@@ -10,8 +10,7 @@ jobs:
       node_js: 10
       script: npm run test
     - node_js: 12
-      #FIXME remove CI=false after linting warnings in transactionReducer are fixed.
-      script: CI=false npm run build
+      script: npm run build
 
 deploy:
   provider: script

@@ -1,12 +1,13 @@
 {
-    "parser": "babel-eslint",
-    "env": {
-        "browser": true,
-        "node": true,
-        "jasmine": true
-    },
-    "extends": ["airbnb", "plugin:prettier/recommended"],
-    "rules": {
-      "prettier/prettier": "error"
-    }
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true
+  },
+  "extends": ["airbnb", "plugin:prettier/recommended"],
+  "rules": {
+    "prettier/prettier": "error",
+    "react/jsx-one-expression-per-line": "off"
+  }
 }
