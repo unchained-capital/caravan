@@ -136,7 +136,7 @@ const Help = () => (
             </CardContent>
             <CardActions>
               <Button href="https://github.com/unchained-capital/caravan/issues"><BugReport /> &nbsp; Report Issue</Button>
-              <Button href="#/test" type="secondary"><Speed /> &nbsp; Run Tests</Button>
+              <Button href="#/test"><Speed /> &nbsp; Run Tests</Button>
             </CardActions>
           </Card>
 
