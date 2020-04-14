@@ -64,6 +64,12 @@ function updateMultisig(state, action) {
 }
 
 export default (state = initialState, action) => {
+  const keyResetState = updatePublicKeyImporterState(
+    state,
+    { value: "" },
+    "publicKey"
+  );
+
   switch (action.type) {
     case CHOOSE_CONFIRM_OWNERSHIP:
       return updateState(state, { chosen: true });
@@ -72,11 +78,6 @@ export default (state = initialState, action) => {
     case SET_OWNERSHIP_MULTISIG:
       return updateMultisig(state, action);
     case SET_PUBLIC_KEY_IMPORTER_BIP32_PATH:
-      const keyResetState = updatePublicKeyImporterState(
-        state,
-        { value: "" },
-        "publicKey"
-      );
       return updatePublicKeyImporterState(keyResetState, action, "bip32Path");
     case SET_PUBLIC_KEY_IMPORTER_METHOD:
       return updatePublicKeyImporterState(state, action, "method");

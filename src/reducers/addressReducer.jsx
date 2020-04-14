@@ -81,7 +81,7 @@ function movePublicKeyImporterDown(state, action) {
   return updateState(newState, { fingerprint: fingerprint(newState) });
 }
 
-function sortPublicKeyImporters(state, action) {
+function sortPublicKeyImporters(state) {
   const publicKeyImporters = Object.values(state.publicKeyImporters);
   const sortedPublicKeys = publicKeyImporters
     .map((publicKeyImporter) => publicKeyImporter.publicKey)
@@ -106,6 +106,15 @@ function sortPublicKeyImporters(state, action) {
     ...{ publicKeyImporters: publicKeyImportersChange },
   };
   return updateState(newState, { fingerprint: fingerprint(newState) });
+}
+
+function setConflict(publicKeyImporter, state) {
+  if (state.finalizedNetwork) {
+    // eslint-disable-next-line no-param-reassign
+    publicKeyImporter.conflict =
+      state.finalizedNetwork !== state.network ||
+      state.finalizedAddressType !== state.addressType;
+  }
 }
 
 function updatePublicKeyImporterState(state, action, field) {
@@ -144,14 +153,6 @@ function updateTotalSigners(state, action) {
     ...{ publicKeyImporters, stub: action.type },
   };
   return updateState(newState, { fingerprint: fingerprint(newState) });
-}
-
-function setConflict(publicKeyImporter, state) {
-  if (state.finalizedNetwork) {
-    publicKeyImporter.conflict =
-      state.finalizedNetwork !== state.network ||
-      state.finalizedAddressType !== state.addressType;
-  }
 }
 
 function updateImporterPaths(state, newState, bip32Path) {
@@ -212,6 +213,7 @@ function updateFinalizedSettings(state, action) {
       newState.finalizedNetwork = "";
       newState.finalizedAddressType = "";
       Object.values(newState.publicKeyImporters).forEach(
+        // eslint-disable-next-line no-param-reassign,no-return-assign
         (importer) => (importer.conflict = false)
       );
     }

@@ -9,25 +9,44 @@ import AddressExpander from "./AddressExpander";
 
 // Actions
 import {
-  setInputs,
-  setFeeRate,
-  updateAutoSpendAction,
+  setInputs as setInputsAction,
+  setFeeRate as setFeeRateAction,
+  updateAutoSpendAction as updateAutoSpendActionImport,
 } from "../../actions/transactionActions";
 import { WALLET_MODES } from "../../actions/walletActions";
 
 class Node extends React.Component {
   static propTypes = {
-    network: PropTypes.string.isRequired,
-    addressType: PropTypes.string.isRequired,
     addNode: PropTypes.func.isRequired,
-    updateNode: PropTypes.func.isRequired,
-    present: PropTypes.bool,
+    addressKnown: PropTypes.bool.isRequired,
+    balanceSats: PropTypes.shape({
+      isEqualTo: PropTypes.func,
+    }).isRequired,
     bip32Path: PropTypes.string.isRequired,
-    multisig: PropTypes.object,
-    spend: PropTypes.bool.isRequired,
+    braidNode: PropTypes.shape({}).isRequired,
     change: PropTypes.bool.isRequired,
-    setInputs: PropTypes.func.isRequired,
+    feeRate: PropTypes.string.isRequired,
+    fetchedUTXOs: PropTypes.bool.isRequired,
+    inputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        index: PropTypes.number,
+        txid: PropTypes.string,
+      })
+    ).isRequired,
+    multisig: PropTypes.shape({}),
+    present: PropTypes.bool,
     setFeeRate: PropTypes.func.isRequired,
+    setInputs: PropTypes.func.isRequired,
+    spend: PropTypes.bool.isRequired,
+    updateAutoSpend: PropTypes.func.isRequired,
+    updateNode: PropTypes.func.isRequired,
+    utxos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    walletMode: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    multisig: {},
+    present: false,
   };
 
   componentDidMount = () => {
@@ -79,12 +98,13 @@ class Node extends React.Component {
     const { utxos } = this.props;
     if (!utxos.length) return "";
     const maxtime = Math.max(...utxos.map((utxo) => utxo.time));
-    if (isNaN(maxtime)) return "Pending";
+    if (Number.isNaN(maxtime)) return "Pending";
     return new Date(1000 * maxtime).toLocaleDateString();
   };
 
   renderAddress = () => {
-    return <AddressExpander node={this.props.braidNode} />;
+    const { braidNode } = this.props;
+    return <AddressExpander node={braidNode} />;
   };
 
   generate = () => {
@@ -141,9 +161,9 @@ function mapStateToProps(state, ownProps) {
 }
 
 const mapDispatchToProps = {
-  setInputs,
-  setFeeRate,
-  updateAutoSpend: updateAutoSpendAction,
+  setInputs: setInputsAction,
+  setFeeRate: setFeeRateAction,
+  updateAutoSpend: updateAutoSpendActionImport,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Node);

@@ -22,9 +22,11 @@ import InteractionMessages from "../InteractionMessages";
 class HermitSignatureImporter extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
-    inputs: PropTypes.array.isRequired,
-    outputs: PropTypes.array.isRequired,
-    signatureImporter: PropTypes.shape({}).isRequired,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    signatureImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+    }).isRequired,
     resetBIP32Path: PropTypes.func.isRequired,
     defaultBIP32Path: PropTypes.string.isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
@@ -37,7 +39,6 @@ class HermitSignatureImporter extends React.Component {
     super(props);
     this.state = {
       bip32PathError: "",
-      bip32PathFinalized: false,
       signatureError: "",
       status: this.interaction(true).isSupported() ? PENDING : UNSUPPORTED,
     };
@@ -136,7 +137,6 @@ class HermitSignatureImporter extends React.Component {
   };
 
   import = (signature) => {
-    console.log("IMPORTED SIGNATURE:", signature);
     const { validateAndSetSignature, enableChangeMethod } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
@@ -152,7 +152,10 @@ class HermitSignatureImporter extends React.Component {
     enableChangeMethod();
   };
 
-  hasBIP32PathError = () => this.state.bip32PathError !== "";
+  hasBIP32PathError = () => {
+    const { bip32PathError } = this.state;
+    return bip32PathError !== "";
+  };
 
   handleBIP32PathChange = (event) => {
     const { validateAndSetBIP32Path } = this.props;

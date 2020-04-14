@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { satoshisToBitcoins } from "unchained-bitcoin";
+import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
+import { satoshisToBitcoins } from "unchained-bitcoin";
 
 // Components
 import {
@@ -14,25 +15,40 @@ import {
   TableRow,
   TableCell,
   Grid,
-  Link,
 } from "@material-ui/core";
 import UnsignedTransaction from "../UnsignedTransaction";
 
 class TransactionPreview extends React.Component {
+  static propTypes = {
+    editTransaction: PropTypes.func.isRequired,
+    fee: PropTypes.number.isRequired,
+    feeRate: PropTypes.string.isRequired,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    inputsTotalSats: PropTypes.shape({}).isRequired,
+    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    signTransaction: PropTypes.func.isRequired,
+  };
+
   render = () => {
-    const { feeRate, fee, inputsTotalSats } = this.props;
+    const {
+      feeRate,
+      fee,
+      inputsTotalSats,
+      editTransaction,
+      signTransaction,
+    } = this.props;
 
     return (
       <Box>
-        <Link
+        <Button
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            this.props.editTransaction();
+            editTransaction();
           }}
         >
           Edit Transaction
-        </Link>
+        </Button>
         <h1>Transaction Preview</h1>
         <UnsignedTransaction />
         <h2>Inputs</h2>
@@ -60,7 +76,7 @@ class TransactionPreview extends React.Component {
             <Button
               variant="contained"
               color="primary"
-              onClick={this.props.signTransaction}
+              onClick={signTransaction}
             >
               Sign Transaction
             </Button>
@@ -152,21 +168,25 @@ class TransactionPreview extends React.Component {
   mapAddresses = () => {
     const { inputs } = this.props;
     return inputs.reduce((mapped, input) => {
+      const mappedAddresses = mapped;
       const { confirmed, txid, index, amount } = input;
-      mapped[input.multisig.address] = mapped[input.multisig.address] || {
+
+      mappedAddresses[input.multisig.address] = mapped[
+        input.multisig.address
+      ] || {
         amount: BigNumber(0),
         utxos: [],
       };
-      mapped[input.multisig.address].utxos.push({
+      mappedAddresses[input.multisig.address].utxos.push({
         confirmed,
         txid,
         index,
         amount,
       });
-      mapped[input.multisig.address].amount = mapped[
+      mappedAddresses[input.multisig.address].amount = mapped[
         input.multisig.address
       ].amount.plus(BigNumber(input.amount));
-      return mapped;
+      return mappedAddresses;
     }, {});
   };
 

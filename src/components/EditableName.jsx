@@ -69,7 +69,10 @@ class EditableName extends React.Component {
     );
   };
 
-  hasError = () => this.state.error !== "";
+  hasError = () => {
+    const { error } = this.state;
+    return error !== "";
+  };
 
   startEditing = (event) => {
     const { name } = this.props;

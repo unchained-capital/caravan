@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { NETWORKS } from "unchained-bitcoin";
 
 // Components
 import {
@@ -100,6 +101,13 @@ WalletInfoCard.propTypes = {
   editable: PropTypes.bool.isRequired,
   setName: PropTypes.func.isRequired,
   children: PropTypes.node,
+};
+
+WalletInfoCard.defaultProps = {
+  network: NETWORKS.TESTNET,
+  balance: 0,
+  pendingBalance: 0,
+  children: React.createElement("span"),
 };
 
 export default WalletInfoCard;

@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+
 // Components
 import {
   List,
@@ -10,6 +12,8 @@ import {
 import { Warning } from "@material-ui/icons";
 
 const Conflict = (props) => {
+  const { message } = props;
+
   return (
     <small>
       <List>
@@ -20,12 +24,16 @@ const Conflict = (props) => {
             </Typography>
           </ListItemIcon>
           <ListItemText>
-            <Typography color="error">{props.message}</Typography>
+            <Typography color="error">{message}</Typography>
           </ListItemText>
         </ListItem>
       </List>
     </small>
   );
+};
+
+Conflict.propTypes = {
+  message: PropTypes.string.isRequired,
 };
 
 export default Conflict;

@@ -11,12 +11,15 @@ const QR_CODE_READER_DELAY = 300; // ms?
 
 class HermitReader extends Component {
   static propTypes = {
-    onStart: PropTypes.func,
+    onStart: PropTypes.func.isRequired,
     onSuccess: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
-    width: PropTypes.string.isRequired,
-    startText: PropTypes.string.isRequired,
-    interaction: PropTypes.object.isRequired,
+    width: PropTypes.string,
+    startText: PropTypes.string,
+    interaction: PropTypes.shape({
+      messageFor: PropTypes.func,
+      parse: PropTypes.func,
+    }).isRequired,
   };
 
   static defaultProps = {

@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
 // Components
 import {
@@ -24,6 +25,7 @@ import { ThumbUp as SuccessIcon, Error as ErrorIcon } from "@material-ui/icons";
 import {
   blockExplorerAddressURL,
   multisigAddressType,
+  NETWORKS,
 } from "unchained-bitcoin";
 import { PENDING, ACTIVE, ConfirmMultisigAddress } from "unchained-wallets";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -45,6 +47,35 @@ const MODE_WATCH = 3;
 let anchor;
 
 class AddressExpander extends React.Component {
+  interaction = null;
+
+  static propTypes = {
+    client: PropTypes.shape({
+      type: PropTypes.string,
+    }).isRequired,
+    extendedPublicKeyImporters: PropTypes.arrayOf(PropTypes.shape({}))
+      .isRequired,
+    node: PropTypes.shape({
+      addressUsed: PropTypes.bool,
+      balanceSats: PropTypes.shape({
+        isEqualTo: PropTypes.func,
+        isGreaterThan: PropTypes.func,
+      }),
+      bip32Path: PropTypes.string,
+      multisig: PropTypes.shape({
+        address: PropTypes.string,
+      }),
+      utxos: PropTypes.arrayOf(PropTypes.shape({})),
+    }).isRequired,
+    network: PropTypes.string,
+    requiredSigners: PropTypes.number.isRequired,
+    totalSigners: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    network: NETWORKS.TESTNET,
+  };
+
   state = {
     expandMode: null,
     showMenu: false,
@@ -60,9 +91,10 @@ class AddressExpander extends React.Component {
   };
 
   addressContent = () => {
-    const { multisig, addressUsed, balanceSats } = this.props.node;
-    const { network, client } = this.props;
-    const { expandMode, showMenuIcon } = this.state;
+    const { node, network, client } = this.props;
+    const { multisig, addressUsed, balanceSats } = node;
+    const { expandMode, showMenu, showMenuIcon } = this.state;
+
     return (
       <div style={{ width: "100%" }}>
         <code
@@ -94,7 +126,7 @@ class AddressExpander extends React.Component {
           id="address-menu"
           anchorEl={anchor}
           keepMounted
-          open={this.state.showMenu}
+          open={showMenu}
           onClose={this.handleClose}
         >
           {balanceSats.isGreaterThan(0) && (
@@ -154,8 +186,9 @@ class AddressExpander extends React.Component {
   };
 
   hasAdditionalOptions = () => {
-    const { balanceSats } = this.props.node;
-    const { client } = this.props;
+    const { client, node } = this.props;
+    const { balanceSats } = node;
+
     return (
       balanceSats.isGreaterThan(0) ||
       client.type === "private" ||
@@ -179,7 +212,8 @@ class AddressExpander extends React.Component {
   };
 
   render = () => {
-    const { bip32Path } = this.props.node;
+    const { node } = this.props;
+    const { bip32Path } = node;
     return (
       <ExpansionPanel onChange={this.panelExpand}>
         <ExpansionPanelSummary
@@ -197,15 +231,17 @@ class AddressExpander extends React.Component {
   };
 
   defaultMode = () => {
-    const { balanceSats } = this.props.node;
+    const { node } = this.props;
+    const { balanceSats } = node;
+
     this.setState({
       expandMode: balanceSats.isGreaterThan(0) ? MODE_UTXO : MODE_REDEEM,
     });
   };
 
   expandContent = () => {
-    const { utxos, balanceSats, multisig } = this.props.node;
-    const { client } = this.props;
+    const { client, node } = this.props;
+    const { utxos, balanceSats, multisig } = node;
     const { expandMode } = this.state;
 
     if (client.type === "public" && expandMode === MODE_WATCH)
@@ -213,7 +249,7 @@ class AddressExpander extends React.Component {
     if (balanceSats.isEqualTo(0) && expandMode === MODE_UTXO)
       this.defaultMode();
 
-    switch (this.state.expandMode) {
+    switch (expandMode) {
       case MODE_UTXO:
         return (
           <Grid item md={12}>
@@ -305,7 +341,8 @@ class AddressExpander extends React.Component {
 
   confirmOnDevice = async () => {
     this.setState({ interactionState: ACTIVE });
-    const { multisig } = this.props.node;
+    const { node } = this.props;
+    const { multisig } = node;
     try {
       const confirmed = await this.interaction.run();
       if (
@@ -333,11 +370,9 @@ class AddressExpander extends React.Component {
     }
   };
 
-  interaction = null;
-
   keySelected = (event, extendedPublicKeyImporter) => {
-    const { multisig, bip32Path } = this.props.node;
-    const network = this.props.network;
+    const { network, node } = this.props;
+    const { multisig, bip32Path } = node;
 
     this.interaction = ConfirmMultisigAddress({
       keystore: extendedPublicKeyImporter.method,
@@ -351,8 +386,8 @@ class AddressExpander extends React.Component {
 
   // TODO: DRY out with test
   confirmAddressDescription() {
-    const { network, requiredSigners, totalSigners } = this.props;
-    const { multisig } = this.props.node;
+    const { network, node, requiredSigners, totalSigners } = this.props;
+    const { multisig } = node;
     const addressType = multisigAddressType(multisig);
 
     return (
@@ -385,7 +420,7 @@ class AddressExpander extends React.Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     network: state.settings.network,
     requiredSigners: state.settings.requiredSigners,

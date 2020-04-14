@@ -16,7 +16,12 @@ import "../styles.css";
 
 class CreateAddress extends React.Component {
   static propTypes = {
+    address: PropTypes.string,
     totalSigners: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    address: "",
   };
 
   render = () => {
@@ -58,8 +63,9 @@ class CreateAddress extends React.Component {
           publicNotes={
             <span>
               If you plan to use this address with your own bitcoind node you
-              can import the address created here by switching for "Public" to
-              "Private". Otherwise no action is needed here.
+              can import the address created here by switching for
+              &quot;Public&quot; to &quot;Private&quot;. Otherwise no action is
+              needed here.
             </span>
           }
           privateNotes={

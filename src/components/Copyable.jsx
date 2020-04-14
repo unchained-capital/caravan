@@ -21,6 +21,7 @@ class Copyable extends React.Component {
   render = () => {
     const { newline, text, children } = this.props;
     return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
       <span onClick={(e) => e.stopPropagation()}>
         <CopyToClipboard
           text={text}
@@ -30,8 +31,6 @@ class Copyable extends React.Component {
           <span className="copyable">
             {children || text}
             {newline && <br />}
-            {/* {this.props.icon && <span>&nbsp;</span>} */}
-            {/* {this.props.icon && <FAIcon name="clipboard" />} */}
             {this.badge()}
           </span>
         </CopyToClipboard>
@@ -42,7 +41,6 @@ class Copyable extends React.Component {
   badge = () => {
     const { copied } = this.state;
     if (copied) {
-      // return (<span>&nbsp; <span className="badge badge-success">Copied</span></span>);
       return <FileCopy fontSize="small" />;
     }
     return null;
@@ -56,18 +54,16 @@ class Copyable extends React.Component {
   };
 }
 
-Copyable.defaultProps = {
-  newline: false,
-  icon: true,
-};
-
 Copyable.propTypes = {
   // defaults
-  newline: PropTypes.bool.isRequired,
-  icon: PropTypes.bool.isRequired,
+  newline: PropTypes.bool,
   // parent
-  text: PropTypes.string,
-  children: PropTypes.any,
+  text: PropTypes.string.isRequired,
+  children: PropTypes.node,
 };
 
+Copyable.defaultProps = {
+  newline: false,
+  children: React.createElement("span"),
+};
 export default Copyable;

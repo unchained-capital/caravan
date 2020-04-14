@@ -30,28 +30,58 @@ import {
 
 import PrivateClientSettings from "./PrivateClientSettings";
 
-const propTypes = {
-  client: PropTypes.shape({}).isRequired,
-  network: PropTypes.string.isRequired,
-  setUrl: PropTypes.func.isRequired,
-  setPassword: PropTypes.func.isRequired,
-  setPasswordError: PropTypes.func.isRequired,
-  setType: PropTypes.func.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  setUsernameError: PropTypes.func.isRequired,
-};
-
 class ClientPicker extends React.Component {
+  static validatePassword() {
+    return "";
+  }
+
+  static validateUsername() {
+    return "";
+  }
+
+  static validateUrl(host) {
+    const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
+    if (!validhost) return "Must be a valid URL.";
+    return "";
+  }
+
+  static propTypes = {
+    client: PropTypes.shape({
+      type: PropTypes.string.isRequired,
+    }).isRequired,
+    network: PropTypes.string.isRequired,
+    privateNotes: PropTypes.shape({}),
+    setUrl: PropTypes.func.isRequired,
+    urlError: PropTypes.string,
+    setUrlError: PropTypes.func.isRequired,
+    setPassword: PropTypes.func.isRequired,
+    passwordError: PropTypes.string,
+    setPasswordError: PropTypes.func.isRequired,
+    setType: PropTypes.func.isRequired,
+    usernameError: PropTypes.string,
+    setUsername: PropTypes.func.isRequired,
+    setUsernameError: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    urlError: "",
+    usernameError: "",
+    passwordError: "",
+    privateNotes: {},
+  };
+
   state = {
-    url_edited: false,
+    urlEdited: false,
     connectError: "",
     connectSuccess: false,
   };
 
   handleTypeChange = (event) => {
     const { setType, network, setUrl } = this.props;
+    const { urlEdited } = this.state;
+
     const type = event.target.value;
-    if (type === "private" && !this.state.url_edited) {
+    if (type === "private" && !urlEdited) {
       setUrl(`http://localhost:${network === "mainnet" ? 8332 : 18332}`);
     }
     setType(type);
@@ -59,9 +89,10 @@ class ClientPicker extends React.Component {
 
   handleUrlChange = (event) => {
     const { setUrl, setUrlError } = this.props;
+    const { urlEdited } = this.state;
     const url = event.target.value;
-    const error = this.validateUrl(url);
-    if (!this.state.url_edited && !error) this.setState({ url_edited: true });
+    const error = ClientPicker.validateUrl(url);
+    if (!urlEdited && !error) this.setState({ urlEdited: true });
     setUrl(url);
     setUrlError(error);
   };
@@ -69,7 +100,7 @@ class ClientPicker extends React.Component {
   handleUsernameChange = (event) => {
     const { setUsername, setUsernameError } = this.props;
     const username = event.target.value;
-    const error = this.validateUsername(username);
+    const error = ClientPicker.validateUsername(username);
     setUsername(username);
     setUsernameError(error);
   };
@@ -77,24 +108,10 @@ class ClientPicker extends React.Component {
   handlePasswordChange = (event) => {
     const { setPassword, setPasswordError } = this.props;
     const password = event.target.value;
-    const error = this.validatePassword(password);
+    const error = ClientPicker.validatePassword(password);
     setPassword(password);
     setPasswordError(error);
   };
-
-  validateUrl(host) {
-    const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
-    if (!validhost) return "Must be a valid URL.";
-    return "";
-  }
-
-  validatePassword(pass) {
-    return "";
-  }
-
-  validateUsername(username) {
-    return "";
-  }
 
   testConnection = async () => {
     const { network, client } = this.props;
@@ -110,9 +127,9 @@ class ClientPicker extends React.Component {
   render() {
     const {
       client,
-      url_error,
-      username_error,
-      password_error,
+      urlError,
+      usernameError,
+      passwordError,
       privateNotes,
     } = this.props;
     const { connectSuccess, connectError } = this.state;
@@ -162,9 +179,9 @@ class ClientPicker extends React.Component {
                     this.handlePasswordChange(event)
                   }
                   client={client}
-                  url_error={url_error}
-                  username_error={username_error}
-                  password_error={password_error}
+                  urlError={urlError}
+                  usernameError={usernameError}
+                  passwordError={passwordError}
                   privateNotes={privateNotes}
                   connectSuccess={connectSuccess}
                   connectError={connectError}
@@ -179,13 +196,11 @@ class ClientPicker extends React.Component {
   }
 }
 
-ClientPicker.propTypes = propTypes;
-
 function mapStateToProps(state) {
   return {
     network: state.settings.network,
     client: state.client,
-    url_error: state.client.url_error,
+    urlError: state.client.urlError,
     url: state.client.url,
   };
 }

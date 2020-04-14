@@ -27,30 +27,34 @@ import MultisigDetails from "../MultisigDetails";
 import ImportAddressesButton from "../ImportAddressesButton";
 
 // Actions
-import { setFrozen } from "../../actions/settingsActions";
+import { setFrozen as setFrozenAction } from "../../actions/settingsActions";
 import {
-  choosePerformSpend,
-  setRequiredSigners,
-  setTotalSigners,
-  setInputs,
+  choosePerformSpend as chosePerformSpendAction,
+  setRequiredSigners as setRequiredSignersAction,
+  setTotalSigners as setTotalSignersAction,
+  setInputs as setInputsAction,
 } from "../../actions/transactionActions";
 import {
-  chooseConfirmOwnership,
-  setOwnershipMultisig,
+  chooseConfirmOwnership as chooseConfirmOwnershipAction,
+  setOwnershipMultisig as setOwnershipMultisigAction,
 } from "../../actions/ownershipActions";
 
 class ScriptEntry extends React.Component {
   static propTypes = {
-    network: PropTypes.string.isRequired,
-    client: PropTypes.object.isRequired,
-    setFrozen: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-    setTotalSigners: PropTypes.func.isRequired,
-    setInputs: PropTypes.func.isRequired,
     addressType: PropTypes.string.isRequired,
-    setOwnershipMultisig: PropTypes.func.isRequired,
+    choosePerformSpend: PropTypes.func.isRequired,
     chosePerformSpend: PropTypes.bool.isRequired,
     choseConfirmOwnership: PropTypes.bool.isRequired,
+    chooseConfirmOwnership: PropTypes.func.isRequired,
+    client: PropTypes.shape({
+      type: PropTypes.string,
+    }).isRequired,
+    network: PropTypes.string.isRequired,
+    setFrozen: PropTypes.func.isRequired,
+    setInputs: PropTypes.func.isRequired,
+    setOwnershipMultisig: PropTypes.func.isRequired,
+    setRequiredSigners: PropTypes.func.isRequired,
+    setTotalSigners: PropTypes.func.isRequired,
   };
 
   state = {
@@ -62,45 +66,15 @@ class ScriptEntry extends React.Component {
 
   disabled = () => {};
 
-  render() {
-    const { scriptHex, scriptError, fetchedUTXOs } = this.state;
+  hasScriptError = () => {
+    const { scriptError } = this.state;
+    return scriptError !== "";
+  };
 
-    return (
-      <Card>
-        <CardHeader title={`Enter ${this.scriptTitle()} Script`} />
-        <CardContent>
-          <form>
-            <TextField
-              fullWidth
-              multiline
-              autoFocus
-              variant="outlined"
-              label={`${this.scriptTitle()} Script`}
-              value={scriptHex}
-              rows={5}
-              onChange={this.handleScriptChange}
-              disabled={fetchedUTXOs && !this.hasFetchUTXOsError()}
-              helperText={scriptError}
-              error={scriptError !== ""}
-            />
-          </form>
-
-          {scriptHex !== "" && !this.hasScriptError() ? (
-            this.renderDetails()
-          ) : (
-            <p>
-              Enter a valid {this.scriptName()} script to generate an address to
-              spend funds from.
-            </p>
-          )}
-        </CardContent>
-      </Card>
-    );
-  }
-
-  hasScriptError = () => this.state.scriptError !== "";
-
-  hasFetchUTXOsError = () => this.state.fetchUTXOsError !== "";
+  hasFetchUTXOsError = () => {
+    const { fetchUTXOsError } = this.state;
+    return fetchUTXOsError !== "";
+  };
 
   hasError = () => this.hasScriptError() || this.hasFetchUTXOsError();
 
@@ -155,6 +129,7 @@ class ScriptEntry extends React.Component {
       try {
         this.generateMultisig(scriptHex);
       } catch (parseError) {
+        // eslint-disable-next-line no-console
         console.error(parseError);
         scriptError = `Failed to parse ${this.scriptName()} script.`;
       }
@@ -168,12 +143,13 @@ class ScriptEntry extends React.Component {
     });
   };
 
-  generateMultisig = (scriptHex) => {
+  generateMultisig = (newScriptHex) => {
     const { network, addressType } = this.props;
-    if (!scriptHex) {
-      scriptHex = this.state.scriptHex;
-    }
-    return generateMultisigFromHex(network, addressType, scriptHex);
+    const { scriptHex } = this.state;
+    let multisigScriptHex = scriptHex;
+    if (newScriptHex) multisigScriptHex = newScriptHex;
+
+    return generateMultisigFromHex(network, addressType, multisigScriptHex);
   };
 
   //
@@ -293,6 +269,45 @@ class ScriptEntry extends React.Component {
     chooseConfirmOwnership();
     setFrozen(true);
   };
+
+  //
+  // Render
+  //
+  render() {
+    const { scriptHex, scriptError, fetchedUTXOs } = this.state;
+
+    return (
+      <Card>
+        <CardHeader title={`Enter ${this.scriptTitle()} Script`} />
+        <CardContent>
+          <form>
+            <TextField
+              fullWidth
+              multiline
+              autoFocus
+              variant="outlined"
+              label={`${this.scriptTitle()} Script`}
+              value={scriptHex}
+              rows={5}
+              onChange={this.handleScriptChange}
+              disabled={fetchedUTXOs && !this.hasFetchUTXOsError()}
+              helperText={scriptError}
+              error={scriptError !== ""}
+            />
+          </form>
+
+          {scriptHex !== "" && !this.hasScriptError() ? (
+            this.renderDetails()
+          ) : (
+            <p>
+              Enter a valid {this.scriptName()} script to generate an address to
+              spend funds from.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 function mapStateToProps(state) {
@@ -307,13 +322,13 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  choosePerformSpend,
-  setFrozen,
-  setInputs,
-  setTotalSigners,
-  setRequiredSigners,
-  chooseConfirmOwnership,
-  setOwnershipMultisig,
+  choosePerformSpend: chosePerformSpendAction,
+  setInputs: setInputsAction,
+  setTotalSigners: setTotalSignersAction,
+  setRequiredSigners: setRequiredSignersAction,
+  chooseConfirmOwnership: chooseConfirmOwnershipAction,
+  setOwnershipMultisig: setOwnershipMultisigAction,
+  setFrozen: setFrozenAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEntry);

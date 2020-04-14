@@ -18,9 +18,16 @@ import "../styles.css";
 
 class Spend extends React.Component {
   static propTypes = {
-    transaction: PropTypes.object.isRequired,
-    ownership: PropTypes.object.isRequired,
-    signatureImporters: PropTypes.object.isRequired,
+    transaction: PropTypes.shape({
+      finalizedOutputs: PropTypes.bool,
+      inputs: PropTypes.arrayOf(PropTypes.shape({})),
+      inputsTotalSats: PropTypes.shape({}),
+      requiredSigners: PropTypes.number,
+    }).isRequired,
+    ownership: PropTypes.shape({
+      chosen: PropTypes.bool,
+    }).isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
   };
 
   render = () => {
@@ -135,6 +142,8 @@ class Spend extends React.Component {
   };
 
   confirmOwnership = (value) => {
+    // TODO can this entire function be removed? The states aren't being used.
+    // eslint-disable-next-line react/no-unused-state
     this.setState({ addressFinalized: true, confirmOwnership: value });
   };
 }

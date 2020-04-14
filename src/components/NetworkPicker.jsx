@@ -17,7 +17,7 @@ import {
 } from "@material-ui/core";
 
 // Actions
-import { setNetwork } from "../actions/settingsActions";
+import { setNetwork as setNetworkAction } from "../actions/settingsActions";
 
 class NetworkPicker extends React.Component {
   static propTypes = {
@@ -62,7 +62,8 @@ class NetworkPicker extends React.Component {
             </RadioGroup>
             <FormHelperText>
               <small>
-                Choose 'Mainnet' if you don't understand the difference.
+                Choose &apos;Mainnet&apos; if you don&apos;t understand the
+                difference.
               </small>
             </FormHelperText>
           </FormControl>
@@ -80,7 +81,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setNetwork,
+  setNetwork: setNetworkAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NetworkPicker);

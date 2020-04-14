@@ -18,7 +18,7 @@ import "./InteractionMessages.css";
 
 class MessagesList extends React.Component {
   static propTypes = {
-    messages: PropTypes.array.isRequired,
+    messages: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   };
 
   render = () => {
@@ -87,7 +87,7 @@ class MessagesList extends React.Component {
 
 class VersionTabPanel extends React.Component {
   static propTypes = {
-    messages: PropTypes.array.isRequired,
+    messages: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     version: PropTypes.string.isRequired,
     currentVersion: PropTypes.string.isRequired,
   };
@@ -121,8 +121,8 @@ class VersionTabPanel extends React.Component {
 
 class InteractionMessages extends React.Component {
   static propTypes = {
-    messages: PropTypes.array.isRequired,
-    excludeCodes: PropTypes.array.isRequired,
+    messages: PropTypes.arrayOf(PropTypes.shape({})),
+    excludeCodes: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
@@ -149,9 +149,9 @@ class InteractionMessages extends React.Component {
             onChange={this.handleChange}
             aria-label="interactionMessages-version"
           >
-            {versions.map((version, i) => (
+            {versions.map((version) => (
               <Tab
-                key={i}
+                key={version}
                 value={version}
                 label={version}
                 id={`interactionMessages-tab-${version}`}
@@ -160,9 +160,9 @@ class InteractionMessages extends React.Component {
             ))}
           </Tabs>
         </Paper>
-        {versions.map((version, i) => (
+        {versions.map((version) => (
           <VersionTabPanel
-            key={i}
+            key={version}
             version={version}
             currentVersion={currentVersion}
             messages={messages}

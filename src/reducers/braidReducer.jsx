@@ -86,8 +86,8 @@ function updateNode(state, action) {
   allBIP32Paths.sort((p1, p2) => {
     const p1Segments = (p1 || "").split("/");
     const p2Segments = (p2 || "").split("/");
-    const p1Index = parseInt(p1Segments[2]);
-    const p2Index = parseInt(p2Segments[2]);
+    const p1Index = parseInt(p1Segments[2], 10);
+    const p2Index = parseInt(p2Segments[2], 10);
     return p1Index - p2Index;
   });
   let nodeFoundWithValue = false;
@@ -120,9 +120,9 @@ function spendNodes(state) {
       updatedState.balanceSats = updatedState.balanceSats.minus(
         node.balanceSats
       );
-      node.balanceSats = new BigNumber(0);
-      node.spend = false;
-      node.utxos = [];
+      node.balanceSats = new BigNumber(0); // eslint-disable-line no-param-reassign
+      node.spend = false; // eslint-disable-line no-param-reassign
+      node.utxos = []; // eslint-disable-line no-param-reassign
     }
   });
   return updatedState;
@@ -131,7 +131,7 @@ function spendNodes(state) {
 function resetSpend(state) {
   const updatedState = { ...state };
   Object.values(updatedState.nodes).forEach((node) => {
-    node.spend = false;
+    node.spend = false; // eslint-disable-line no-param-reassign
   });
   return updatedState;
 }
@@ -146,8 +146,12 @@ export default (actionType) => (state = initialState, action) => {
       return updateState(state, {
         fetchUTXOsErrors: 0,
         nodes: Object.values(state.nodes).reduce((allNodes, thisNode) => {
-          allNodes[thisNode.bip32Path] = { ...thisNode, fetchUTXOsError: "" };
-          return allNodes;
+          const updatedNodes = allNodes;
+          updatedNodes[thisNode.bip32Path] = {
+            ...thisNode,
+            fetchUTXOsError: "",
+          };
+          return updatedNodes;
         }, {}),
       });
     case actionType:

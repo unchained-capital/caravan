@@ -28,7 +28,39 @@ class UTXOSet extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
     inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    inputsTotalSats: PropTypes.object.isRequired,
+    inputsTotalSats: PropTypes.shape({}).isRequired,
+  };
+
+  renderInputs = () => {
+    const { inputs, network } = this.props;
+    return inputs.map((input, inputIndex) => {
+      const confirmedStyle = `${styles.utxoTxid}${
+        input.confirmed ? "" : ` ${styles.unconfirmed}`
+      }`;
+      const confirmedTitle = input.confirmed ? "confirmed" : "unconfirmed";
+      return (
+        <TableRow hover key={input.txid}>
+          <TableCell>{inputIndex + 1}</TableCell>
+          <TableCell className={confirmedStyle}>
+            <Copyable text={input.txid}>
+              <code title={confirmedTitle}>{input.txid}</code>
+            </Copyable>
+          </TableCell>
+          <TableCell>
+            <Copyable text={input.index.toString()} />
+          </TableCell>
+          <TableCell>
+            <Copyable text={satoshisToBitcoins(input.amountSats).toString()} />
+          </TableCell>
+          <TableCell>
+            {externalLink(
+              blockExplorerTransactionURL(input.txid, network),
+              <OpenInNew />
+            )}
+          </TableCell>
+        </TableRow>
+      );
+    });
   };
 
   render() {
@@ -62,38 +94,6 @@ class UTXOSet extends React.Component {
       </>
     );
   }
-
-  renderInputs = () => {
-    const { inputs, network } = this.props;
-    return inputs.map((input, inputIndex) => {
-      const confirmedStyle = `${styles.utxoTxid}${
-        input.confirmed ? "" : ` ${styles.unconfirmed}`
-      }`;
-      const confirmedTitle = input.confirmed ? "confirmed" : "unconfirmed";
-      return (
-        <TableRow hover key={input.txid}>
-          <TableCell>{inputIndex + 1}</TableCell>
-          <TableCell className={confirmedStyle}>
-            <Copyable text={input.txid}>
-              <code title={confirmedTitle}>{input.txid}</code>
-            </Copyable>
-          </TableCell>
-          <TableCell>
-            <Copyable text={input.index.toString()} />
-          </TableCell>
-          <TableCell>
-            <Copyable text={satoshisToBitcoins(input.amountSats).toString()} />
-          </TableCell>
-          <TableCell>
-            {externalLink(
-              blockExplorerTransactionURL(input.txid, network),
-              <OpenInNew />
-            )}
-          </TableCell>
-        </TableRow>
-      );
-    });
-  };
 }
 
 function mapStateToProps(state) {

@@ -33,106 +33,37 @@ import styles from "./styles.module.scss";
 
 class OutputEntry extends React.Component {
   static propTypes = {
-    number: PropTypes.number.isRequired,
-    inputsTotalSats: PropTypes.object.isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    address: PropTypes.string.isRequired,
+    addressError: PropTypes.string.isRequired,
+    amount: PropTypes.string.isRequired,
+    amountError: PropTypes.string.isRequired,
+    autoSpend: PropTypes.bool.isRequired,
+    balanceError: PropTypes.string.isRequired,
+    changeNode: PropTypes.shape({
+      multisig: PropTypes.shape({
+        address: PropTypes.string,
+      }),
+    }).isRequired,
+    changeOutputIndex: PropTypes.number.isRequired,
     fee: PropTypes.string.isRequired,
     feeError: PropTypes.string.isRequired,
-    address: PropTypes.string.isRequired,
-    amount: PropTypes.string.isRequired,
-    addressError: PropTypes.string.isRequired,
-    amountError: PropTypes.string.isRequired,
     finalizedOutputs: PropTypes.bool.isRequired,
+    inputsTotalSats: PropTypes.shape({
+      minus: PropTypes.func,
+    }).isRequired,
+    isWallet: PropTypes.bool.isRequired,
+    number: PropTypes.number.isRequired,
+    outputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        amount: PropTypes.number,
+        amountError: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+    remove: PropTypes.func.isRequired,
     setAddress: PropTypes.func.isRequired,
     setAmount: PropTypes.func.isRequired,
-    remove: PropTypes.func.isRequired,
+    setChangeOutput: PropTypes.func.isRequired,
   };
-
-  render() {
-    const {
-      outputs,
-      finalizedOutputs,
-      address,
-      amount,
-      addressError,
-      amountError,
-      changeOutputIndex,
-      autoSpend,
-      isWallet,
-    } = this.props;
-
-    const gridSpacing = isWallet ? 10 : 1;
-
-    return (
-      <Grid container spacing={gridSpacing}>
-        <Grid item xs={7}>
-          <TextField
-            fullWidth
-            placeholder="Address"
-            name="destination"
-            className={styles.outputsFormInput}
-            disabled={finalizedOutputs}
-            onChange={this.handleAddressChange}
-            value={address}
-            error={this.hasAddressError()}
-            helperText={addressError}
-            InputProps={this.renderChangeAdornment()}
-          />
-        </Grid>
-
-        <Grid item xs={3}>
-          <TextField
-            fullWidth
-            placeholder="Amount"
-            className={styles.outputsFormInput}
-            name="amount"
-            disabled={finalizedOutputs}
-            onChange={this.handleAmountChange}
-            value={amount}
-            error={this.hasAmountError()}
-            helperText={amountError}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <FormHelperText>BTC</FormHelperText>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-
-        {this.displayBalanceAction() && (
-          <Grid item xs={1}>
-            <Tooltip
-              title={`${this.balanceAction()} to ${this.autoBalancedAmount().toString()}`}
-              placement="top"
-            >
-              <small>
-                <IconButton onClick={this.handleBalance}>
-                  {this.balanceAction() === "Increase" ? (
-                    <AddCircle />
-                  ) : (
-                    <RemoveCircle />
-                  )}
-                </IconButton>
-              </small>
-            </Tooltip>
-          </Grid>
-        )}
-
-        {!finalizedOutputs &&
-          outputs.length > (changeOutputIndex > 0 && autoSpend ? 2 : 1) && (
-            <Grid item xs={1}>
-              <Tooltip title="Remove Output" placement="top">
-                <IconButton onClick={this.handleDelete}>
-                  <Delete />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          )}
-      </Grid>
-    );
-  }
 
   displayBalanceAction = () => {
     const { isWallet, finalizedOutputs, autoSpend } = this.props;
@@ -303,6 +234,92 @@ class OutputEntry extends React.Component {
     const { number, remove } = this.props;
     remove(number);
   };
+
+  render() {
+    const {
+      outputs,
+      finalizedOutputs,
+      address,
+      amount,
+      addressError,
+      amountError,
+      changeOutputIndex,
+      autoSpend,
+      isWallet,
+    } = this.props;
+
+    const gridSpacing = isWallet ? 10 : 1;
+
+    return (
+      <Grid container spacing={gridSpacing}>
+        <Grid item xs={7}>
+          <TextField
+            fullWidth
+            placeholder="Address"
+            name="destination"
+            className={styles.outputsFormInput}
+            disabled={finalizedOutputs}
+            onChange={this.handleAddressChange}
+            value={address}
+            error={this.hasAddressError()}
+            helperText={addressError}
+            InputProps={this.renderChangeAdornment()}
+          />
+        </Grid>
+
+        <Grid item xs={3}>
+          <TextField
+            fullWidth
+            placeholder="Amount"
+            className={styles.outputsFormInput}
+            name="amount"
+            disabled={finalizedOutputs}
+            onChange={this.handleAmountChange}
+            value={amount}
+            error={this.hasAmountError()}
+            helperText={amountError}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <FormHelperText>BTC</FormHelperText>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+
+        {this.displayBalanceAction() && (
+          <Grid item xs={1}>
+            <Tooltip
+              title={`${this.balanceAction()} to ${this.autoBalancedAmount().toString()}`}
+              placement="top"
+            >
+              <small>
+                <IconButton onClick={this.handleBalance}>
+                  {this.balanceAction() === "Increase" ? (
+                    <AddCircle />
+                  ) : (
+                    <RemoveCircle />
+                  )}
+                </IconButton>
+              </small>
+            </Tooltip>
+          </Grid>
+        )}
+
+        {!finalizedOutputs &&
+          outputs.length > (changeOutputIndex > 0 && autoSpend ? 2 : 1) && (
+            <Grid item xs={1}>
+              <Tooltip title="Remove Output" placement="top">
+                <IconButton onClick={this.handleDelete}>
+                  <Delete />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          )}
+      </Grid>
+    );
+  }
 }
 
 function mapStateToProps(state, ownProps) {

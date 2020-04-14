@@ -15,7 +15,7 @@ import {
 import { fetchAddressUTXOs } from "../../blockchain";
 import {
   updateDepositSliceAction,
-  resetWalletView,
+  resetWalletView as resetWalletViewAction,
 } from "../../actions/walletActions";
 
 // Components
@@ -27,7 +27,6 @@ let depositTimer;
 class WalletDeposit extends React.Component {
   state = {
     address: "",
-    bip32Path: "",
     amount: 0,
     amountError: "",
     showReceived: false,
@@ -36,8 +35,11 @@ class WalletDeposit extends React.Component {
   };
 
   static propTypes = {
-    deposits: PropTypes.object.isRequired,
-    client: PropTypes.object.isRequired,
+    client: PropTypes.shape({}).isRequired,
+    depositNodes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    deposits: PropTypes.shape({}).isRequired,
+    network: PropTypes.string.isRequired,
+    resetWalletView: PropTypes.func.isRequired,
     updateDepositSlice: PropTypes.func.isRequired,
   };
 
@@ -64,7 +66,8 @@ class WalletDeposit extends React.Component {
   };
 
   getNextDepositAddress = () => {
-    this.setState({ depositIndex: this.state.depositIndex + 1 });
+    const { depositIndex } = this.state;
+    this.setState({ depositIndex: depositIndex + 1 });
     setTimeout(this.getDepositAddress, 0);
   };
 
@@ -76,7 +79,6 @@ class WalletDeposit extends React.Component {
       this.setState({
         node: depositableNodes[depositIndex],
         address: depositableNodes[depositIndex].multisig.address,
-        bip32Path: depositableNodes[depositIndex].bip32Path,
         showReceived: false,
       });
 
@@ -84,20 +86,67 @@ class WalletDeposit extends React.Component {
     depositTimer = setInterval(async () => {
       let updates;
       try {
-        updates = await fetchAddressUTXOs(this.state.address, network, client);
+        const { address } = this.state;
+        updates = await fetchAddressUTXOs(address, network, client);
         if (updates && updates.utxos && updates.utxos.length) {
           clearInterval(depositTimer);
           updateDepositSlice(updates);
           this.setState({ showReceived: true });
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e);
       }
     }, 2000);
   };
 
   renderAddress = () => {
-    return this.state.node ? <AddressExpander node={this.state.node} /> : "";
+    const { node } = this.state;
+    return node ? <AddressExpander node={node} /> : "";
+  };
+
+  renderReceived = () => {
+    const { resetWalletView } = this.props;
+    const { depositIndex } = this.state;
+    return (
+      <Box mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.getNextDepositAddress}
+          disabled={depositIndex >= this.getDepositableNodes().length - 1}
+        >
+          Next Address
+        </Button>
+        <Box ml={2} component="span">
+          <Button variant="contained" onClick={resetWalletView}>
+            Return
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
+  handleAmountChange = (event) => {
+    const amount = event.target.value;
+    let error = "";
+
+    if (amount.length && !amount.match(/^[0-9.]+$/)) {
+      error = "Amount must be numeric";
+    }
+    const decimal = amount.split(".");
+    if (decimal.length > 2) {
+      error = "Amount must be numeric";
+    } else if (decimal.length === 2 && decimal[1].length > 8) {
+      error = "Amount must have maximum precision of 8 decimal places";
+    }
+
+    this.setState({ amount: event.target.value, amountError: error });
+  };
+
+  qrString = () => {
+    const { address, amount } = this.state;
+    return `bitcoin:${address}${amount ? `?amount=${amount}` : ""}`;
   };
 
   render() {
@@ -143,50 +192,6 @@ class WalletDeposit extends React.Component {
       </div>
     );
   }
-
-  renderReceived = () => {
-    const { resetWalletView } = this.props;
-    const { depositIndex } = this.state;
-    return (
-      <Box mt={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.getNextDepositAddress}
-          disabled={depositIndex >= this.getDepositableNodes().length - 1}
-        >
-          Next Address
-        </Button>
-        <Box ml={2} component="span">
-          <Button variant="contained" onClick={resetWalletView}>
-            Return
-          </Button>
-        </Box>
-      </Box>
-    );
-  };
-
-  handleAmountChange = (event) => {
-    const amount = event.target.value;
-    let error = "";
-
-    if (amount.length && !amount.match(/^[0-9.]+$/)) {
-      error = "Amount must be numeric";
-    }
-    const decimal = amount.split(".");
-    if (decimal.length > 2) {
-      error = "Amount must be numeric";
-    } else if (decimal.length === 2 && decimal[1].length > 8) {
-      error = "Amount must have maximum precision of 8 decimal places";
-    }
-
-    this.setState({ amount: event.target.value, amountError: error });
-  };
-
-  qrString = () => {
-    const { address, amount } = this.state;
-    return `bitcoin:${address}${amount ? `?amount=${amount}` : ""}`;
-  };
 }
 
 function mapStateToProps(state) {
@@ -200,7 +205,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   updateDepositSlice: updateDepositSliceAction,
-  resetWalletView,
+  resetWalletView: resetWalletViewAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletDeposit);

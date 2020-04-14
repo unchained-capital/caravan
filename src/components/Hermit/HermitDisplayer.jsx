@@ -5,29 +5,23 @@ import PropTypes from "prop-types";
 import QRCode from "qrcode.react";
 import Copyable from "../Copyable";
 
-class HermitDisplayer extends React.Component {
-  static propTypes = {
-    string: PropTypes.string.isRequired,
-    width: PropTypes.number.isRequired,
-  };
+const HermitDisplayer = (props) => {
+  const { width, string } = props;
+  return (
+    <Copyable text={string} newline>
+      <QRCode size={width} value={string} level="L" />
+    </Copyable>
+  );
+};
 
-  static defaultProps = {
-    string: "",
-    width: 120,
-  };
+HermitDisplayer.propTypes = {
+  string: PropTypes.string,
+  width: PropTypes.number,
+};
 
-  state = {
-    errorMessage: "",
-  };
-
-  render = () => {
-    const { width, string } = this.props;
-    return (
-      <Copyable text={string} newline>
-        <QRCode size={width} value={string} level="L" />
-      </Copyable>
-    );
-  };
-}
+HermitDisplayer.defaultProps = {
+  string: "",
+  width: 120,
+};
 
 export default HermitDisplayer;

@@ -16,16 +16,30 @@ import {
   setSignatureImporterMethod,
 } from "../../actions/signatureImporterActions";
 
-import { setSigningKey } from "../../actions/transactionActions";
+import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
 
 // Components
 import SignatureImporter from "../ScriptExplorer/SignatureImporter";
 
 class ExtendedPublicKeySelector extends React.Component {
   static propTypes = {
-    number: PropTypes.number.isRequired,
-    totalSigners: PropTypes.number.isRequired,
     extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+    inputs: PropTypes.arrayOf({
+      bip32Path: PropTypes.string,
+    }).isRequired,
+    onChange: PropTypes.func.isRequired,
+    network: PropTypes.string.isRequired,
+    number: PropTypes.number.isRequired,
+    setBIP32Path: PropTypes.func.isRequired,
+    setMethod: PropTypes.func.isRequired,
+    setSigningKey: PropTypes.func.isRequired,
+    signatureImporters: PropTypes.arrayOf({
+      bip32Path: PropTypes.string,
+      method: PropTypes.string,
+      signature: PropTypes.string,
+    }).isRequired,
+    signingKeys: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    totalSigners: PropTypes.number.isRequired,
   };
 
   state = {
@@ -164,6 +178,18 @@ class ExtendedPublicKeySelector extends React.Component {
     return extendedPublicKeys;
   };
 
+  handleKeyChange = (event) => {
+    const { onChange } = this.props;
+    this.updateKeySelection(event.target.value);
+
+    if (onChange) {
+      const { extendedPublicKeyImporters } = this.props;
+
+      const importer = extendedPublicKeyImporters[event.target.value];
+      onChange(event, importer);
+    }
+  };
+
   updateKeySelection(value) {
     this.setState({ selection: value });
     if (value === "") return;
@@ -183,17 +209,6 @@ class ExtendedPublicKeySelector extends React.Component {
     }
     if (number > 0) setSigningKey(number, value);
   }
-
-  handleKeyChange = (event) => {
-    this.updateKeySelection(event.target.value);
-
-    if (this.props.onChange) {
-      const { extendedPublicKeyImporters } = this.props;
-
-      const importer = extendedPublicKeyImporters[event.target.value];
-      this.props.onChange(event, importer);
-    }
-  };
 }
 
 function mapStateToProps(state) {
@@ -210,7 +225,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   setBIP32Path: setSignatureImporterBIP32Path,
   setMethod: setSignatureImporterMethod,
-  setSigningKey,
+  setSigningKey: setSigningKeyAction,
 };
 
 export default connect(

@@ -35,8 +35,8 @@ class WalletConfirmation extends React.Component {
 
   renderConfirmationInfo = () => {
     const { extendedPublicKeyImporters } = this.props;
-    return Object.values(extendedPublicKeyImporters).map((importer, i) => (
-      <TableRow key={i}>
+    return Object.values(extendedPublicKeyImporters).map((importer) => (
+      <TableRow key={importer.extendedPublicKey}>
         <TableCell>{importer.name}</TableCell>
         <TableCell>
           {importer.method === "text" ? "N/A" : importer.bip32Path}

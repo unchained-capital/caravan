@@ -27,19 +27,25 @@ import InteractionMessages from "../InteractionMessages";
 
 class HardwareWalletSignatureImporter extends React.Component {
   static propTypes = {
-    network: PropTypes.string.isRequired,
-    inputsTotalSats: PropTypes.object.isRequired,
-    inputs: PropTypes.array.isRequired,
-    outputs: PropTypes.array.isRequired,
+    defaultBIP32Path: PropTypes.string.isRequired,
+    disableChangeMethod: PropTypes.func.isRequired,
+    enableChangeMethod: PropTypes.func.isRequired,
+    extendedPublicKeyImporter: PropTypes.shape({
+      method: PropTypes.string,
+    }).isRequired,
     fee: PropTypes.string.isRequired,
-    signatureImporter: PropTypes.shape({}).isRequired,
+    inputsTotalSats: PropTypes.shape({}).isRequired,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    network: PropTypes.string.isRequired,
+    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    resetBIP32Path: PropTypes.func.isRequired,
+    signatureImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+      method: PropTypes.string,
+    }).isRequired,
     signatureImporters: PropTypes.shape({}).isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
     validateAndSetSignature: PropTypes.func.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    defaultBIP32Path: PropTypes.string.isRequired,
-    enableChangeMethod: PropTypes.func.isRequired,
-    disableChangeMethod: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -55,7 +61,7 @@ class HardwareWalletSignatureImporter extends React.Component {
     this.resetBIP32Path();
   };
 
-  interaction = (inConstructor) => {
+  interaction = () => {
     const { signatureImporter, network, inputs, outputs } = this.props;
     const keystore = signatureImporter.method;
     const bip32Paths = inputs.map((input) => {
@@ -169,9 +175,9 @@ class HardwareWalletSignatureImporter extends React.Component {
 
   renderTargets = () => {
     const { outputs } = this.props;
-    return outputs.map((output, i) => {
+    return outputs.map((output) => {
       return (
-        <TableRow hover key={i}>
+        <TableRow hover key={output.address}>
           <TableCell>
             Address <code>{output.address}</code>
           </TableCell>
@@ -273,6 +279,7 @@ class HardwareWalletSignatureImporter extends React.Component {
         this.setState(stateUpdate);
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       this.setState({ signatureError: e.message, status: PENDING });
     }

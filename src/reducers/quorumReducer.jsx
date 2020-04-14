@@ -1,6 +1,5 @@
 import { MAINNET, P2SH, multisigBIP32Root } from "unchained-bitcoin";
 import updateState from "./utils";
-import { SET_TOTAL_SIGNERS } from "../actions/settingsActions";
 import {
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_NAME,
   RESET_EXTENDED_PUBLIC_KEY_IMPORTER_BIP32_PATH,
@@ -10,7 +9,11 @@ import {
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE,
 } from "../actions/extendedPublicKeyImporterActions";
-import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
+import {
+  SET_TOTAL_SIGNERS,
+  SET_NETWORK,
+  SET_ADDRESS_TYPE,
+} from "../actions/settingsActions";
 
 function fingerprint(state) {
   const timestamp = new Date().getTime().toString();
@@ -56,6 +59,15 @@ const initialState = {
   configuring: true,
 };
 
+function setConflict(extendedPublicKeyImporter, state) {
+  if (state.finalizedNetwork) {
+    // eslint-disable-next-line no-param-reassign
+    extendedPublicKeyImporter.conflict =
+      state.finalizedNetwork !== state.network ||
+      state.finalizedAddressType !== state.addressType;
+  }
+}
+
 function updateExtendedPublicKeyImporterState(state, action, field) {
   const extendedPublicKeyImporterChange = {};
   extendedPublicKeyImporterChange[field] = action.value;
@@ -85,7 +97,7 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
 
 function updateTotalSigners(state, action) {
   const totalSigners = action.value;
-  const extendedPublicKeyImporters = {};
+  const extendedPublicKeyImporters = [];
   for (
     let extendedPublicKeyImporterNum = 1;
     extendedPublicKeyImporterNum <= totalSigners;
@@ -106,14 +118,6 @@ function updateTotalSigners(state, action) {
   };
 }
 
-function setConflict(extendedPublicKeyImporter, state) {
-  if (state.finalizedNetwork) {
-    extendedPublicKeyImporter.conflict =
-      state.finalizedNetwork !== state.network ||
-      state.finalizedAddressType !== state.addressType;
-  }
-}
-
 function updateImporterPaths(state, newState, bip32Path) {
   for (
     let extendedPublicKeyImporterNum = 1;
@@ -132,7 +136,7 @@ function updateImporterPaths(state, newState, bip32Path) {
 }
 
 function updateNetwork(state, action) {
-  const addressType = state.addressType;
+  const { addressType } = state;
   const network = action.value;
   const bip32Path = multisigBIP32Root(addressType, network);
   const newState = { ...state, ...{ network, defaultBIP32Path: bip32Path } };
@@ -142,7 +146,7 @@ function updateNetwork(state, action) {
 
 function updateAddressType(state, action) {
   const addressType = action.value;
-  const network = state.network;
+  const { network } = state;
   const bip32Path = multisigBIP32Root(addressType, network);
   const newState = {
     ...state,
@@ -169,6 +173,7 @@ function updateFinalizedSettings(state, action) {
       newState.finalizedNetwork = "";
       newState.finalizedAddressType = "";
       Object.values(newState.extendedPublicKeyImporters).forEach(
+        // eslint-disable-next-line no-param-reassign,no-return-assign
         (importer) => (importer.conflict = false)
       );
     }

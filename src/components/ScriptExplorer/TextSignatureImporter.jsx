@@ -48,7 +48,8 @@ class TextSignatureImporter extends React.Component {
   };
 
   hasError = () => {
-    return this.state.error !== "";
+    const { error } = this.state;
+    return error !== "";
   };
 
   setError = (value) => {

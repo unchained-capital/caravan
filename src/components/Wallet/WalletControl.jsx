@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Tabs, Tab, Box, LinearProgress } from "@material-ui/core";
 import {
-  setWalletModeAction,
-  initialLoadComplete,
+  setWalletModeAction as setWalletModeActionImport,
+  initialLoadComplete as initialLoadCompleteAction,
   WALLET_MODES,
 } from "../../actions/walletActions";
-import { setRequiredSigners } from "../../actions/transactionActions";
+import { setRequiredSigners as setRequiredSignersAction } from "../../actions/transactionActions";
 import { naiveCoinSelection } from "../../utils";
 
 // Components
@@ -24,10 +24,23 @@ class WalletControl extends React.Component {
   scrollRef = React.createRef();
 
   static propTypes = {
-    deposits: PropTypes.object.isRequired,
-    change: PropTypes.object.isRequired,
+    addNode: PropTypes.func.isRequired,
+    change: PropTypes.shape({
+      trailingEmptyNodes: PropTypes.number,
+      fetchUTXOsErrors: PropTypes.number,
+    }).isRequired,
+    deposits: PropTypes.shape({
+      trailingEmptyNodes: PropTypes.number,
+      fetchUTXOsErrors: PropTypes.number,
+    }).isRequired,
+    initialLoadComplete: PropTypes.func.isRequired,
+    nodesLoaded: PropTypes.bool.isRequired,
+    requiredSigners: PropTypes.number.isRequired,
     setMode: PropTypes.func.isRequired,
     setRequiredSigners: PropTypes.func.isRequired,
+    signatureImporters: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    updateNode: PropTypes.func.isRequired,
+    walletMode: PropTypes.number.isRequired,
   };
 
   componentDidMount = () => {
@@ -35,11 +48,12 @@ class WalletControl extends React.Component {
   };
 
   render = () => {
+    const { walletMode } = this.props;
     return (
       <div>
         <Tabs
           ref={this.scrollRef}
-          value={this.props.walletMode}
+          value={walletMode}
           onChange={this.handleModeChange}
           indicatorColor="primary"
           textColor="primary"
@@ -124,9 +138,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setMode: setWalletModeAction,
-  setRequiredSigners,
-  initialLoadComplete,
+  setMode: setWalletModeActionImport,
+  setRequiredSigners: setRequiredSignersAction,
+  initialLoadComplete: initialLoadCompleteAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletControl);

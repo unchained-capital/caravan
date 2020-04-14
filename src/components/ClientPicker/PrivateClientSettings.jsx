@@ -12,28 +12,14 @@ import {
 
 import { externalLink } from "../../utils";
 
-const propTypes = {
-  client: PropTypes.shape({}).isRequired,
-  handleUrlChange: PropTypes.func.isRequired,
-  handleUsernameChange: PropTypes.func.isRequired,
-  handlePasswordChange: PropTypes.func.isRequired,
-  testConnection: PropTypes.func.isRequired,
-  url_error: PropTypes.string,
-  username_error: PropTypes.string,
-  password_error: PropTypes.string,
-  privateNotes: PropTypes.node,
-  connectSuccess: PropTypes.bool.isRequired,
-  connectError: PropTypes.string.isRequired,
-};
-
 const PrivateClientSettings = ({
   handleUrlChange,
   handleUsernameChange,
   handlePasswordChange,
   client,
-  url_error,
-  username_error,
-  password_error,
+  urlError,
+  usernameError,
+  passwordError,
   privateNotes,
   connectSuccess,
   connectError,
@@ -41,7 +27,7 @@ const PrivateClientSettings = ({
 }) => (
   <div>
     <p>
-      A<code>bitcoind</code>
+      A <code>bitcoind</code>
       -compatible client is required to query UTXO data, estimate fees, and
       broadcast transactions.
     </p>
@@ -65,8 +51,8 @@ const PrivateClientSettings = ({
             label="URL"
             value={client.url}
             onChange={handleUrlChange}
-            error={url_error !== ""}
-            helperText={url_error}
+            error={urlError !== ""}
+            helperText={urlError}
           />
         </Grid>
 
@@ -77,8 +63,8 @@ const PrivateClientSettings = ({
             label="Username"
             value={client.username}
             onChange={handleUsernameChange}
-            error={username_error}
-            helperText={username_error}
+            error={usernameError !== ""}
+            helperText={usernameError}
           />
         </Grid>
 
@@ -90,8 +76,8 @@ const PrivateClientSettings = ({
             label="Password"
             value={client.password}
             onChange={handlePasswordChange}
-            error={password_error}
-            helperText={password_error}
+            error={passwordError !== ""}
+            helperText={passwordError}
           />
         </Grid>
         <Grid item>
@@ -111,8 +97,33 @@ const PrivateClientSettings = ({
         </Grid>
       </Grid>
     </form>
-    {typeof privateNotes !== "undefined" && privateNotes}
+    {privateNotes}
   </div>
 );
-PrivateClientSettings.propTypes = propTypes;
+
+PrivateClientSettings.propTypes = {
+  client: PropTypes.shape({
+    url: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+    password: PropTypes.string.isRequired,
+  }).isRequired,
+  handleUrlChange: PropTypes.func.isRequired,
+  handleUsernameChange: PropTypes.func.isRequired,
+  handlePasswordChange: PropTypes.func.isRequired,
+  testConnection: PropTypes.func.isRequired,
+  urlError: PropTypes.string,
+  usernameError: PropTypes.string,
+  passwordError: PropTypes.string,
+  privateNotes: PropTypes.node,
+  connectSuccess: PropTypes.bool.isRequired,
+  connectError: PropTypes.string.isRequired,
+};
+
+PrivateClientSettings.defaultProps = {
+  urlError: "",
+  usernameError: "",
+  passwordError: "",
+  privateNotes: React.createElement("span"),
+};
+
 export default PrivateClientSettings;

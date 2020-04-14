@@ -22,14 +22,14 @@ import {
 import { Speed } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import {
-  addOutput,
-  setOutputAmount,
-  setOutputAddress,
-  setFeeRate,
-  setFee,
-  finalizeOutputs,
-  resetOutputs,
-  setChangeOutputIndex,
+  addOutput as addOutputAction,
+  setOutputAmount as setOutputAmountAction,
+  setOutputAddress as setOutputAddressAction,
+  setFeeRate as setFeeRateAction,
+  setFee as setFeeAction,
+  finalizeOutputs as finalizeOutputsAction,
+  resetOutputs as resetOutputsAction,
+  setChangeOutputIndex as setChangeOutputIndexAction,
 } from "../../actions/transactionActions";
 import { fetchFeeEstimate } from "../../blockchain";
 import OutputEntry from "./OutputEntry";
@@ -38,28 +38,68 @@ import OutputEntry from "./OutputEntry";
 import styles from "./styles.module.scss";
 
 class OutputsForm extends React.Component {
+  static unitLabel(label, options) {
+    let inputProps = {
+      endAdornment: (
+        <InputAdornment position="end">
+          <FormHelperText>{label}</FormHelperText>
+        </InputAdornment>
+      ),
+    };
+    if (options) {
+      inputProps = {
+        ...inputProps,
+        ...options,
+      };
+    }
+    return inputProps;
+  }
+
   titleRef = React.createRef();
 
   outputsTotal = 0;
 
   static propTypes = {
-    network: PropTypes.string.isRequired,
-    client: PropTypes.object.isRequired,
-    inputsTotalSats: PropTypes.object.isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    addOutput: PropTypes.func.isRequired,
+    autoSpend: PropTypes.bool.isRequired,
+    balanceError: PropTypes.string.isRequired,
+    change: PropTypes.shape({
+      nextNode: PropTypes.shape({
+        multisig: PropTypes.shape({
+          address: PropTypes.string,
+        }),
+      }),
+    }).isRequired,
+    changeOutputIndex: PropTypes.number.isRequired,
+    client: PropTypes.shape({}).isRequired,
     fee: PropTypes.string.isRequired,
+    feeError: PropTypes.string.isRequired,
+    feeRateError: PropTypes.string.isRequired,
+    finalizeOutputs: PropTypes.func.isRequired,
     feeRate: PropTypes.string.isRequired,
     finalizedOutputs: PropTypes.bool.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    inputsTotalSats: PropTypes.shape({
+      minus: PropTypes.func,
+    }).isRequired,
+    isWallet: PropTypes.bool.isRequired,
+    network: PropTypes.string.isRequired,
+    outputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        address: PropTypes.string,
+        addressError: PropTypes.string,
+        amount: PropTypes.number,
+        amountError: PropTypes.string,
+      })
+    ).isRequired,
+    resetOutputs: PropTypes.func.isRequired,
     setFeeRate: PropTypes.func.isRequired,
     setFee: PropTypes.func.isRequired,
-    addOutput: PropTypes.func.isRequired,
+    setChangeOutputIndex: PropTypes.func.isRequired,
+    setOutputAddress: PropTypes.func.isRequired,
     setOutputAmount: PropTypes.func.isRequired,
-    resetOutputs: PropTypes.func.isRequired,
-    finalizeOutputs: PropTypes.func.isRequired,
-    feeRateError: PropTypes.string.isRequired,
-    feeError: PropTypes.string.isRequired,
-    balanceError: PropTypes.string.isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
+    updatesComplete: PropTypes.bool.isRequired,
   };
 
   state = {
@@ -85,6 +125,135 @@ class OutputsForm extends React.Component {
       this.titleRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
+  renderOutputs = () => {
+    const { outputs, changeOutputIndex, autoSpend } = this.props;
+    return map(outputs).map((output, i) => (
+      <Box
+        key={output.address}
+        display={autoSpend && changeOutputIndex === i + 1 ? "none" : "block"}
+      >
+        <Grid container>
+          <OutputEntry number={i + 1} />
+        </Grid>
+      </Box>
+    ));
+  };
+
+  inputsTotal = () => {
+    const { inputsTotalSats } = this.props;
+    return satoshisToBitcoins(inputsTotalSats);
+  };
+
+  outputsAndFeeTotal = () => {
+    const { outputs, fee, inputs, updatesComplete } = this.props;
+    if (!inputs.length) return "";
+
+    const total = outputs
+      .map((output) => new BigNumber(output.amount || 0))
+      .reduce(
+        (accumulator, currentValue) => accumulator.plus(currentValue),
+        new BigNumber(0)
+      )
+      .plus(new BigNumber(fee));
+
+    if (updatesComplete) {
+      this.outputsTotal = total;
+      return total;
+    }
+    return this.outputsTotal;
+  };
+
+  hasFeeRateFetchError = () => {
+    const { feeRateFetchError } = this.state;
+    return feeRateFetchError !== "";
+  };
+
+  hasFeeRateError = () => {
+    const { feeRateError } = this.props;
+    return feeRateError !== "";
+  };
+
+  hasFeeError = () => {
+    const { feeError } = this.props;
+    return feeError !== "";
+  };
+
+  hasBalanceError = () => {
+    const { balanceError } = this.props;
+    return balanceError !== "";
+  };
+
+  hasError = () => {
+    return (
+      this.hasFeeRateFetchError() ||
+      this.hasFeeRateError() ||
+      this.hasFeeError() ||
+      this.hasBalanceError()
+    );
+  };
+
+  handleAddOutput = () => {
+    const { addOutput } = this.props;
+    addOutput();
+  };
+
+  handleFeeRateChange = (event) => {
+    const { setFeeRate, inputs } = this.props;
+    if (inputs.length) setFeeRate(event.target.value);
+  };
+
+  handleFeeChange = (event) => {
+    const { setFee } = this.props;
+    setFee(event.target.value);
+  };
+
+  handleFinalize = () => {
+    const { finalizeOutputs } = this.props;
+    finalizeOutputs(true);
+  };
+
+  handleReset = () => {
+    const { resetOutputs, isWallet } = this.props;
+    resetOutputs();
+    if (!isWallet) setTimeout(() => this.initialOutputState(), 0);
+  };
+
+  getFeeEstimate = async () => {
+    const { client, network, setFeeRate } = this.props;
+    let newFeeRate = 1;
+    let feeRateFetchError = "";
+    try {
+      newFeeRate = await fetchFeeEstimate(network, client);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      feeRateFetchError = "There was an error fetching the fee rate.";
+    } finally {
+      setFeeRate(newFeeRate.toString());
+      this.setState({ feeRateFetchError });
+    }
+  };
+
+  gatherSignaturesDisabled = () => {
+    const { finalizedOutputs, outputs, inputs } = this.props;
+    if (inputs.length === 0) return true;
+    if (finalizedOutputs || this.hasError()) {
+      return true;
+    }
+    for (let i = 0; i < outputs.length; i += 1) {
+      const output = outputs[i];
+      if (
+        output.address === "" ||
+        output.amount === "" ||
+        output.addressError !== "" ||
+        output.amountError !== ""
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   async initialOutputState() {
     const {
       inputs,
@@ -100,7 +269,7 @@ class OutputsForm extends React.Component {
     const { inputsTotalSats, fee, setOutputAmount } = this.props;
     const feeSats = bitcoinsToSatoshis(new BigNumber(fee));
     const outputAmount = satoshisToBitcoins(inputsTotalSats.minus(feeSats));
-    // onliy initialize once so we don't lose state
+    // only initialize once so we don't lose state
     if (inputs.length && outputs[0].amount === "")
       setOutputAmount(1, outputAmount.toFixed(8));
 
@@ -220,7 +389,7 @@ class OutputsForm extends React.Component {
                   onChange={this.handleFeeChange}
                   error={this.hasFeeError()}
                   helperText={feeError}
-                  InputProps={this.unitLabel("BTC", {
+                  InputProps={OutputsForm.unitLabel("BTC", {
                     readOnly: true,
                     disableUnderline: true,
                     style: { color: "gray" },
@@ -255,7 +424,7 @@ class OutputsForm extends React.Component {
                   readOnly
                   value={this.inputsTotal().toString()}
                   disabled={finalizedOutputs}
-                  InputProps={this.unitLabel("BTC", { readOnly: true })}
+                  InputProps={OutputsForm.unitLabel("BTC", { readOnly: true })}
                 />
               </Box>
             </Grid>
@@ -272,7 +441,7 @@ class OutputsForm extends React.Component {
                   error={this.hasBalanceError()}
                   disabled={finalizedOutputs}
                   helperText={balanceError}
-                  InputProps={this.unitLabel("BTC", {
+                  InputProps={OutputsForm.unitLabel("BTC", {
                     readOnly: true,
                     disableUnderline: true,
                   })}
@@ -317,151 +486,6 @@ class OutputsForm extends React.Component {
       </React.Fragment>
     );
   }
-
-  unitLabel(label, options) {
-    let inputProps = {
-      endAdornment: (
-        <InputAdornment position="end">
-          <FormHelperText>{label}</FormHelperText>
-        </InputAdornment>
-      ),
-    };
-    if (options) {
-      inputProps = {
-        ...inputProps,
-        ...options,
-      };
-    }
-    return inputProps;
-  }
-
-  renderOutputs = () => {
-    const { outputs, changeOutputIndex, autoSpend } = this.props;
-    return map(outputs).map((output, i) => (
-      <Box
-        key={i}
-        display={autoSpend && changeOutputIndex === i + 1 ? "none" : "block"}
-      >
-        <Grid container>
-          <OutputEntry number={i + 1} />
-        </Grid>
-      </Box>
-    ));
-  };
-
-  inputsTotal = () => {
-    const { inputsTotalSats } = this.props;
-    return satoshisToBitcoins(inputsTotalSats);
-  };
-
-  outputsAndFeeTotal = () => {
-    const { outputs, fee, inputs, updatesComplete } = this.props;
-    if (!inputs.length) return "";
-
-    const total = outputs
-      .map((output) => new BigNumber(output.amount || 0))
-      .reduce(
-        (accumulator, currentValue) => accumulator.plus(currentValue),
-        new BigNumber(0)
-      )
-      .plus(new BigNumber(fee));
-
-    if (updatesComplete) {
-      this.outputsTotal = total;
-      return total;
-    }
-    return this.outputsTotal;
-  };
-
-  hasFeeRateFetchError = () => {
-    const { feeRateFetchError } = this.state;
-    return feeRateFetchError !== "";
-  };
-
-  hasFeeRateError = () => {
-    const { feeRateError } = this.props;
-    return feeRateError !== "";
-  };
-
-  hasFeeError = () => {
-    const { feeError } = this.props;
-    return feeError !== "";
-  };
-
-  hasBalanceError = () => {
-    const { balanceError } = this.props;
-    return balanceError !== "";
-  };
-
-  hasError = () => {
-    return (
-      this.hasFeeRateFetchError() ||
-      this.hasFeeRateError() ||
-      this.hasFeeError() ||
-      this.hasBalanceError()
-    );
-  };
-
-  handleAddOutput = () => {
-    const { addOutput } = this.props;
-    addOutput();
-  };
-
-  handleFeeRateChange = (event) => {
-    const { setFeeRate, inputs } = this.props;
-    if (inputs.length) setFeeRate(event.target.value);
-  };
-
-  handleFeeChange = (event) => {
-    const { setFee } = this.props;
-    setFee(event.target.value);
-  };
-
-  handleFinalize = () => {
-    const { finalizeOutputs } = this.props;
-    finalizeOutputs(true);
-  };
-
-  handleReset = () => {
-    const { resetOutputs, isWallet } = this.props;
-    resetOutputs();
-    if (!isWallet) setTimeout(() => this.initialOutputState(), 0);
-  };
-
-  getFeeEstimate = async () => {
-    const { client, network, setFeeRate } = this.props;
-    let newFeeRate = 1;
-    let feeRateFetchError = "";
-    try {
-      newFeeRate = await fetchFeeEstimate(network, client);
-    } catch (e) {
-      console.error(e);
-      feeRateFetchError = "There was an error fetching the fee rate.";
-    } finally {
-      setFeeRate(newFeeRate.toString());
-      this.setState({ feeRateFetchError });
-    }
-  };
-
-  gatherSignaturesDisabled = () => {
-    const { finalizedOutputs, outputs, inputs } = this.props;
-    if (inputs.length === 0) return true;
-    if (finalizedOutputs || this.hasError()) {
-      return true;
-    }
-    for (let i = 0; i < outputs.length; i += 1) {
-      const output = outputs[i];
-      if (
-        output.address === "" ||
-        output.amount === "" ||
-        output.addressError !== "" ||
-        output.amountError !== ""
-      ) {
-        return true;
-      }
-    }
-    return false;
-  };
 }
 
 function mapStateToProps(state) {
@@ -478,14 +502,14 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  addOutput,
-  setOutputAmount,
-  setFeeRate,
-  setFee,
-  finalizeOutputs,
-  resetOutputs,
-  setChangeOutputIndex,
-  setOutputAddress,
+  addOutput: addOutputAction,
+  setOutputAmount: setOutputAmountAction,
+  setFeeRate: setFeeRateAction,
+  setFee: setFeeAction,
+  finalizeOutputs: finalizeOutputsAction,
+  resetOutputs: resetOutputsAction,
+  setChangeOutputIndex: setChangeOutputIndexAction,
+  setOutputAddress: setOutputAddressAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(OutputsForm);

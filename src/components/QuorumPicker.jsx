@@ -16,8 +16,8 @@ import {
 } from "@material-ui/core";
 import { AddCircle, RemoveCircle } from "@material-ui/icons";
 import {
-  setTotalSigners,
-  setRequiredSigners,
+  setTotalSigners as setTotalSignersAction,
+  setRequiredSigners as setRequiredSignersAction,
 } from "../actions/settingsActions";
 import "./styles.css";
 
@@ -31,85 +31,6 @@ class QuorumPicker extends React.Component {
     setTotalSigners: PropTypes.func.isRequired,
     setRequiredSigners: PropTypes.func.isRequired,
   };
-
-  render() {
-    const { requiredSigners, totalSigners } = this.props;
-
-    return (
-      <Card>
-        <CardHeader title="Quorum" />
-        <CardContent>
-          <Box>
-            <Grid container justify="center">
-              <Grid container item xs={2} direction="column">
-                &nbsp;
-              </Grid>
-
-              <Grid
-                container
-                item
-                xs={3}
-                direction="column"
-                alignItems="center"
-              >
-                <Grid item>{this.renderIncrementRequiredSigners()}</Grid>
-
-                <Grid item>
-                  <Typography variant="h2">{requiredSigners}</Typography>
-                </Grid>
-
-                <Grid item>
-                  <small>
-                    <p>Required</p>
-                  </small>
-                </Grid>
-
-                <Grid item>{this.renderDecrementRequiredSigners()}</Grid>
-              </Grid>
-
-              <Grid
-                container
-                item
-                xs={2}
-                direction="column"
-                alignItems="center"
-                justify="center"
-              >
-                <Grid item>
-                  <Typography variant="h6">of</Typography>
-                </Grid>
-              </Grid>
-
-              <Grid
-                item
-                container
-                xs={3}
-                direction="column"
-                alignItems="center"
-              >
-                <Grid item>{this.renderIncrementTotalSigners()}</Grid>
-
-                <Grid item>
-                  <Typography variant="h2">{totalSigners}</Typography>
-                </Grid>
-
-                <Grid item>
-                  <small>
-                    <p>Total</p>
-                  </small>
-                </Grid>
-
-                <Grid item>{this.renderDecrementTotalSigners()}</Grid>
-              </Grid>
-              <Grid container item xs={2} direction="column">
-                &nbsp;
-              </Grid>
-            </Grid>
-          </Box>
-        </CardContent>
-      </Card>
-    );
-  }
 
   renderIncrementRequiredSigners = () => {
     const { requiredSigners, totalSigners, frozen } = this.props;
@@ -191,6 +112,85 @@ class QuorumPicker extends React.Component {
     setTotalSigners(totalSigners - 1);
     event.preventDefault();
   };
+
+  render() {
+    const { requiredSigners, totalSigners } = this.props;
+
+    return (
+      <Card>
+        <CardHeader title="Quorum" />
+        <CardContent>
+          <Box>
+            <Grid container justify="center">
+              <Grid container item xs={2} direction="column">
+                &nbsp;
+              </Grid>
+
+              <Grid
+                container
+                item
+                xs={3}
+                direction="column"
+                alignItems="center"
+              >
+                <Grid item>{this.renderIncrementRequiredSigners()}</Grid>
+
+                <Grid item>
+                  <Typography variant="h2">{requiredSigners}</Typography>
+                </Grid>
+
+                <Grid item>
+                  <small>
+                    <p>Required</p>
+                  </small>
+                </Grid>
+
+                <Grid item>{this.renderDecrementRequiredSigners()}</Grid>
+              </Grid>
+
+              <Grid
+                container
+                item
+                xs={2}
+                direction="column"
+                alignItems="center"
+                justify="center"
+              >
+                <Grid item>
+                  <Typography variant="h6">of</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid
+                item
+                container
+                xs={3}
+                direction="column"
+                alignItems="center"
+              >
+                <Grid item>{this.renderIncrementTotalSigners()}</Grid>
+
+                <Grid item>
+                  <Typography variant="h2">{totalSigners}</Typography>
+                </Grid>
+
+                <Grid item>
+                  <small>
+                    <p>Total</p>
+                  </small>
+                </Grid>
+
+                <Grid item>{this.renderDecrementTotalSigners()}</Grid>
+              </Grid>
+              <Grid container item xs={2} direction="column">
+                &nbsp;
+              </Grid>
+            </Grid>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 function mapStateToProps(state) {
@@ -198,8 +198,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setTotalSigners,
-  setRequiredSigners,
+  setTotalSigners: setTotalSignersAction,
+  setRequiredSigners: setRequiredSignersAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(QuorumPicker);

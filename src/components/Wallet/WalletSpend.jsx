@@ -16,20 +16,20 @@ import { bitcoinsToSatoshis } from "unchained-bitcoin";
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,
-  resetNodesSpend,
+  resetNodesSpend as resetNodesSpendAction,
 } from "../../actions/walletActions";
 import {
-  setInputs,
-  setFeeRate,
+  setInputs as setInputsAction,
+  setFeeRate as setFeeRateAction,
   addOutput,
   setOutputAddress,
   updateAutoSpendAction,
   setChangeAddressAction,
-  finalizeOutputs,
+  finalizeOutputs as finalizeOutputsAction,
   SPEND_STEP_CREATE,
   SPEND_STEP_PREVIEW,
   SPEND_STEP_SIGN,
-  setSpendStep,
+  setSpendStep as setSpendStepAction,
 } from "../../actions/transactionActions";
 
 // Components
@@ -39,16 +39,60 @@ import WalletSign from "./WalletSign";
 import TransactionPreview from "./TransactionPreview";
 
 class WalletSpend extends React.Component {
-  static propTypes = {
-    addNode: PropTypes.func.isRequired,
-    updateNode: PropTypes.func.isRequired,
-    setFeeRate: PropTypes.func.isRequired,
-    coinSelection: PropTypes.func.isRequired,
-  };
-
   outputsAmount = new BigNumber(0);
 
   feeAmount = new BigNumber(0);
+
+  static propTypes = {
+    addNode: PropTypes.func.isRequired,
+    autoSpend: PropTypes.bool,
+    balanceError: PropTypes.string,
+    changeNode: PropTypes.shape({
+      multisig: PropTypes.shape({
+        address: PropTypes.string,
+      }),
+    }).isRequired,
+    changeNodes: PropTypes.shape({}),
+    changeOutputIndex: PropTypes.number.isRequired,
+    coinSelection: PropTypes.func.isRequired,
+    depositNodes: PropTypes.shape({}),
+    fee: PropTypes.number.isRequired,
+    feeError: PropTypes.string,
+    feeRate: PropTypes.string.isRequired,
+    feeRateError: PropTypes.string,
+    finalizeOutputs: PropTypes.func.isRequired,
+    finalizedOutputs: PropTypes.bool,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    outputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        address: PropTypes.string,
+        amount: PropTypes.number,
+        addressError: PropTypes.string,
+        amountError: PropTypes.string,
+      })
+    ).isRequired,
+    resetNodesSpend: PropTypes.func.isRequired,
+    setChangeAddress: PropTypes.func.isRequired,
+    setInputs: PropTypes.func.isRequired,
+    setFeeRate: PropTypes.func.isRequired,
+    setSpendStep: PropTypes.func.isRequired,
+    spendingStep: PropTypes.number,
+    updateAutoSpend: PropTypes.func.isRequired,
+    updateChangeSlice: PropTypes.func.isRequired,
+    updateDepositSlice: PropTypes.func.isRequired,
+    updateNode: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    autoSpend: false,
+    balanceError: null,
+    changeNodes: {},
+    depositNodes: {},
+    finalizedOutputs: false,
+    feeError: null,
+    feeRateError: null,
+    spendingStep: 0,
+  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.autoSpend) {
@@ -67,72 +111,6 @@ class WalletSpend extends React.Component {
     if (autoSpend) setChangeAddress(changeNode.multisig.address);
     if (finalizedOutputs) finalizeOutputs(false);
   };
-
-  render() {
-    const { autoSpend, updateNode, addNode, spendingStep } = this.props;
-
-    return (
-      <Box style={{ marginLeft: "10%" }}>
-        <Grid container>
-          {spendingStep === SPEND_STEP_SIGN && (
-            <Grid item md={12}>
-              <Box>
-                <WalletSign />
-              </Box>
-            </Grid>
-          )}
-          {spendingStep === SPEND_STEP_CREATE && (
-            <Grid item md={12}>
-              <Box mt={2}>
-                <Box mb={7}>
-                  <div style={{ width: "100%" }}>
-                    <Box display="flex" p={1}>
-                      <Box p={1} flexGrow={1}>
-                        <Typography align="center" variant="h4">
-                          Create Transaction
-                        </Typography>
-                      </Box>
-                      <Box p={1}>{this.renderSpend()}</Box>
-                    </Box>
-                  </div>
-                  <Box component="div" display={autoSpend ? "none" : "block"}>
-                    <NodeSet addNode={addNode} updateNode={updateNode} />
-                  </Box>
-                  <OutputsForm />
-                  <div style={{ width: "100%" }}>
-                    <Box display="flex" p={1}>
-                      <Box p={1} flexGrow={1} mt={8}>
-                        <Typography align="center" variant="h4">
-                          <Button
-                            onClick={this.showPreview}
-                            variant="contained"
-                            color="primary"
-                            disabled={this.previewDisabled()}
-                          >
-                            Preview Transaction
-                          </Button>
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </div>
-                </Box>
-              </Box>
-            </Grid>
-          )}
-          {spendingStep === SPEND_STEP_PREVIEW && (
-            <Grid item md={12}>
-              <Box mt={3}>
-                <TransactionPreview
-                  editTransaction={this.showCreate}
-                  signTransaction={this.signTransaction}
-                />
-              </Box>
-            </Grid>
-          )}
-        </Grid>
-      </Box>
-    );
-  }
 
   previewDisabled = () => {
     const {
@@ -161,19 +139,22 @@ class WalletSpend extends React.Component {
     return false;
   };
 
-  signTransaction = () => this.props.setSpendStep(SPEND_STEP_SIGN);
+  signTransaction = () => {
+    const { setSpendStep } = this.props;
+    setSpendStep(SPEND_STEP_SIGN);
+  };
 
   showPreview = () => {
-    const { finalizeOutputs } = this.props;
+    const { finalizeOutputs, setSpendStep } = this.props;
 
-    this.props.setSpendStep(SPEND_STEP_PREVIEW);
+    setSpendStep(SPEND_STEP_PREVIEW);
     finalizeOutputs(true);
   };
 
   showCreate = () => {
-    const { finalizeOutputs } = this.props;
+    const { finalizeOutputs, setSpendStep } = this.props;
 
-    this.props.setSpendStep(SPEND_STEP_CREATE);
+    setSpendStep(SPEND_STEP_CREATE);
     finalizeOutputs(false);
   };
 
@@ -251,6 +232,72 @@ class WalletSpend extends React.Component {
     setInputs(selectedInputs);
     if (changeOutputIndex > 0 || !autoSpend) setFeeRate(feeRate); // recalulate fee
   };
+
+  render() {
+    const { autoSpend, updateNode, addNode, spendingStep } = this.props;
+
+    return (
+      <Box style={{ marginLeft: "10%" }}>
+        <Grid container>
+          {spendingStep === SPEND_STEP_SIGN && (
+            <Grid item md={12}>
+              <Box>
+                <WalletSign />
+              </Box>
+            </Grid>
+          )}
+          {spendingStep === SPEND_STEP_CREATE && (
+            <Grid item md={12}>
+              <Box mt={2}>
+                <Box mb={7}>
+                  <div style={{ width: "100%" }}>
+                    <Box display="flex" p={1}>
+                      <Box p={1} flexGrow={1}>
+                        <Typography align="center" variant="h4">
+                          Create Transaction
+                        </Typography>
+                      </Box>
+                      <Box p={1}>{this.renderSpend()}</Box>
+                    </Box>
+                  </div>
+                  <Box component="div" display={autoSpend ? "none" : "block"}>
+                    <NodeSet addNode={addNode} updateNode={updateNode} />
+                  </Box>
+                  <OutputsForm />
+                  <div style={{ width: "100%" }}>
+                    <Box display="flex" p={1}>
+                      <Box p={1} flexGrow={1} mt={8}>
+                        <Typography align="center" variant="h4">
+                          <Button
+                            onClick={this.showPreview}
+                            variant="contained"
+                            color="primary"
+                            disabled={this.previewDisabled()}
+                          >
+                            Preview Transaction
+                          </Button>
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </div>
+                </Box>
+              </Box>
+            </Grid>
+          )}
+          {spendingStep === SPEND_STEP_PREVIEW && (
+            <Grid item md={12}>
+              <Box mt={3}>
+                <TransactionPreview
+                  editTransaction={this.showCreate}
+                  signTransaction={this.signTransaction}
+                />
+              </Box>
+            </Grid>
+          )}
+        </Grid>
+      </Box>
+    );
+  }
 }
 
 function mapStateToProps(state) {
@@ -265,16 +312,16 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   updateAutoSpend: updateAutoSpendAction,
-  setInputs,
+  setInputs: setInputsAction,
   updateChangeSlice: updateChangeSliceAction,
   updateDepositSlice: updateDepositSliceAction,
   setAddress: setOutputAddress,
-  resetNodesSpend,
-  setFeeRate,
+  resetNodesSpend: resetNodesSpendAction,
+  setFeeRate: setFeeRateAction,
   addOutput,
-  finalizeOutputs,
+  finalizeOutputs: finalizeOutputsAction,
   setChangeAddress: setChangeAddressAction,
-  setSpendStep,
+  setSpendStep: setSpendStepAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);

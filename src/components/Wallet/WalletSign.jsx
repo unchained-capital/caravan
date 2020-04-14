@@ -3,34 +3,51 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 // Components
-import { Box, Button, Link } from "@material-ui/core";
+import { Box, Button } from "@material-ui/core";
 import Transaction from "../ScriptExplorer/Transaction";
 import ExtendedPublicKeySelector from "./ExtendedPublicKeySelector";
 
 // Actions
 import {
-  finalizeOutputs,
-  setRequiredSigners,
-  resetTransaction,
-  setSpendStep,
+  finalizeOutputs as finalizeOutputsAction,
+  setRequiredSigners as setRequiredSignersAction,
+  resetTransaction as resetTransactionAction,
+  setSpendStep as setSpendStepAction,
   SPEND_STEP_CREATE,
 } from "../../actions/transactionActions";
 import {
-  spendNodes,
-  resetWalletView,
-  updateChangeSliceAction,
+  spendNodes as spendNodesAction,
+  resetWalletView as resetWalletViewAction,
+  updateChangeSliceAction as updateChangeSliceActionImport,
 } from "../../actions/walletActions";
 import UnsignedTransaction from "../UnsignedTransaction";
 
 class WalletSign extends React.Component {
   static propTypes = {
-    transaction: PropTypes.object.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    changeNode: PropTypes.shape({}).isRequired,
+    changeNode: PropTypes.shape({
+      bip32Path: PropTypes.string,
+      multisig: PropTypes.shape({
+        address: PropTypes.string,
+      }),
+    }).isRequired,
     finalizeOutputs: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-    spendNodes: PropTypes.func.isRequired,
+    requiredSigners: PropTypes.shape({}).isRequired,
     resetTransaction: PropTypes.func.isRequired,
+    resetWalletView: PropTypes.func.isRequired,
+    setRequiredSigners: PropTypes.func.isRequired,
+    setSpendStep: PropTypes.func.isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
+    spendNodes: PropTypes.func.isRequired,
+    transaction: PropTypes.shape({
+      outputs: PropTypes.arrayOf(
+        PropTypes.shape({
+          address: PropTypes.string,
+          amountSats: PropTypes.number,
+        })
+      ),
+      txid: PropTypes.string,
+    }).isRequired,
+    updateChangeNode: PropTypes.func.isRequired,
   };
 
   state = {
@@ -38,11 +55,12 @@ class WalletSign extends React.Component {
   };
 
   render = () => {
+    const { spent } = this.state;
     return (
       <Box>
-        <Link href="#" onClick={this.handleCancel}>
+        <Button href="#" onClick={this.handleCancel}>
           Edit Transaction
-        </Link>
+        </Button>
 
         <Box mt={2}>
           <UnsignedTransaction />
@@ -50,7 +68,7 @@ class WalletSign extends React.Component {
         {this.renderKeySelectors()}
 
         <Box mt={2}>
-          <Link
+          <Button
             href="#"
             onClick={(e) => {
               e.preventDefault();
@@ -58,7 +76,7 @@ class WalletSign extends React.Component {
             }}
           >
             Abandon Transaction
-          </Link>
+          </Button>
         </Box>
 
         {this.signaturesFinalized() && (
@@ -67,7 +85,7 @@ class WalletSign extends React.Component {
           </Box>
         )}
 
-        {(this.transactionFinalized() || this.state.spent) && (
+        {(this.transactionFinalized() || spent) && (
           <Button
             variant="contained"
             color="primary"
@@ -115,8 +133,9 @@ class WalletSign extends React.Component {
       updateChangeNode,
     } = this.props;
 
-    const txid = transaction.txid;
-    if (txid !== "" && !this.state.spent) {
+    const { txid } = transaction;
+    const { spent } = this.state;
+    if (txid !== "" && !spent) {
       this.setState({ spent: true });
       const changeAddress = changeNode.multisig.address;
       for (let i = 0; i < transaction.outputs.length; i += 1) {
@@ -167,13 +186,13 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  finalizeOutputs,
-  setRequiredSigners,
-  spendNodes,
-  resetTransaction,
-  resetWalletView,
-  updateChangeNode: updateChangeSliceAction,
-  setSpendStep,
+  finalizeOutputs: finalizeOutputsAction,
+  setRequiredSigners: setRequiredSignersAction,
+  spendNodes: spendNodesAction,
+  resetTransaction: resetTransactionAction,
+  resetWalletView: resetWalletViewAction,
+  updateChangeNode: updateChangeSliceActionImport,
+  setSpendStep: setSpendStepAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSign);

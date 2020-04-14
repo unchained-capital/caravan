@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
   AppBar,
   Toolbar,
@@ -31,6 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// This needs to be a class component because it uses a ref
+// eslint-disable-next-line react/prefer-stateless-function
 class NavItem extends React.Component {
   render() {
     const { href, title, classes, handleClose } = this.props;
@@ -43,6 +46,16 @@ class NavItem extends React.Component {
     );
   }
 }
+
+NavItem.propTypes = {
+  href: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  classes: PropTypes.shape({
+    menuLink: PropTypes.string.isRequired,
+    menuItem: PropTypes.string.isRequired,
+  }).isRequired,
+  handleClose: PropTypes.func.isRequired,
+};
 
 const Navbar = () => {
   const classes = useStyles();
@@ -84,16 +97,15 @@ const Navbar = () => {
             open={Boolean(anchorEl)}
             onClose={() => setAnchorEl(null)}
           >
-            {menuItems.map(({ href, title }, index) => (
+            {menuItems.map(({ href, title }) => (
               <NavItem
                 href={href}
                 title={title}
                 classes={classes}
-                key={index}
+                key={href}
                 handleClose={() => setAnchorEl(null)}
               />
             ))}
-            )
           </Menu>
         </Toolbar>
       </AppBar>

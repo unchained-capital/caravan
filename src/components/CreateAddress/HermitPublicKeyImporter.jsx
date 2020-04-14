@@ -9,7 +9,10 @@ import HermitReader from "../Hermit/HermitReader";
 
 class HermitPublicKeyImporter extends React.Component {
   static propTypes = {
-    publicKeyImporter: PropTypes.shape({}).isRequired,
+    network: PropTypes.string.isRequired,
+    publicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+    }).isRequired,
     validateAndSetPublicKey: PropTypes.func.isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
     reset: PropTypes.func.isRequired,
@@ -64,9 +67,9 @@ class HermitPublicKeyImporter extends React.Component {
       enableChangeMethod,
     } = this.props;
     enableChangeMethod();
-    const { pubkey, bip32_path } = data;
+    const { pubkey, bip32Path } = data;
     validateAndSetBIP32Path(
-      bip32_path,
+      bip32Path,
       () => {
         validateAndSetPublicKey(pubkey, this.setError);
       },

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { SvgIcon } from "@material-ui/core";
 import { MAINNET } from "unchained-bitcoin";
 
-const BitcoinIcon = ({ network = MAINNET }) => (
+const BitcoinIcon = ({ network }) => (
   <SvgIcon htmlColor={network === MAINNET ? "orange" : "grey"}>
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,6 +25,10 @@ const BitcoinIcon = ({ network = MAINNET }) => (
 
 BitcoinIcon.propTypes = {
   network: PropTypes.string,
+};
+
+BitcoinIcon.defaultProps = {
+  network: MAINNET,
 };
 
 export default BitcoinIcon;

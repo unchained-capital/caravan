@@ -99,9 +99,9 @@ const Help = () => (
               </p>
 
               <p>
-                If you don't want to or cannot run your own full node, Caravan
-                defaults to using the freely available API at
-                <code>blockstream.info</code>.
+                If you don&apos;t want to or cannot run your own full node,
+                Caravan defaults to using the freely available API at
+                <code> blockstream.info</code>.
               </p>
             </CardContent>
           </Card>

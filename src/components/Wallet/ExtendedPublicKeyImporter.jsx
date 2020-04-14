@@ -45,52 +45,32 @@ const TEXT = "text";
 
 class ExtendedPublicKeyImporter extends React.Component {
   static propTypes = {
+    addressType: PropTypes.string.isRequired,
+    defaultBIP32Path: PropTypes.string.isRequired,
+    extendedPublicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+      conflict: PropTypes.bool,
+      extendedPublicKey: PropTypes.string,
+      finalized: PropTypes.bool,
+      name: PropTypes.string,
+      method: PropTypes.string,
+    }).isRequired,
+    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+    finalizedNetwork: PropTypes.string.isRequired,
     network: PropTypes.string.isRequired,
     number: PropTypes.number.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({}).isRequired,
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    defaultBIP32Path: PropTypes.string.isRequired,
-    addressType: PropTypes.string.isRequired,
-    setName: PropTypes.func.isRequired,
-    setBIP32Path: PropTypes.func.isRequired,
     resetBIP32Path: PropTypes.func.isRequired,
-    setMethod: PropTypes.func.isRequired,
+    setBIP32Path: PropTypes.func.isRequired,
     setExtendedPublicKey: PropTypes.func.isRequired,
     setFinalized: PropTypes.func.isRequired,
+    setName: PropTypes.func.isRequired,
+    setMethod: PropTypes.func.isRequired,
   };
 
   state = {
     disableChangeMethod: false,
     conversionMessage: "",
   };
-
-  render() {
-    const { extendedPublicKeyImporter, finalizedNetwork, network } = this.props;
-    const hasConflict =
-      extendedPublicKeyImporter.method /* && extendedPublicKeyImporter.method !== TEXT */ &&
-      extendedPublicKeyImporter.conflict;
-    let conflictMessage = "";
-    if (hasConflict) {
-      if (finalizedNetwork !== network) {
-        conflictMessage =
-          "Warning, you can not mix xpub and tpub.  Do not proceed without resolving by either removing conflicting imported keys or returning network type to original state!";
-      } else {
-        conflictMessage =
-          "Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!";
-      }
-    }
-    return (
-      <Card>
-        <CardHeader title={this.title()} />
-        <CardContent>
-          {hasConflict && <Conflict message={conflictMessage} />}
-          {extendedPublicKeyImporter.finalized
-            ? this.renderExtendedPublicKey()
-            : this.renderImport()}
-        </CardContent>
-      </Card>
-    );
-  }
 
   title = () => {
     const { number, extendedPublicKeyImporter, setName } = this.props;
@@ -228,22 +208,6 @@ class ExtendedPublicKeyImporter extends React.Component {
     if (resetBIP32Path) {
       this.resetBIP32Path();
     }
-  };
-
-  //
-  // Position
-  //
-
-  moveUp = (event) => {
-    const { moveUp, number } = this.props;
-    event.preventDefault();
-    moveUp(number);
-  };
-
-  moveDown = (event) => {
-    const { moveDown, number } = this.props;
-    event.preventDefault();
-    moveDown(number);
   };
 
   //
@@ -392,9 +356,40 @@ class ExtendedPublicKeyImporter extends React.Component {
             )} to ${actualExtendedPublicKey.slice(0, 4)}`;
       this.setState({ conversionMessage });
       this.finalize();
-      callback && callback();
+
+      if (callback) {
+        callback();
+      }
     }
   };
+
+  render() {
+    const { extendedPublicKeyImporter, finalizedNetwork, network } = this.props;
+    const hasConflict =
+      extendedPublicKeyImporter.method /* && extendedPublicKeyImporter.method !== TEXT */ &&
+      extendedPublicKeyImporter.conflict;
+    let conflictMessage = "";
+    if (hasConflict) {
+      if (finalizedNetwork !== network) {
+        conflictMessage =
+          "Warning, you can not mix xpub and tpub.  Do not proceed without resolving by either removing conflicting imported keys or returning network type to original state!";
+      } else {
+        conflictMessage =
+          "Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!";
+      }
+    }
+    return (
+      <Card>
+        <CardHeader title={this.title()} />
+        <CardContent>
+          {hasConflict && <Conflict message={conflictMessage} />}
+          {extendedPublicKeyImporter.finalized
+            ? this.renderExtendedPublicKey()
+            : this.renderImport()}
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 function mapStateToProps(state, ownProps) {

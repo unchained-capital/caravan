@@ -19,14 +19,12 @@ const DEFAULT_BIP32_PATH = "m/0";
 class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({}).isRequired,
+    extendedPublicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+    }).isRequired,
     extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
     validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
-  };
-
-  componentDidMount = () => {
-    this.setBIP32PathToDefault();
   };
 
   state = {
@@ -34,6 +32,10 @@ class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
     extendedPublicKey: "",
     extendedPublicKeyError: "",
     bip32PathError: "",
+  };
+
+  componentDidMount = () => {
+    this.setBIP32PathToDefault();
   };
 
   render = () => {
@@ -133,11 +135,13 @@ class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
   };
 
   hasBIP32PathError = () => {
-    return this.state.bip32PathError !== "";
+    const { bip32PathError } = this.state;
+    return bip32PathError !== "";
   };
 
   hasExtendedPublicKeyError = () => {
-    return this.state.extendedPublicKeyError !== "";
+    const { extendedPublicKeyError } = this.state;
+    return extendedPublicKeyError !== "";
   };
 
   hasError = () => this.hasBIP32PathError() || this.hasExtendedPublicKeyError();

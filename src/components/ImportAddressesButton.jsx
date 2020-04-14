@@ -69,6 +69,7 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
         // e.status 500 e.data.error.message
         const status = (e.response && e.response.status) || "unknown";
         const errorMessage =
+          // eslint-disable-next-line no-nested-ternary
           status === 401
             ? e.response.statusText
             : status === 500
@@ -177,7 +178,12 @@ however to know if an address has been used prior to import, a rescan needs to t
 ImportAddressesButton.propTypes = {
   addresses: PropTypes.arrayOf(PropTypes.string),
   importCallback: PropTypes.func,
-  client: PropTypes.object.isRequired,
+  client: PropTypes.shape({}).isRequired,
+};
+
+ImportAddressesButton.defaultProps = {
+  addresses: [],
+  importCallback() {},
 };
 
 export default ImportAddressesButton;

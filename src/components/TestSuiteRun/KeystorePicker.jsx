@@ -1,5 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+
 import {
   TREZOR,
   LEDGER,
@@ -19,13 +21,22 @@ import {
   TextField,
   Button,
 } from "@material-ui/core";
-import { setKeystore, setKeystoreStatus } from "../../actions/keystoreActions";
-import { setErrorNotification } from "../../actions/errorNotificationActions";
+import * as keystoreActions from "../../actions/keystoreActions";
+import { setErrorNotification as setErrorNotificationAction } from "../../actions/errorNotificationActions";
 
 import { KeystoreNote } from "./Note";
 import InteractionMessages from "../InteractionMessages";
 
 class KeystorePickerBase extends React.Component {
+  static propTypes = {
+    setErrorNotification: PropTypes.func.isRequired,
+    setKeystore: PropTypes.func.isRequired,
+    setKeystoreStatus: PropTypes.func.isRequired,
+    status: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    version: PropTypes.string.isRequired,
+  };
+
   detectVersion = async () => {
     const {
       type,
@@ -40,6 +51,7 @@ class KeystorePickerBase extends React.Component {
         setKeystore(type, result.spec);
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       setErrorNotification(e.message);
     }
@@ -125,9 +137,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setKeystore,
-  setKeystoreStatus,
-  setErrorNotification,
+  ...keystoreActions,
+  setErrorNotification: setErrorNotificationAction,
 };
 
 const KeystorePicker = connect(
@@ -135,4 +146,4 @@ const KeystorePicker = connect(
   mapDispatchToProps
 )(KeystorePickerBase);
 
-export { KeystorePicker };
+export default KeystorePicker;

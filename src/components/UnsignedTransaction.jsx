@@ -7,7 +7,9 @@ import Copyable from "./Copyable";
 
 class UnsignedTransaction extends React.Component {
   static propTypes = {
-    unsignedTransaction: PropTypes.object.isRequired,
+    unsignedTransaction: PropTypes.shape({
+      toHex: PropTypes.func,
+    }).isRequired,
   };
 
   state = {

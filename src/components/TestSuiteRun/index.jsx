@@ -1,5 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+
 import { PENDING, ACTIVE } from "unchained-wallets";
 
 import {
@@ -12,14 +14,11 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
-import {
-  startTestSuiteRun,
-  setCurrentTestRun,
-} from "../../actions/testSuiteRunActions";
-import { KeystorePicker } from "./KeystorePicker";
-import { TestSuiteRunSummary } from "./TestSuiteRunSummary";
+import * as testSuiteRunActions from "../../actions/testSuiteRunActions";
+import KeystorePicker from "./KeystorePicker";
+import TestSuiteRunSummary from "./TestSuiteRunSummary";
 import TestRun from "./TestRun";
-import { Seed } from "./Seed";
+import Seed from "./Seed";
 
 const SPACEBAR_CODE = 32;
 const LEFT_ARROW_CODE = 37;
@@ -28,6 +27,22 @@ const RIGHT_ARROW_CODE = 39;
 const DOWN_ARROW_CODE = 40;
 
 class TestSuiteRunBase extends React.Component {
+  static propTypes = {
+    keystore: PropTypes.shape({
+      note: PropTypes.string,
+      type: PropTypes.string,
+      status: PropTypes.string,
+      version: PropTypes.string,
+    }).isRequired,
+    setCurrentTestRun: PropTypes.func.isRequired,
+    startTestSuiteRun: PropTypes.func.isRequired,
+    testSuiteRun: PropTypes.shape({
+      currentTestRunIndex: PropTypes.number,
+      started: PropTypes.bool,
+      testRuns: PropTypes.arrayOf(PropTypes.shape({})),
+    }).isRequired,
+  };
+
   componentDidMount = () => {
     document.addEventListener("keydown", this.handleKeyDown);
   };
@@ -227,7 +242,7 @@ class TestSuiteRunBase extends React.Component {
     );
   };
 
-  previousTest = (event) => {
+  previousTest = () => {
     const { testSuiteRun, setCurrentTestRun } = this.props;
     if (testSuiteRun.currentTestRunIndex < 1) {
       return;
@@ -235,7 +250,7 @@ class TestSuiteRunBase extends React.Component {
     setCurrentTestRun(testSuiteRun.currentTestRunIndex - 1);
   };
 
-  nextTest = (event) => {
+  nextTest = () => {
     const { testSuiteRun, setCurrentTestRun } = this.props;
     if (testSuiteRun.currentTestRunIndex === testSuiteRun.testRuns.length - 1) {
       return;
@@ -252,8 +267,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  startTestSuiteRun,
-  setCurrentTestRun,
+  ...testSuiteRunActions,
 };
 
 const TestSuiteRun = connect(
@@ -261,4 +275,4 @@ const TestSuiteRun = connect(
   mapDispatchToProps
 )(TestSuiteRunBase);
 
-export { TestSuiteRun };
+export default TestSuiteRun;

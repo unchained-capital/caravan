@@ -14,9 +14,9 @@ const initialState = {
   url: "",
   username: "",
   password: "",
-  url_error: "",
-  username_error: "",
-  password_error: "",
+  urlError: "",
+  usernameError: "",
+  passwordError: "",
   status: "unknown",
 };
 
@@ -31,11 +31,11 @@ export default (state = initialState, action) => {
     case SET_CLIENT_PASSWORD:
       return updateState(state, { password: action.value });
     case SET_CLIENT_URL_ERROR:
-      return updateState(state, { url_error: action.value });
+      return updateState(state, { urlError: action.value });
     case SET_CLIENT_USERNAME_ERROR:
-      return updateState(state, { username_error: action.value });
+      return updateState(state, { usernameError: action.value });
     case SET_CLIENT_PASSWORD_ERROR:
-      return updateState(state, { password_error: action.value });
+      return updateState(state, { passwordError: action.value });
 
     default:
       return state;

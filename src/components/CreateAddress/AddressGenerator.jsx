@@ -16,18 +16,17 @@ import {
   CardContent,
   FormHelperText,
 } from "@material-ui/core";
-import { externalLink } from "../../utils";
+import { externalLink, downloadFile } from "../../utils";
 
 // Actions
 import {
-  sortPublicKeyImporters,
-  setMultisigAddress,
+  sortPublicKeyImporters as sortPublicKeyImportersAction,
+  setMultisigAddress as setMultisigAddressAction,
 } from "../../actions/publicKeyImporterActions";
 
 // Components
 import MultisigDetails from "../MultisigDetails";
 import Conflict from "./Conflict";
-import { downloadFile } from "../../utils";
 
 class AddressGenerator extends React.Component {
   static propTypes = {
@@ -36,90 +35,8 @@ class AddressGenerator extends React.Component {
     requiredSigners: PropTypes.number.isRequired,
     addressType: PropTypes.string.isRequired,
     publicKeyImporters: PropTypes.shape({}).isRequired,
-    fingerprint: PropTypes.string.isRequired,
     sortPublicKeyImporters: PropTypes.func.isRequired,
-  };
-
-  render() {
-    return (
-      <Card>
-        <CardHeader title={this.title()} />
-        <CardContent>{this.body()}</CardContent>
-      </Card>
-    );
-  }
-
-  body() {
-    const { totalSigners } = this.props;
-    if (this.publicKeyCount() === totalSigners) {
-      const multisig = this.generateMultisig();
-
-      const canonicallySorted = this.publicKeysAreCanonicallySorted();
-      return (
-        <div>
-          {this.isInConflict() && <Conflict />}
-          {!canonicallySorted && (
-            <Grid container justify="space-between">
-              <Grid item md={8}>
-                <FormHelperText error>
-                  WARNING: These public keys are not in the standard{" "}
-                  {externalLink(
-                    "https://github.com/bitcoin/bips/blob/master/bip-0067.mediawiki",
-                    "BIP67 order"
-                  )}
-                  .
-                </FormHelperText>
-              </Grid>
-              <Grid item md={4}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={this.canonicallySortPublicKeys}
-                >
-                  Sort Public Keys
-                </Button>
-              </Grid>
-            </Grid>
-          )}
-
-          <Box mt={2}>
-            <MultisigDetails multisig={multisig} />
-          </Box>
-
-          <Box mt={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.downloadAddressDetails}
-            >
-              Download Address Details
-            </Button>
-          </Box>
-        </div>
-      );
-    }
-    return (
-      <p>
-        {`Once you have imported all ${totalSigners} public keys, `}
-        {"your address details will be displayed here."}
-      </p>
-    );
-  }
-
-  title = () => {
-    const { totalSigners, requiredSigners, addressType } = this.props;
-    return (
-      <Grid container justify="space-between">
-        <Grid item>
-          {requiredSigners}
-          -of-
-          {totalSigners} Multisig{addressType}{" "}
-        </Grid>
-        <Grid item>
-          <small>{`Public Keys: ${this.publicKeyCount()}/${totalSigners}`}</small>
-        </Grid>
-      </Grid>
-    );
+    setMultisigAddress: PropTypes.func.isRequired,
   };
 
   isInConflict = () => {
@@ -247,6 +164,88 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
         : publicKeyImporter.bip32Path;
     return `  * ${publicKeyImporter.name}: ${bip32Path}: ${publicKeyImporter.publicKey}`;
   };
+
+  title = () => {
+    const { totalSigners, requiredSigners, addressType } = this.props;
+    return (
+      <Grid container justify="space-between">
+        <Grid item>
+          {requiredSigners}
+          -of-
+          {totalSigners} Multisig{addressType}{" "}
+        </Grid>
+        <Grid item>
+          <small>{`Public Keys: ${this.publicKeyCount()}/${totalSigners}`}</small>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  body() {
+    const { totalSigners } = this.props;
+    if (this.publicKeyCount() === totalSigners) {
+      const multisig = this.generateMultisig();
+
+      const canonicallySorted = this.publicKeysAreCanonicallySorted();
+      return (
+        <div>
+          {this.isInConflict() && <Conflict />}
+          {!canonicallySorted && (
+            <Grid container justify="space-between">
+              <Grid item md={8}>
+                <FormHelperText error>
+                  WARNING: These public keys are not in the standard{" "}
+                  {externalLink(
+                    "https://github.com/bitcoin/bips/blob/master/bip-0067.mediawiki",
+                    "BIP67 order"
+                  )}
+                  .
+                </FormHelperText>
+              </Grid>
+              <Grid item md={4}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.canonicallySortPublicKeys}
+                >
+                  Sort Public Keys
+                </Button>
+              </Grid>
+            </Grid>
+          )}
+
+          <Box mt={2}>
+            <MultisigDetails multisig={multisig} />
+          </Box>
+
+          <Box mt={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.downloadAddressDetails}
+            >
+              Download Address Details
+            </Button>
+          </Box>
+        </div>
+      );
+    }
+    return (
+      <p>
+        {`Once you have imported all ${totalSigners} public keys, `}
+        {"your address details will be displayed here."}
+      </p>
+    );
+  }
+
+  render() {
+    return (
+      <Card>
+        <CardHeader title={this.title()} />
+        <CardContent>{this.body()}</CardContent>
+      </Card>
+    );
+  }
 }
 
 function mapStateToProps(state) {
@@ -257,8 +256,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  sortPublicKeyImporters,
-  setMultisigAddress,
+  sortPublicKeyImporters: sortPublicKeyImportersAction,
+  setMultisigAddress: setMultisigAddressAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddressGenerator);

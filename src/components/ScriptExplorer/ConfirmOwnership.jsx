@@ -41,16 +41,19 @@ class ConfirmOwnership extends React.Component {
   titleRef = React.createRef();
 
   static propTypes = {
-    publicKeyImporter: PropTypes.shape({}).isRequired,
-    addressType: PropTypes.string.isRequired,
+    defaultBIP32Path: PropTypes.string.isRequired,
     network: PropTypes.string.isRequired,
-    publicKeys: PropTypes.array.isRequired,
-    address: PropTypes.string.isRequired,
+    publicKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
+    publicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+      method: PropTypes.string,
+      publicKey: PropTypes.string,
+    }).isRequired,
+    reset: PropTypes.func.isRequired,
+    resetBIP32Path: PropTypes.func.isRequired,
     setMethod: PropTypes.func.isRequired,
     setPublicKey: PropTypes.func.isRequired,
     setBIP32Path: PropTypes.func.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    reset: PropTypes.func.isRequired,
   };
 
   state = {
@@ -68,90 +71,6 @@ class ConfirmOwnership extends React.Component {
 
   scrollToTitle = () => {
     this.titleRef.current.scrollIntoView({ behavior: "smooth" });
-  };
-
-  render() {
-    const { publicKeyImporter } = this.props;
-    const { disableChangeMethod } = this.state;
-    const labelId = "public-key-importer-select-label";
-    return (
-      <Card>
-        <CardHeader ref={this.titleRef} title="Confirm Ownership" />
-        <CardContent>
-          <form>
-            <p>How will you confirm your ownership of this address?</p>
-
-            <FormControl fullWidth>
-              <InputLabel id={labelId}>Select Method</InputLabel>
-
-              <Select
-                labelId
-                id="public-key-importer-select"
-                disabled={disableChangeMethod}
-                value={publicKeyImporter.method}
-                onChange={this.handleMethodChange}
-              >
-                <MenuItem value="">{"< Select method >"}</MenuItem>
-                <MenuItem value={TREZOR}>Trezor</MenuItem>
-                <MenuItem value={LEDGER}>Ledger</MenuItem>
-                <MenuItem value={HERMIT}>Hermit</MenuItem>
-              </Select>
-            </FormControl>
-
-            {this.renderImportByMethod()}
-
-            {this.renderConfirmation()}
-
-            {publicKeyImporter.method !== "" && (
-              <Button
-                variant="contained"
-                size="small"
-                color="secondary"
-                role="button"
-                onClick={this.reset}
-              >
-                Start Again
-              </Button>
-            )}
-          </form>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  renderImportByMethod = () => {
-    const { network, publicKeyImporter, defaultBIP32Path } = this.props;
-    if (publicKeyImporter.method === HERMIT) {
-      return (
-        <HermitPublicKeyImporter
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          resetBIP32Path={this.resetBIP32Path}
-          enableChangeMethod={this.enableChangeMethod}
-          disableChangeMethod={this.disableChangeMethod}
-          reset={this.reset}
-        />
-      );
-    }
-    if (
-      publicKeyImporter.method === TREZOR ||
-      publicKeyImporter.method === LEDGER
-    ) {
-      return (
-        <HardwareWalletPublicKeyImporter
-          network={network}
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
-          resetBIP32Path={this.resetBIP32Path}
-          defaultBIP32Path={defaultBIP32Path}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          enableChangeMethod={this.enableChangeMethod}
-          disableChangeMethod={this.disableChangeMethod}
-        />
-      );
-    }
-    return null;
   };
 
   //
@@ -211,10 +130,10 @@ class ConfirmOwnership extends React.Component {
     const error = validatePublicKey(publicKey);
     setPublicKey(publicKey);
     if (error) {
-      errback && errback(error);
+      if (errback) errback(error);
     } else {
-      errback && errback("");
-      callback && callback();
+      if (errback) errback("");
+      if (callback) callback();
     }
   };
 
@@ -257,9 +176,93 @@ class ConfirmOwnership extends React.Component {
       </List>
     );
   };
+
+  renderImportByMethod = () => {
+    const { network, publicKeyImporter, defaultBIP32Path } = this.props;
+    if (publicKeyImporter.method === HERMIT) {
+      return (
+        <HermitPublicKeyImporter
+          publicKeyImporter={publicKeyImporter}
+          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          validateAndSetPublicKey={this.validateAndSetPublicKey}
+          resetBIP32Path={this.resetBIP32Path}
+          enableChangeMethod={this.enableChangeMethod}
+          disableChangeMethod={this.disableChangeMethod}
+          reset={this.reset}
+        />
+      );
+    }
+    if (
+      publicKeyImporter.method === TREZOR ||
+      publicKeyImporter.method === LEDGER
+    ) {
+      return (
+        <HardwareWalletPublicKeyImporter
+          network={network}
+          publicKeyImporter={publicKeyImporter}
+          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          resetBIP32Path={this.resetBIP32Path}
+          defaultBIP32Path={defaultBIP32Path}
+          validateAndSetPublicKey={this.validateAndSetPublicKey}
+          enableChangeMethod={this.enableChangeMethod}
+          disableChangeMethod={this.disableChangeMethod}
+        />
+      );
+    }
+    return null;
+  };
+
+  render() {
+    const { publicKeyImporter } = this.props;
+    const { disableChangeMethod } = this.state;
+    const labelId = "public-key-importer-select-label";
+    return (
+      <Card>
+        <CardHeader ref={this.titleRef} title="Confirm Ownership" />
+        <CardContent>
+          <form>
+            <p>How will you confirm your ownership of this address?</p>
+
+            <FormControl fullWidth>
+              <InputLabel id={labelId}>Select Method</InputLabel>
+
+              <Select
+                labelId
+                id="public-key-importer-select"
+                disabled={disableChangeMethod}
+                value={publicKeyImporter.method}
+                onChange={this.handleMethodChange}
+              >
+                <MenuItem value="">{"< Select method >"}</MenuItem>
+                <MenuItem value={TREZOR}>Trezor</MenuItem>
+                <MenuItem value={LEDGER}>Ledger</MenuItem>
+                <MenuItem value={HERMIT}>Hermit</MenuItem>
+              </Select>
+            </FormControl>
+
+            {this.renderImportByMethod()}
+
+            {this.renderConfirmation()}
+
+            {publicKeyImporter.method !== "" && (
+              <Button
+                variant="contained"
+                size="small"
+                color="secondary"
+                role="button"
+                onClick={this.reset}
+              >
+                Start Again
+              </Button>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return state.spend.ownership;
 }
 

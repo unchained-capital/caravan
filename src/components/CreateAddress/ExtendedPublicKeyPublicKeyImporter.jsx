@@ -21,13 +21,11 @@ const DEFAULT_BIP32_PATH = "m/0";
 class ExtendedPublicKeyPublicKeyImporter extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
-    publicKeyImporter: PropTypes.shape({}).isRequired,
+    publicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+    }).isRequired,
     validateAndSetPublicKey: PropTypes.func.isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
-  };
-
-  componentDidMount = () => {
-    this.setBIP32PathToDefault();
   };
 
   state = {
@@ -35,6 +33,10 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
     extendedPublicKeyError: "",
     bip32PathError: "",
     conversionMessage: "",
+  };
+
+  componentDidMount = () => {
+    this.setBIP32PathToDefault();
   };
 
   render = () => {
@@ -66,7 +68,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
             </FormHelperText>
           </Box>
         )}
-        )}
+        )
         <Box mt={2}>
           <Grid container>
             <Grid item md={10}>
@@ -137,11 +139,13 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
   };
 
   hasBIP32PathError = () => {
-    return this.state.bip32PathError !== "";
+    const { bip32PathError } = this.state;
+    return bip32PathError !== "";
   };
 
   hasExtendedPublicKeyError = () => {
-    return this.state.extendedPublicKeyError !== "";
+    const { extendedPublicKeyError } = this.state;
+    return extendedPublicKeyError !== "";
   };
 
   hasError = () => this.hasBIP32PathError() || this.hasExtendedPublicKeyError();

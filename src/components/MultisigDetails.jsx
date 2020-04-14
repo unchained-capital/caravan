@@ -21,13 +21,38 @@ import Copyable from "./Copyable";
 
 class MultisigDetails extends React.Component {
   static propTypes = {
+    multisig: PropTypes.shape({
+      address: PropTypes.string,
+    }).isRequired,
     network: PropTypes.string.isRequired,
-    multisig: PropTypes.object.isRequired,
+    showAddress: PropTypes.bool.isRequired,
+  };
+
+  renderScript = (name, script) => {
+    const hex = scriptToHex(script);
+    const ops = scriptToOps(script);
+    return (
+      <Box mt={2}>
+        <Typography variant="h6">{name}</Typography>
+        <Grid container spacing={2}>
+          <Grid item sm={6}>
+            <Copyable text={hex}>
+              <code>{hex}</code>
+            </Copyable>
+          </Grid>
+          <Grid item sm={6}>
+            <Copyable text={ops}>
+              <code>{ops}</code>
+            </Copyable>
+          </Grid>
+        </Grid>
+      </Box>
+    );
   };
 
   render() {
     const { network, multisig, showAddress } = this.props;
-    const address = multisig.address;
+    const { address } = multisig;
     const redeemScript = multisigRedeemScript(multisig);
     const witnessScript = multisigWitnessScript(multisig);
     return (
@@ -79,28 +104,6 @@ class MultisigDetails extends React.Component {
       </Box>
     );
   }
-
-  renderScript = (name, script) => {
-    const hex = scriptToHex(script);
-    const ops = scriptToOps(script);
-    return (
-      <Box mt={2}>
-        <Typography variant="h6">{name}</Typography>
-        <Grid container spacing={2}>
-          <Grid item sm={6}>
-            <Copyable text={hex}>
-              <code>{hex}</code>
-            </Copyable>
-          </Grid>
-          <Grid item sm={6}>
-            <Copyable text={ops}>
-              <code>{ops}</code>
-            </Copyable>
-          </Grid>
-        </Grid>
-      </Box>
-    );
-  };
 }
 
 function mapStateToProps(state) {

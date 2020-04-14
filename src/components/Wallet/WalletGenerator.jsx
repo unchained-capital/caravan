@@ -13,7 +13,6 @@ import {
   CardContent,
   InputAdornment,
   Grid,
-  Link,
   TextField,
   FormHelperText,
   Typography,
@@ -41,12 +40,12 @@ import { setFrozen } from "../../actions/settingsActions";
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,
-  resetNodesFetchErrors,
-  resetWallet,
+  resetNodesFetchErrors as resetNodesFetchErrorsAction,
+  resetWallet as resetWalletAction,
 } from "../../actions/walletActions";
-import { fetchSliceData } from "../../actions/braidActions";
+import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import { setExtendedPublicKeyImporterVisible } from "../../actions/extendedPublicKeyImporterActions";
-import { setIsWallet } from "../../actions/transactionActions";
+import { setIsWallet as setIsWalletAction } from "../../actions/transactionActions";
 import { wrappedActions } from "../../actions/utils";
 import {
   SET_CLIENT_PASSWORD,
@@ -60,17 +59,49 @@ class WalletGenerator extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
     addressType: PropTypes.string.isRequired,
-    client: PropTypes.object.isRequired,
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+    client: PropTypes.shape({
+      password: PropTypes.string,
+      passwordError: PropTypes.string,
+      type: PropTypes.string,
+      username: PropTypes.string,
+    }).isRequired,
+    change: PropTypes.shape({
+      nodes: PropTypes.shape({}),
+      fetchUTXOsErrors: PropTypes.number,
+    }).isRequired,
+    deposits: PropTypes.shape({
+      nodes: PropTypes.shape({}),
+      fetchUTXOsErrors: PropTypes.number,
+    }).isRequired,
+    configuring: PropTypes.bool.isRequired,
+    common: PropTypes.shape({
+      nodesLoaded: PropTypes.bool,
+    }).isRequired,
+    downloadWalletDetails: PropTypes.func.isRequired,
+    extendedPublicKeyImporters: PropTypes.arrayOf(
+      PropTypes.shape({
+        extendedPublicKey: PropTypes.string,
+      })
+    ).isRequired,
+    fetchSliceData: PropTypes.func.isRequired,
     totalSigners: PropTypes.number.isRequired,
     requiredSigners: PropTypes.number.isRequired,
-    deposits: PropTypes.object.isRequired,
-    change: PropTypes.object.isRequired,
     freeze: PropTypes.func.isRequired,
     updateDepositSlice: PropTypes.func.isRequired,
     updateChangeSlice: PropTypes.func.isRequired,
-    unknownAddresses: PropTypes.array,
+    unknownAddresses: PropTypes.arrayOf(PropTypes.string),
+    refreshNodes: PropTypes.func.isRequired,
+    resetNodesFetchErrors: PropTypes.func.isRequired,
+    resetWallet: PropTypes.func.isRequired,
+    setImportersVisible: PropTypes.func.isRequired,
     setIsWallet: PropTypes.func.isRequired,
+    setPassword: PropTypes.func.isRequired,
+    setPasswordError: PropTypes.func.isRequired,
+    unknownSlices: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  };
+
+  static defaultProps = {
+    unknownAddresses: [],
   };
 
   state = {
@@ -116,28 +147,6 @@ class WalletGenerator extends React.Component {
     );
   };
 
-  /**
-   * Callback function to pass to the address importer
-   * after addresses have been imported we want
-   * @param {Array<string>} importedAddresses
-   * @param {boolean} rescan - whether or not a rescan is being performed
-   */
-  async afterImportAddresses(importedAddresses, rescan) {
-    // if rescan is true then there's no point in fetching
-    // the slice data yet since we likely won't get anything
-    // until the rescan is complete
-    if (rescan) return;
-
-    const { unknownSlices, fetchSliceData } = this.props;
-    const importedSlices = unknownSlices.reduce((slices, slice) => {
-      if (importedAddresses.indexOf(slice.multisig.address) > -1)
-        slices.push(slice);
-      return slice;
-    }, []);
-
-    await fetchSliceData(importedSlices);
-  }
-
   testConnection = async ({ network, client, setPasswordError }, cb) => {
     try {
       await fetchFeeEstimate(network, client);
@@ -164,138 +173,6 @@ class WalletGenerator extends React.Component {
       (extendedPublicKeyImporter) => extendedPublicKeyImporter.finalized
     ).length;
   };
-
-  body() {
-    const {
-      totalSigners,
-      configuring,
-      downloadWalletDetails,
-      client,
-      unknownAddresses,
-    } = this.props;
-    const { generating, connectSuccess } = this.state;
-    if (this.extendedPublicKeyCount() === totalSigners) {
-      if (generating && !configuring) {
-        return (
-          <div>
-            <WalletControl
-              addNode={this.addNode}
-              updateNode={this.updateNode}
-            />
-            <Box mt={2} textAlign="center">
-              <Grid container>
-                <Grid item>
-                  <WalletConfigInteractionButtons
-                    onClearFn={(e) => this.toggleImporters(e)}
-                    onDownloadFn={downloadWalletDetails}
-                  />
-                </Grid>
-                {client.type === "private" && (
-                  <Grid item>
-                    <ImportAddressesButton
-                      addresses={unknownAddresses}
-                      client={client}
-                      importCallback={(addresses) =>
-                        this.afterImportAddresses(addresses)
-                      }
-                    />
-                  </Grid>
-                )}
-              </Grid>
-            </Box>
-          </div>
-        );
-      }
-      return (
-        <Card>
-          <CardHeader title={this.title()} />
-          <CardContent>
-            <Link href="#" onClick={this.toggleImporters}>
-              {configuring ? "Hide Key Selection" : "Edit Details"}
-            </Link>
-            <ConfirmWallet />
-            <p>
-              You have imported all
-              {totalSigners} extended public keys. You will need to save this
-              information.
-            </p>
-            <WalletConfigInteractionButtons
-              onClearFn={(e) => this.toggleImporters(e)}
-              onDownloadFn={downloadWalletDetails}
-            />
-            {client.type === "private" && (
-              <Box my={5}>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1">
-                      This config uses a private client. Please enter password
-                      if not set.
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      id="client-username"
-                      label="Username"
-                      defaultValue={client.username}
-                      InputProps={{
-                        readOnly: true,
-                        disabled: true,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <AccountCircleIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={4} xs={10}>
-                    <form onSubmit={(event) => this.handlePasswordEnter(event)}>
-                      <TextField
-                        id="bitcoind-password"
-                        fullWidth
-                        type="password"
-                        label="Password"
-                        placeholder="Enter bitcoind password"
-                        value={client.password}
-                        onChange={(event) => this.handlePasswordChange(event)}
-                        error={client.password_error.length > 0}
-                        helperText={client.password_error}
-                      />
-                      {connectSuccess && (
-                        <FormHelperText>
-                          Connection confirmed with password!
-                        </FormHelperText>
-                      )}
-                    </form>
-                  </Grid>
-                </Grid>
-              </Box>
-            )}
-            <p>
-              Please confirm that the above information is correct and you wish
-              to generate your wallet.
-            </p>
-            <Button
-              id="confirm-wallet"
-              type="button"
-              variant="contained"
-              color="primary"
-              onClick={this.generate}
-              disabled={client.type === "private" && !connectSuccess}
-            >
-              Confirm
-            </Button>
-          </CardContent>
-        </Card>
-      );
-    }
-    return (
-      <p>
-        {`Once you have imported all ${totalSigners} extended public keys, `}
-        {"your wallet will be generated here."}
-      </p>
-    );
-  }
 
   toggleImporters = (event) => {
     event.preventDefault();
@@ -346,7 +223,7 @@ class WalletGenerator extends React.Component {
     for (
       let extendedPublicKeyImporterNumber = 1;
       extendedPublicKeyImporterNumber <= totalSigners;
-      extendedPublicKeyImporterNumber++
+      extendedPublicKeyImporterNumber += 1
     ) {
       const extendedPublicKeyImporter =
         extendedPublicKeyImporters[extendedPublicKeyImporterNumber];
@@ -396,9 +273,8 @@ class WalletGenerator extends React.Component {
 
   generateNextNodeIfNecessary = (isChange) => {
     const { change, deposits } = this.props;
-    const trailingEmptyNodes = (isChange ? change : deposits)
-      .trailingEmptyNodes;
-    const fetchUTXOsErrors = (isChange ? change : deposits).fetchUTXOsErrors;
+    const { trailingEmptyNodes } = isChange ? change : deposits;
+    const { fetchUTXOsErrors } = isChange ? change : deposits;
     const allBIP32Paths = Object.keys((isChange ? change : deposits).nodes);
     if (
       trailingEmptyNodes >= MAX_TRAILING_EMPTY_NODES ||
@@ -444,7 +320,6 @@ class WalletGenerator extends React.Component {
     );
 
     if (previousFetchErrors >= MAX_FETCH_UTXOS_ERRORS) {
-      const { change, deposits } = this.props;
       const currentFetchErrors = Math.max(
         change.fetchUTXOsErrors,
         deposits.fetchUTXOsErrors
@@ -455,6 +330,28 @@ class WalletGenerator extends React.Component {
       }
     }
   };
+
+  /**
+   * Callback function to pass to the address importer
+   * after addresses have been imported we want
+   * @param {Array<string>} importedAddresses
+   * @param {boolean} rescan - whether or not a rescan is being performed
+   */
+  async afterImportAddresses(importedAddresses, rescan) {
+    // if rescan is true then there's no point in fetching
+    // the slice data yet since we likely won't get anything
+    // until the rescan is complete
+    if (rescan) return;
+
+    const { unknownSlices, fetchSliceData } = this.props;
+    const importedSlices = unknownSlices.reduce((slices, slice) => {
+      if (importedAddresses.indexOf(slice.multisig.address) > -1)
+        slices.push(slice);
+      return slice;
+    }, []);
+
+    await fetchSliceData(importedSlices);
+  }
 
   async handlePasswordEnter(event) {
     event.preventDefault();
@@ -470,6 +367,138 @@ class WalletGenerator extends React.Component {
       setPassword(password);
       setPasswordError("");
     });
+  }
+
+  body() {
+    const {
+      totalSigners,
+      configuring,
+      downloadWalletDetails,
+      client,
+      unknownAddresses,
+    } = this.props;
+    const { generating, connectSuccess } = this.state;
+    if (this.extendedPublicKeyCount() === totalSigners) {
+      if (generating && !configuring) {
+        return (
+          <div>
+            <WalletControl
+              addNode={this.addNode}
+              updateNode={this.updateNode}
+            />
+            <Box mt={2} textAlign="center">
+              <Grid container>
+                <Grid item>
+                  <WalletConfigInteractionButtons
+                    onClearFn={(e) => this.toggleImporters(e)}
+                    onDownloadFn={downloadWalletDetails}
+                  />
+                </Grid>
+                {client.type === "private" && (
+                  <Grid item>
+                    <ImportAddressesButton
+                      addresses={unknownAddresses}
+                      client={client}
+                      importCallback={(addresses) =>
+                        this.afterImportAddresses(addresses)
+                      }
+                    />
+                  </Grid>
+                )}
+              </Grid>
+            </Box>
+          </div>
+        );
+      }
+      return (
+        <Card>
+          <CardHeader title={this.title()} />
+          <CardContent>
+            <Button href="#" onClick={this.toggleImporters}>
+              {configuring ? "Hide Key Selection" : "Edit Details"}
+            </Button>
+            <ConfirmWallet />
+            <p>
+              You have imported all&nbsp;
+              {totalSigners} extended public keys. You will need to save this
+              information.
+            </p>
+            <WalletConfigInteractionButtons
+              onClearFn={(e) => this.toggleImporters(e)}
+              onDownloadFn={downloadWalletDetails}
+            />
+            {client.type === "private" && (
+              <Box my={5}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1">
+                      This config uses a private client. Please enter password
+                      if not set.
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                      id="client-username"
+                      label="Username"
+                      defaultValue={client.username}
+                      InputProps={{
+                        readOnly: true,
+                        disabled: true,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountCircleIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={4} xs={10}>
+                    <form onSubmit={(event) => this.handlePasswordEnter(event)}>
+                      <TextField
+                        id="bitcoind-password"
+                        fullWidth
+                        type="password"
+                        label="Password"
+                        placeholder="Enter bitcoind password"
+                        value={client.password}
+                        onChange={(event) => this.handlePasswordChange(event)}
+                        error={client.passwordError.length > 0}
+                        helperText={client.passwordError}
+                      />
+                      {connectSuccess && (
+                        <FormHelperText>
+                          Connection confirmed with password!
+                        </FormHelperText>
+                      )}
+                    </form>
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
+            <p>
+              Please confirm that the above information is correct and you wish
+              to generate your wallet.
+            </p>
+            <Button
+              id="confirm-wallet"
+              type="button"
+              variant="contained"
+              color="primary"
+              onClick={this.generate}
+              disabled={client.type === "private" && !connectSuccess}
+            >
+              Confirm
+            </Button>
+          </CardContent>
+        </Card>
+      );
+    }
+    return (
+      <p>
+        {`Once you have imported all ${totalSigners} extended public keys, `}
+        {"your wallet will be generated here."}
+      </p>
+    );
   }
 
   render() {
@@ -493,11 +522,11 @@ const mapDispatchToProps = {
   freeze: setFrozen,
   updateDepositSlice: updateDepositSliceAction,
   updateChangeSlice: updateChangeSliceAction,
-  fetchSliceData,
+  fetchSliceData: fetchSliceDataAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
-  setIsWallet,
-  resetWallet,
-  resetNodesFetchErrors,
+  setIsWallet: setIsWalletAction,
+  resetWallet: resetWalletAction,
+  resetNodesFetchErrors: resetNodesFetchErrorsAction,
   ...wrappedActions({
     setPassword: SET_CLIENT_PASSWORD,
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,

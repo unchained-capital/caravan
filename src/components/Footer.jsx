@@ -26,7 +26,7 @@ const Footer = () => (
 
       <Grid item sm={6}>
         <p>
-          Copyright
+          Copyright&nbsp;
           {new Date(Date.now()).getFullYear()} by Unchained Capital and released
           under an MIT license.
         </p>

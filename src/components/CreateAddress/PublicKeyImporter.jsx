@@ -47,9 +47,17 @@ class PublicKeyImporter extends React.Component {
     network: PropTypes.string.isRequired,
     totalSigners: PropTypes.number.isRequired,
     number: PropTypes.number.isRequired,
-    publicKeyImporter: PropTypes.shape({}).isRequired,
+    publicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+      conflict: PropTypes.bool,
+      finalized: PropTypes.bool,
+      method: PropTypes.string,
+      name: PropTypes.string,
+      publicKey: PropTypes.string,
+    }).isRequired,
     publicKeyImporters: PropTypes.shape({}).isRequired,
     defaultBIP32Path: PropTypes.string.isRequired,
+    resetBIP32Path: PropTypes.func.isRequired,
     addressType: PropTypes.string.isRequired,
     setName: PropTypes.func.isRequired,
     setBIP32Path: PropTypes.func.isRequired,
@@ -63,25 +71,6 @@ class PublicKeyImporter extends React.Component {
   state = {
     disableChangeMethod: false,
   };
-
-  render() {
-    const { publicKeyImporter } = this.props;
-    return (
-      <Card>
-        <CardHeader title={this.title()} />
-        <CardContent>
-          {publicKeyImporter.method &&
-            publicKeyImporter.method !== TEXT &&
-            publicKeyImporter.conflict && (
-              <Conflict message="Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!" />
-            )}
-          {publicKeyImporter.finalized
-            ? this.renderPublicKey()
-            : this.renderImport()}
-        </CardContent>
-      </Card>
-    );
-  }
 
   title = () => {
     const { number, totalSigners, publicKeyImporter, setName } = this.props;
@@ -340,7 +329,7 @@ class PublicKeyImporter extends React.Component {
     const error = validatePublicKey(publicKey);
     setPublicKey(number, publicKey);
     if (error) {
-      errback && errback(error);
+      if (errback) errback(error);
     } else if (
       publicKey &&
       Object.values(publicKeyImporters).find(
@@ -349,13 +338,32 @@ class PublicKeyImporter extends React.Component {
           publicKeyImporter.publicKey === publicKey
       )
     ) {
-      errback && errback("This public key has already been imported.");
+      if (errback) errback("This public key has already been imported.");
     } else {
-      errback && errback("");
+      if (errback) errback("");
       this.finalize();
-      callback && callback();
+      if (callback) callback();
     }
   };
+
+  render() {
+    const { publicKeyImporter } = this.props;
+    return (
+      <Card>
+        <CardHeader title={this.title()} />
+        <CardContent>
+          {publicKeyImporter.method &&
+            publicKeyImporter.method !== TEXT &&
+            publicKeyImporter.conflict && (
+              <Conflict message="Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!" />
+            )}
+          {publicKeyImporter.finalized
+            ? this.renderPublicKey()
+            : this.renderImport()}
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 function mapStateToProps(state, ownProps) {

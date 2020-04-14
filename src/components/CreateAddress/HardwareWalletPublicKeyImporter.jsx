@@ -22,18 +22,16 @@ import InteractionMessages from "../InteractionMessages";
 class HardwareWalletPublicKeyImporter extends React.Component {
   static propTypes = {
     network: PropTypes.string.isRequired,
-    addressType: PropTypes.string.isRequired,
-    publicKeyImporter: PropTypes.shape({}).isRequired,
+    publicKeyImporter: PropTypes.shape({
+      bip32Path: PropTypes.string,
+      method: PropTypes.string,
+    }).isRequired,
     validateAndSetPublicKey: PropTypes.func.isRequired,
     validateAndSetBIP32Path: PropTypes.func.isRequired,
     resetBIP32Path: PropTypes.func.isRequired,
     defaultBIP32Path: PropTypes.string.isRequired,
     enableChangeMethod: PropTypes.func.isRequired,
     disableChangeMethod: PropTypes.func.isRequired,
-  };
-
-  componentDidMount = () => {
-    this.resetBIP32Path();
   };
 
   constructor(props) {
@@ -44,6 +42,10 @@ class HardwareWalletPublicKeyImporter extends React.Component {
       status: this.interaction().isSupported() ? PENDING : UNSUPPORTED,
     };
   }
+
+  componentDidMount = () => {
+    this.resetBIP32Path();
+  };
 
   interaction = () => {
     const { network, publicKeyImporter } = this.props;
@@ -131,6 +133,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
         this.setState({ publicKeyError: error, status: PENDING });
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       this.setState({ publicKeyError: e.message, status: PENDING });
     }

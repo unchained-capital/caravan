@@ -47,17 +47,17 @@ class SignatureImporter extends React.Component {
   titleRef = React.createRef();
 
   static propTypes = {
-    number: PropTypes.number.isRequired,
-    signatureImporter: PropTypes.shape({}).isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    inputsTotalSats: PropTypes.object.isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    unsignedTransaction: PropTypes.object.isRequired,
     addressType: PropTypes.string.isRequired,
-    network: PropTypes.string.isRequired,
+    extendedPublicKeyImporter: PropTypes.shape({
+      method: PropTypes.string,
+    }).isRequired,
     fee: PropTypes.string.isRequired,
-    txid: PropTypes.string.isRequired,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    inputsTotalSats: PropTypes.shape({}).isRequired,
+    isWallet: PropTypes.bool.isRequired,
+    network: PropTypes.string.isRequired,
+    number: PropTypes.number.isRequired,
+    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     setName: PropTypes.func.isRequired,
     setMethod: PropTypes.func.isRequired,
     setBIP32Path: PropTypes.func.isRequired,
@@ -65,6 +65,15 @@ class SignatureImporter extends React.Component {
     setPublicKeys: PropTypes.func.isRequired,
     setFinalized: PropTypes.func.isRequired,
     setComplete: PropTypes.func.isRequired,
+    signatureImporter: PropTypes.shape({
+      finalized: PropTypes.bool,
+      name: PropTypes.string,
+      method: PropTypes.string,
+      signature: PropTypes.string,
+    }).isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
+    txid: PropTypes.string.isRequired,
+    unsignedTransaction: PropTypes.shape({}).isRequired,
   };
 
   state = {
@@ -80,25 +89,11 @@ class SignatureImporter extends React.Component {
     this.scrollToTitle();
   };
 
-  scrollToTitle = () => {
-    const { number } = this.props;
-    if (number === this.getCurrent()) {
-      this.titleRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  render() {
-    const { signatureImporter } = this.props;
-    return (
-      <Card>
-        <CardHeader title={this.title()} ref={this.titleRef} />
-        <CardContent>
-          {signatureImporter.finalized
-            ? this.renderSignature()
-            : this.renderImport()}
-        </CardContent>
-      </Card>
-    );
+  getCurrent() {
+    const { signatureImporters } = this.props;
+    return Object.keys(signatureImporters).reduce((o, k) => {
+      return o + (signatureImporters[k].finalized ? 1 : 0);
+    }, 1);
   }
 
   title = () => {
@@ -112,12 +107,12 @@ class SignatureImporter extends React.Component {
     );
   };
 
-  getCurrent() {
-    const { signatureImporters } = this.props;
-    return Object.keys(signatureImporters).reduce((o, k) => {
-      return o + (signatureImporters[k].finalized ? 1 : 0);
-    }, 1);
-  }
+  scrollToTitle = () => {
+    const { number } = this.props;
+    if (number === this.getCurrent()) {
+      this.titleRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   renderImport = () => {
     const { signatureImporter, number, extendedPublicKeyImporter } = this.props;
@@ -405,6 +400,20 @@ class SignatureImporter extends React.Component {
       finalized: true,
     });
   };
+
+  render() {
+    const { signatureImporter } = this.props;
+    return (
+      <Card>
+        <CardHeader title={this.title()} ref={this.titleRef} />
+        <CardContent>
+          {signatureImporter.finalized
+            ? this.renderSignature()
+            : this.renderImport()}
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 function mapStateToProps(state, ownProps) {

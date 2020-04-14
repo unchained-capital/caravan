@@ -70,11 +70,11 @@ class AddressTypePicker extends React.Component {
             </RadioGroup>
             <FormHelperText>
               <small>
-                Choose '
-{P2WSH}' for best practices, '
-{P2SH}
-' for greatest
-                compatibility.
+                Choose &apos;
+                {P2WSH}
+                &apos; for best practices, &apos;
+                {P2SH}
+                &apos; for greatest compatibility.
               </small>
             </FormHelperText>
           </FormControl>
