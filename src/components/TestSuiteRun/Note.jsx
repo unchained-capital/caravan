@@ -40,7 +40,11 @@ NoteBase.propTypes = {
   note: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
   setNote: PropTypes.func.isRequired,
-  testRunIndex: PropTypes.number.isRequired,
+  testRunIndex: PropTypes.number,
+};
+
+NoteBase.defaultProps = {
+  testRunIndex: 0,
 };
 
 const mapStateToKeystoreNoteProps = (state) => {

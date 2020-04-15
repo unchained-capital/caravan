@@ -19,19 +19,21 @@ class SeedBase extends React.Component {
     return (
       <Grid container>
         <Grid item md={3}>
-          <ol>{bip39Phrase.slice(0, 6).map(this.renderSeedWord)}</ol>
+          <ol>{bip39Phrase.slice(0, 6).map(SeedBase.renderSeedWord)}</ol>
         </Grid>
         <Grid item md={3}>
-          <ol start={7}>{bip39Phrase.slice(6, 12).map(this.renderSeedWord)}</ol>
+          <ol start={7}>
+            {bip39Phrase.slice(6, 12).map(SeedBase.renderSeedWord)}
+          </ol>
         </Grid>
         <Grid item md={3}>
           <ol start={13}>
-            {bip39Phrase.slice(12, 18).map(this.renderSeedWord)}
+            {bip39Phrase.slice(12, 18).map(SeedBase.renderSeedWord)}
           </ol>
         </Grid>
         <Grid item md={3}>
           <ol start={19}>
-            {bip39Phrase.slice(18, 24).map(this.renderSeedWord)}
+            {bip39Phrase.slice(18, 24).map(SeedBase.renderSeedWord)}
           </ol>
         </Grid>
       </Grid>

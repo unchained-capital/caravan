@@ -15,10 +15,6 @@ class Test {
     throw Error("Define the `interaction` method in your subclass of `Test`.");
   }
 
-  static supports() {
-    return true;
-  }
-
   static postprocess(thing) {
     return thing;
   }
@@ -27,7 +23,12 @@ class Test {
     return expected === actual;
   }
 
-  static diff(expected, actual) {
+  constructor(params) {
+    this.params = params || {};
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  diff(expected, actual) {
     if (typeof expected === "string" && typeof actual === "string") {
       return diffChars(expected, actual);
     }
@@ -42,8 +43,9 @@ class Test {
     return null;
   }
 
-  constructor(params) {
-    this.params = params || {};
+  // eslint-disable-next-line class-methods-use-this
+  supports() {
+    return true;
   }
 
   name() {
@@ -75,7 +77,7 @@ class Test {
 
   resolve(actual) {
     const expected = this.expected();
-    if (this.matches(expected, actual)) {
+    if (Test.matches(expected, actual)) {
       return { status: SUCCESS };
     }
     return {
