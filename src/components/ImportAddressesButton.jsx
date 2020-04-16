@@ -178,11 +178,12 @@ however to know if an address has been used prior to import, a rescan needs to t
 ImportAddressesButton.propTypes = {
   addresses: PropTypes.arrayOf(PropTypes.string),
   importCallback: PropTypes.func,
-  client: PropTypes.shape({}).isRequired,
+  client: PropTypes.shape({}),
 };
 
 ImportAddressesButton.defaultProps = {
   addresses: [],
+  client: {},
   importCallback() {},
 };
 

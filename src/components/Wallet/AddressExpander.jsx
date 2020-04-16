@@ -53,8 +53,7 @@ class AddressExpander extends React.Component {
     client: PropTypes.shape({
       type: PropTypes.string,
     }).isRequired,
-    extendedPublicKeyImporters: PropTypes.arrayOf(PropTypes.shape({}))
-      .isRequired,
+    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
     node: PropTypes.shape({
       addressUsed: PropTypes.bool,
       balanceSats: PropTypes.shape({

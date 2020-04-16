@@ -21,7 +21,7 @@ import UnsignedTransaction from "../UnsignedTransaction";
 class TransactionPreview extends React.Component {
   static propTypes = {
     editTransaction: PropTypes.func.isRequired,
-    fee: PropTypes.number.isRequired,
+    fee: PropTypes.string.isRequired,
     feeRate: PropTypes.string.isRequired,
     inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     inputsTotalSats: PropTypes.shape({}).isRequired,

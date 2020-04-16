@@ -24,22 +24,24 @@ import SignatureImporter from "../ScriptExplorer/SignatureImporter";
 class ExtendedPublicKeySelector extends React.Component {
   static propTypes = {
     extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    inputs: PropTypes.arrayOf({
-      bip32Path: PropTypes.string,
-    }).isRequired,
-    onChange: PropTypes.func.isRequired,
+    inputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        bip32Path: PropTypes.string,
+      })
+    ).isRequired,
+    onChange: PropTypes.func,
     network: PropTypes.string.isRequired,
     number: PropTypes.number.isRequired,
     setBIP32Path: PropTypes.func.isRequired,
     setMethod: PropTypes.func.isRequired,
     setSigningKey: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.arrayOf({
-      bip32Path: PropTypes.string,
-      method: PropTypes.string,
-      signature: PropTypes.string,
-    }).isRequired,
-    signingKeys: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
+    signingKeys: PropTypes.arrayOf(PropTypes.number).isRequired,
     totalSigners: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    onChange: null,
   };
 
   state = {

@@ -25,7 +25,11 @@ class MultisigDetails extends React.Component {
       address: PropTypes.string,
     }).isRequired,
     network: PropTypes.string.isRequired,
-    showAddress: PropTypes.bool.isRequired,
+    showAddress: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    showAddress: true,
   };
 
   renderScript = (name, script) => {

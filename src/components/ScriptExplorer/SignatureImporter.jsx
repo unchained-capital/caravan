@@ -69,7 +69,10 @@ class SignatureImporter extends React.Component {
       finalized: PropTypes.bool,
       name: PropTypes.string,
       method: PropTypes.string,
-      signature: PropTypes.string,
+      signature: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string),
+      ]),
     }).isRequired,
     signatureImporters: PropTypes.shape({}).isRequired,
     txid: PropTypes.string.isRequired,

@@ -56,7 +56,7 @@ class WalletSpend extends React.Component {
     changeOutputIndex: PropTypes.number.isRequired,
     coinSelection: PropTypes.func.isRequired,
     depositNodes: PropTypes.shape({}),
-    fee: PropTypes.number.isRequired,
+    fee: PropTypes.string.isRequired,
     feeError: PropTypes.string,
     feeRate: PropTypes.string.isRequired,
     feeRateError: PropTypes.string,
@@ -66,7 +66,7 @@ class WalletSpend extends React.Component {
     outputs: PropTypes.arrayOf(
       PropTypes.shape({
         address: PropTypes.string,
-        amount: PropTypes.number,
+        amount: PropTypes.string,
         addressError: PropTypes.string,
         amountError: PropTypes.string,
       })

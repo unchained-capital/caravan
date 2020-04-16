@@ -38,7 +38,7 @@ class WalletControl extends React.Component {
     requiredSigners: PropTypes.number.isRequired,
     setMode: PropTypes.func.isRequired,
     setRequiredSigners: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    signatureImporters: PropTypes.shape({}).isRequired,
     updateNode: PropTypes.func.isRequired,
     walletMode: PropTypes.number.isRequired,
   };

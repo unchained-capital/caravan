@@ -78,11 +78,7 @@ class WalletGenerator extends React.Component {
       nodesLoaded: PropTypes.bool,
     }).isRequired,
     downloadWalletDetails: PropTypes.func.isRequired,
-    extendedPublicKeyImporters: PropTypes.arrayOf(
-      PropTypes.shape({
-        extendedPublicKey: PropTypes.string,
-      })
-    ).isRequired,
+    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
     fetchSliceData: PropTypes.func.isRequired,
     totalSigners: PropTypes.number.isRequired,
     requiredSigners: PropTypes.number.isRequired,

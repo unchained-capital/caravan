@@ -162,14 +162,7 @@ class CreateWallet extends React.Component {
       fetchUTXOsErrors: PropTypes.number,
       nodes: PropTypes.shape({}),
     }).isRequired,
-    extendedPublicKeyImporters: PropTypes.arrayOf(
-      PropTypes.shape({
-        bip32Path: PropTypes.string,
-        extendedPublicKey: PropTypes.string,
-        method: PropTypes.string,
-        name: PropTypes.name,
-      })
-    ).isRequired,
+    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
     network: PropTypes.string.isRequired,
     nodesLoaded: PropTypes.bool.isRequired,
     pendingBalance: PropTypes.number,
