@@ -51,9 +51,7 @@ import {
   SET_CLIENT_PASSWORD,
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
-
-const MAX_TRAILING_EMPTY_NODES = 20;
-const MAX_FETCH_UTXOS_ERRORS = 25;
+import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
 
 class WalletGenerator extends React.Component {
   static propTypes = {
