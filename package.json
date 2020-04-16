@@ -87,7 +87,7 @@
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "unchained-bitcoin": "0.0.9",
-    "unchained-wallets": "0.0.10"
+    "unchained-bitcoin": "0.0.12",
+    "unchained-wallets": "0.0.11"
   }
 }
