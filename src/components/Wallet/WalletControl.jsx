@@ -9,16 +9,13 @@ import {
 } from "../../actions/walletActions";
 import { setRequiredSigners as setRequiredSignersAction } from "../../actions/transactionActions";
 import { naiveCoinSelection } from "../../utils";
+import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
 
 // Components
 
 import WalletDeposit from "./WalletDeposit";
 import WalletSpend from "./WalletSpend";
-import WalletView from "./WalletView";
-
-// TODO: centralize these, used in WalletGenerator also
-const MAX_TRAILING_EMPTY_NODES = 20;
-const MAX_FETCH_UTXOS_ERRORS = 5;
+import NodeSet from "./NodeSet";
 
 class WalletControl extends React.Component {
   scrollRef = React.createRef();
@@ -81,7 +78,7 @@ class WalletControl extends React.Component {
           />
         );
       if (walletMode === WALLET_MODES.VIEW)
-        return <WalletView addNode={addNode} updateNode={updateNode} />;
+        return <NodeSet addNode={addNode} updateNode={updateNode} />;
       return "";
     }
     const progress = this.progress();
