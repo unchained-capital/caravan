@@ -25,6 +25,7 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
     "gh-pages": "^2.0.1",
     "jest-junit": "^8.0.0",
     "mocha": "5.2.0",
@@ -35,8 +36,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test-ci": "react-scripts test --reporters ./node_modules/jest-junit --coverage --coverageReporters cobertura",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
+    "lint": "eslint --ext .js,.jsx src/",
+    "lint:fix": "eslint --ext .js,.jsx --fix src/",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"

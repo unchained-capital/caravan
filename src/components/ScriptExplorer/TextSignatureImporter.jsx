@@ -1,23 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 // Components
-import {
-  Box,
-  TextField,
-  Button,
-} from '@material-ui/core';
+import { Box, TextField, Button } from "@material-ui/core";
 
 class TextSignatureImporter extends React.Component {
-
-  static propTypes =  {
+  static propTypes = {
     signatureImporter: PropTypes.shape({}).isRequired,
     validateAndSetSignature: PropTypes.func.isRequired,
   };
 
   state = {
-    signatureJSON: '',
-    error: '',
+    signatureJSON: "",
+    error: "",
   };
 
   render = () => {
@@ -43,42 +38,40 @@ class TextSignatureImporter extends React.Component {
             color="primary"
             size="large"
             onClick={this.finalize}
-            disabled={signatureJSON === ''}
+            disabled={signatureJSON === ""}
           >
             Add Signature
           </Button>
         </Box>
       </Box>
     );
-  }
+  };
 
   hasError = () => {
-    return this.state.error !== '';
-  }
+    const { error } = this.state;
+    return error !== "";
+  };
 
   setError = (value) => {
-    this.setState({error: value});
-  }
+    this.setState({ error: value });
+  };
 
   handleChange = (event) => {
     const signatureJSON = event.target.value;
-    let error = '';
+    let error = "";
     try {
       JSON.parse(signatureJSON);
-    } catch(parseError) {
+    } catch (parseError) {
       error = "Invalid JSON.";
     }
-    this.setState({signatureJSON, error});
-  }
+    this.setState({ signatureJSON, error });
+  };
 
   finalize = () => {
-    const {validateAndSetSignature} = this.props;
-    const {signatureJSON} = this.state;
-    validateAndSetSignature(
-      JSON.parse(signatureJSON),
-      this.setError);
-  }
-
+    const { validateAndSetSignature } = this.props;
+    const { signatureJSON } = this.state;
+    validateAndSetSignature(JSON.parse(signatureJSON), this.setError);
+  };
 }
 
 export default TextSignatureImporter;

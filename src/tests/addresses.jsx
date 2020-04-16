@@ -8,6 +8,11 @@ import { externalLink } from "../utils";
 import Test from "./Test";
 
 class ConfirmMultisigAddressTest extends Test {
+  // eslint-disable-next-line class-methods-use-this
+  matches() {
+    return true;
+  }
+
   name() {
     return `Confirm ${this.params.network} ${this.params.type} multisig address`;
   }
@@ -17,9 +22,7 @@ class ConfirmMultisigAddressTest extends Test {
       <Box>
         <p>
           Confirm the following
-          {this.params.network} 
-{' '}
-{this.params.type} 2-of-2 multisig address on
+          {this.params.network} {this.params.type} 2-of-2 multisig address on
           your device:
         </p>
 
@@ -57,11 +60,6 @@ class ConfirmMultisigAddressTest extends Test {
       bip32Path: this.params.bip32Path,
       multisig: this.params.multisig,
     });
-  }
-
-  matches(expected, actual) {
-    // Either we get an error or we succeed with no output.
-    return true;
   }
 }
 

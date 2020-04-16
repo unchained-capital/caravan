@@ -35,14 +35,12 @@ const testRunsForKeystore = (action) => {
   if (action.keystoreType === "") {
     return [];
   }
-  return (SUITE[action.keystoreType] || [])
-    .filter((test) => test.supports(action.keystoreVersion))
-    .map((test) => {
-      return {
-        ...initialTestRunState,
-        ...{ test },
-      };
-    });
+  return (SUITE[action.keystoreType] || []).map((test) => {
+    return {
+      ...initialTestRunState,
+      ...{ test },
+    };
+  });
 };
 
 const updatedTestRun = (state, testRunIndex, update) => {

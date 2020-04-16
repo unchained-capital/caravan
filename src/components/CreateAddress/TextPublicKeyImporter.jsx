@@ -1,22 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {
-  validatePublicKey,
-} from "unchained-bitcoin";
+import React from "react";
+import PropTypes from "prop-types";
+import { validatePublicKey } from "unchained-bitcoin";
 
 // Components
-import { Button, TextField, Box } from '@material-ui/core';
+import { Button, TextField, Box } from "@material-ui/core";
 
 class TextPublicKeyImporter extends React.Component {
-
-  static propTypes =  {
+  static propTypes = {
     publicKeyImporter: PropTypes.shape({}).isRequired,
     validateAndSetPublicKey: PropTypes.func.isRequired,
   };
 
   state = {
-    error: '',
-    publicKey: '',
+    error: "",
+    publicKey: "",
   };
 
   render = () => {
@@ -39,35 +36,35 @@ class TextPublicKeyImporter extends React.Component {
             color="primary"
             size="large"
             onClick={this.import}
-            disabled={publicKey === '' || this.hasError()}
+            disabled={publicKey === "" || this.hasError()}
           >
             Add Public Key
           </Button>
         </Box>
       </Box>
     );
-  }
+  };
 
   import = () => {
-    const {validateAndSetPublicKey} = this.props;
-    const {publicKey} = this.state;
+    const { validateAndSetPublicKey } = this.props;
+    const { publicKey } = this.state;
     validateAndSetPublicKey(publicKey, this.setError);
-  }
-  
+  };
+
   hasError = () => {
-    return this.state.error !== '';
-  }
+    const { error } = this.state;
+    return error !== "";
+  };
 
   setError = (value) => {
-    this.setState({error: value});
-  }
+    this.setState({ error: value });
+  };
 
   handleChange = (event) => {
     const publicKey = event.target.value;
     const error = validatePublicKey(publicKey);
-    this.setState({publicKey, error});
-  }
-
+    this.setState({ publicKey, error });
+  };
 }
 
 export default TextPublicKeyImporter;

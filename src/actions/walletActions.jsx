@@ -13,15 +13,14 @@ export const WALLET_MODES = {
   VIEW: 0,
   DEPOSIT: 1,
   SPEND: 2,
-}
-
+};
 
 export function updateDepositSliceAction(value) {
   return {
     type: UPDATE_DEPOSIT_NODE,
     value: {
       ...value,
-      ...{change: false}
+      ...{ change: false },
     },
   };
 }
@@ -31,59 +30,57 @@ export function updateChangeSliceAction(value) {
     type: UPDATE_CHANGE_NODE,
     value: {
       ...value,
-      ...{change: true}
+      ...{ change: true },
     },
   };
 }
 
 export function resetNodesSpend() {
   return {
-    type: RESET_NODES_SPEND
-  }
+    type: RESET_NODES_SPEND,
+  };
 }
 
 export function spendNodes() {
   return {
-    type: SPEND_NODES
-  }
+    type: SPEND_NODES,
+  };
 }
 
 export function setWalletModeAction(value) {
-  return  {
+  return {
     type: UPDATE_WALLET_MODE,
-    value: value
-  }
+    value,
+  };
 }
 
 export function updateWalletNameAction(number, value) {
   return {
     type: UPDATE_WALLET_NAME,
-    value: value
+    value,
   };
 }
 
 export function resetWalletView() {
   return {
-    type: RESET_WALLET_VIEW
-  }
+    type: RESET_WALLET_VIEW,
+  };
 }
 
 export function resetWallet() {
   return {
-    type: RESET_WALLET
-  }
+    type: RESET_WALLET,
+  };
 }
-
 
 export function initialLoadComplete() {
   return {
-    type: INITIAL_LOAD_COMPLETE
-  }
+    type: INITIAL_LOAD_COMPLETE,
+  };
 }
 
 export function resetNodesFetchErrors() {
   return {
-    type: RESET_NODES_FETCH_ERRORS
-  }
+    type: RESET_NODES_FETCH_ERRORS,
+  };
 }
-

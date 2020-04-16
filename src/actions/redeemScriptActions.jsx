@@ -1,4 +1,4 @@
-export const SET_REDEEM_SCRIPT = 'SET_REDEEM_SCRIPT';
+export const SET_REDEEM_SCRIPT = "SET_REDEEM_SCRIPT";
 
 export function setRedeemScript(redeemScript) {
   return {

@@ -1,13 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 // Components
-import { Grid, IconButton, TextField } from '@material-ui/core';
-import { Check, Clear, Edit } from '@material-ui/icons';
+import { Grid, IconButton, TextField } from "@material-ui/core";
+import { Check, Clear, Edit } from "@material-ui/icons";
 
 class EditableName extends React.Component {
-
-  static propTypes =  {
+  static propTypes = {
     number: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     setName: PropTypes.func.isRequired,
@@ -15,23 +14,22 @@ class EditableName extends React.Component {
 
   state = {
     editing: false,
-    newName: '',
-    error: '',
+    newName: "",
+    error: "",
   };
 
   componentDidMount = () => {
-    const {name} = this.props;
-    this.setState({newName: name});
-  }
+    const { name } = this.props;
+    this.setState({ newName: name });
+  };
 
   render = () => {
-    const {name} = this.props;
-    const {editing, newName, error} = this.state;
+    const { name } = this.props;
+    const { editing, newName, error } = this.state;
     if (editing) {
       // <Form onSubmit={this.submit} inline>
       return (
         <Grid container alignItems="center">
-
           <Grid item>
             <TextField
               label="Name"
@@ -43,7 +41,11 @@ class EditableName extends React.Component {
           </Grid>
 
           <Grid item>
-            <IconButton size="small" onClick={this.submit} disabled={this.hasError()}>
+            <IconButton
+              size="small"
+              onClick={this.submit}
+              disabled={this.hasError()}
+            >
               <Check />
             </IconButton>
           </Grid>
@@ -55,48 +57,49 @@ class EditableName extends React.Component {
           </Grid>
         </Grid>
       );
-    } else {
-      return (
-        <span>
-          <IconButton size="small" onClick={this.startEditing}>
-            <Edit />
-          </IconButton>
-          &nbsp;
-          {name}
-        </span>
-      );
     }
-  }
+    return (
+      <span>
+        <IconButton size="small" onClick={this.startEditing}>
+          <Edit />
+        </IconButton>
+        &nbsp;
+        {name}
+      </span>
+    );
+  };
 
-  hasError = () => (this.state.error !== '')
+  hasError = () => {
+    const { error } = this.state;
+    return error !== "";
+  };
 
   startEditing = (event) => {
-    const {name} = this.props;
+    const { name } = this.props;
     event.preventDefault();
-    this.setState({editing: true, newName: name});
-  }
+    this.setState({ editing: true, newName: name });
+  };
 
   handleChange = (event) => {
     const newName = event.target.value;
-    let error = '';
-    if (newName === null || newName === undefined || newName === '') {
-      error =  "Name cannot be blank.";
+    let error = "";
+    if (newName === null || newName === undefined || newName === "") {
+      error = "Name cannot be blank.";
     }
-    this.setState({newName, error});
-  }
+    this.setState({ newName, error });
+  };
 
   submit = () => {
-    const {setName, number} = this.props;
-    const {newName} = this.state;
+    const { setName, number } = this.props;
+    const { newName } = this.state;
     setName(number, newName);
-    this.setState({editing: false});
-  }
+    this.setState({ editing: false });
+  };
 
   cancel = () => {
-    const {name} = this.props;
-    this.setState({error: '', newName: name, editing: false});
-  }
-
+    const { name } = this.props;
+    this.setState({ error: "", newName: name, editing: false });
+  };
 }
 
 export default EditableName;

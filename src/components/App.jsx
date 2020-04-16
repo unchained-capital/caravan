@@ -6,12 +6,12 @@ import { CssBaseline, Container } from "@material-ui/core";
 import Help from "./Help";
 import Wallet from "./Wallet";
 import CreateAddress from "./CreateAddress";
-import { TestSuiteRun } from "./TestSuiteRun";
+import TestSuiteRun from "./TestSuiteRun";
 import ScriptExplorer from "./ScriptExplorer";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
-import { ErrorNotification } from "./ErrorNotification";
+import ErrorNotification from "./ErrorNotification";
 
 const App = () => (
   <div className="App">

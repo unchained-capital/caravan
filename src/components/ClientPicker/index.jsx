@@ -1,9 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { fetchFeeEstimate } from "../../blockchain";
-
-// Components
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import {
   Grid,
   Card,
@@ -14,10 +11,13 @@ import {
   Radio,
   RadioGroup,
   FormHelperText,
-} from '@material-ui/core';
+} from "@material-ui/core";
+import { fetchFeeEstimate } from "../../blockchain";
+
+// Components
 
 // Actions
-import { wrappedActions } from '../../actions/utils';
+import { wrappedActions } from "../../actions/utils";
 import {
   SET_CLIENT_TYPE,
   SET_CLIENT_URL,
@@ -26,42 +26,73 @@ import {
   SET_CLIENT_URL_ERROR,
   SET_CLIENT_USERNAME_ERROR,
   SET_CLIENT_PASSWORD_ERROR,
-} from '../../actions/clientActions';
+} from "../../actions/clientActions";
 
-import PrivateClientSettings from './PrivateClientSettings';
-
-const propTypes = {
-  client: PropTypes.shape({}).isRequired,
-  network: PropTypes.string.isRequired,
-  setUrl: PropTypes.func.isRequired,
-  setPassword: PropTypes.func.isRequired,
-  setPasswordError: PropTypes.func.isRequired,
-  setType: PropTypes.func.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  setUsernameError: PropTypes.func.isRequired,
-};
+import PrivateClientSettings from "./PrivateClientSettings";
 
 class ClientPicker extends React.Component {
-  state = {
-    url_edited: false,
-    connectError: "",
-    connectSuccess: false
+  static validatePassword() {
+    return "";
   }
+
+  static validateUsername() {
+    return "";
+  }
+
+  static validateUrl(host) {
+    const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
+    if (!validhost) return "Must be a valid URL.";
+    return "";
+  }
+
+  static propTypes = {
+    client: PropTypes.shape({
+      type: PropTypes.string.isRequired,
+    }).isRequired,
+    network: PropTypes.string.isRequired,
+    privateNotes: PropTypes.shape({}),
+    setUrl: PropTypes.func.isRequired,
+    urlError: PropTypes.string,
+    setUrlError: PropTypes.func.isRequired,
+    setPassword: PropTypes.func.isRequired,
+    passwordError: PropTypes.string,
+    setPasswordError: PropTypes.func.isRequired,
+    setType: PropTypes.func.isRequired,
+    usernameError: PropTypes.string,
+    setUsername: PropTypes.func.isRequired,
+    setUsernameError: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    urlError: "",
+    usernameError: "",
+    passwordError: "",
+    privateNotes: {},
+  };
+
+  state = {
+    urlEdited: false,
+    connectError: "",
+    connectSuccess: false,
+  };
 
   handleTypeChange = (event) => {
     const { setType, network, setUrl } = this.props;
-    const type = event.target.value
-    if (type === 'private' && !this.state.url_edited) {
-      setUrl(`http://localhost:${network === 'mainnet' ? 8332 : 18332}`)
+    const { urlEdited } = this.state;
+
+    const type = event.target.value;
+    if (type === "private" && !urlEdited) {
+      setUrl(`http://localhost:${network === "mainnet" ? 8332 : 18332}`);
     }
     setType(type);
-  }
+  };
 
   handleUrlChange = (event) => {
     const { setUrl, setUrlError } = this.props;
+    const { urlEdited } = this.state;
     const url = event.target.value;
-    const error = this.validateUrl(url);
-    if (!this.state.url_edited && !error) this.setState({ url_edited: true });
+    const error = ClientPicker.validateUrl(url);
+    if (!urlEdited && !error) this.setState({ urlEdited: true });
     setUrl(url);
     setUrlError(error);
   };
@@ -69,7 +100,7 @@ class ClientPicker extends React.Component {
   handleUsernameChange = (event) => {
     const { setUsername, setUsernameError } = this.props;
     const username = event.target.value;
-    const error = this.validateUsername(username);
+    const error = ClientPicker.validateUsername(username);
     setUsername(username);
     setUsernameError(error);
   };
@@ -77,27 +108,13 @@ class ClientPicker extends React.Component {
   handlePasswordChange = (event) => {
     const { setPassword, setPasswordError } = this.props;
     const password = event.target.value;
-    const error = this.validatePassword(password);
+    const error = ClientPicker.validatePassword(password);
     setPassword(password);
     setPasswordError(error);
   };
 
-  validateUrl(host) {
-    const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
-    if (!validhost) return 'Must be a valid URL.'
-    return '';
-  }
-
-  validatePassword(pass) {
-    return '';
-  }
-
-  validateUsername(username) {
-    return '';
-  }
-
   testConnection = async () => {
-    const { network, client } = this.props
+    const { network, client } = this.props;
     this.setState({ connectError: "", connectSuccess: false });
     try {
       await fetchFeeEstimate(network, client);
@@ -105,10 +122,16 @@ class ClientPicker extends React.Component {
     } catch (e) {
       this.setState({ connectError: e.message });
     }
-  }
+  };
 
   render() {
-    const { client, url_error, username_error, password_error, privateNotes } = this.props;
+    const {
+      client,
+      urlError,
+      usernameError,
+      passwordError,
+      privateNotes,
+    } = this.props;
     const { connectSuccess, connectError } = this.state;
     return (
       <Card>
@@ -124,9 +147,9 @@ class ClientPicker extends React.Component {
                   control={<Radio color="primary" />}
                   name="clientType"
                   value="public"
-                  label={(<strong>Public</strong>)}
+                  label={<strong>Public</strong>}
                   onChange={this.handleTypeChange}
-                  checked={client.type === 'public'}
+                  checked={client.type === "public"}
                 />
                 <FormControlLabel
                   id="private"
@@ -135,34 +158,36 @@ class ClientPicker extends React.Component {
                   value="private"
                   label="Private"
                   onChange={this.handleTypeChange}
-                  checked={client.type === 'private'}
+                  checked={client.type === "private"}
                 />
               </RadioGroup>
-              {
-                client.type === 'public' ? (
-                  <FormHelperText>
-                    {"'Public' uses the "}
-                    <code>blockstream.info</code>
-                    {' API. Switch to private to use a '}
-                    <code>bitcoind</code>
-                    {' node.'}
-                  </FormHelperText>
-                ) : (
-                  <PrivateClientSettings 
-                    handleUrlChange={(event) => this.handleUrlChange(event)}
-                    handleUsernameChange={(event) => this.handleUsernameChange(event)}
-                    handlePasswordChange={(event) => this.handlePasswordChange(event)}
-                    client={client}
-                    url_error={url_error}
-                    username_error={username_error}
-                    password_error={password_error}
-                    privateNotes={privateNotes}
-                    connectSuccess={connectSuccess}
-                    connectError={connectError}
-                    testConnection={() => this.testConnection()}
-                  />
-                )
-              }
+              {client.type === "public" ? (
+                <FormHelperText>
+                  {"'Public' uses the "}
+                  <code>blockstream.info</code>
+                  {" API. Switch to private to use a "}
+                  <code>bitcoind</code>
+                  {" node."}
+                </FormHelperText>
+              ) : (
+                <PrivateClientSettings
+                  handleUrlChange={(event) => this.handleUrlChange(event)}
+                  handleUsernameChange={(event) =>
+                    this.handleUsernameChange(event)
+                  }
+                  handlePasswordChange={(event) =>
+                    this.handlePasswordChange(event)
+                  }
+                  client={client}
+                  urlError={urlError}
+                  usernameError={usernameError}
+                  passwordError={passwordError}
+                  privateNotes={privateNotes}
+                  connectSuccess={connectSuccess}
+                  connectError={connectError}
+                  testConnection={() => this.testConnection()}
+                />
+              )}
             </FormControl>
           </Grid>
         </CardContent>
@@ -171,13 +196,11 @@ class ClientPicker extends React.Component {
   }
 }
 
-ClientPicker.propTypes = propTypes;
-
 function mapStateToProps(state) {
   return {
     network: state.settings.network,
     client: state.client,
-    url_error: state.client.url_error,
+    urlError: state.client.urlError,
     url: state.client.url,
   };
 }
@@ -192,5 +215,5 @@ export default connect(
     setUrlError: SET_CLIENT_URL_ERROR,
     setUsernameError: SET_CLIENT_USERNAME_ERROR,
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
-  }),
+  })
 )(ClientPicker);

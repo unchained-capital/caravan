@@ -1,19 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import Copyable from "./Copyable";
 import { Button } from "@material-ui/core";
+import Copyable from "./Copyable";
 
 class UnsignedTransaction extends React.Component {
-
   static propTypes = {
-    unsignedTransaction: PropTypes.object.isRequired,
+    unsignedTransaction: PropTypes.shape({
+      toHex: PropTypes.func,
+    }).isRequired,
   };
 
   state = {
     showUnsignedTransaction: false,
-  }
+  };
 
   render = () => {
     const { showUnsignedTransaction } = this.state;
@@ -25,31 +26,32 @@ class UnsignedTransaction extends React.Component {
           <small>
             <Button size="small" onClick={this.handleHideUnsignedTransaction}>
               Hide Unsigned Transaction
-                </Button>
+            </Button>
           </small>
-          <p><Copyable text={hex}><code>{hex}</code></Copyable></p>
+          <p>
+            <Copyable text={hex}>
+              <code>{hex}</code>
+            </Copyable>
+          </p>
         </div>
-
-      );
-    } else {
-      return (
-        <small>
-          <Button size="small" onClick={this.handleShowUnsignedTransaction}>
-            Show Unsigned Transaction
-              </Button>
-        </small>
       );
     }
-  }
+    return (
+      <small>
+        <Button size="small" onClick={this.handleShowUnsignedTransaction}>
+          Show Unsigned Transaction
+        </Button>
+      </small>
+    );
+  };
 
   handleShowUnsignedTransaction = () => {
     this.setState({ showUnsignedTransaction: true });
-  }
+  };
 
   handleHideUnsignedTransaction = () => {
     this.setState({ showUnsignedTransaction: false });
-  }
-
+  };
 }
 
 function mapStateToProps(state) {
@@ -60,4 +62,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(UnsignedTransaction);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UnsignedTransaction);

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import moment from "moment";
 import { connect } from "react-redux";
 import Bowser from "bowser";
@@ -35,11 +36,25 @@ import {
 } from "@material-ui/icons";
 import Test from "../../tests/Test";
 
-import { setCurrentTestRun } from "../../actions/testSuiteRunActions";
+import { setCurrentTestRun as setCurrentTestRunAction } from "../../actions/testSuiteRunActions";
 
 import "./TestSuiteRunSummary.css";
 
 class TestSuiteRunSummaryBase extends React.Component {
+  static propTypes = {
+    keystore: PropTypes.shape({
+      note: PropTypes.string,
+      type: PropTypes.string,
+      version: PropTypes.string,
+    }).isRequired,
+    testSuiteRun: PropTypes.shape({
+      currentTestRunIndex: PropTypes.number,
+      started: PropTypes.bool,
+      testRuns: PropTypes.arrayOf(PropTypes.shape({})),
+    }).isRequired,
+    setCurrentTestRun: PropTypes.func.isRequired,
+  };
+
   render = () => {
     const { testSuiteRun, keystore } = this.props;
     const environment = Bowser.getParser(window.navigator.userAgent);
@@ -218,7 +233,7 @@ class TestSuiteRunSummaryBase extends React.Component {
 
   testRunChooser = (testRunIndex) => {
     const { setCurrentTestRun } = this.props;
-    return (event) => {
+    return () => {
       setCurrentTestRun(testRunIndex);
     };
   };
@@ -245,7 +260,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setCurrentTestRun,
+  setCurrentTestRun: setCurrentTestRunAction,
 };
 
 const TestSuiteRunSummary = connect(
@@ -253,4 +268,4 @@ const TestSuiteRunSummary = connect(
   mapDispatchToProps
 )(TestSuiteRunSummaryBase);
 
-export { TestSuiteRunSummary };
+export default TestSuiteRunSummary;

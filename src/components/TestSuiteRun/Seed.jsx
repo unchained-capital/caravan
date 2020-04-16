@@ -49,4 +49,4 @@ const mapDispatchToProps = {};
 
 const Seed = connect(mapStateToProps, mapDispatchToProps)(SeedBase);
 
-export { Seed };
+export default Seed;

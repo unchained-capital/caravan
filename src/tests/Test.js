@@ -11,15 +11,18 @@ class Test {
 
   static ERROR = ERROR;
 
-  static interaction() {
-    throw Error("Define the `interaction` method in your subclass of `Test`.");
-  }
-
-  static postprocess(thing) {
+  // eslint-disable-next-line class-methods-use-this
+  postprocess(thing) {
     return thing;
   }
 
-  static matches(expected, actual) {
+  // eslint-disable-next-line class-methods-use-this
+  interaction() {
+    throw Error("Define the `interaction` method in your subclass of `Test`.");
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  matches(expected, actual) {
     return expected === actual;
   }
 
@@ -77,7 +80,7 @@ class Test {
 
   resolve(actual) {
     const expected = this.expected();
-    if (Test.matches(expected, actual)) {
+    if (this.matches(expected, actual)) {
       return { status: SUCCESS };
     }
     return {

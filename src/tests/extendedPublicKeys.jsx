@@ -5,7 +5,8 @@ import { ExportExtendedPublicKey } from "unchained-wallets";
 import Test from "./Test";
 
 class ExportExtendedPublicKeyTest extends Test {
-  static postprocess(result) {
+  // eslint-disable-next-line class-methods-use-this
+  postprocess(result) {
     return result.pubkey ? result.pubkey : result;
   }
 

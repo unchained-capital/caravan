@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 // Components
-import { TextField, Box } from '@material-ui/core';
-
+import { TextField, Box } from "@material-ui/core";
 
 class TextExtendedPublicKeyImporter extends React.Component {
-
-  static propTypes =  {
-    extendedPublicKeyImporter: PropTypes.shape({}).isRequired,
+  static propTypes = {
+    extendedPublicKeyImporter: PropTypes.shape({
+      extendedPublicKey: PropTypes.string,
+    }).isRequired,
     validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
   };
 
   state = {
-    error: '',
+    error: "",
   };
 
   render = () => {
@@ -25,28 +25,28 @@ class TextExtendedPublicKeyImporter extends React.Component {
           fullWidth
           name="publicKey"
           label="Extended Public Key"
-            value={extendedPublicKeyImporter.extendedPublicKey}
-            onChange={this.handleChange}
-            error={this.hasError()}
-            helperText={error}
+          value={extendedPublicKeyImporter.extendedPublicKey}
+          onChange={this.handleChange}
+          error={this.hasError()}
+          helperText={error}
         />
       </Box>
     );
-  }
+  };
 
   hasError = () => {
-    return this.state.error !== '';
-  }
+    const { error } = this.state;
+    return error !== "";
+  };
 
   setError = (value) => {
-    this.setState({error: value});
-  }
+    this.setState({ error: value });
+  };
 
   handleChange = (event) => {
-    const {validateAndSetExtendedPublicKey} = this.props;
+    const { validateAndSetExtendedPublicKey } = this.props;
     validateAndSetExtendedPublicKey(event.target.value, this.setError);
-  }
-
+  };
 }
 
 export default TextExtendedPublicKeyImporter;

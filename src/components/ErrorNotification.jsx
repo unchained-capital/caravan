@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import { Snackbar, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import { clearErrorNotification } from "../actions/errorNotificationActions";
+import { clearErrorNotification as clearErrorNotificationAction } from "../actions/errorNotificationActions";
 
 const ErrorNotificationBase = (props) => {
   const { open, message, clearErrorNotification } = props;
@@ -47,7 +47,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  clearErrorNotification,
+  clearErrorNotification: clearErrorNotificationAction,
 };
 
 const ErrorNotification = connect(
@@ -55,4 +55,4 @@ const ErrorNotification = connect(
   mapDispatchToProps
 )(ErrorNotificationBase);
 
-export { ErrorNotification };
+export default ErrorNotification;
