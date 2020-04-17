@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import MaterialTable from "material-table";
 import { Typography } from "@material-ui/core";
 import { satoshisToBitcoins } from "unchained-bitcoin";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import Copyable from "../Copyable";
 import { slicePropTypes } from "../../proptypes";

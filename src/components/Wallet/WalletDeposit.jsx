@@ -20,7 +20,6 @@ import {
 
 // Components
 import Copyable from "../Copyable";
-import AddressExpander from "./AddressExpander";
 import AddressTable from "./AddressTable";
 
 let depositTimer;

@@ -19,7 +19,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { ThumbUp as SuccessIcon, Error as ErrorIcon } from "@material-ui/icons";
 import {
