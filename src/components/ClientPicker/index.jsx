@@ -50,7 +50,7 @@ class ClientPicker extends React.Component {
       type: PropTypes.string.isRequired,
     }).isRequired,
     network: PropTypes.string.isRequired,
-    privateNotes: PropTypes.shape({}),
+    privateNotes: PropTypes.node,
     setUrl: PropTypes.func.isRequired,
     urlError: PropTypes.string,
     setUrlError: PropTypes.func.isRequired,
@@ -67,7 +67,7 @@ class ClientPicker extends React.Component {
     urlError: "",
     usernameError: "",
     passwordError: "",
-    privateNotes: {},
+    privateNotes: React.createElement("span"),
   };
 
   state = {
