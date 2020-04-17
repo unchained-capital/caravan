@@ -102,33 +102,6 @@ class WalletDeposit extends React.Component {
     }, 2000);
   };
 
-  renderAddress = () => {
-    const { node } = this.state;
-    return node ? <AddressExpander node={node} /> : "";
-  };
-
-  renderReceived = () => {
-    const { resetWalletView } = this.props;
-    const { depositIndex } = this.state;
-    return (
-      <Box mt={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.getNextDepositAddress}
-          disabled={depositIndex >= this.getDepositableNodes().length - 1}
-        >
-          Next Address
-        </Button>
-        <Box ml={2} component="span">
-          <Button variant="contained" onClick={resetWalletView}>
-            Return
-          </Button>
-        </Box>
-      </Box>
-    );
-  };
-
   handleAmountChange = (event) => {
     const amount = event.target.value;
     let error = "";
@@ -152,14 +125,20 @@ class WalletDeposit extends React.Component {
   };
 
   render() {
-    const { amount, amountError, showReceived } = this.state;
+    const { resetWalletView } = this.props;
+    const {
+      amount,
+      amountError,
+      showReceived,
+      depositIndex,
+      node,
+    } = this.state;
     return (
       <div>
         <Card>
           <CardHeader title="Deposit" />
           <CardContent>
             <Copyable text={this.qrString()} newline>
-              {this.renderAddress()}
               <QRCode size={300} value={this.qrString()} level="L" />
               <p>Scan QR code or click to copy address to clipboard.</p>
             </Copyable>
@@ -172,7 +151,22 @@ class WalletDeposit extends React.Component {
               error={amountError !== ""}
               helperText={amountError}
             />
-            {this.renderReceived()}
+            {node ? <AddressExpander node={node} /> : ""}
+            <Box mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.getNextDepositAddress}
+                disabled={depositIndex >= this.getDepositableNodes().length - 1}
+              >
+                Next Address
+              </Button>
+              <Box ml={2} component="span">
+                <Button variant="contained" onClick={resetWalletView}>
+                  Return
+                </Button>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
         <Snackbar
