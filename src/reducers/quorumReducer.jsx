@@ -97,7 +97,7 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
 
 function updateTotalSigners(state, action) {
   const totalSigners = action.value;
-  const extendedPublicKeyImporters = [];
+  const extendedPublicKeyImporters = {};
   for (
     let extendedPublicKeyImporterNum = 1;
     extendedPublicKeyImporterNum <= totalSigners;

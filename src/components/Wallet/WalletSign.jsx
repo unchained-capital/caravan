@@ -31,7 +31,7 @@ class WalletSign extends React.Component {
       }),
     }).isRequired,
     finalizeOutputs: PropTypes.func.isRequired,
-    requiredSigners: PropTypes.shape({}).isRequired,
+    requiredSigners: PropTypes.number.isRequired,
     resetTransaction: PropTypes.func.isRequired,
     resetWalletView: PropTypes.func.isRequired,
     setRequiredSigners: PropTypes.func.isRequired,
@@ -42,7 +42,7 @@ class WalletSign extends React.Component {
       outputs: PropTypes.arrayOf(
         PropTypes.shape({
           address: PropTypes.string,
-          amountSats: PropTypes.number,
+          amountSats: PropTypes.shape({}),
         })
       ),
       txid: PropTypes.string,

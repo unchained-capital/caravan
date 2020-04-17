@@ -36,7 +36,9 @@ class WalletDeposit extends React.Component {
 
   static propTypes = {
     client: PropTypes.shape({}).isRequired,
-    depositNodes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    depositNodes: PropTypes.shape({
+      nodes: PropTypes.shape({}),
+    }).isRequired,
     deposits: PropTypes.shape({}).isRequired,
     network: PropTypes.string.isRequired,
     resetWalletView: PropTypes.func.isRequired,

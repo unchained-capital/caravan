@@ -55,7 +55,7 @@ class OutputEntry extends React.Component {
     number: PropTypes.number.isRequired,
     outputs: PropTypes.arrayOf(
       PropTypes.shape({
-        amount: PropTypes.number,
+        amount: PropTypes.string,
         amountError: PropTypes.string.isRequired,
       })
     ).isRequired,

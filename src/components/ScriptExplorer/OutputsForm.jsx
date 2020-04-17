@@ -88,7 +88,7 @@ class OutputsForm extends React.Component {
       PropTypes.shape({
         address: PropTypes.string,
         addressError: PropTypes.string,
-        amount: PropTypes.number,
+        amount: PropTypes.string,
         amountError: PropTypes.string,
       })
     ).isRequired,
@@ -99,7 +99,11 @@ class OutputsForm extends React.Component {
     setOutputAddress: PropTypes.func.isRequired,
     setOutputAmount: PropTypes.func.isRequired,
     signatureImporters: PropTypes.shape({}).isRequired,
-    updatesComplete: PropTypes.bool.isRequired,
+    updatesComplete: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    updatesComplete: false,
   };
 
   state = {
@@ -129,7 +133,7 @@ class OutputsForm extends React.Component {
     const { outputs, changeOutputIndex, autoSpend } = this.props;
     return map(outputs).map((output, i) => (
       <Box
-        key={output.address}
+        key={i} // eslint-disable-line react/no-array-index-key
         display={autoSpend && changeOutputIndex === i + 1 ? "none" : "block"}
       >
         <Grid container>

@@ -317,7 +317,6 @@ TestRunBase.propTypes = {
   keystore: PropTypes.shape({
     type: PropTypes.string.isRequired,
   }).isRequired,
-  // FIXME: this seems...wrong
   message: PropTypes.oneOfType([PropTypes.string, PropTypes.shape({})])
     .isRequired,
   nextTest: PropTypes.func.isRequired,
