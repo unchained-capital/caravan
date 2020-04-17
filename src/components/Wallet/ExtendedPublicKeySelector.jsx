@@ -81,10 +81,14 @@ class ExtendedPublicKeySelector extends React.Component {
   getAssociatedExtendedPublicKeyImporter = () => {
     const { signingKeys, number, extendedPublicKeyImporters } = this.props;
     const { selection } = this.state;
+    let associatedExtendedPublicKeyImporter = null;
 
-    const keyIndex = number > 0 ? signingKeys[number - 1] : selection;
-    if (keyIndex > 0) return extendedPublicKeyImporters[keyIndex];
-    return null;
+    if (selection) {
+      associatedExtendedPublicKeyImporter =
+        extendedPublicKeyImporters[selection];
+    }
+
+    return associatedExtendedPublicKeyImporter;
   };
 
   renderKeySelectorMenu = () => {
