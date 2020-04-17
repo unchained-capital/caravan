@@ -17,19 +17,6 @@ import UnsignedTransaction from "../UnsignedTransaction";
 import "../styles.css";
 
 class Spend extends React.Component {
-  static propTypes = {
-    transaction: PropTypes.shape({
-      finalizedOutputs: PropTypes.bool,
-      inputs: PropTypes.arrayOf(PropTypes.shape({})),
-      inputsTotalSats: PropTypes.shape({}),
-      requiredSigners: PropTypes.number,
-    }).isRequired,
-    ownership: PropTypes.shape({
-      chosen: PropTypes.bool,
-    }).isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-  };
-
   render = () => {
     return (
       <Box mt={2}>
@@ -147,6 +134,19 @@ class Spend extends React.Component {
     this.setState({ addressFinalized: true, confirmOwnership: value });
   };
 }
+
+Spend.propTypes = {
+  transaction: PropTypes.shape({
+    finalizedOutputs: PropTypes.bool,
+    inputs: PropTypes.arrayOf(PropTypes.shape({})),
+    inputsTotalSats: PropTypes.shape({}),
+    requiredSigners: PropTypes.number,
+  }).isRequired,
+  ownership: PropTypes.shape({
+    chosen: PropTypes.bool,
+  }).isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+};
 
 function mapStateToProps(state) {
   return state.spend;

@@ -10,9 +10,8 @@
     "airbnb",
     "prettier",
     "prettier/react",
-
   ],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
   }
 }

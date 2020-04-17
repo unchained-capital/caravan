@@ -20,20 +20,6 @@ import {
 import InteractionMessages from "../InteractionMessages";
 
 class HardwareWalletExtendedPublicKeyImporter extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-      method: PropTypes.string,
-    }).isRequired,
-    validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
-    validateAndSetBIP32Path: PropTypes.func.isRequired,
-    defaultBIP32Path: PropTypes.string.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    enableChangeMethod: PropTypes.func.isRequired,
-    disableChangeMethod: PropTypes.func.isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -188,5 +174,19 @@ class HardwareWalletExtendedPublicKeyImporter extends React.Component {
     resetBIP32Path();
   };
 }
+
+HardwareWalletExtendedPublicKeyImporter.propTypes = {
+  network: PropTypes.string.isRequired,
+  extendedPublicKeyImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+    method: PropTypes.string,
+  }).isRequired,
+  validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
+  validateAndSetBIP32Path: PropTypes.func.isRequired,
+  defaultBIP32Path: PropTypes.string.isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  enableChangeMethod: PropTypes.func.isRequired,
+  disableChangeMethod: PropTypes.func.isRequired,
+};
 
 export default HardwareWalletExtendedPublicKeyImporter;

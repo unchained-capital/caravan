@@ -22,31 +22,13 @@ import { setSigningKey as setSigningKeyAction } from "../../actions/transactionA
 import SignatureImporter from "../ScriptExplorer/SignatureImporter";
 
 class ExtendedPublicKeySelector extends React.Component {
-  static propTypes = {
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    inputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        bip32Path: PropTypes.string,
-      })
-    ).isRequired,
-    onChange: PropTypes.func,
-    network: PropTypes.string.isRequired,
-    number: PropTypes.number.isRequired,
-    setBIP32Path: PropTypes.func.isRequired,
-    setMethod: PropTypes.func.isRequired,
-    setSigningKey: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    signingKeys: PropTypes.arrayOf(PropTypes.number).isRequired,
-    totalSigners: PropTypes.number.isRequired,
-  };
+  constructor(props) {
+    super(props);
 
-  static defaultProps = {
-    onChange: null,
-  };
-
-  state = {
-    selection: "",
-  };
+    this.state = {
+      selection: "",
+    };
+  }
 
   componentDidMount = () => {
     const { signingKeys, number } = this.props;
@@ -79,7 +61,7 @@ class ExtendedPublicKeySelector extends React.Component {
   };
 
   getAssociatedExtendedPublicKeyImporter = () => {
-    const { signingKeys, number, extendedPublicKeyImporters } = this.props;
+    const { extendedPublicKeyImporters } = this.props;
     const { selection } = this.state;
     let associatedExtendedPublicKeyImporter = null;
 
@@ -216,6 +198,28 @@ class ExtendedPublicKeySelector extends React.Component {
     if (number > 0) setSigningKey(number, value);
   }
 }
+
+ExtendedPublicKeySelector.propTypes = {
+  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  inputs: PropTypes.arrayOf(
+    PropTypes.shape({
+      bip32Path: PropTypes.string,
+    })
+  ).isRequired,
+  onChange: PropTypes.func,
+  network: PropTypes.string.isRequired,
+  number: PropTypes.number.isRequired,
+  setBIP32Path: PropTypes.func.isRequired,
+  setMethod: PropTypes.func.isRequired,
+  setSigningKey: PropTypes.func.isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+  signingKeys: PropTypes.arrayOf(PropTypes.number).isRequired,
+  totalSigners: PropTypes.number.isRequired,
+};
+
+ExtendedPublicKeySelector.defaultProps = {
+  onChange: null,
+};
 
 function mapStateToProps(state) {
   return {

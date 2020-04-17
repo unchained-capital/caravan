@@ -20,21 +20,6 @@ import HermitDisplayer from "../Hermit/HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
 
 class HermitSignatureImporter extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    signatureImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-    }).isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    defaultBIP32Path: PropTypes.string.isRequired,
-    validateAndSetBIP32Path: PropTypes.func.isRequired,
-    validateAndSetSignature: PropTypes.func.isRequired,
-    enableChangeMethod: PropTypes.func.isRequired,
-    disableChangeMethod: PropTypes.func.isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -174,5 +159,20 @@ class HermitSignatureImporter extends React.Component {
     return signatureImporter.bip32Path === defaultBIP32Path;
   };
 }
+
+HermitSignatureImporter.propTypes = {
+  network: PropTypes.string.isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  signatureImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+  }).isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  defaultBIP32Path: PropTypes.string.isRequired,
+  validateAndSetBIP32Path: PropTypes.func.isRequired,
+  validateAndSetSignature: PropTypes.func.isRequired,
+  enableChangeMethod: PropTypes.func.isRequired,
+  disableChangeMethod: PropTypes.func.isRequired,
+};
 
 export default HermitSignatureImporter;

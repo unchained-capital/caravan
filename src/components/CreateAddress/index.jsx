@@ -15,15 +15,6 @@ import ImportAddressesButton from "../ImportAddressesButton";
 import "../styles.css";
 
 class CreateAddress extends React.Component {
-  static propTypes = {
-    address: PropTypes.string,
-    totalSigners: PropTypes.number.isRequired,
-  };
-
-  static defaultProps = {
-    address: "",
-  };
-
   render = () => {
     const { address } = this.props;
     return (
@@ -102,5 +93,14 @@ function mapStateToProps(state) {
     ...state.address,
   };
 }
+
+CreateAddress.propTypes = {
+  address: PropTypes.string,
+  totalSigners: PropTypes.number.isRequired,
+};
+
+CreateAddress.defaultProps = {
+  address: "",
+};
 
 export default connect(mapStateToProps)(CreateAddress);

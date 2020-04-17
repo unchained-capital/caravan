@@ -41,20 +41,6 @@ import { setCurrentTestRun as setCurrentTestRunAction } from "../../actions/test
 import "./TestSuiteRunSummary.css";
 
 class TestSuiteRunSummaryBase extends React.Component {
-  static propTypes = {
-    keystore: PropTypes.shape({
-      note: PropTypes.string,
-      type: PropTypes.string,
-      version: PropTypes.string,
-    }).isRequired,
-    testSuiteRun: PropTypes.shape({
-      currentTestRunIndex: PropTypes.number,
-      started: PropTypes.bool,
-      testRuns: PropTypes.arrayOf(PropTypes.shape({})),
-    }).isRequired,
-    setCurrentTestRun: PropTypes.func.isRequired,
-  };
-
   render = () => {
     const { testSuiteRun, keystore } = this.props;
     const environment = Bowser.getParser(window.navigator.userAgent);
@@ -251,6 +237,20 @@ class TestSuiteRunSummaryBase extends React.Component {
     }
   };
 }
+
+TestSuiteRunSummaryBase.propTypes = {
+  keystore: PropTypes.shape({
+    note: PropTypes.string,
+    type: PropTypes.string,
+    version: PropTypes.string,
+  }).isRequired,
+  testSuiteRun: PropTypes.shape({
+    currentTestRunIndex: PropTypes.number,
+    started: PropTypes.bool,
+    testRuns: PropTypes.arrayOf(PropTypes.shape({})),
+  }).isRequired,
+  setCurrentTestRun: PropTypes.func.isRequired,
+};
 
 const mapStateToProps = (state) => {
   return {

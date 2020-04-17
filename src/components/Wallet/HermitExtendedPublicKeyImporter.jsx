@@ -8,22 +8,12 @@ import { FormGroup, FormHelperText } from "@material-ui/core";
 import HermitReader from "../Hermit/HermitReader";
 
 class HermitExtendedPublicKeyImporter extends React.Component {
-  static propTypes = {
-    enableChangeMethod: PropTypes.func.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-    }).isRequired,
-    disableChangeMethod: PropTypes.func.isRequired,
-    network: PropTypes.string.isRequired,
-    reset: PropTypes.func.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    validateAndSetBIP32Path: PropTypes.func.isRequired,
-    validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
-  };
-
-  state = {
-    extendedPublicKeyError: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      extendedPublicKeyError: "",
+    };
+  }
 
   componentDidMount = () => {
     const { resetBIP32Path } = this.props;
@@ -85,5 +75,18 @@ class HermitExtendedPublicKeyImporter extends React.Component {
     enableChangeMethod();
   };
 }
+
+HermitExtendedPublicKeyImporter.propTypes = {
+  enableChangeMethod: PropTypes.func.isRequired,
+  extendedPublicKeyImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+  }).isRequired,
+  disableChangeMethod: PropTypes.func.isRequired,
+  network: PropTypes.string.isRequired,
+  reset: PropTypes.func.isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  validateAndSetBIP32Path: PropTypes.func.isRequired,
+  validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
+};
 
 export default HermitExtendedPublicKeyImporter;

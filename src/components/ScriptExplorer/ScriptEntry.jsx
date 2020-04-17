@@ -40,29 +40,15 @@ import {
 } from "../../actions/ownershipActions";
 
 class ScriptEntry extends React.Component {
-  static propTypes = {
-    addressType: PropTypes.string.isRequired,
-    choosePerformSpend: PropTypes.func.isRequired,
-    chosePerformSpend: PropTypes.bool.isRequired,
-    choseConfirmOwnership: PropTypes.bool.isRequired,
-    chooseConfirmOwnership: PropTypes.func.isRequired,
-    client: PropTypes.shape({
-      type: PropTypes.string,
-    }).isRequired,
-    network: PropTypes.string.isRequired,
-    setFrozen: PropTypes.func.isRequired,
-    setInputs: PropTypes.func.isRequired,
-    setOwnershipMultisig: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-    setTotalSigners: PropTypes.func.isRequired,
-  };
-
-  state = {
-    scriptHex: "",
-    scriptError: "",
-    fetchUTXOsError: "",
-    fetchedUTXOs: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      scriptHex: "",
+      scriptError: "",
+      fetchUTXOsError: "",
+      fetchedUTXOs: false,
+    };
+  }
 
   disabled = () => {};
 
@@ -309,6 +295,23 @@ class ScriptEntry extends React.Component {
     );
   }
 }
+
+ScriptEntry.propTypes = {
+  addressType: PropTypes.string.isRequired,
+  choosePerformSpend: PropTypes.func.isRequired,
+  chosePerformSpend: PropTypes.bool.isRequired,
+  choseConfirmOwnership: PropTypes.bool.isRequired,
+  chooseConfirmOwnership: PropTypes.func.isRequired,
+  client: PropTypes.shape({
+    type: PropTypes.string,
+  }).isRequired,
+  network: PropTypes.string.isRequired,
+  setFrozen: PropTypes.func.isRequired,
+  setInputs: PropTypes.func.isRequired,
+  setOwnershipMultisig: PropTypes.func.isRequired,
+  setRequiredSigners: PropTypes.func.isRequired,
+  setTotalSigners: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

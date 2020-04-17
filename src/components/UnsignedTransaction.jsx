@@ -6,15 +6,12 @@ import { Button } from "@material-ui/core";
 import Copyable from "./Copyable";
 
 class UnsignedTransaction extends React.Component {
-  static propTypes = {
-    unsignedTransaction: PropTypes.shape({
-      toHex: PropTypes.func,
-    }).isRequired,
-  };
-
-  state = {
-    showUnsignedTransaction: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      showUnsignedTransaction: false,
+    };
+  }
 
   render = () => {
     const { showUnsignedTransaction } = this.state;
@@ -53,6 +50,12 @@ class UnsignedTransaction extends React.Component {
     this.setState({ showUnsignedTransaction: false });
   };
 }
+
+UnsignedTransaction.propTypes = {
+  unsignedTransaction: PropTypes.shape({
+    toHex: PropTypes.func,
+  }).isRequired,
+};
 
 function mapStateToProps(state) {
   return {

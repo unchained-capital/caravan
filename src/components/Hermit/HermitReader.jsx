@@ -10,27 +10,13 @@ import Copyable from "../Copyable";
 const QR_CODE_READER_DELAY = 300; // ms?
 
 class HermitReader extends Component {
-  static propTypes = {
-    onStart: PropTypes.func.isRequired,
-    onSuccess: PropTypes.func.isRequired,
-    onClear: PropTypes.func.isRequired,
-    width: PropTypes.string,
-    startText: PropTypes.string,
-    interaction: PropTypes.shape({
-      messageFor: PropTypes.func,
-      parse: PropTypes.func,
-    }).isRequired,
-  };
-
-  static defaultProps = {
-    width: "256px",
-    startText: "Scan",
-  };
-
-  state = {
-    status: PENDING,
-    error: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      status: PENDING,
+      error: "",
+    };
+  }
 
   render = () => {
     const { status, error } = this.state;
@@ -153,5 +139,22 @@ class HermitReader extends Component {
     }
   };
 }
+
+HermitReader.propTypes = {
+  onStart: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
+  width: PropTypes.string,
+  startText: PropTypes.string,
+  interaction: PropTypes.shape({
+    messageFor: PropTypes.func,
+    parse: PropTypes.func,
+  }).isRequired,
+};
+
+HermitReader.defaultProps = {
+  width: "256px",
+  startText: "Scan",
+};
 
 export default HermitReader;

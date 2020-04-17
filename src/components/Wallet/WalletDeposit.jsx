@@ -25,25 +25,18 @@ import AddressExpander from "./AddressExpander";
 let depositTimer;
 
 class WalletDeposit extends React.Component {
-  state = {
-    address: "",
-    amount: 0,
-    amountError: "",
-    showReceived: false,
-    depositIndex: 0,
-    node: null,
-  };
+  constructor(props) {
+    super(props);
 
-  static propTypes = {
-    client: PropTypes.shape({}).isRequired,
-    depositNodes: PropTypes.shape({
-      nodes: PropTypes.shape({}),
-    }).isRequired,
-    deposits: PropTypes.shape({}).isRequired,
-    network: PropTypes.string.isRequired,
-    resetWalletView: PropTypes.func.isRequired,
-    updateDepositSlice: PropTypes.func.isRequired,
-  };
+    this.state = {
+      address: "",
+      amount: 0,
+      amountError: "",
+      showReceived: false,
+      depositIndex: 0,
+      node: null,
+    };
+  }
 
   componentDidMount() {
     this.getDepositAddress();
@@ -195,6 +188,17 @@ class WalletDeposit extends React.Component {
     );
   }
 }
+
+WalletDeposit.propTypes = {
+  client: PropTypes.shape({}).isRequired,
+  depositNodes: PropTypes.shape({
+    nodes: PropTypes.shape({}),
+  }).isRequired,
+  deposits: PropTypes.shape({}).isRequired,
+  network: PropTypes.string.isRequired,
+  resetWalletView: PropTypes.func.isRequired,
+  updateDepositSlice: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

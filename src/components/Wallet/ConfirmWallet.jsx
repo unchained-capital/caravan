@@ -12,10 +12,6 @@ import {
 } from "@material-ui/core";
 
 class WalletConfirmation extends React.Component {
-  static propTypes = {
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-  };
-
   render = () => {
     return (
       <Box>
@@ -46,6 +42,10 @@ class WalletConfirmation extends React.Component {
     ));
   };
 }
+
+WalletConfirmation.propTypes = {
+  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+};
 
 function mapStateToProps(state) {
   return {

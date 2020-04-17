@@ -18,12 +18,6 @@ import {
 import { setAddressType } from "../actions/settingsActions";
 
 class AddressTypePicker extends React.Component {
-  static propTypes = {
-    addressType: PropTypes.string.isRequired,
-    frozen: PropTypes.bool.isRequired,
-    setType: PropTypes.func.isRequired,
-  };
-
   handleTypeChange = (event) => {
     const { setType } = this.props;
     setType(event.target.value);
@@ -83,6 +77,12 @@ class AddressTypePicker extends React.Component {
     );
   }
 }
+
+AddressTypePicker.propTypes = {
+  addressType: PropTypes.string.isRequired,
+  frozen: PropTypes.bool.isRequired,
+  setType: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return state.settings;

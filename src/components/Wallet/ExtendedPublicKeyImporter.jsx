@@ -44,33 +44,13 @@ const XPUB = "xpub";
 const TEXT = "text";
 
 class ExtendedPublicKeyImporter extends React.Component {
-  static propTypes = {
-    addressType: PropTypes.string.isRequired,
-    defaultBIP32Path: PropTypes.string.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-      conflict: PropTypes.bool,
-      extendedPublicKey: PropTypes.string,
-      finalized: PropTypes.bool,
-      name: PropTypes.string,
-      method: PropTypes.string,
-    }).isRequired,
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    finalizedNetwork: PropTypes.string.isRequired,
-    network: PropTypes.string.isRequired,
-    number: PropTypes.number.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    setBIP32Path: PropTypes.func.isRequired,
-    setExtendedPublicKey: PropTypes.func.isRequired,
-    setFinalized: PropTypes.func.isRequired,
-    setName: PropTypes.func.isRequired,
-    setMethod: PropTypes.func.isRequired,
-  };
-
-  state = {
-    disableChangeMethod: false,
-    conversionMessage: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      disableChangeMethod: false,
+      conversionMessage: "",
+    };
+  }
 
   title = () => {
     const { number, extendedPublicKeyImporter, setName } = this.props;
@@ -391,6 +371,29 @@ class ExtendedPublicKeyImporter extends React.Component {
     );
   }
 }
+
+ExtendedPublicKeyImporter.propTypes = {
+  addressType: PropTypes.string.isRequired,
+  defaultBIP32Path: PropTypes.string.isRequired,
+  extendedPublicKeyImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+    conflict: PropTypes.bool,
+    extendedPublicKey: PropTypes.string,
+    finalized: PropTypes.bool,
+    name: PropTypes.string,
+    method: PropTypes.string,
+  }).isRequired,
+  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  finalizedNetwork: PropTypes.string.isRequired,
+  network: PropTypes.string.isRequired,
+  number: PropTypes.number.isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  setBIP32Path: PropTypes.func.isRequired,
+  setExtendedPublicKey: PropTypes.func.isRequired,
+  setFinalized: PropTypes.func.isRequired,
+  setName: PropTypes.func.isRequired,
+  setMethod: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state, ownProps) {
   return {
