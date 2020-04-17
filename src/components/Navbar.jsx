@@ -66,7 +66,7 @@ const Navbar = () => {
   };
 
   const menuItems = [
-    { href: "#/wallet", title: "Create Wallet" },
+    { href: "#/wallet", title: "Wallet" },
     { href: "#/create", title: "Create Address" },
     { href: "#/script", title: "Script Explorer" },
     { href: "#/help", title: "Help" },
