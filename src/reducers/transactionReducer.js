@@ -213,7 +213,7 @@ function updateOutputAddress(state, action) {
       inputIndex += 1
     ) {
       const input = state.inputs[inputIndex];
-      if (address === input.multisig.address) {
+      if (input.multisig && address === input.multisig.address) {
         error = "Output address cannot equal input address.";
         break;
       }
