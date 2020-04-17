@@ -21,6 +21,7 @@ import {
 // Components
 import Copyable from "../Copyable";
 import AddressExpander from "./AddressExpander";
+import AddressTable from "./AddressTable";
 
 let depositTimer;
 
@@ -149,7 +150,7 @@ class WalletDeposit extends React.Component {
               error={amountError !== ""}
               helperText={amountError}
             />
-            {node ? <AddressExpander node={node} /> : ""}
+            {node ? <AddressTable slices={[node]} /> : ""}
             <Box mt={2}>
               <Button
                 variant="contained"

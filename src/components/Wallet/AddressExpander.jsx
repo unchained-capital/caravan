@@ -97,21 +97,22 @@ class AddressExpander extends React.Component {
 
     return (
       <div style={{ width: "100%" }}>
-        <code
-          className={
-            addressUsed && balanceSats.isEqualTo(0) ? styles.spent : ""
-          }
-        >
-          {multisig.address}
-        </code>
-        &nbsp;
-        <Copyable text={multisig.address}>
-          <FileCopyIcon />
-        </Copyable>
-        {externalLink(
-          blockExplorerAddressURL(multisig.address, network),
-          <LaunchIcon onClick={(e) => e.stopPropagation()} />
-        )}
+        <Typography>
+          <Copyable text={multisig.address} showIcon>
+            <code
+              className={
+                addressUsed && balanceSats.isEqualTo(0) ? styles.spent : ""
+              }
+            >
+              {multisig.address}
+            </code>
+            &nbsp;
+          </Copyable>
+          {externalLink(
+            blockExplorerAddressURL(multisig.address, network),
+            <LaunchIcon onClick={(e) => e.stopPropagation()} />
+          )}
+        </Typography>
         <MoreVertIcon
           onClick={this.handleMenu}
           style={{
