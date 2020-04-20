@@ -5,9 +5,10 @@ import { Typography } from "@material-ui/core";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
 import Copyable from "../Copyable";
-import { slicePropTypes } from "../../proptypes";
+import { slicePropTypes, clientPropTypes } from "../../proptypes";
+import SliceDetails from "./SliceDetails";
 
-const AddressTable = ({ slices, search, paging, title }) => {
+const AddressTable = ({ slices, search, paging, title, client }) => {
   const options = {
     search,
     paging,
@@ -44,6 +45,9 @@ const AddressTable = ({ slices, search, paging, title }) => {
         },
       ]}
       data={slices}
+      detailPanel={(rowData) => (
+        <SliceDetails client={client} slice={rowData} />
+      )}
     />
   );
 };
@@ -53,6 +57,7 @@ AddressTable.propTypes = {
   search: PropTypes.bool,
   paging: PropTypes.bool,
   title: PropTypes.string,
+  client: PropTypes.shape(clientPropTypes).isRequired,
 };
 
 AddressTable.defaultProps = {

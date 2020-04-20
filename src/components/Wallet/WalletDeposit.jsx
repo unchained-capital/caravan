@@ -20,7 +20,7 @@ import {
 
 // Components
 import Copyable from "../Copyable";
-import AddressTable from "./AddressTable";
+import SlicesTable from "../Slice/SlicesTable";
 
 let depositTimer;
 
@@ -125,7 +125,7 @@ class WalletDeposit extends React.Component {
   };
 
   render() {
-    const { resetWalletView } = this.props;
+    const { resetWalletView, client } = this.props;
     const {
       amount,
       amountError,
@@ -151,7 +151,7 @@ class WalletDeposit extends React.Component {
               error={amountError !== ""}
               helperText={amountError}
             />
-            {node ? <AddressTable slices={[node]} /> : ""}
+            {node ? <SlicesTable slices={[node]} client={client} /> : ""}
             <Box mt={2}>
               <Button
                 variant="contained"

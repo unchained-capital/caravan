@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
 export { default as slicePropTypes } from "./slice";
+export { default as clientPropTypes } from "./client";
