@@ -1,17 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 import MaterialTable from "material-table";
-import { Typography } from "@material-ui/core";
+import { Typography, Box } from "@material-ui/core";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
 import Copyable from "../Copyable";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 import SliceDetails from "./SliceDetails";
 
-const AddressTable = ({ slices, search, paging, title, client }) => {
+const AddressTable = ({ slices, search, paging, title, client, network }) => {
   const options = {
     search,
     paging,
+    detailPanelType: "single",
     showTitle: (title && title.length) || false,
   };
   options.toolbar = options.showTitle && options.search;
@@ -45,9 +46,16 @@ const AddressTable = ({ slices, search, paging, title, client }) => {
         },
       ]}
       data={slices}
-      detailPanel={(rowData) => (
-        <SliceDetails client={client} slice={rowData} />
-      )}
+      detailPanel={[
+        {
+          tooltip: "Address Details",
+          render: (rowData) => (
+            <Box p={1}>
+              <SliceDetails client={client} slice={rowData} network={network} />
+            </Box>
+          ),
+        },
+      ]}
     />
   );
 };
@@ -58,6 +66,7 @@ AddressTable.propTypes = {
   paging: PropTypes.bool,
   title: PropTypes.string,
   client: PropTypes.shape(clientPropTypes).isRequired,
+  network: PropTypes.string.isRequired,
 };
 
 AddressTable.defaultProps = {

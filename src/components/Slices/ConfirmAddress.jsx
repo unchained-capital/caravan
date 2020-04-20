@@ -15,7 +15,6 @@ import {
   multisigAddressType,
   multisigRequiredSigners,
   multisigTotalSigners,
-  MAINNET,
 } from "unchained-bitcoin";
 import { ACTIVE, PENDING, ConfirmMultisigAddress } from "unchained-wallets";
 
@@ -72,6 +71,7 @@ const ConfirmAddress = ({ slice, network }) => {
   const requiredSigners = multisigRequiredSigners(slice.multisig);
   const totalSigners = multisigTotalSigners(slice.multisig);
 
+  // Sets device interaction for component based on xpub selected
   function keySelected(_event, extendedPublicKeyImporter) {
     const { multisig, bip32Path } = slice;
     setInteraction(
@@ -88,6 +88,7 @@ const ConfirmAddress = ({ slice, network }) => {
     dispatch({ type: "RESET" });
   }
 
+  // run interaction and see if address confirms
   async function confirmOnDevice() {
     dispatch({ type: "SET_ACTIVE" });
     const { multisig } = slice;
@@ -114,7 +115,8 @@ const ConfirmAddress = ({ slice, network }) => {
         <>
           <Box>
             <p>
-              Confirm the following {network} {addressType} {requiredSigners}
+              Confirm the following{network.length ? network : ""} {addressType}{" "}
+              {requiredSigners}
               -of-
               {totalSigners} multisig address on your device:
             </p>
@@ -189,6 +191,6 @@ ConfirmAddress.propTypes = {
 };
 
 ConfirmAddress.defaultProps = {
-  network: MAINNET,
+  network: "",
 };
 export default ConfirmAddress;

@@ -4,13 +4,16 @@ import { connect } from "react-redux";
 
 import QRCode from "qrcode.react";
 import {
+  Button,
+  Box,
   Card,
   CardHeader,
   CardContent,
-  TextField,
+  Grid,
+  InputAdornment,
   Snackbar,
-  Button,
-  Box,
+  Typography,
+  TextField,
 } from "@material-ui/core";
 import { fetchAddressUTXOs } from "../../blockchain";
 import {
@@ -20,7 +23,8 @@ import {
 
 // Components
 import Copyable from "../Copyable";
-import SlicesTable from "../Slice/SlicesTable";
+import BitcoinIcon from "../BitcoinIcon";
+import SlicesTable from "../Slices/SlicesTable";
 
 let depositTimer;
 
@@ -125,7 +129,7 @@ class WalletDeposit extends React.Component {
   };
 
   render() {
-    const { resetWalletView, client } = this.props;
+    const { resetWalletView, client, network } = this.props;
     const {
       amount,
       amountError,
@@ -138,20 +142,48 @@ class WalletDeposit extends React.Component {
         <Card>
           <CardHeader title="Deposit" />
           <CardContent>
-            <Copyable text={this.qrString()} newline>
-              <QRCode size={300} value={this.qrString()} level="L" />
-              <p>Scan QR code or click to copy address to clipboard.</p>
-            </Copyable>
-            <TextField
-              fullWidth
-              label="Amount BTC"
-              name="depositAmount"
-              onChange={this.handleAmountChange}
-              value={amount}
-              error={amountError !== ""}
-              helperText={amountError}
-            />
-            {node ? <SlicesTable slices={[node]} client={client} /> : ""}
+            <Grid
+              container
+              justify="center"
+              direction="column"
+              alignItems="center"
+            >
+              <Grid item md={6}>
+                <Copyable text={this.qrString()} newline>
+                  <QRCode size={300} value={this.qrString()} level="L" />
+                </Copyable>
+              </Grid>
+              <Grid item>
+                <Typography align="center" variant="subtitle">
+                  Scan QR code or click to copy address to clipboard.
+                </Typography>
+              </Grid>
+              <Grid item md={6}>
+                <Box my={3}>
+                  <TextField
+                    fullWidth
+                    label="Amount BTC"
+                    name="depositAmount"
+                    onChange={this.handleAmountChange}
+                    value={amount}
+                    error={amountError !== ""}
+                    helperText={amountError}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <BitcoinIcon network={network} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            {node ? (
+              <SlicesTable slices={[node]} client={client} network={network} />
+            ) : (
+              ""
+            )}
             <Box mt={2}>
               <Button
                 variant="contained"

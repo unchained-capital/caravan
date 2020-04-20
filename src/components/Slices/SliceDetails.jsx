@@ -5,10 +5,8 @@ import {
   Typography,
   Grid,
   Tabs,
-  Button,
   Tab,
   Box,
-  Paper,
   Tooltip,
   AppBar,
   makeStyles,
@@ -17,6 +15,7 @@ import {
 import UTXOSet from "../ScriptExplorer/UTXOSet";
 import MultisigDetails from "../MultisigDetails";
 import ImportAddressesButton from "../ImportAddressesButton";
+import ConfirmAddress from "./ConfirmAddress";
 
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 
@@ -51,10 +50,11 @@ function TabPanel({ children, value, index, ...other }) {
   return (
     <Grid
       container
+      justify="center"
       style={{ display: value === index ? "inherit" : "none" }}
       {...other}
     >
-      <Grid item md={12}>
+      <Grid item md={11}>
         <Box>{children}</Box>
       </Grid>
     </Grid>
@@ -71,7 +71,7 @@ TabPanel.defaultProps = {
   children: React.createElement("span"),
 };
 
-const SliceDetails = ({ slice, client }) => {
+const SliceDetails = ({ slice, client, network }) => {
   const [tabIndex, setTabIndex] = React.useState("0");
   const classes = useStyles();
 
@@ -87,7 +87,17 @@ const SliceDetails = ({ slice, client }) => {
       tab: {
         label: "Confirm on Device",
       },
-      panel: "Confirm on Device",
+      panel: (
+        <div>
+          <Typography variant="h6">
+            Verify Address with Quorum Participants
+          </Typography>
+          <Typography variant="caption">
+            (not all device variants supported)
+          </Typography>
+          <ConfirmAddress slice={slice} network={network} />
+        </div>
+      ),
     },
     {
       tab: {
@@ -121,7 +131,7 @@ const SliceDetails = ({ slice, client }) => {
       </AppBar>
       {tabs.map(({ panel }, index) => (
         <TabPanel value={tabIndex} index={index.toString()} key={index}>
-          {panel}
+          <Box my={3}>{panel}</Box>
         </TabPanel>
       ))}
     </Grid>
@@ -131,6 +141,7 @@ const SliceDetails = ({ slice, client }) => {
 SliceDetails.propTypes = {
   slice: PropTypes.shape(slicePropTypes).isRequired,
   client: PropTypes.shape(clientPropTypes).isRequired,
+  network: PropTypes.string.isRequired,
 };
 
 export default SliceDetails;

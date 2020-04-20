@@ -40,12 +40,12 @@ class MultisigDetails extends React.Component {
         <Typography variant="h6">{name}</Typography>
         <Grid container spacing={2}>
           <Grid item sm={6}>
-            <Copyable text={hex}>
+            <Copyable text={hex} showIcon>
               <code>{hex}</code>
             </Copyable>
           </Grid>
           <Grid item sm={6}>
-            <Copyable text={ops}>
+            <Copyable text={ops} showIcon>
               <code>{ops}</code>
             </Copyable>
           </Grid>
@@ -67,7 +67,7 @@ class MultisigDetails extends React.Component {
           <Grid container direction="column" spacing={2}>
             {showAddress && (
               <Grid item>
-                <Copyable text={address}>
+                <Copyable text={address} showIcon>
                   <code>{address}</code>
                 </Copyable>
                 &nbsp;
