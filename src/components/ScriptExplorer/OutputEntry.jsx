@@ -43,7 +43,7 @@ class OutputEntry extends React.Component {
       multisig: PropTypes.shape({
         address: PropTypes.string,
       }),
-    }).isRequired,
+    }),
     changeOutputIndex: PropTypes.number.isRequired,
     fee: PropTypes.string.isRequired,
     feeError: PropTypes.string.isRequired,
@@ -63,6 +63,10 @@ class OutputEntry extends React.Component {
     setAddress: PropTypes.func.isRequired,
     setAmount: PropTypes.func.isRequired,
     setChangeOutput: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    changeNode: {},
   };
 
   displayBalanceAction = () => {

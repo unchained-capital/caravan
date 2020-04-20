@@ -216,6 +216,8 @@ class ConfirmOwnership extends React.Component {
     const { publicKeyImporter } = this.props;
     const { disableChangeMethod } = this.state;
     const labelId = "public-key-importer-select-label";
+    const selectLabelId = `${labelId}-select`;
+
     return (
       <Card>
         <CardHeader ref={this.titleRef} title="Confirm Ownership" />
@@ -227,7 +229,7 @@ class ConfirmOwnership extends React.Component {
               <InputLabel id={labelId}>Select Method</InputLabel>
 
               <Select
-                labelId
+                labelId={selectLabelId}
                 id="public-key-importer-select"
                 disabled={disableChangeMethod}
                 value={publicKeyImporter.method}
