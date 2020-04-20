@@ -18,6 +18,7 @@ import {
   bitcoindGetAddressStatus,
   bitcoindParams,
 } from "../bitcoind";
+import { clientPropTypes } from "../proptypes";
 
 const useStyles = makeStyles(() => ({
   tooltip: {
@@ -117,6 +118,7 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
         await importCallback(successes, rescan);
       }
     } catch (e) {
+      console.log("e:", e);
       setImportError("Unable to import, check your settings and try again");
       setImported(false);
     }
@@ -178,12 +180,11 @@ however to know if an address has been used prior to import, a rescan needs to t
 ImportAddressesButton.propTypes = {
   addresses: PropTypes.arrayOf(PropTypes.string),
   importCallback: PropTypes.func,
-  client: PropTypes.shape({}),
+  client: PropTypes.shape(clientPropTypes).isRequired,
 };
 
 ImportAddressesButton.defaultProps = {
   addresses: [],
-  client: {},
   importCallback() {},
 };
 

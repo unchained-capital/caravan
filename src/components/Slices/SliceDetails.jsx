@@ -113,7 +113,12 @@ const SliceDetails = ({ slice, client, network }) => {
         label: "Watch Address",
         disabled: client.type !== "private",
       },
-      panel: <ImportAddressesButton addresses={[slice.multisig.address]} />,
+      panel: (
+        <ImportAddressesButton
+          addresses={[slice.multisig.address]}
+          client={client}
+        />
+      ),
     },
   ];
 

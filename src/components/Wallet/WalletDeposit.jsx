@@ -154,7 +154,7 @@ class WalletDeposit extends React.Component {
                 </Copyable>
               </Grid>
               <Grid item>
-                <Typography align="center" variant="subtitle">
+                <Typography align="center" variant="subtitle1">
                   Scan QR code or click to copy address to clipboard.
                 </Typography>
               </Grid>
