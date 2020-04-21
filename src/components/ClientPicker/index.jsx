@@ -45,36 +45,15 @@ class ClientPicker extends React.Component {
     return "";
   }
 
-  static propTypes = {
-    client: PropTypes.shape({
-      type: PropTypes.string.isRequired,
-    }).isRequired,
-    network: PropTypes.string.isRequired,
-    privateNotes: PropTypes.node,
-    setUrl: PropTypes.func.isRequired,
-    urlError: PropTypes.string,
-    setUrlError: PropTypes.func.isRequired,
-    setPassword: PropTypes.func.isRequired,
-    passwordError: PropTypes.string,
-    setPasswordError: PropTypes.func.isRequired,
-    setType: PropTypes.func.isRequired,
-    usernameError: PropTypes.string,
-    setUsername: PropTypes.func.isRequired,
-    setUsernameError: PropTypes.func.isRequired,
-  };
+  constructor(props) {
+    super(props);
 
-  static defaultProps = {
-    urlError: "",
-    usernameError: "",
-    passwordError: "",
-    privateNotes: React.createElement("span"),
-  };
-
-  state = {
-    urlEdited: false,
-    connectError: "",
-    connectSuccess: false,
-  };
+    this.state = {
+      urlEdited: false,
+      connectError: "",
+      connectSuccess: false,
+    };
+  }
 
   handleTypeChange = (event) => {
     const { setType, network, setUrl } = this.props;
@@ -218,7 +197,7 @@ ClientPicker.defaultProps = {
   urlError: "",
   usernameError: "",
   passwordError: "",
-  privateNotes: {},
+  privateNotes: React.createElement("span"),
 };
 
 function mapStateToProps(state) {
