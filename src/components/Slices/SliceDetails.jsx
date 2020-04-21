@@ -124,7 +124,7 @@ const SliceDetails = ({ slice, client, network }) => {
 
   return (
     <Grid container className={classes.root}>
-      <AppBar position="static" color="default">
+      <AppBar position="static" color="default" variant="outlined">
         <Tabs
           value={tabIndex}
           onChange={handleChange}

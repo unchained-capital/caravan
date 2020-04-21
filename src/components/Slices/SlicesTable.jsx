@@ -1,12 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 import MaterialTable from "material-table";
-import { Typography, Box } from "@material-ui/core";
+import { Typography, Box, makeStyles } from "@material-ui/core";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
 import Copyable from "../Copyable";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 import SliceDetails from "./SliceDetails";
+
+const useStyles = makeStyles((theme) => ({
+  panel: {
+    boxShadow: `inset 0px 0px 4px 1px ${theme.palette.grey[500]}`,
+  },
+}));
 
 const SlicesTable = ({
   slices,
@@ -17,6 +23,8 @@ const SlicesTable = ({
   network,
   disabled,
 }) => {
+  const classes = useStyles();
+
   const options = {
     search,
     paging,
@@ -66,7 +74,7 @@ const SlicesTable = ({
         {
           tooltip: "Address Details",
           render: (rowData) => (
-            <Box p={1}>
+            <Box p={1} className={classes.panel}>
               <SliceDetails client={client} slice={rowData} network={network} />
             </Box>
           ),
