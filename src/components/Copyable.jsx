@@ -84,7 +84,7 @@ Copyable.defaultProps = {
   newline: false,
   showIcon: false,
   children: React.createElement("span"),
-  showText: false,
+  showText: true,
   code: false,
 };
 export default Copyable;

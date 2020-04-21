@@ -96,7 +96,7 @@ class AddressExpander extends React.Component {
     return (
       <div style={{ width: "100%" }}>
         <Typography>
-          <Copyable text={multisig.address} showIcon>
+          <Copyable text={multisig.address} showIcon showText={false}>
             <code
               className={
                 addressUsed && balanceSats.isEqualTo(0) ? styles.spent : ""

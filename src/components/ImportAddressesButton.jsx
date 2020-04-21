@@ -118,7 +118,6 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
         await importCallback(successes, rescan);
       }
     } catch (e) {
-      console.log("e:", e);
       setImportError("Unable to import, check your settings and try again");
       setImported(false);
     }

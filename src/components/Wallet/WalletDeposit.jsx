@@ -149,7 +149,7 @@ class WalletDeposit extends React.Component {
               alignItems="center"
             >
               <Grid item md={6}>
-                <Copyable text={this.qrString()} newline>
+                <Copyable text={this.qrString()} newline showText={false}>
                   <QRCode size={300} value={this.qrString()} level="L" />
                 </Copyable>
               </Grid>
