@@ -173,7 +173,12 @@ class WalletDeposit extends React.Component {
               </Grid>
             </Grid>
             {node ? (
-              <SlicesTable slices={[node]} client={client} network={network} />
+              <SlicesTable
+                slices={[node]}
+                client={client}
+                network={network}
+                disabled={["lastUsed"]}
+              />
             ) : (
               ""
             )}

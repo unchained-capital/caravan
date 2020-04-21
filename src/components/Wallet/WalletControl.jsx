@@ -16,6 +16,7 @@ import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
 import WalletDeposit from "./WalletDeposit";
 import WalletSpend from "./WalletSpend";
 import NodeSet from "./NodeSet";
+import { SlicesTableContainer } from "../Slices";
 
 class WalletControl extends React.Component {
   scrollRef = React.createRef();
@@ -58,7 +59,12 @@ class WalletControl extends React.Component {
           />
         );
       if (walletMode === WALLET_MODES.VIEW)
-        return <NodeSet addNode={addNode} updateNode={updateNode} />;
+        return (
+          <React.Fragment>
+            <NodeSet addNode={addNode} updateNode={updateNode} />
+            <SlicesTableContainer />
+          </React.Fragment>
+        );
       return "";
     }
     const progress = this.progress();

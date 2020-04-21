@@ -18,6 +18,7 @@ const slicePropTypes = {
   fetchUTXOsError: PropTypes.string.isRequired,
   addressUsed: PropTypes.bool.isRequired,
   addressKnown: PropTypes.bool.isRequired,
+  lastUsed: PropTypes.string,
 };
 
 export default slicePropTypes;

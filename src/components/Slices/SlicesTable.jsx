@@ -8,7 +8,15 @@ import Copyable from "../Copyable";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 import SliceDetails from "./SliceDetails";
 
-const AddressTable = ({ slices, search, paging, title, client, network }) => {
+const SlicesTable = ({
+  slices,
+  search,
+  paging,
+  title,
+  client,
+  network,
+  disabled,
+}) => {
   const options = {
     search,
     paging,
@@ -16,35 +24,43 @@ const AddressTable = ({ slices, search, paging, title, client, network }) => {
     showTitle: (title && title.length) || false,
   };
   options.toolbar = options.showTitle && options.search;
+  let columns = [
+    { title: "BIP32 Path", field: "bip32Path", type: "string" },
+    {
+      title: "UTXOs",
+      field: "utxos",
+      width: "50px",
+      render: (rowData) => <Typography>{rowData.utxos.length}</Typography>,
+    },
+    {
+      title: "Balance",
+      field: "balanceSats",
+      render: (rowData) => (
+        <Typography>
+          {satoshisToBitcoins(rowData.balanceSats).toString()}
+        </Typography>
+      ),
+    },
+    {
+      title: "Last Used",
+      field: "lastUsed",
+      render: (rowData) => <Typography>{rowData.lastUsed || ""}</Typography>,
+    },
+    {
+      title: "Address",
+      field: "address",
+      render: (rowData) => (
+        <Copyable text={rowData.multisig.address} showIcon showText code />
+      ),
+    },
+  ];
 
+  // filter out any columns that should be disabled
+  columns = columns.filter((column) => !disabled.includes(column.field));
   return (
     <MaterialTable
       options={options}
-      columns={[
-        { title: "BIP32 Path", field: "bip32Path", type: "string" },
-        {
-          title: "UTXOs",
-          field: "utxos",
-          width: "50px",
-          render: (rowData) => <Typography>{rowData.utxos.length}</Typography>,
-        },
-        {
-          title: "Balance",
-          field: "balanceSats",
-          render: (rowData) => (
-            <Typography>
-              {satoshisToBitcoins(rowData.balanceSats).toString()}
-            </Typography>
-          ),
-        },
-        {
-          title: "Address",
-          field: "address",
-          render: (rowData) => (
-            <Copyable text={rowData.multisig.address} showIcon showText code />
-          ),
-        },
-      ]}
+      columns={columns}
       data={slices}
       detailPanel={[
         {
@@ -60,19 +76,21 @@ const AddressTable = ({ slices, search, paging, title, client, network }) => {
   );
 };
 
-AddressTable.propTypes = {
+SlicesTable.propTypes = {
   slices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   search: PropTypes.bool,
   paging: PropTypes.bool,
   title: PropTypes.string,
   client: PropTypes.shape(clientPropTypes).isRequired,
   network: PropTypes.string.isRequired,
+  disabled: PropTypes.arrayOf(PropTypes.string),
 };
 
-AddressTable.defaultProps = {
+SlicesTable.defaultProps = {
   search: false,
   paging: false,
   title: "",
+  disabled: [],
 };
 
-export default AddressTable;
+export default SlicesTable;

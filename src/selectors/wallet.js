@@ -29,6 +29,32 @@ export const getPendingBalance = createSelector(
   }
 );
 
+// returns all slices from both deposit and change braids
+// also adds a "lastUsed" property for each slice
+export const getAllSlices = createSelector(getWalletSlices, (slices) => {
+  return slices.map((slice) => {
+    if (!slice.utxos.length) return slice;
+    const maxtime = Math.max(...slice.utxos.map((utxo) => utxo.time));
+    if (Number.isNaN(maxtime)) return { ...slice, lastUsed: "Pending" };
+    return {
+      ...slice,
+      lastUsed: new Date(1000 * maxtime).toLocaleDateString(),
+    };
+  });
+});
+
+export const getSpentSlices = createSelector(getAllSlices, (slices) =>
+  slices.filter((slice) => slice.addressUsed)
+);
+
+export const getSlicesWithBalance = createSelector(getAllSlices, (slices) =>
+  slices.filter((slice) => slice.balanceSats.isGreaterThan(0))
+);
+
+export const getZeroBalanceSlices = createSelector(getAllSlices, (slices) =>
+  slices.filter((slice) => slice.balanceSats.isEqualTo(0) && !slice.addressUsed)
+);
+
 export const getUnknownAddressSlices = createSelector(
   getWalletSlices,
   (slices) => slices.filter((slice) => !slice.addressKnown)
