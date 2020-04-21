@@ -20,20 +20,6 @@ import {
 import InteractionMessages from "../InteractionMessages";
 
 class HardwareWalletPublicKeyImporter extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    publicKeyImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-      method: PropTypes.string,
-    }).isRequired,
-    validateAndSetPublicKey: PropTypes.func.isRequired,
-    validateAndSetBIP32Path: PropTypes.func.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    defaultBIP32Path: PropTypes.string.isRequired,
-    enableChangeMethod: PropTypes.func.isRequired,
-    disableChangeMethod: PropTypes.func.isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -186,5 +172,19 @@ class HardwareWalletPublicKeyImporter extends React.Component {
     resetBIP32Path();
   };
 }
+
+HardwareWalletPublicKeyImporter.propTypes = {
+  network: PropTypes.string.isRequired,
+  publicKeyImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+    method: PropTypes.string,
+  }).isRequired,
+  validateAndSetPublicKey: PropTypes.func.isRequired,
+  validateAndSetBIP32Path: PropTypes.func.isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  defaultBIP32Path: PropTypes.string.isRequired,
+  enableChangeMethod: PropTypes.func.isRequired,
+  disableChangeMethod: PropTypes.func.isRequired,
+};
 
 export default HardwareWalletPublicKeyImporter;

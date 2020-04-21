@@ -3,6 +3,8 @@ import BigNumber from "bignumber.js";
 import { bitcoinsToSatoshis } from "unchained-bitcoin";
 
 async function callBitcoind(url, auth, method, params = []) {
+  // FIXME
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     axios(url, {
       method: "post",

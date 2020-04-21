@@ -28,15 +28,6 @@ import { KeystoreNote } from "./Note";
 import InteractionMessages from "../InteractionMessages";
 
 class KeystorePickerBase extends React.Component {
-  static propTypes = {
-    setErrorNotification: PropTypes.func.isRequired,
-    setKeystore: PropTypes.func.isRequired,
-    setKeystoreStatus: PropTypes.func.isRequired,
-    status: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    version: PropTypes.string.isRequired,
-  };
-
   detectVersion = async () => {
     const {
       type,
@@ -129,6 +120,15 @@ class KeystorePickerBase extends React.Component {
     );
   }
 }
+
+KeystorePickerBase.propTypes = {
+  setErrorNotification: PropTypes.func.isRequired,
+  setKeystore: PropTypes.func.isRequired,
+  setKeystoreStatus: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  version: PropTypes.string.isRequired,
+};
 
 const mapStateToProps = (state) => {
   return {

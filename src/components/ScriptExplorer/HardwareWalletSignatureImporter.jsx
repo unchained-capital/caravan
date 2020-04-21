@@ -26,28 +26,6 @@ import {
 import InteractionMessages from "../InteractionMessages";
 
 class HardwareWalletSignatureImporter extends React.Component {
-  static propTypes = {
-    defaultBIP32Path: PropTypes.string.isRequired,
-    disableChangeMethod: PropTypes.func.isRequired,
-    enableChangeMethod: PropTypes.func.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({
-      method: PropTypes.string,
-    }).isRequired,
-    fee: PropTypes.string.isRequired,
-    inputsTotalSats: PropTypes.shape({}).isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    network: PropTypes.string.isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    signatureImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-      method: PropTypes.string,
-    }).isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    validateAndSetBIP32Path: PropTypes.func.isRequired,
-    validateAndSetSignature: PropTypes.func.isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -94,7 +72,7 @@ class HardwareWalletSignatureImporter extends React.Component {
         {(extendedPublicKeyImporter === null ||
           typeof extendedPublicKeyImporter === "undefined" ||
           extendedPublicKeyImporter.method === "text") && (
-          <React.Fragment>
+          <>
             <Grid container>
               <Grid item md={10}>
                 <TextField
@@ -126,7 +104,7 @@ class HardwareWalletSignatureImporter extends React.Component {
             <FormHelperText>
               Use the default value if you don&rsquo;t understand BIP32 paths.
             </FormHelperText>
-          </React.Fragment>
+          </>
         )}
         <Box mt={2}>{this.renderAction()}</Box>
         {this.renderDeviceConfirmInfo()}
@@ -286,5 +264,27 @@ class HardwareWalletSignatureImporter extends React.Component {
     enableChangeMethod();
   };
 }
+
+HardwareWalletSignatureImporter.propTypes = {
+  defaultBIP32Path: PropTypes.string.isRequired,
+  disableChangeMethod: PropTypes.func.isRequired,
+  enableChangeMethod: PropTypes.func.isRequired,
+  extendedPublicKeyImporter: PropTypes.shape({
+    method: PropTypes.string,
+  }).isRequired,
+  fee: PropTypes.string.isRequired,
+  inputsTotalSats: PropTypes.shape({}).isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  network: PropTypes.string.isRequired,
+  outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  signatureImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+    method: PropTypes.string,
+  }).isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+  validateAndSetBIP32Path: PropTypes.func.isRequired,
+  validateAndSetSignature: PropTypes.func.isRequired,
+};
 
 export default HardwareWalletSignatureImporter;

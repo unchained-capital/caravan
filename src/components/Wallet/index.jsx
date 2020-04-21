@@ -142,58 +142,14 @@ class CreateWallet extends React.Component {
     return "";
   }
 
-  static propTypes = {
-    addressType: PropTypes.string.isRequired,
-    change: PropTypes.shape({
-      balanceSats: PropTypes.shape({}),
-      fetchUTXOsErrors: PropTypes.number,
-      nodes: PropTypes.shape({}),
-    }).isRequired,
-    client: PropTypes.shape({
-      type: PropTypes.string,
-      url: PropTypes.string,
-      username: PropTypes.string,
-    }).isRequired,
-    configuring: PropTypes.bool.isRequired,
-    deposits: PropTypes.shape({
-      balanceSats: PropTypes.shape({
-        plus: PropTypes.func,
-      }),
-      fetchUTXOsErrors: PropTypes.number,
-      nodes: PropTypes.shape({}),
-    }).isRequired,
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    network: PropTypes.string.isRequired,
-    nodesLoaded: PropTypes.bool.isRequired,
-    pendingBalance: PropTypes.number,
-    requiredSigners: PropTypes.number.isRequired,
-    setTotalSigners: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-    setAddressType: PropTypes.func.isRequired,
-    setName: PropTypes.func.isRequired,
-    setNetwork: PropTypes.func.isRequired,
-    setExtendedPublicKeyImporterMethod: PropTypes.func.isRequired,
-    setExtendedPublicKeyImporterExtendedPublicKey: PropTypes.func.isRequired,
-    setExtendedPublicKeyImporterBIP32Path: PropTypes.func.isRequired,
-    setExtendedPublicKeyImporterFinalized: PropTypes.func.isRequired,
-    setExtendedPublicKeyImporterName: PropTypes.func.isRequired,
-    setClientType: PropTypes.func.isRequired,
-    setClientUrl: PropTypes.func.isRequired,
-    setClientUsername: PropTypes.func.isRequired,
-    totalSigners: PropTypes.number.isRequired,
-    updateWalletNameAction: PropTypes.func.isRequired,
-    walletName: PropTypes.string.isRequired,
-  };
-
-  static defaultProps = {
-    pendingBalance: 0,
-  };
-
-  state = {
-    configError: "",
-    configJson: "",
-    refreshing: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      configError: "",
+      configJson: "",
+      refreshing: false,
+    };
+  }
 
   componentDidMount() {
     if (sessionStorage) {
@@ -293,7 +249,7 @@ class CreateWallet extends React.Component {
 
     if (configuring)
       return (
-        <React.Fragment>
+        <>
           <label htmlFor="upload-config">
             <input
               style={{ display: "none" }}
@@ -314,7 +270,7 @@ class CreateWallet extends React.Component {
             </Button>
           </label>
           <FormHelperText error>{configError}</FormHelperText>
-        </React.Fragment>
+        </>
       );
     return "";
   };
@@ -483,7 +439,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
         : "";
 
     return (
-      <React.Fragment>
+      <>
         <Box mt={3}>
           <Grid container>
             <Grid item xs={10} md={6}>
@@ -543,10 +499,57 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
             {this.renderSettings()}
           </Grid>
         </Box>
-      </React.Fragment>
+      </>
     );
   };
 }
+
+CreateWallet.propTypes = {
+  addressType: PropTypes.string.isRequired,
+  change: PropTypes.shape({
+    balanceSats: PropTypes.shape({}),
+    fetchUTXOsErrors: PropTypes.number,
+    nodes: PropTypes.shape({}),
+  }).isRequired,
+  client: PropTypes.shape({
+    type: PropTypes.string,
+    url: PropTypes.string,
+    username: PropTypes.string,
+  }).isRequired,
+  configuring: PropTypes.bool.isRequired,
+  deposits: PropTypes.shape({
+    balanceSats: PropTypes.shape({
+      plus: PropTypes.func,
+    }),
+    fetchUTXOsErrors: PropTypes.number,
+    nodes: PropTypes.shape({}),
+  }).isRequired,
+  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  network: PropTypes.string.isRequired,
+  nodesLoaded: PropTypes.bool.isRequired,
+  pendingBalance: PropTypes.number,
+  requiredSigners: PropTypes.number.isRequired,
+  setTotalSigners: PropTypes.func.isRequired,
+  setRequiredSigners: PropTypes.func.isRequired,
+  setAddressType: PropTypes.func.isRequired,
+  setName: PropTypes.func.isRequired,
+  setNetwork: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterMethod: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterExtendedPublicKey: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterBIP32Path: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterFinalized: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterName: PropTypes.func.isRequired,
+  setClientType: PropTypes.func.isRequired,
+  setClientUrl: PropTypes.func.isRequired,
+  setClientUsername: PropTypes.func.isRequired,
+  totalSigners: PropTypes.number.isRequired,
+  updateWalletNameAction: PropTypes.func.isRequired,
+  walletName: PropTypes.string.isRequired,
+};
+
+CreateWallet.defaultProps = {
+  pendingBalance: 0,
+};
 
 function mapStateToProps(state) {
   return {

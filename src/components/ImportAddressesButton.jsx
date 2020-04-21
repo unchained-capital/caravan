@@ -85,10 +85,13 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
     // there's been an update to the address array and there's only one
     // this typically is the case for the script interactions when dealing
     // with a single address
-    if (!enableImport || addresses.length === 1) {
+    if (
+      client.type === "private" &&
+      (!enableImport || addresses.length === 1)
+    ) {
       checkAddress();
     }
-  }, [addresses]);
+  }, [addresses, client, enableImport]);
 
   // return "addresses" or "address"
   const pluralOrSingularAddress = (capitalize = false) =>

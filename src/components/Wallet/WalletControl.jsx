@@ -20,26 +20,6 @@ import NodeSet from "./NodeSet";
 class WalletControl extends React.Component {
   scrollRef = React.createRef();
 
-  static propTypes = {
-    addNode: PropTypes.func.isRequired,
-    change: PropTypes.shape({
-      trailingEmptyNodes: PropTypes.number,
-      fetchUTXOsErrors: PropTypes.number,
-    }).isRequired,
-    deposits: PropTypes.shape({
-      trailingEmptyNodes: PropTypes.number,
-      fetchUTXOsErrors: PropTypes.number,
-    }).isRequired,
-    initialLoadComplete: PropTypes.func.isRequired,
-    nodesLoaded: PropTypes.bool.isRequired,
-    requiredSigners: PropTypes.number.isRequired,
-    setMode: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    updateNode: PropTypes.func.isRequired,
-    walletMode: PropTypes.number.isRequired,
-  };
-
   componentDidMount = () => {
     this.scrollRef.current.scrollIntoView({ behavior: "smooth" });
   };
@@ -124,6 +104,26 @@ class WalletControl extends React.Component {
     setMode(mode);
   };
 }
+
+WalletControl.propTypes = {
+  addNode: PropTypes.func.isRequired,
+  change: PropTypes.shape({
+    trailingEmptyNodes: PropTypes.number,
+    fetchUTXOsErrors: PropTypes.number,
+  }).isRequired,
+  deposits: PropTypes.shape({
+    trailingEmptyNodes: PropTypes.number,
+    fetchUTXOsErrors: PropTypes.number,
+  }).isRequired,
+  initialLoadComplete: PropTypes.func.isRequired,
+  nodesLoaded: PropTypes.bool.isRequired,
+  requiredSigners: PropTypes.number.isRequired,
+  setMode: PropTypes.func.isRequired,
+  setRequiredSigners: PropTypes.func.isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+  updateNode: PropTypes.func.isRequired,
+  walletMode: PropTypes.number.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

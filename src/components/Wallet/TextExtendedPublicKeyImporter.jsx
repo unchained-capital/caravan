@@ -5,16 +5,12 @@ import PropTypes from "prop-types";
 import { TextField, Box } from "@material-ui/core";
 
 class TextExtendedPublicKeyImporter extends React.Component {
-  static propTypes = {
-    extendedPublicKeyImporter: PropTypes.shape({
-      extendedPublicKey: PropTypes.string,
-    }).isRequired,
-    validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
-  };
-
-  state = {
-    error: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: "",
+    };
+  }
 
   render = () => {
     const { extendedPublicKeyImporter } = this.props;
@@ -48,5 +44,11 @@ class TextExtendedPublicKeyImporter extends React.Component {
     validateAndSetExtendedPublicKey(event.target.value, this.setError);
   };
 }
+TextExtendedPublicKeyImporter.propTypes = {
+  extendedPublicKeyImporter: PropTypes.shape({
+    extendedPublicKey: PropTypes.string,
+  }).isRequired,
+  validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
+};
 
 export default TextExtendedPublicKeyImporter;

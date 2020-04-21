@@ -20,12 +20,6 @@ import {
 import { setNetwork as setNetworkAction } from "../actions/settingsActions";
 
 class NetworkPicker extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    frozen: PropTypes.bool.isRequired,
-    setNetwork: PropTypes.func.isRequired,
-  };
-
   handleNetworkChange = (event) => {
     const { setNetwork } = this.props;
     setNetwork(event.target.value);
@@ -72,6 +66,12 @@ class NetworkPicker extends React.Component {
     );
   }
 }
+
+NetworkPicker.propTypes = {
+  network: PropTypes.string.isRequired,
+  frozen: PropTypes.bool.isRequired,
+  setNetwork: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

@@ -29,16 +29,6 @@ import MultisigDetails from "../MultisigDetails";
 import Conflict from "./Conflict";
 
 class AddressGenerator extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    totalSigners: PropTypes.number.isRequired,
-    requiredSigners: PropTypes.number.isRequired,
-    addressType: PropTypes.string.isRequired,
-    publicKeyImporters: PropTypes.shape({}).isRequired,
-    sortPublicKeyImporters: PropTypes.func.isRequired,
-    setMultisigAddress: PropTypes.func.isRequired,
-  };
-
   isInConflict = () => {
     const { publicKeyImporters } = this.props;
     return Object.values(publicKeyImporters).some(
@@ -247,6 +237,16 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
     );
   }
 }
+
+AddressGenerator.propTypes = {
+  network: PropTypes.string.isRequired,
+  totalSigners: PropTypes.number.isRequired,
+  requiredSigners: PropTypes.number.isRequired,
+  addressType: PropTypes.string.isRequired,
+  publicKeyImporters: PropTypes.shape({}).isRequired,
+  sortPublicKeyImporters: PropTypes.func.isRequired,
+  setMultisigAddress: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

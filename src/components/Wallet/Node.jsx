@@ -16,39 +16,6 @@ import {
 import { WALLET_MODES } from "../../actions/walletActions";
 
 class Node extends React.Component {
-  static propTypes = {
-    addNode: PropTypes.func.isRequired,
-    addressKnown: PropTypes.bool.isRequired,
-    balanceSats: PropTypes.shape({
-      isEqualTo: PropTypes.func,
-    }).isRequired,
-    bip32Path: PropTypes.string.isRequired,
-    braidNode: PropTypes.shape({}).isRequired,
-    change: PropTypes.bool.isRequired,
-    feeRate: PropTypes.string.isRequired,
-    fetchedUTXOs: PropTypes.bool.isRequired,
-    inputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        index: PropTypes.number,
-        txid: PropTypes.string,
-      })
-    ).isRequired,
-    multisig: PropTypes.shape({}),
-    present: PropTypes.bool,
-    setFeeRate: PropTypes.func.isRequired,
-    setInputs: PropTypes.func.isRequired,
-    spend: PropTypes.bool.isRequired,
-    updateAutoSpend: PropTypes.func.isRequired,
-    updateNode: PropTypes.func.isRequired,
-    utxos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    walletMode: PropTypes.number.isRequired,
-  };
-
-  static defaultProps = {
-    multisig: {},
-    present: false,
-  };
-
   componentDidMount = () => {
     this.generate();
   };
@@ -146,6 +113,39 @@ class Node extends React.Component {
     setFeeRate(feeRate);
   };
 }
+
+Node.propTypes = {
+  addNode: PropTypes.func.isRequired,
+  addressKnown: PropTypes.bool.isRequired,
+  balanceSats: PropTypes.shape({
+    isEqualTo: PropTypes.func,
+  }).isRequired,
+  bip32Path: PropTypes.string.isRequired,
+  braidNode: PropTypes.shape({}).isRequired,
+  change: PropTypes.bool.isRequired,
+  feeRate: PropTypes.string.isRequired,
+  fetchedUTXOs: PropTypes.bool.isRequired,
+  inputs: PropTypes.arrayOf(
+    PropTypes.shape({
+      index: PropTypes.number,
+      txid: PropTypes.string,
+    })
+  ).isRequired,
+  multisig: PropTypes.shape({}),
+  present: PropTypes.bool,
+  setFeeRate: PropTypes.func.isRequired,
+  setInputs: PropTypes.func.isRequired,
+  spend: PropTypes.bool.isRequired,
+  updateAutoSpend: PropTypes.func.isRequired,
+  updateNode: PropTypes.func.isRequired,
+  utxos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  walletMode: PropTypes.number.isRequired,
+};
+
+Node.defaultProps = {
+  multisig: {},
+  present: false,
+};
 
 function mapStateToProps(state, ownProps) {
   const change = (ownProps.bip32Path || "").split("/")[1] === "1"; // // m, 0, 1

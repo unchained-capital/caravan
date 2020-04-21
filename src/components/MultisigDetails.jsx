@@ -20,18 +20,6 @@ import { externalLink } from "../utils";
 import Copyable from "./Copyable";
 
 class MultisigDetails extends React.Component {
-  static propTypes = {
-    multisig: PropTypes.shape({
-      address: PropTypes.string,
-    }).isRequired,
-    network: PropTypes.string.isRequired,
-    showAddress: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    showAddress: true,
-  };
-
   renderScript = (name, script) => {
     const hex = scriptToHex(script);
     const ops = scriptToOps(script);
@@ -103,6 +91,18 @@ class MultisigDetails extends React.Component {
     );
   }
 }
+
+MultisigDetails.propTypes = {
+  multisig: PropTypes.shape({
+    address: PropTypes.string,
+  }).isRequired,
+  network: PropTypes.string.isRequired,
+  showAddress: PropTypes.bool,
+};
+
+MultisigDetails.defaultProps = {
+  showAddress: true,
+};
 
 function mapStateToProps(state) {
   return state.settings;

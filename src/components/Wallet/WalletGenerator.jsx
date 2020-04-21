@@ -54,53 +54,12 @@ import {
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
 
 class WalletGenerator extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    addressType: PropTypes.string.isRequired,
-    client: PropTypes.shape({
-      password: PropTypes.string,
-      passwordError: PropTypes.string,
-      type: PropTypes.string,
-      username: PropTypes.string,
-    }).isRequired,
-    change: PropTypes.shape({
-      nodes: PropTypes.shape({}),
-      fetchUTXOsErrors: PropTypes.number,
-    }).isRequired,
-    deposits: PropTypes.shape({
-      nodes: PropTypes.shape({}),
-      fetchUTXOsErrors: PropTypes.number,
-    }).isRequired,
-    configuring: PropTypes.bool.isRequired,
-    common: PropTypes.shape({
-      nodesLoaded: PropTypes.bool,
-    }).isRequired,
-    downloadWalletDetails: PropTypes.func.isRequired,
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    fetchSliceData: PropTypes.func.isRequired,
-    totalSigners: PropTypes.number.isRequired,
-    requiredSigners: PropTypes.number.isRequired,
-    freeze: PropTypes.func.isRequired,
-    updateDepositSlice: PropTypes.func.isRequired,
-    updateChangeSlice: PropTypes.func.isRequired,
-    unknownAddresses: PropTypes.arrayOf(PropTypes.string),
-    refreshNodes: PropTypes.func.isRequired,
-    resetNodesFetchErrors: PropTypes.func.isRequired,
-    resetWallet: PropTypes.func.isRequired,
-    setImportersVisible: PropTypes.func.isRequired,
-    setIsWallet: PropTypes.func.isRequired,
-    setPassword: PropTypes.func.isRequired,
-    setPasswordError: PropTypes.func.isRequired,
-    unknownSlices: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  };
-
-  static defaultProps = {
-    unknownAddresses: [],
-  };
-
-  state = {
-    generating: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      generating: false,
+    };
+  }
 
   componentDidMount() {
     const {
@@ -499,6 +458,50 @@ class WalletGenerator extends React.Component {
     return <div>{this.body()}</div>;
   }
 }
+
+WalletGenerator.propTypes = {
+  network: PropTypes.string.isRequired,
+  addressType: PropTypes.string.isRequired,
+  client: PropTypes.shape({
+    password: PropTypes.string,
+    passwordError: PropTypes.string,
+    type: PropTypes.string,
+    username: PropTypes.string,
+  }).isRequired,
+  change: PropTypes.shape({
+    nodes: PropTypes.shape({}),
+    fetchUTXOsErrors: PropTypes.number,
+  }).isRequired,
+  deposits: PropTypes.shape({
+    nodes: PropTypes.shape({}),
+    fetchUTXOsErrors: PropTypes.number,
+  }).isRequired,
+  configuring: PropTypes.bool.isRequired,
+  common: PropTypes.shape({
+    nodesLoaded: PropTypes.bool,
+  }).isRequired,
+  downloadWalletDetails: PropTypes.func.isRequired,
+  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  fetchSliceData: PropTypes.func.isRequired,
+  totalSigners: PropTypes.number.isRequired,
+  requiredSigners: PropTypes.number.isRequired,
+  freeze: PropTypes.func.isRequired,
+  updateDepositSlice: PropTypes.func.isRequired,
+  updateChangeSlice: PropTypes.func.isRequired,
+  unknownAddresses: PropTypes.arrayOf(PropTypes.string),
+  refreshNodes: PropTypes.func.isRequired,
+  resetNodesFetchErrors: PropTypes.func.isRequired,
+  resetWallet: PropTypes.func.isRequired,
+  setImportersVisible: PropTypes.func.isRequired,
+  setIsWallet: PropTypes.func.isRequired,
+  setPassword: PropTypes.func.isRequired,
+  setPasswordError: PropTypes.func.isRequired,
+  unknownSlices: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+};
+
+WalletGenerator.defaultProps = {
+  unknownAddresses: [],
+};
 
 function mapStateToProps(state) {
   return {

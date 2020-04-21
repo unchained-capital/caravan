@@ -22,23 +22,18 @@ import Node from "./Node";
 import { WALLET_MODES } from "../../actions/walletActions";
 
 class NodeSet extends React.Component {
-  static propTypes = {
-    depositNodes: PropTypes.shape({}).isRequired,
-    changeNodes: PropTypes.shape({}).isRequired,
-    addNode: PropTypes.func.isRequired,
-    updateNode: PropTypes.func.isRequired,
-    walletMode: PropTypes.number.isRequired,
-  };
-
-  state = {
-    page: 0,
-    nodesPerPage: 10,
-    spend: false,
-    filterIncludeSpent: false,
-    filterIncludeZeroBalance: false,
-    orderBy: "bip32Path",
-    orderDir: "asc",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 0,
+      nodesPerPage: 10,
+      spend: false,
+      filterIncludeSpent: false,
+      filterIncludeZeroBalance: false,
+      orderBy: "bip32Path",
+      orderDir: "asc",
+    };
+  }
 
   sortAddresses = (key) => {
     const { orderBy, orderDir } = this.state;
@@ -279,6 +274,14 @@ class NodeSet extends React.Component {
     );
   }
 }
+
+NodeSet.propTypes = {
+  depositNodes: PropTypes.shape({}).isRequired,
+  changeNodes: PropTypes.shape({}).isRequired,
+  addNode: PropTypes.func.isRequired,
+  updateNode: PropTypes.func.isRequired,
+  walletMode: PropTypes.number.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

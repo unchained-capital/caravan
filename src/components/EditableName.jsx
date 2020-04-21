@@ -6,17 +6,14 @@ import { Grid, IconButton, TextField } from "@material-ui/core";
 import { Check, Clear, Edit } from "@material-ui/icons";
 
 class EditableName extends React.Component {
-  static propTypes = {
-    number: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    setName: PropTypes.func.isRequired,
-  };
-
-  state = {
-    editing: false,
-    newName: "",
-    error: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      editing: false,
+      newName: "",
+      error: "",
+    };
+  }
 
   componentDidMount = () => {
     const { name } = this.props;
@@ -101,5 +98,11 @@ class EditableName extends React.Component {
     this.setState({ error: "", newName: name, editing: false });
   };
 }
+
+EditableName.propTypes = {
+  number: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  setName: PropTypes.func.isRequired,
+};
 
 export default EditableName;

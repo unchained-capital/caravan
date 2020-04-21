@@ -196,6 +196,31 @@ class ClientPicker extends React.Component {
   }
 }
 
+ClientPicker.propTypes = {
+  client: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+  }).isRequired,
+  network: PropTypes.string.isRequired,
+  privateNotes: PropTypes.shape({}),
+  setUrl: PropTypes.func.isRequired,
+  urlError: PropTypes.string,
+  setUrlError: PropTypes.func.isRequired,
+  setPassword: PropTypes.func.isRequired,
+  passwordError: PropTypes.string,
+  setPasswordError: PropTypes.func.isRequired,
+  setType: PropTypes.func.isRequired,
+  usernameError: PropTypes.string,
+  setUsername: PropTypes.func.isRequired,
+  setUsernameError: PropTypes.func.isRequired,
+};
+
+ClientPicker.defaultProps = {
+  urlError: "",
+  usernameError: "",
+  passwordError: "",
+  privateNotes: {},
+};
+
 function mapStateToProps(state) {
   return {
     network: state.settings.network,

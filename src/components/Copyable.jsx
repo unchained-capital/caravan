@@ -21,6 +21,7 @@ const Copyable = ({ newline, text, children, showIcon, showText, code }) => {
 
   useEffect(() => {
     if (timer) clearTimeout(timer);
+    // eslint-disable-next-line
   }, []);
 
   const classes = useStyles();

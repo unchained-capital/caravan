@@ -49,7 +49,7 @@ const WalletInfoCard = ({
               </Typography>
             </Grid>
           ) : (
-            <React.Fragment>
+            <>
               <Grid container alignItems="center" className={classes.gutter}>
                 <Grid item xs={1}>
                   <BitcoinIcon network={network} />
@@ -84,7 +84,7 @@ const WalletInfoCard = ({
                   <Typography variant="caption">Confirmed balance</Typography>
                 </Grid>
               </Grid>
-            </React.Fragment>
+            </>
           )}
         </Grid>
         {children}

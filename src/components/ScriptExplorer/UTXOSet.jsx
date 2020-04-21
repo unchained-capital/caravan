@@ -25,12 +25,6 @@ import "react-table/react-table.css";
 import styles from "./styles.module.scss";
 
 class UTXOSet extends React.Component {
-  static propTypes = {
-    network: PropTypes.string.isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    inputsTotalSats: PropTypes.shape({}).isRequired,
-  };
-
   renderInputs = () => {
     const { inputs, network } = this.props;
     return inputs.map((input, inputIndex) => {
@@ -95,6 +89,12 @@ class UTXOSet extends React.Component {
     );
   }
 }
+
+UTXOSet.propTypes = {
+  network: PropTypes.string.isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  inputsTotalSats: PropTypes.shape({}).isRequired,
+};
 
 function mapStateToProps(state) {
   return {

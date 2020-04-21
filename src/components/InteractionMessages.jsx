@@ -1,3 +1,6 @@
+// FIXME
+/* eslint-disable max-classes-per-file */
+
 import React from "react";
 import PropTypes from "prop-types";
 import { INFO, WARNING, ERROR } from "unchained-wallets";
@@ -17,10 +20,6 @@ import { Info, Warning, Error } from "@material-ui/icons";
 import "./InteractionMessages.css";
 
 class MessagesList extends React.Component {
-  static propTypes = {
-    messages: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  };
-
   render = () => {
     const { messages } = this.props;
     return (
@@ -85,13 +84,11 @@ class MessagesList extends React.Component {
   };
 }
 
-class VersionTabPanel extends React.Component {
-  static propTypes = {
-    messages: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    version: PropTypes.string.isRequired,
-    currentVersion: PropTypes.string.isRequired,
-  };
+MessagesList.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+};
 
+class VersionTabPanel extends React.Component {
   render = () => {
     const { version, currentVersion } = this.props;
     return (
@@ -119,20 +116,19 @@ class VersionTabPanel extends React.Component {
   };
 }
 
+VersionTabPanel.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  version: PropTypes.string.isRequired,
+  currentVersion: PropTypes.string.isRequired,
+};
+
 class InteractionMessages extends React.Component {
-  static propTypes = {
-    messages: PropTypes.arrayOf(PropTypes.shape({})),
-    excludeCodes: PropTypes.arrayOf(PropTypes.string),
-  };
-
-  static defaultProps = {
-    messages: [],
-    excludeCodes: [],
-  };
-
-  state = {
-    currentVersion: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentVersion: "",
+    };
+  }
 
   render = () => {
     const { messages, versions } = this.filteredMessages();
@@ -203,5 +199,15 @@ class InteractionMessages extends React.Component {
     return { versions, messages: filteredMessages };
   };
 }
+
+InteractionMessages.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.shape({})),
+  excludeCodes: PropTypes.arrayOf(PropTypes.string),
+};
+
+InteractionMessages.defaultProps = {
+  messages: [],
+  excludeCodes: [],
+};
 
 export default InteractionMessages;
