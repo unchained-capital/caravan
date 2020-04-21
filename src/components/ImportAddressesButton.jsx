@@ -87,7 +87,7 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
     if (!enableImport || addresses.length === 1) {
       checkAddress();
     }
-  }, [addresses]);
+  }, [addresses, client, enableImport]);
 
   // return "addresses" or "address"
   const pluralOrSingularAddress = (capitalize = false) =>

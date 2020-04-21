@@ -5,15 +5,13 @@ import PropTypes from "prop-types";
 import { Box, TextField, Button } from "@material-ui/core";
 
 class TextSignatureImporter extends React.Component {
-  static propTypes = {
-    signatureImporter: PropTypes.shape({}).isRequired,
-    validateAndSetSignature: PropTypes.func.isRequired,
-  };
-
-  state = {
-    signatureJSON: "",
-    error: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      signatureJSON: "",
+      error: "",
+    };
+  }
 
   render = () => {
     const { signatureJSON, error } = this.state;
@@ -73,5 +71,10 @@ class TextSignatureImporter extends React.Component {
     validateAndSetSignature(JSON.parse(signatureJSON), this.setError);
   };
 }
+
+TextSignatureImporter.propTypes = {
+  signatureImporter: PropTypes.shape({}).isRequired,
+  validateAndSetSignature: PropTypes.func.isRequired,
+};
 
 export default TextSignatureImporter;

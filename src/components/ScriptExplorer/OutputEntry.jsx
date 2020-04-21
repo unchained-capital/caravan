@@ -32,43 +32,6 @@ import {
 import styles from "./styles.module.scss";
 
 class OutputEntry extends React.Component {
-  static propTypes = {
-    address: PropTypes.string.isRequired,
-    addressError: PropTypes.string.isRequired,
-    amount: PropTypes.string.isRequired,
-    amountError: PropTypes.string.isRequired,
-    autoSpend: PropTypes.bool.isRequired,
-    balanceError: PropTypes.string.isRequired,
-    changeNode: PropTypes.shape({
-      multisig: PropTypes.shape({
-        address: PropTypes.string,
-      }),
-    }),
-    changeOutputIndex: PropTypes.number.isRequired,
-    fee: PropTypes.string.isRequired,
-    feeError: PropTypes.string.isRequired,
-    finalizedOutputs: PropTypes.bool.isRequired,
-    inputsTotalSats: PropTypes.shape({
-      minus: PropTypes.func,
-    }).isRequired,
-    isWallet: PropTypes.bool.isRequired,
-    number: PropTypes.number.isRequired,
-    outputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        amount: PropTypes.string,
-        amountError: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-    remove: PropTypes.func.isRequired,
-    setAddress: PropTypes.func.isRequired,
-    setAmount: PropTypes.func.isRequired,
-    setChangeOutput: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    changeNode: {},
-  };
-
   displayBalanceAction = () => {
     const { isWallet, finalizedOutputs, autoSpend } = this.props;
     if (isWallet) {
@@ -325,6 +288,43 @@ class OutputEntry extends React.Component {
     );
   }
 }
+
+OutputEntry.propTypes = {
+  address: PropTypes.string.isRequired,
+  addressError: PropTypes.string.isRequired,
+  amount: PropTypes.string.isRequired,
+  amountError: PropTypes.string.isRequired,
+  autoSpend: PropTypes.bool.isRequired,
+  balanceError: PropTypes.string.isRequired,
+  changeNode: PropTypes.shape({
+    multisig: PropTypes.shape({
+      address: PropTypes.string,
+    }),
+  }),
+  changeOutputIndex: PropTypes.number.isRequired,
+  fee: PropTypes.string.isRequired,
+  feeError: PropTypes.string.isRequired,
+  finalizedOutputs: PropTypes.bool.isRequired,
+  inputsTotalSats: PropTypes.shape({
+    minus: PropTypes.func,
+  }).isRequired,
+  isWallet: PropTypes.bool.isRequired,
+  number: PropTypes.number.isRequired,
+  outputs: PropTypes.arrayOf(
+    PropTypes.shape({
+      amount: PropTypes.string,
+      amountError: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  remove: PropTypes.func.isRequired,
+  setAddress: PropTypes.func.isRequired,
+  setAmount: PropTypes.func.isRequired,
+  setChangeOutput: PropTypes.func.isRequired,
+};
+
+OutputEntry.defaultProps = {
+  changeNode: {},
+};
 
 function mapStateToProps(state, ownProps) {
   return {

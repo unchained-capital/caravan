@@ -6,10 +6,13 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { FileCopy } from "@material-ui/icons";
 
 class Copyable extends React.Component {
-  state = {
-    copied: false,
-    timer: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      copied: false,
+      timer: null,
+    };
+  }
 
   componentWillUnmount = () => {
     const { timer } = this.state;

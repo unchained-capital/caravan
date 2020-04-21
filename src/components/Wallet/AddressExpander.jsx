@@ -49,41 +49,19 @@ let anchor;
 class AddressExpander extends React.Component {
   interaction = null;
 
-  static propTypes = {
-    client: PropTypes.shape({
-      type: PropTypes.string,
-    }).isRequired,
-    extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-    node: PropTypes.shape({
-      addressUsed: PropTypes.bool,
-      balanceSats: PropTypes.shape({
-        isEqualTo: PropTypes.func,
-        isGreaterThan: PropTypes.func,
-      }),
-      bip32Path: PropTypes.string,
-      multisig: PropTypes.shape({
-        address: PropTypes.string,
-      }),
-      utxos: PropTypes.arrayOf(PropTypes.shape({})),
-    }).isRequired,
-    network: PropTypes.string,
-    requiredSigners: PropTypes.number.isRequired,
-    totalSigners: PropTypes.number.isRequired,
-  };
+  constructor(props) {
+    super(props);
 
-  static defaultProps = {
-    network: NETWORKS.TESTNET,
-  };
-
-  state = {
-    expandMode: null,
-    showMenu: false,
-    showMenuIcon: false,
-    hasInteraction: false,
-    interactionState: PENDING,
-    interactionError: "",
-    interactionMessage: "",
-  };
+    this.state = {
+      expandMode: null,
+      showMenu: false,
+      showMenuIcon: false,
+      hasInteraction: false,
+      interactionState: PENDING,
+      interactionError: "",
+      interactionMessage: "",
+    };
+  }
 
   componentDidMount = () => {
     this.defaultMode();
@@ -418,6 +396,32 @@ class AddressExpander extends React.Component {
     );
   }
 }
+
+AddressExpander.propTypes = {
+  client: PropTypes.shape({
+    type: PropTypes.string,
+  }).isRequired,
+  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  node: PropTypes.shape({
+    addressUsed: PropTypes.bool,
+    balanceSats: PropTypes.shape({
+      isEqualTo: PropTypes.func,
+      isGreaterThan: PropTypes.func,
+    }),
+    bip32Path: PropTypes.string,
+    multisig: PropTypes.shape({
+      address: PropTypes.string,
+    }),
+    utxos: PropTypes.arrayOf(PropTypes.shape({})),
+  }).isRequired,
+  network: PropTypes.string,
+  requiredSigners: PropTypes.number.isRequired,
+  totalSigners: PropTypes.number.isRequired,
+};
+
+AddressExpander.defaultProps = {
+  network: NETWORKS.TESTNET,
+};
 
 function mapStateToProps(state) {
   return {

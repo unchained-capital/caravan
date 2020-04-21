@@ -27,22 +27,6 @@ const RIGHT_ARROW_CODE = 39;
 const DOWN_ARROW_CODE = 40;
 
 class TestSuiteRunBase extends React.Component {
-  static propTypes = {
-    keystore: PropTypes.shape({
-      note: PropTypes.string,
-      type: PropTypes.string,
-      status: PropTypes.string,
-      version: PropTypes.string,
-    }).isRequired,
-    setCurrentTestRun: PropTypes.func.isRequired,
-    startTestSuiteRun: PropTypes.func.isRequired,
-    testSuiteRun: PropTypes.shape({
-      currentTestRunIndex: PropTypes.number,
-      started: PropTypes.bool,
-      testRuns: PropTypes.arrayOf(PropTypes.shape({})),
-    }).isRequired,
-  };
-
   componentDidMount = () => {
     document.addEventListener("keydown", this.handleKeyDown);
   };
@@ -258,6 +242,22 @@ class TestSuiteRunBase extends React.Component {
     setCurrentTestRun(testSuiteRun.currentTestRunIndex + 1);
   };
 }
+
+TestSuiteRunBase.propTypes = {
+  keystore: PropTypes.shape({
+    note: PropTypes.string,
+    type: PropTypes.string,
+    status: PropTypes.string,
+    version: PropTypes.string,
+  }).isRequired,
+  setCurrentTestRun: PropTypes.func.isRequired,
+  startTestSuiteRun: PropTypes.func.isRequired,
+  testSuiteRun: PropTypes.shape({
+    currentTestRunIndex: PropTypes.number,
+    started: PropTypes.bool,
+    testRuns: PropTypes.arrayOf(PropTypes.shape({})),
+  }).isRequired,
+};
 
 const mapStateToProps = (state) => {
   return {

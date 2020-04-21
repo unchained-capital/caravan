@@ -23,36 +23,12 @@ import {
 import UnsignedTransaction from "../UnsignedTransaction";
 
 class WalletSign extends React.Component {
-  static propTypes = {
-    changeNode: PropTypes.shape({
-      bip32Path: PropTypes.string,
-      multisig: PropTypes.shape({
-        address: PropTypes.string,
-      }),
-    }).isRequired,
-    finalizeOutputs: PropTypes.func.isRequired,
-    requiredSigners: PropTypes.number.isRequired,
-    resetTransaction: PropTypes.func.isRequired,
-    resetWalletView: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-    setSpendStep: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    spendNodes: PropTypes.func.isRequired,
-    transaction: PropTypes.shape({
-      outputs: PropTypes.arrayOf(
-        PropTypes.shape({
-          address: PropTypes.string,
-          amountSats: PropTypes.shape({}),
-        })
-      ),
-      txid: PropTypes.string,
-    }).isRequired,
-    updateChangeNode: PropTypes.func.isRequired,
-  };
-
-  state = {
-    spent: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      spent: false,
+    };
+  }
 
   render = () => {
     const { spent } = this.state;
@@ -173,6 +149,33 @@ class WalletSign extends React.Component {
     setSpendStep(SPEND_STEP_CREATE);
   };
 }
+
+WalletSign.propTypes = {
+  changeNode: PropTypes.shape({
+    bip32Path: PropTypes.string,
+    multisig: PropTypes.shape({
+      address: PropTypes.string,
+    }),
+  }).isRequired,
+  finalizeOutputs: PropTypes.func.isRequired,
+  requiredSigners: PropTypes.number.isRequired,
+  resetTransaction: PropTypes.func.isRequired,
+  resetWalletView: PropTypes.func.isRequired,
+  setRequiredSigners: PropTypes.func.isRequired,
+  setSpendStep: PropTypes.func.isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+  spendNodes: PropTypes.func.isRequired,
+  transaction: PropTypes.shape({
+    outputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        address: PropTypes.string,
+        amountSats: PropTypes.shape({}),
+      })
+    ),
+    txid: PropTypes.string,
+  }).isRequired,
+  updateChangeNode: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

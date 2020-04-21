@@ -40,25 +40,12 @@ import "react-table/react-table.css";
 class ConfirmOwnership extends React.Component {
   titleRef = React.createRef();
 
-  static propTypes = {
-    defaultBIP32Path: PropTypes.string.isRequired,
-    network: PropTypes.string.isRequired,
-    publicKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
-    publicKeyImporter: PropTypes.shape({
-      bip32Path: PropTypes.string,
-      method: PropTypes.string,
-      publicKey: PropTypes.string,
-    }).isRequired,
-    reset: PropTypes.func.isRequired,
-    resetBIP32Path: PropTypes.func.isRequired,
-    setMethod: PropTypes.func.isRequired,
-    setPublicKey: PropTypes.func.isRequired,
-    setBIP32Path: PropTypes.func.isRequired,
-  };
-
-  state = {
-    disableChangeMethod: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      disableChangeMethod: false,
+    };
+  }
 
   componentDidMount = () => {
     this.resetBIP32Path();
@@ -263,6 +250,22 @@ class ConfirmOwnership extends React.Component {
     );
   }
 }
+
+ConfirmOwnership.propTypes = {
+  defaultBIP32Path: PropTypes.string.isRequired,
+  network: PropTypes.string.isRequired,
+  publicKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
+  publicKeyImporter: PropTypes.shape({
+    bip32Path: PropTypes.string,
+    method: PropTypes.string,
+    publicKey: PropTypes.string,
+  }).isRequired,
+  reset: PropTypes.func.isRequired,
+  resetBIP32Path: PropTypes.func.isRequired,
+  setMethod: PropTypes.func.isRequired,
+  setPublicKey: PropTypes.func.isRequired,
+  setBIP32Path: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return state.spend.ownership;

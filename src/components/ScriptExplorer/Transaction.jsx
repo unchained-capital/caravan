@@ -22,20 +22,14 @@ import { externalLink } from "../../utils";
 import { setTXID } from "../../actions/transactionActions";
 
 class Transaction extends React.Component {
-  static propTypes = {
-    client: PropTypes.shape({}).isRequired,
-    network: PropTypes.string.isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    setTxid: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-  };
-
-  state = {
-    error: "",
-    broadcasting: false,
-    txid: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: "",
+      broadcasting: false,
+      txid: "",
+    };
+  }
 
   buildSignedTransaction = () => {
     const { network, inputs, outputs, signatureImporters } = this.props;
@@ -131,6 +125,15 @@ class Transaction extends React.Component {
     );
   }
 }
+
+Transaction.propTypes = {
+  client: PropTypes.shape({}).isRequired,
+  network: PropTypes.string.isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setTxid: PropTypes.func.isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+};
 
 function mapStateToProps(state) {
   return {

@@ -192,7 +192,7 @@ describe("Test transactionReducer", () => {
           number: 1,
         }
       );
-      expect(r.outputs[0].amountSats).toEqual(BigNumber(1234));
+      expect(r.outputs[0].amountSats).toMatchObject(BigNumber(1234));
     });
   });
 

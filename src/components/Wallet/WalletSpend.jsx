@@ -43,58 +43,9 @@ class WalletSpend extends React.Component {
 
   feeAmount = new BigNumber(0);
 
-  static propTypes = {
-    addNode: PropTypes.func.isRequired,
-    autoSpend: PropTypes.bool,
-    balanceError: PropTypes.string,
-    changeNode: PropTypes.shape({
-      multisig: PropTypes.shape({
-        address: PropTypes.string,
-      }),
-    }).isRequired,
-    changeNodes: PropTypes.shape({}),
-    changeOutputIndex: PropTypes.number.isRequired,
-    coinSelection: PropTypes.func.isRequired,
-    depositNodes: PropTypes.shape({}),
-    fee: PropTypes.string.isRequired,
-    feeError: PropTypes.string,
-    feeRate: PropTypes.string.isRequired,
-    feeRateError: PropTypes.string,
-    finalizeOutputs: PropTypes.func.isRequired,
-    finalizedOutputs: PropTypes.bool,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    outputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        address: PropTypes.string,
-        amount: PropTypes.string,
-        addressError: PropTypes.string,
-        amountError: PropTypes.string,
-      })
-    ).isRequired,
-    resetNodesSpend: PropTypes.func.isRequired,
-    setChangeAddress: PropTypes.func.isRequired,
-    setInputs: PropTypes.func.isRequired,
-    setFeeRate: PropTypes.func.isRequired,
-    setSpendStep: PropTypes.func.isRequired,
-    spendingStep: PropTypes.number,
-    updateAutoSpend: PropTypes.func.isRequired,
-    updateChangeSlice: PropTypes.func.isRequired,
-    updateDepositSlice: PropTypes.func.isRequired,
-    updateNode: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    autoSpend: false,
-    balanceError: null,
-    changeNodes: {},
-    depositNodes: {},
-    finalizedOutputs: false,
-    feeError: null,
-    feeRateError: null,
-    spendingStep: 0,
-  };
-
-  componentWillReceiveProps(nextProps) {
+  // FIXME
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.autoSpend) {
       setTimeout(this.selectCoins, 0);
     }
@@ -299,6 +250,57 @@ class WalletSpend extends React.Component {
     );
   }
 }
+
+WalletSpend.propTypes = {
+  addNode: PropTypes.func.isRequired,
+  autoSpend: PropTypes.bool,
+  balanceError: PropTypes.string,
+  changeNode: PropTypes.shape({
+    multisig: PropTypes.shape({
+      address: PropTypes.string,
+    }),
+  }).isRequired,
+  changeNodes: PropTypes.shape({}),
+  changeOutputIndex: PropTypes.number.isRequired,
+  coinSelection: PropTypes.func.isRequired,
+  depositNodes: PropTypes.shape({}),
+  fee: PropTypes.string.isRequired,
+  feeError: PropTypes.string,
+  feeRate: PropTypes.string.isRequired,
+  feeRateError: PropTypes.string,
+  finalizeOutputs: PropTypes.func.isRequired,
+  finalizedOutputs: PropTypes.bool,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  outputs: PropTypes.arrayOf(
+    PropTypes.shape({
+      address: PropTypes.string,
+      amount: PropTypes.string,
+      addressError: PropTypes.string,
+      amountError: PropTypes.string,
+    })
+  ).isRequired,
+  resetNodesSpend: PropTypes.func.isRequired,
+  setChangeAddress: PropTypes.func.isRequired,
+  setInputs: PropTypes.func.isRequired,
+  setFeeRate: PropTypes.func.isRequired,
+  setSpendStep: PropTypes.func.isRequired,
+  spendingStep: PropTypes.number,
+  updateAutoSpend: PropTypes.func.isRequired,
+  updateChangeSlice: PropTypes.func.isRequired,
+  updateDepositSlice: PropTypes.func.isRequired,
+  updateNode: PropTypes.func.isRequired,
+};
+
+WalletSpend.defaultProps = {
+  autoSpend: false,
+  balanceError: null,
+  changeNodes: {},
+  depositNodes: {},
+  finalizedOutputs: false,
+  feeError: null,
+  feeRateError: null,
+  spendingStep: 0,
+};
 
 function mapStateToProps(state) {
   return {

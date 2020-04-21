@@ -5,13 +5,6 @@ import PropTypes from "prop-types";
 const reportingURL = "https://github.com/unchained-capital/caravan/issues";
 
 class ErrorBoundary extends React.Component {
-  static propTypes = {
-    children: PropTypes.oneOfType([
-      PropTypes.arrayOf(PropTypes.node),
-      PropTypes.node,
-    ]).isRequired,
-  };
-
   constructor(props) {
     super(props);
     this.state = { error: null, errorInfo: null };
@@ -58,5 +51,12 @@ class ErrorBoundary extends React.Component {
     return children;
   }
 }
+
+ErrorBoundary.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+};
 
 export default ErrorBoundary;

@@ -24,14 +24,6 @@ import "./styles.css";
 const MAX_TOTAL_SIGNERS = 7;
 
 class QuorumPicker extends React.Component {
-  static propTypes = {
-    totalSigners: PropTypes.number.isRequired,
-    requiredSigners: PropTypes.number.isRequired,
-    frozen: PropTypes.bool.isRequired,
-    setTotalSigners: PropTypes.func.isRequired,
-    setRequiredSigners: PropTypes.func.isRequired,
-  };
-
   renderIncrementRequiredSigners = () => {
     const { requiredSigners, totalSigners, frozen } = this.props;
     const disabled = requiredSigners === totalSigners || frozen;
@@ -192,6 +184,14 @@ class QuorumPicker extends React.Component {
     );
   }
 }
+
+QuorumPicker.propTypes = {
+  totalSigners: PropTypes.number.isRequired,
+  requiredSigners: PropTypes.number.isRequired,
+  frozen: PropTypes.bool.isRequired,
+  setTotalSigners: PropTypes.func.isRequired,
+  setRequiredSigners: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return state.settings;

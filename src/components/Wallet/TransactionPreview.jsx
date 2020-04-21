@@ -19,16 +19,6 @@ import {
 import UnsignedTransaction from "../UnsignedTransaction";
 
 class TransactionPreview extends React.Component {
-  static propTypes = {
-    editTransaction: PropTypes.func.isRequired,
-    fee: PropTypes.string.isRequired,
-    feeRate: PropTypes.string.isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    inputsTotalSats: PropTypes.shape({}).isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    signTransaction: PropTypes.func.isRequired,
-  };
-
   render = () => {
     const {
       feeRate,
@@ -200,6 +190,16 @@ class TransactionPreview extends React.Component {
     ).toString();
   };
 }
+
+TransactionPreview.propTypes = {
+  editTransaction: PropTypes.func.isRequired,
+  fee: PropTypes.string.isRequired,
+  feeRate: PropTypes.string.isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  inputsTotalSats: PropTypes.shape({}).isRequired,
+  outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  signTransaction: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

@@ -59,56 +59,12 @@ class OutputsForm extends React.Component {
 
   outputsTotal = 0;
 
-  static propTypes = {
-    addOutput: PropTypes.func.isRequired,
-    autoSpend: PropTypes.bool.isRequired,
-    balanceError: PropTypes.string.isRequired,
-    change: PropTypes.shape({
-      nextNode: PropTypes.shape({
-        multisig: PropTypes.shape({
-          address: PropTypes.string,
-        }),
-      }),
-    }).isRequired,
-    changeOutputIndex: PropTypes.number.isRequired,
-    client: PropTypes.shape({}).isRequired,
-    fee: PropTypes.string.isRequired,
-    feeError: PropTypes.string.isRequired,
-    feeRateError: PropTypes.string.isRequired,
-    finalizeOutputs: PropTypes.func.isRequired,
-    feeRate: PropTypes.string.isRequired,
-    finalizedOutputs: PropTypes.bool.isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    inputsTotalSats: PropTypes.shape({
-      minus: PropTypes.func,
-    }).isRequired,
-    isWallet: PropTypes.bool.isRequired,
-    network: PropTypes.string.isRequired,
-    outputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        address: PropTypes.string,
-        addressError: PropTypes.string,
-        amount: PropTypes.string,
-        amountError: PropTypes.string,
-      })
-    ).isRequired,
-    resetOutputs: PropTypes.func.isRequired,
-    setFeeRate: PropTypes.func.isRequired,
-    setFee: PropTypes.func.isRequired,
-    setChangeOutputIndex: PropTypes.func.isRequired,
-    setOutputAddress: PropTypes.func.isRequired,
-    setOutputAmount: PropTypes.func.isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    updatesComplete: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    updatesComplete: false,
-  };
-
-  state = {
-    feeRateFetchError: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      feeRateFetchError: "",
+    };
+  }
 
   componentDidMount = () => {
     this.initialOutputState();
@@ -304,7 +260,7 @@ class OutputsForm extends React.Component {
     const actionMt = 7;
     const gridSpacing = isWallet ? 10 : 1;
     return (
-      <React.Fragment>
+      <>
         <Box ref={this.titleRef}>
           <Grid container spacing={gridSpacing}>
             <Grid item xs={4}>
@@ -487,10 +443,57 @@ class OutputsForm extends React.Component {
             </Grid>
           </Box>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }
+
+OutputsForm.propTypes = {
+  addOutput: PropTypes.func.isRequired,
+  autoSpend: PropTypes.bool.isRequired,
+  balanceError: PropTypes.string.isRequired,
+  change: PropTypes.shape({
+    nextNode: PropTypes.shape({
+      multisig: PropTypes.shape({
+        address: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
+  changeOutputIndex: PropTypes.number.isRequired,
+  client: PropTypes.shape({}).isRequired,
+  fee: PropTypes.string.isRequired,
+  feeError: PropTypes.string.isRequired,
+  feeRateError: PropTypes.string.isRequired,
+  finalizeOutputs: PropTypes.func.isRequired,
+  feeRate: PropTypes.string.isRequired,
+  finalizedOutputs: PropTypes.bool.isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  inputsTotalSats: PropTypes.shape({
+    minus: PropTypes.func,
+  }).isRequired,
+  isWallet: PropTypes.bool.isRequired,
+  network: PropTypes.string.isRequired,
+  outputs: PropTypes.arrayOf(
+    PropTypes.shape({
+      address: PropTypes.string,
+      addressError: PropTypes.string,
+      amount: PropTypes.string,
+      amountError: PropTypes.string,
+    })
+  ).isRequired,
+  resetOutputs: PropTypes.func.isRequired,
+  setFeeRate: PropTypes.func.isRequired,
+  setFee: PropTypes.func.isRequired,
+  setChangeOutputIndex: PropTypes.func.isRequired,
+  setOutputAddress: PropTypes.func.isRequired,
+  setOutputAmount: PropTypes.func.isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+  updatesComplete: PropTypes.bool,
+};
+
+OutputsForm.defaultProps = {
+  updatesComplete: false,
+};
 
 function mapStateToProps(state) {
   return {

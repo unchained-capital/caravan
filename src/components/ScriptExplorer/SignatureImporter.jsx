@@ -46,42 +46,12 @@ const TEXT = "text";
 class SignatureImporter extends React.Component {
   titleRef = React.createRef();
 
-  static propTypes = {
-    addressType: PropTypes.string.isRequired,
-    extendedPublicKeyImporter: PropTypes.shape({
-      method: PropTypes.string,
-    }).isRequired,
-    fee: PropTypes.string.isRequired,
-    inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    inputsTotalSats: PropTypes.shape({}).isRequired,
-    isWallet: PropTypes.bool.isRequired,
-    network: PropTypes.string.isRequired,
-    number: PropTypes.number.isRequired,
-    outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    setName: PropTypes.func.isRequired,
-    setMethod: PropTypes.func.isRequired,
-    setBIP32Path: PropTypes.func.isRequired,
-    setSignature: PropTypes.func.isRequired,
-    setPublicKeys: PropTypes.func.isRequired,
-    setFinalized: PropTypes.func.isRequired,
-    setComplete: PropTypes.func.isRequired,
-    signatureImporter: PropTypes.shape({
-      finalized: PropTypes.bool,
-      name: PropTypes.string,
-      method: PropTypes.string,
-      signature: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.arrayOf(PropTypes.string),
-      ]),
-    }).isRequired,
-    signatureImporters: PropTypes.shape({}).isRequired,
-    txid: PropTypes.string.isRequired,
-    unsignedTransaction: PropTypes.shape({}).isRequired,
-  };
-
-  state = {
-    disableChangeMethod: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      disableChangeMethod: false,
+    };
+  }
 
   componentDidMount = () => {
     this.resetBIP32Path();
@@ -418,6 +388,39 @@ class SignatureImporter extends React.Component {
     );
   }
 }
+
+SignatureImporter.propTypes = {
+  addressType: PropTypes.string.isRequired,
+  extendedPublicKeyImporter: PropTypes.shape({
+    method: PropTypes.string,
+  }).isRequired,
+  fee: PropTypes.string.isRequired,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  inputsTotalSats: PropTypes.shape({}).isRequired,
+  isWallet: PropTypes.bool.isRequired,
+  network: PropTypes.string.isRequired,
+  number: PropTypes.number.isRequired,
+  outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setName: PropTypes.func.isRequired,
+  setMethod: PropTypes.func.isRequired,
+  setBIP32Path: PropTypes.func.isRequired,
+  setSignature: PropTypes.func.isRequired,
+  setPublicKeys: PropTypes.func.isRequired,
+  setFinalized: PropTypes.func.isRequired,
+  setComplete: PropTypes.func.isRequired,
+  signatureImporter: PropTypes.shape({
+    finalized: PropTypes.bool,
+    name: PropTypes.string,
+    method: PropTypes.string,
+    signature: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+  }).isRequired,
+  signatureImporters: PropTypes.shape({}).isRequired,
+  txid: PropTypes.string.isRequired,
+  unsignedTransaction: PropTypes.shape({}).isRequired,
+};
 
 function mapStateToProps(state, ownProps) {
   return {
