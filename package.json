@@ -33,7 +33,8 @@
   },
   "scripts": {
     "start": "HTTPS=true react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run ci && react-scripts build",
+    "ci": "npm run lint && npm run test-ci",
     "test": "react-scripts test",
     "test-ci": "react-scripts test --reporters ./node_modules/jest-junit --coverage --coverageReporters cobertura",
     "lint": "eslint --ext .js,.jsx src/",
