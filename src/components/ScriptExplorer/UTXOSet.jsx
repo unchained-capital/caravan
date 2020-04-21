@@ -36,7 +36,7 @@ class UTXOSet extends React.Component {
         <TableRow hover key={input.txid}>
           <TableCell>{inputIndex + 1}</TableCell>
           <TableCell className={confirmedStyle}>
-            <Copyable text={input.txid}>
+            <Copyable text={input.txid} showIcon showText={false}>
               <code title={confirmedTitle}>{input.txid}</code>
             </Copyable>
           </TableCell>

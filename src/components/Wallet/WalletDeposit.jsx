@@ -4,13 +4,16 @@ import { connect } from "react-redux";
 
 import QRCode from "qrcode.react";
 import {
+  Button,
+  Box,
   Card,
   CardHeader,
   CardContent,
-  TextField,
+  Grid,
+  InputAdornment,
   Snackbar,
-  Button,
-  Box,
+  Typography,
+  TextField,
 } from "@material-ui/core";
 import { fetchAddressUTXOs } from "../../blockchain";
 import {
@@ -20,7 +23,8 @@ import {
 
 // Components
 import Copyable from "../Copyable";
-import AddressExpander from "./AddressExpander";
+import BitcoinIcon from "../BitcoinIcon";
+import SlicesTable from "../Slices/SlicesTable";
 
 let depositTimer;
 
@@ -95,33 +99,6 @@ class WalletDeposit extends React.Component {
     }, 2000);
   };
 
-  renderAddress = () => {
-    const { node } = this.state;
-    return node ? <AddressExpander node={node} /> : "";
-  };
-
-  renderReceived = () => {
-    const { resetWalletView } = this.props;
-    const { depositIndex } = this.state;
-    return (
-      <Box mt={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.getNextDepositAddress}
-          disabled={depositIndex >= this.getDepositableNodes().length - 1}
-        >
-          Next Address
-        </Button>
-        <Box ml={2} component="span">
-          <Button variant="contained" onClick={resetWalletView}>
-            Return
-          </Button>
-        </Box>
-      </Box>
-    );
-  };
-
   handleAmountChange = (event) => {
     const amount = event.target.value;
     let error = "";
@@ -145,27 +122,76 @@ class WalletDeposit extends React.Component {
   };
 
   render() {
-    const { amount, amountError, showReceived } = this.state;
+    const { resetWalletView, client, network } = this.props;
+    const {
+      amount,
+      amountError,
+      showReceived,
+      depositIndex,
+      node,
+    } = this.state;
     return (
       <div>
         <Card>
           <CardHeader title="Deposit" />
           <CardContent>
-            <Copyable text={this.qrString()} newline>
-              {this.renderAddress()}
-              <QRCode size={300} value={this.qrString()} level="L" />
-              <p>Scan QR code or click to copy address to clipboard.</p>
-            </Copyable>
-            <TextField
-              fullWidth
-              label="Amount BTC"
-              name="depositAmount"
-              onChange={this.handleAmountChange}
-              value={amount}
-              error={amountError !== ""}
-              helperText={amountError}
-            />
-            {this.renderReceived()}
+            <Grid
+              container
+              justify="center"
+              direction="column"
+              alignItems="center"
+            >
+              <Grid item md={6}>
+                <Copyable text={this.qrString()} newline showText={false}>
+                  <QRCode size={300} value={this.qrString()} level="L" />
+                </Copyable>
+              </Grid>
+              <Grid item>
+                <Typography align="center" variant="subtitle1">
+                  Scan QR code or click to copy address to clipboard.
+                </Typography>
+              </Grid>
+              <Grid item md={6}>
+                <Box my={3}>
+                  <TextField
+                    fullWidth
+                    label="Amount BTC"
+                    name="depositAmount"
+                    onChange={this.handleAmountChange}
+                    value={amount}
+                    error={amountError !== ""}
+                    helperText={amountError}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <BitcoinIcon network={network} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            {node ? (
+              <SlicesTable slices={[node]} client={client} network={network} />
+            ) : (
+              ""
+            )}
+            <Box mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.getNextDepositAddress}
+                disabled={depositIndex >= this.getDepositableNodes().length - 1}
+              >
+                Next Address
+              </Button>
+              <Box ml={2} component="span">
+                <Button variant="contained" onClick={resetWalletView}>
+                  Return
+                </Button>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
         <Snackbar

@@ -18,6 +18,7 @@ import {
   bitcoindGetAddressStatus,
   bitcoindParams,
 } from "../bitcoind";
+import { clientPropTypes } from "../proptypes";
 
 const useStyles = makeStyles(() => ({
   tooltip: {
@@ -84,7 +85,10 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
     // there's been an update to the address array and there's only one
     // this typically is the case for the script interactions when dealing
     // with a single address
-    if (!enableImport || addresses.length === 1) {
+    if (
+      client.type === "private" &&
+      (!enableImport || addresses.length === 1)
+    ) {
       checkAddress();
     }
   }, [addresses, client, enableImport]);
@@ -178,12 +182,11 @@ however to know if an address has been used prior to import, a rescan needs to t
 ImportAddressesButton.propTypes = {
   addresses: PropTypes.arrayOf(PropTypes.string),
   importCallback: PropTypes.func,
-  client: PropTypes.shape({}),
+  client: PropTypes.shape(clientPropTypes).isRequired,
 };
 
 ImportAddressesButton.defaultProps = {
   addresses: [],
-  client: {},
   importCallback() {},
 };
 

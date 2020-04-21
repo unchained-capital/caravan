@@ -28,14 +28,10 @@ class MultisigDetails extends React.Component {
         <Typography variant="h6">{name}</Typography>
         <Grid container spacing={2}>
           <Grid item sm={6}>
-            <Copyable text={hex}>
-              <code>{hex}</code>
-            </Copyable>
+            <Copyable text={hex} showIcon code />
           </Grid>
           <Grid item sm={6}>
-            <Copyable text={ops}>
-              <code>{ops}</code>
-            </Copyable>
+            <Copyable text={ops} showIcon code />
           </Grid>
         </Grid>
       </Box>
@@ -55,9 +51,7 @@ class MultisigDetails extends React.Component {
           <Grid container direction="column" spacing={2}>
             {showAddress && (
               <Grid item>
-                <Copyable text={address}>
-                  <code>{address}</code>
-                </Copyable>
+                <Copyable text={address} showIcon code />
                 &nbsp;
                 {externalLink(
                   blockExplorerAddressURL(address, network),

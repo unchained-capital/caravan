@@ -197,7 +197,7 @@ ClientPicker.defaultProps = {
   urlError: "",
   usernameError: "",
   passwordError: "",
-  privateNotes: {},
+  privateNotes: React.createElement("span"),
 };
 
 function mapStateToProps(state) {

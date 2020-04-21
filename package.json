@@ -51,10 +51,10 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@ledgerhq/hw-app-btc": "^5.13.1",
-    "@ledgerhq/hw-transport-node-hid": "^5.13.1",
-    "@ledgerhq/hw-transport-u2f": "^5.13.1",
-    "@material-ui/core": "^4.5.2",
+    "@ledgerhq/hw-app-btc": "^4.21.0",
+    "@ledgerhq/hw-transport-node-hid": "^4.22.0",
+    "@ledgerhq/hw-transport-u2f": "^4.21.0",
+    "@material-ui/core": "^4.9.11",
     "@material-ui/icons": "^4.5.1",
     "axios": "^0.19.0",
     "base58check": "^2.0.0",
@@ -67,6 +67,7 @@
     "diff": "^4.0.2",
     "hi-base32": "^0.5.0",
     "lodash": "^4.17.11",
+    "material-table": "^1.57.2",
     "moment": "^2.24.0",
     "node-sass": "^4.13.1",
     "pako": "^1.0.10",

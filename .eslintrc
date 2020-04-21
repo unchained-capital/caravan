@@ -6,12 +6,9 @@
     "jasmine": true
   },
   "plugins": ["prettier"],
-  "extends": [
-    "airbnb",
-    "prettier",
-    "prettier/react",
-  ],
+  "extends": ["airbnb", "prettier", "prettier/react"],
   "rules": {
     "prettier/prettier": "error",
+    "react/jsx-props-no-spreading": "off"
   }
 }
