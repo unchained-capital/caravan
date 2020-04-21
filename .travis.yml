@@ -3,13 +3,16 @@ language: node_js
 jobs:
   include:
     - stage: test
-      node_js: 6
-      script: npm run test
-      node_js: 8
       script: npm run test
       node_js: 10
       script: npm run test
     - node_js: 12
+      script: npm run ci
+
+    - stage: build
+      node_js: 10
+      script: npm run build
+      node_js: 12
       script: npm run build
 
 deploy:
