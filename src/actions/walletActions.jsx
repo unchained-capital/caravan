@@ -1,5 +1,5 @@
-export const UPDATE_DEPOSIT_NODE = "UPDATE_DEPOSIT_NODE";
-export const UPDATE_CHANGE_NODE = "UPDATE_CHANGE_NODE";
+export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
+export const UPDATE_CHANGE_SLICE = "UPDATE_CHANGE_SLICE";
 export const RESET_NODES_SPEND = "RESET_NODES_SPEND";
 export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
 export const UPDATE_WALLET_MODE = "UPDATE_WALLET_MODE";
@@ -17,7 +17,7 @@ export const WALLET_MODES = {
 
 export function updateDepositSliceAction(value) {
   return {
-    type: UPDATE_DEPOSIT_NODE,
+    type: UPDATE_DEPOSIT_SLICE,
     value: {
       ...value,
       ...{ change: false },
@@ -27,7 +27,7 @@ export function updateDepositSliceAction(value) {
 
 export function updateChangeSliceAction(value) {
   return {
-    type: UPDATE_CHANGE_NODE,
+    type: UPDATE_CHANGE_SLICE,
     value: {
       ...value,
       ...{ change: true },

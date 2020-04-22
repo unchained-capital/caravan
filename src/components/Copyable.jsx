@@ -16,7 +16,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Copyable = ({ newline, text, children, showIcon, showText, code }) => {
+const Copyable = ({
+  newline,
+  text,
+  children,
+  showIcon,
+  showText,
+  code,
+  ...otherProps
+}) => {
   const [copied, setCopied] = useState(false);
   const [timer, setTimer] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
@@ -57,7 +65,7 @@ const Copyable = ({ newline, text, children, showIcon, showText, code }) => {
 
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-    <span onClick={(e) => e.stopPropagation()}>
+    <span onClick={(e) => e.stopPropagation()} {...otherProps}>
       <CopyToClipboard
         text={text}
         onCopy={onCopy}

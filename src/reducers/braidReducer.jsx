@@ -6,7 +6,7 @@ import {
 } from "../actions/walletActions";
 import updateState from "./utils";
 
-const initialNodeState = {
+const intialSliceState = {
   present: true,
   bip32Path: "",
   publicKeys: [],
@@ -42,21 +42,21 @@ function getNextNode(state) {
   return null;
 }
 
-function updateNode(state, action) {
-  const node = {
-    ...initialNodeState,
+function updateSlice(state, action) {
+  const slice = {
+    ...intialSliceState,
     ...(state.nodes[action.value.bip32Path] || {}),
     ...action.value,
   };
-  const newNodes = {};
-  newNodes[node.bip32Path] = node;
+  const newSlices = {};
+  newSlices[slice.bip32Path] = slice;
 
   const updatedState = {
     ...state,
     ...{
       nodes: {
         ...state.nodes,
-        ...newNodes,
+        ...newSlices,
       },
     },
   };
@@ -67,16 +67,16 @@ function updateNode(state, action) {
     // add the new value to the previous value. We also can't just
     // reset spendingSats because there might be multiple outputs
     updatedState.spendingSats = action.value.spend
-      ? state.spendingSats.plus(node.balanceSats)
-      : state.spendingSats.minus(node.balanceSats);
+      ? state.spendingSats.plus(slice.balanceSats)
+      : state.spendingSats.minus(slice.balanceSats);
   }
 
   if (action.value.balanceSats) {
-    const currentNodeBalance = state.nodes[node.bip32Path]
-      ? state.nodes[node.bip32Path].balanceSats
+    const currentNodeBalance = state.nodes[slice.bip32Path]
+      ? state.nodes[slice.bip32Path].balanceSats
       : BigNumber(0);
     updatedState.balanceSats = state.balanceSats.plus(
-      node.balanceSats.minus(currentNodeBalance)
+      slice.balanceSats.minus(currentNodeBalance)
     );
   }
 
@@ -155,7 +155,7 @@ export default (actionType) => (state = initialState, action) => {
         }, {}),
       });
     case actionType:
-      return updateNode(state, action);
+      return updateSlice(state, action);
     default:
       return state;
   }

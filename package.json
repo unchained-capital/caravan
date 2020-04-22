@@ -41,7 +41,8 @@
     "lint:fix": "eslint --ext .js,.jsx --fix src/",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "gh-pages": "CI=true npm run build && gh-pages -d build"
   },
   "bin": {},
   "browserslist": [
