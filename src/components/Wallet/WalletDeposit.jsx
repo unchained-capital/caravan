@@ -15,11 +15,14 @@ import {
   Typography,
   TextField,
 } from "@material-ui/core";
+
 import { fetchAddressUTXOs } from "../../blockchain";
 import {
   updateDepositSliceAction,
   resetWalletView as resetWalletViewAction,
 } from "../../actions/walletActions";
+import { getDepositableSlices } from "../../selectors/wallet";
+import { slicePropTypes } from "../../proptypes";
 
 // Components
 import Copyable from "../Copyable";
@@ -38,7 +41,7 @@ class WalletDeposit extends React.Component {
       amountError: "",
       showReceived: false,
       depositIndex: 0,
-      node: null,
+      slice: null,
     };
   }
 
@@ -50,34 +53,34 @@ class WalletDeposit extends React.Component {
     clearInterval(depositTimer);
   }
 
-  getDepositableNodes = () => {
-    const { depositNodes } = this.props;
-    const nodes = Object.values(depositNodes.nodes);
-    const depositable = [];
-
-    for (let i = 0; i < nodes.length; i += 1) {
-      const node = nodes[i];
-      if (node.balanceSats.isEqualTo(0) && !node.addressUsed) {
-        depositable.push(node);
-      }
-    }
-    return depositable;
-  };
-
   getNextDepositAddress = () => {
     const { depositIndex } = this.state;
     this.setState({ depositIndex: depositIndex + 1 });
     setTimeout(this.getDepositAddress, 0);
   };
 
+  resetDepositAddressIndex() {
+    const { depositableSlices } = this.props;
+    this.setState({
+      slice: depositableSlices[0],
+      address: depositableSlices[0].multisig.address,
+      depositIndex: 0,
+    });
+  }
+
   getDepositAddress = () => {
-    const { network, client, updateDepositSlice } = this.props;
+    const {
+      network,
+      client,
+      updateDepositSlice,
+      depositableSlices,
+    } = this.props;
     const { depositIndex } = this.state;
-    const depositableNodes = this.getDepositableNodes();
-    if (depositIndex < depositableNodes.length)
+
+    if (depositIndex < depositableSlices.length)
       this.setState({
-        node: depositableNodes[depositIndex],
-        address: depositableNodes[depositIndex].multisig.address,
+        slice: depositableSlices[depositIndex],
+        address: depositableSlices[depositIndex].multisig.address,
         showReceived: false,
       });
 
@@ -85,12 +88,15 @@ class WalletDeposit extends React.Component {
     depositTimer = setInterval(async () => {
       let updates;
       try {
-        const { address } = this.state;
+        const { address, slice } = this.state;
         updates = await fetchAddressUTXOs(address, network, client);
         if (updates && updates.utxos && updates.utxos.length) {
           clearInterval(depositTimer);
-          updateDepositSlice(updates);
-          this.setState({ showReceived: true });
+          updateDepositSlice({ ...updates, bip32Path: slice.bip32Path });
+          this.setState({ showReceived: true }, () => {
+            this.resetDepositAddressIndex();
+            setTimeout(this.getDepositAddress, 2000);
+          });
         }
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -122,14 +128,15 @@ class WalletDeposit extends React.Component {
   };
 
   render() {
-    const { resetWalletView, client, network } = this.props;
+    const { resetWalletView, client, network, depositableSlices } = this.props;
     const {
       amount,
       amountError,
       showReceived,
       depositIndex,
-      node,
+      slice,
     } = this.state;
+
     return (
       <div>
         <Card>
@@ -172,9 +179,9 @@ class WalletDeposit extends React.Component {
                 </Box>
               </Grid>
             </Grid>
-            {node ? (
+            {slice ? (
               <SlicesTable
-                slices={[node]}
+                slices={[slice]}
                 client={client}
                 network={network}
                 disabled={["lastUsed"]}
@@ -187,7 +194,7 @@ class WalletDeposit extends React.Component {
                 variant="contained"
                 color="primary"
                 onClick={this.getNextDepositAddress}
-                disabled={depositIndex >= this.getDepositableNodes().length - 1}
+                disabled={depositIndex >= depositableSlices.length - 1}
               >
                 Next Address
               </Button>
@@ -222,10 +229,8 @@ class WalletDeposit extends React.Component {
 
 WalletDeposit.propTypes = {
   client: PropTypes.shape({}).isRequired,
-  depositNodes: PropTypes.shape({
-    nodes: PropTypes.shape({}),
-  }).isRequired,
-  deposits: PropTypes.shape({}).isRequired,
+  depositableSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes))
+    .isRequired,
   network: PropTypes.string.isRequired,
   resetWalletView: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
@@ -233,9 +238,8 @@ WalletDeposit.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    ...state.wallet,
     ...state.settings,
-    depositNodes: state.wallet.deposits,
+    depositableSlices: getDepositableSlices(state),
     client: state.client,
   };
 }

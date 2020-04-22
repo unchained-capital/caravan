@@ -31,28 +31,38 @@ export const getPendingBalance = createSelector(
 
 // returns all slices from both deposit and change braids
 // also adds a "lastUsed" property for each slice
-export const getAllSlices = createSelector(getWalletSlices, (slices) => {
-  return slices.map((slice) => {
-    if (!slice.utxos.length) return slice;
-    const maxtime = Math.max(...slice.utxos.map((utxo) => utxo.time));
-    if (Number.isNaN(maxtime)) return { ...slice, lastUsed: "Pending" };
-    return {
-      ...slice,
-      lastUsed: new Date(1000 * maxtime).toLocaleDateString(),
-    };
-  });
-});
-
-export const getSpentSlices = createSelector(getAllSlices, (slices) =>
-  slices.filter((slice) => slice.addressUsed)
+export const getSlicesWithLastUsed = createSelector(
+  getWalletSlices,
+  (slices) => {
+    return slices.map((slice) => {
+      if (!slice.utxos.length && slice.addressUsed)
+        return { ...slice, lastUsed: "Spent" };
+      if (!slice.utxos.length) return slice;
+      const maxtime = Math.max(...slice.utxos.map((utxo) => utxo.time));
+      if (Number.isNaN(maxtime)) return { ...slice, lastUsed: "Pending" };
+      return {
+        ...slice,
+        lastUsed: new Date(1000 * maxtime).toLocaleDateString(),
+      };
+    });
+  }
 );
 
-export const getSlicesWithBalance = createSelector(getAllSlices, (slices) =>
-  slices.filter((slice) => slice.balanceSats.isGreaterThan(0))
+export const getSpentSlices = createSelector(getSlicesWithLastUsed, (slices) =>
+  slices.filter((slice) => slice.addressUsed && slice.balanceSats.isEqualTo(0))
 );
 
-export const getZeroBalanceSlices = createSelector(getAllSlices, (slices) =>
-  slices.filter((slice) => slice.balanceSats.isEqualTo(0) && !slice.addressUsed)
+export const getSlicesWithBalance = createSelector(
+  getSlicesWithLastUsed,
+  (slices) => slices.filter((slice) => slice.balanceSats.isGreaterThan(0))
+);
+
+export const getZeroBalanceSlices = createSelector(
+  getSlicesWithLastUsed,
+  (slices) =>
+    slices.filter(
+      (slice) => slice.balanceSats.isEqualTo(0) && !slice.addressUsed
+    )
 );
 
 export const getUnknownAddressSlices = createSelector(
@@ -62,5 +72,9 @@ export const getUnknownAddressSlices = createSelector(
 
 export const getUnknownAddresses = createSelector(
   [getWalletSlices, getUnknownAddressSlices],
-  (nodes) => nodes.map((slice) => slice.multisig.address)
+  (slices) => slices.map((slice) => slice.multisig.address)
+);
+
+export const getDepositableSlices = createSelector(getDepositSlices, (slices) =>
+  slices.filter((slice) => slice.balanceSats.isEqualTo(0) && !slice.addressUsed)
 );
