@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { FileCopy } from "@material-ui/icons";
 import { IconButton, makeStyles } from "@material-ui/core";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(() => ({
   copyText: {
@@ -26,6 +27,7 @@ const Copyable = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [timer, setTimer] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (timer) clearTimeout(timer);
@@ -33,6 +35,16 @@ const Copyable = ({
   }, []);
 
   const classes = useStyles();
+
+  const showSnackbarMessage = () => {
+    const MAX_LENGTH = 25;
+    const shortenedText =
+      text.length > MAX_LENGTH ? `${text.substring(0, MAX_LENGTH)}...` : text;
+
+    enqueueSnackbar(`Copied ${shortenedText} to clipboard`, {
+      preventDuplicate: true,
+    });
+  };
 
   const onCopy = () => {
     const timerTimeout = setTimeout(() => {
@@ -42,6 +54,8 @@ const Copyable = ({
 
     setCopied(true);
     setTimer(timerTimeout);
+
+    showSnackbarMessage();
   };
 
   const TextComponent = () => {

@@ -50,10 +50,9 @@ const Help = () => (
               </p>
 
               <p>
-                Caravan is also
-                <strong>stateless</strong>. It does not itself store any data.
-                You must safekeep the addresses (and redeem scripts & BIP32
-                paths) you create.
+                Caravan is <strong>stateless</strong>. It does not itself store
+                any data. You must safekeep the addresses (and redeem scripts &
+                BIP32 paths) you create.
               </p>
             </CardContent>
           </Card>

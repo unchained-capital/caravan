@@ -11,10 +11,10 @@ import {
   CardContent,
   Grid,
   InputAdornment,
-  Snackbar,
   Typography,
   TextField,
 } from "@material-ui/core";
+import { withSnackbar } from "notistack";
 
 import { fetchAddressUTXOs } from "../../blockchain";
 import {
@@ -39,7 +39,6 @@ class WalletDeposit extends React.Component {
       address: "",
       amount: 0,
       amountError: "",
-      showReceived: false,
       depositIndex: 0,
       slice: null,
     };
@@ -65,6 +64,7 @@ class WalletDeposit extends React.Component {
       client,
       updateDepositSlice,
       depositableSlices,
+      enqueueSnackbar,
     } = this.props;
     const { depositIndex } = this.state;
 
@@ -72,7 +72,6 @@ class WalletDeposit extends React.Component {
       this.setState({
         slice: depositableSlices[depositIndex],
         address: depositableSlices[depositIndex].multisig.address,
-        showReceived: false,
       });
 
     clearInterval(depositTimer);
@@ -84,10 +83,11 @@ class WalletDeposit extends React.Component {
         if (updates && updates.utxos && updates.utxos.length) {
           clearInterval(depositTimer);
           updateDepositSlice({ ...updates, bip32Path: slice.bip32Path });
-          this.setState({ showReceived: true }, () => {
-            this.resetDepositAddressIndex();
-            setTimeout(this.getDepositAddress, 2000);
-          });
+          enqueueSnackbar(
+            "Deposit received. A new address should now be available for deposit."
+          );
+          this.resetDepositAddressIndex();
+          setTimeout(this.getDepositAddress, 2000);
         }
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -129,13 +129,7 @@ class WalletDeposit extends React.Component {
 
   render() {
     const { resetWalletView, client, network, depositableSlices } = this.props;
-    const {
-      amount,
-      amountError,
-      showReceived,
-      depositIndex,
-      slice,
-    } = this.state;
+    const { amount, amountError, depositIndex, slice } = this.state;
 
     return (
       <div>
@@ -206,22 +200,6 @@ class WalletDeposit extends React.Component {
             </Box>
           </CardContent>
         </Card>
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          open={showReceived}
-          autoHideDuration={3000}
-          ContentProps={{
-            "aria-describedby": "message-id",
-          }}
-          message={
-            <span id="message-id">
-              Deposit received, choose Next Address to make another deposit.
-            </span>
-          }
-        />
       </div>
     );
   }
@@ -231,6 +209,7 @@ WalletDeposit.propTypes = {
   client: PropTypes.shape({}).isRequired,
   depositableSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes))
     .isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
   network: PropTypes.string.isRequired,
   resetWalletView: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
@@ -249,4 +228,7 @@ const mapDispatchToProps = {
   resetWalletView: resetWalletViewAction,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(WalletDeposit);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(WalletDeposit));

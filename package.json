@@ -71,6 +71,7 @@
     "material-table": "^1.57.2",
     "moment": "^2.24.0",
     "node-sass": "^4.13.1",
+    "notistack": "^0.9.11",
     "pako": "^1.0.10",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
