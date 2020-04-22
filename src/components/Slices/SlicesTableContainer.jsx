@@ -10,40 +10,56 @@ import {
   FormLabel,
   Grid,
 } from "@material-ui/core";
-import { getSlicesWithBalance } from "../../selectors/wallet";
+import {
+  getSlicesWithBalance,
+  getZeroBalanceSlices,
+  getSpentSlices,
+} from "../../selectors/wallet";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 
 // Components
 import SlicesTable from "./SlicesTable";
 
 class SlicesTableContainer extends React.PureComponent {
-  static propTypes = {
-    slices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
-    client: PropTypes.shape(clientPropTypes).isRequired,
-    network: PropTypes.string.isRequired,
-    // walletMode: PropTypes.number.isRequired,
-    // addNode: PropTypes.func.isRequired,
-    // updateNode: PropTypes.func.isRequired,
-    // walletMode: PropTypes.number.isRequired,
-  };
-
-  state = {
-    filterIncludeSpent: false,
-    filterIncludeZeroBalance: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      filterIncludeSpent: false,
+      filterIncludeZeroBalance: false,
+      displaySlices: props.slicesWithBalance.length
+        ? [...props.slicesWithBalance]
+        : [],
+    };
+  }
 
   filterAddresses = (event, checked) => {
-    this.setState({ [event.target.value]: checked });
+    const { slicesWithBalance, zeroBalanceSlices, spentSlices } = this.props;
+    const { filterIncludeSpent, filterIncludeZeroBalance } = this.state;
+    this.setState({ [event.target.value]: checked }, () => {
+      const newDisplaySlices = [...slicesWithBalance];
+      if (filterIncludeSpent) {
+        newDisplaySlices.push(...spentSlices);
+      }
+      if (filterIncludeZeroBalance) {
+        newDisplaySlices.push(...zeroBalanceSlices);
+      }
+      this.setState({ displaySlices: newDisplaySlices });
+    });
   };
 
   render() {
-    const { filterIncludeSpent, filterIncludeZeroBalance } = this.state;
-    const { slices, client, network } = this.props;
+    const {
+      filterIncludeSpent,
+      filterIncludeZeroBalance,
+      displaySlices,
+    } = this.state;
+    const { client, network } = this.props;
+
     return (
       <Grid container direction="column">
         <Grid item>
           <SlicesTable
-            slices={slices}
+            slices={displaySlices}
             client={client}
             network={network}
             paging
@@ -81,9 +97,21 @@ class SlicesTableContainer extends React.PureComponent {
   }
 }
 
+SlicesTableContainer.propTypes = {
+  slicesWithBalance: PropTypes.arrayOf(PropTypes.shape(slicePropTypes))
+    .isRequired,
+  zeroBalanceSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes))
+    .isRequired,
+  spentSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
+  client: PropTypes.shape(clientPropTypes).isRequired,
+  network: PropTypes.string.isRequired,
+};
+
 function mapStateToProps(state) {
   return {
-    slices: getSlicesWithBalance(state),
+    slicesWithBalance: getSlicesWithBalance(state),
+    zeroBalanceSlices: getZeroBalanceSlices(state),
+    spentSlices: getSpentSlices(state),
     walletMode: state.wallet.common.walletMode,
     client: state.client,
     network: state.settings.network,

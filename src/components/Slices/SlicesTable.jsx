@@ -4,6 +4,14 @@ import MaterialTable from "material-table";
 import { Typography, Box, makeStyles } from "@material-ui/core";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
+import {
+  compareSlicesByPath,
+  compareSlicesByBalance,
+  compareSlicesByUTXOCount,
+  compareSlicesByTime,
+} from "../../utils/slices";
+
+// Components
 import Copyable from "../Copyable";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 import SliceDetails from "./SliceDetails";
@@ -11,6 +19,9 @@ import SliceDetails from "./SliceDetails";
 const useStyles = makeStyles((theme) => ({
   panel: {
     boxShadow: `inset 0px 0px 4px 1px ${theme.palette.grey[500]}`,
+  },
+  spent: {
+    textDecoration: "line-through",
   },
 }));
 
@@ -30,15 +41,25 @@ const SlicesTable = ({
     paging,
     detailPanelType: "single",
     showTitle: (title && title.length) || false,
+    emptyRowsWhenPaging: false,
+    pageSize: 10,
+    pageSizeOptions: [10, 20, 50],
   };
   options.toolbar = options.showTitle && options.search;
   let columns = [
-    { title: "BIP32 Path", field: "bip32Path", type: "string" },
+    {
+      title: "BIP32 Path",
+      field: "bip32Path",
+      type: "string",
+      defaultSort: "asc",
+      customSort: compareSlicesByPath,
+    },
     {
       title: "UTXOs",
       field: "utxos",
       width: "50px",
       render: (rowData) => <Typography>{rowData.utxos.length}</Typography>,
+      customSort: compareSlicesByUTXOCount,
     },
     {
       title: "Balance",
@@ -48,17 +69,30 @@ const SlicesTable = ({
           {satoshisToBitcoins(rowData.balanceSats).toString()}
         </Typography>
       ),
+      customSort: compareSlicesByBalance,
     },
     {
       title: "Last Used",
       field: "lastUsed",
       render: (rowData) => <Typography>{rowData.lastUsed || ""}</Typography>,
+      customSort: compareSlicesByTime,
     },
     {
       title: "Address",
       field: "address",
+      sorting: false,
       render: (rowData) => (
-        <Copyable text={rowData.multisig.address} showIcon showText code />
+        <Copyable
+          text={rowData.multisig.address}
+          showIcon
+          showText
+          code
+          className={
+            rowData.addressUsed && rowData.balanceSats.isEqualTo(0)
+              ? classes.spent
+              : ""
+          }
+        />
       ),
     },
   ];

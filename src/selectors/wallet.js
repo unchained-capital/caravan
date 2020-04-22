@@ -29,8 +29,10 @@ export const getPendingBalance = createSelector(
   }
 );
 
-// returns all slices from both deposit and change braids
-// also adds a "lastUsed" property for each slice
+/**
+ * @description Returns a selector with all slices from both deposit and change braids
+ * also adds a "lastUsed" property for each slice
+ */
 export const getSlicesWithLastUsed = createSelector(
   getWalletSlices,
   (slices) => {
@@ -48,15 +50,26 @@ export const getSlicesWithLastUsed = createSelector(
   }
 );
 
+/**
+ * @description Returns a selector that provides all spent slices, i.e.
+ * All slices that have been used but have no balance left.
+ */
 export const getSpentSlices = createSelector(getSlicesWithLastUsed, (slices) =>
   slices.filter((slice) => slice.addressUsed && slice.balanceSats.isEqualTo(0))
 );
 
+/**
+ * @description Returns a selector that provides all slices with an active balance
+ */
 export const getSlicesWithBalance = createSelector(
   getSlicesWithLastUsed,
   (slices) => slices.filter((slice) => slice.balanceSats.isGreaterThan(0))
 );
 
+/**
+ * @description Returns a selector that provides all unused slices,
+ * i.e. where the balance is zero and the address has not been used
+ */
 export const getZeroBalanceSlices = createSelector(
   getSlicesWithLastUsed,
   (slices) =>
@@ -65,16 +78,28 @@ export const getZeroBalanceSlices = createSelector(
     )
 );
 
+/**
+ * @description Returns a selector of all wallet slices
+ * where the status of that slice is not known.
+ */
 export const getUnknownAddressSlices = createSelector(
   getWalletSlices,
   (slices) => slices.filter((slice) => !slice.addressKnown)
 );
 
+/**
+ * @description returns an array of all addresses of slices
+ * where the state of that slice is not known
+ */
 export const getUnknownAddresses = createSelector(
   [getWalletSlices, getUnknownAddressSlices],
   (slices) => slices.map((slice) => slice.multisig.address)
 );
 
+/**
+ * @description Returns a selector of all slices from the _deposit_ braid
+ * where the address hasn't been used yet.
+ */
 export const getDepositableSlices = createSelector(getDepositSlices, (slices) =>
   slices.filter((slice) => slice.balanceSats.isEqualTo(0) && !slice.addressUsed)
 );

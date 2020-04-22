@@ -59,15 +59,6 @@ class WalletDeposit extends React.Component {
     setTimeout(this.getDepositAddress, 0);
   };
 
-  resetDepositAddressIndex() {
-    const { depositableSlices } = this.props;
-    this.setState({
-      slice: depositableSlices[0],
-      address: depositableSlices[0].multisig.address,
-      depositIndex: 0,
-    });
-  }
-
   getDepositAddress = () => {
     const {
       network,
@@ -125,6 +116,15 @@ class WalletDeposit extends React.Component {
   qrString = () => {
     const { address, amount } = this.state;
     return `bitcoin:${address}${amount ? `?amount=${amount}` : ""}`;
+  };
+
+  resetDepositAddressIndex = () => {
+    const { depositableSlices } = this.props;
+    this.setState({
+      slice: depositableSlices[0],
+      address: depositableSlices[0].multisig.address,
+      depositIndex: 0,
+    });
   };
 
   render() {
