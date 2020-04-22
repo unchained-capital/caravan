@@ -34,8 +34,8 @@ class SlicesTableContainer extends React.PureComponent {
 
   filterAddresses = (event, checked) => {
     const { slicesWithBalance, zeroBalanceSlices, spentSlices } = this.props;
-    const { filterIncludeSpent, filterIncludeZeroBalance } = this.state;
     this.setState({ [event.target.value]: checked }, () => {
+      const { filterIncludeSpent, filterIncludeZeroBalance } = this.state;
       const newDisplaySlices = [...slicesWithBalance];
       if (filterIncludeSpent) {
         newDisplaySlices.push(...spentSlices);
