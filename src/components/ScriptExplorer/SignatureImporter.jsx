@@ -266,11 +266,7 @@ class SignatureImporter extends React.Component {
       <div>
         <p>The following signature was imported:</p>
         <Box>
-          <Copyable text={signatureJSON}>
-            <small>
-              <code>{signatureJSON}</code>
-            </small>
-          </Copyable>
+          <Copyable text={signatureJSON} showIcon code />
         </Box>
         <Box mt={2}>
           <Button

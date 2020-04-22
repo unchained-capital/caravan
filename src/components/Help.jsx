@@ -51,10 +51,10 @@ const Help = () => (
                     variant="contained"
                     size="large"
                     color="primary"
-                    href="/#/wallet"
+                    href="#/wallet"
                     endIcon={<AccountBalanceWallet />}
                   >
-                    Create Wallet
+                    Setup Wallet
                   </Button>
                 </Grid>
                 <Grid item xs={10} md={4}>
@@ -62,10 +62,10 @@ const Help = () => (
                     variant="contained"
                     size="large"
                     color="default"
-                    href="/#/create"
+                    href="#/address"
                     endIcon={<SportsVolleyball />}
                   >
-                    Create Address
+                    Setup Address
                   </Button>
                 </Grid>
               </Grid>

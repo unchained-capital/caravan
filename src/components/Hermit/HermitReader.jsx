@@ -31,7 +31,7 @@ class HermitReader extends Component {
         <div>
           <p>{commandMessage.instructions}</p>
           <Grid container justify="center" className="mb-2">
-            <Copyable text={commandMessage.command}>
+            <Copyable text={commandMessage.command} showText={false}>
               <code>
                 <strong>{commandMessage.mode}&gt;</strong>{" "}
                 {commandMessage.command}
