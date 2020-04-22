@@ -26,9 +26,7 @@ class UnsignedTransaction extends React.Component {
             </Button>
           </small>
           <p>
-            <Copyable text={hex}>
-              <code>{hex}</code>
-            </Copyable>
+            <Copyable text={hex} showIcon />
           </p>
         </div>
       );

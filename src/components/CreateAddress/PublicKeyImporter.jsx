@@ -239,9 +239,7 @@ class PublicKeyImporter extends React.Component {
         <Box mt={4}>
           <p>The BIP32 path for this public key is:</p>
           <Grid container justify="center">
-            <Copyable text={publicKeyImporter.bip32Path}>
-              <code>{publicKeyImporter.bip32Path}</code>
-            </Copyable>
+            <Copyable text={publicKeyImporter.bip32Path} code />
           </Grid>
           <Box mt={4}>
             <p>
@@ -282,9 +280,7 @@ class PublicKeyImporter extends React.Component {
       <div>
         <p>The following public key was imported:</p>
         <Grid container justify="center">
-          <Copyable text={publicKeyImporter.publicKey}>
-            <code>{publicKeyImporter.publicKey}</code>
-          </Copyable>
+          <Copyable text={publicKeyImporter.publicKey} showIcon code />
         </Grid>
         {this.renderBIP32Path()}
         <Box mt={2}>

@@ -21,6 +21,7 @@ import {
   Button,
   FormHelperText,
   Box,
+  withStyles,
 } from "@material-ui/core";
 import Copyable from "../Copyable";
 import ExtendedPublicKeyExtendedPublicKeyImporter from "./ExtendedPublicKeyExtendedPublicKeyImporter";
@@ -42,6 +43,13 @@ import {
 
 const XPUB = "xpub";
 const TEXT = "text";
+
+const useStyles = () => ({
+  xpub: {
+    lineHeight: ".8rem",
+    overflowWrap: "break-word",
+  },
+});
 
 class ExtendedPublicKeyImporter extends React.Component {
   constructor(props) {
@@ -209,9 +217,7 @@ class ExtendedPublicKeyImporter extends React.Component {
       <div className="mt-4">
         <p>The BIP32 path for this extended public key is:</p>
         <div className="text-center">
-          <Copyable text={extendedPublicKeyImporter.bip32Path}>
-            <code>{extendedPublicKeyImporter.bip32Path}</code>
-          </Copyable>
+          <Copyable text={extendedPublicKeyImporter.bip32Path} showIcon />
         </div>
         <p className="mt-4">
           You will need this BIP32 path to sign for this key later.{" "}
@@ -243,7 +249,7 @@ class ExtendedPublicKeyImporter extends React.Component {
   //
 
   renderExtendedPublicKey = () => {
-    const { extendedPublicKeyImporter, network } = this.props;
+    const { extendedPublicKeyImporter, network, classes } = this.props;
     const { conversionMessage } = this.state;
     const conversionAppend =
       extendedPublicKeyImporter.method === HERMIT &&
@@ -253,12 +259,11 @@ class ExtendedPublicKeyImporter extends React.Component {
     return (
       <div>
         <p>The following extended public key was imported:</p>
-        <div className="text-center">
-          <Copyable text={extendedPublicKeyImporter.extendedPublicKey}>
-            <small>
-              <code>{extendedPublicKeyImporter.extendedPublicKey}</code>
-            </small>
-          </Copyable>
+        <div className={classes.xpub}>
+          <Copyable
+            text={extendedPublicKeyImporter.extendedPublicKey}
+            showIcon
+          />
         </div>
         {this.renderBIP32Path()}
         {conversionMessage !== "" && (
@@ -374,6 +379,9 @@ class ExtendedPublicKeyImporter extends React.Component {
 
 ExtendedPublicKeyImporter.propTypes = {
   addressType: PropTypes.string.isRequired,
+  classes: PropTypes.shape({
+    xpub: PropTypes.shape({}),
+  }).isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
   extendedPublicKeyImporter: PropTypes.shape({
     bip32Path: PropTypes.string,
@@ -415,7 +423,11 @@ const mapDispatchToProps = {
   setFinalized: setExtendedPublicKeyImporterFinalized,
 };
 
+const ExtendedPublicKeyImporterWithStyles = withStyles(useStyles)(
+  ExtendedPublicKeyImporter
+);
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ExtendedPublicKeyImporter);
+)(ExtendedPublicKeyImporterWithStyles);

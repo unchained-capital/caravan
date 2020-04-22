@@ -8,7 +8,7 @@ import Copyable from "../Copyable";
 const HermitDisplayer = (props) => {
   const { width, string } = props;
   return (
-    <Copyable text={string} newline>
+    <Copyable text={string} newline showText={false}>
       <QRCode size={width} value={string} level="L" />
     </Copyable>
   );

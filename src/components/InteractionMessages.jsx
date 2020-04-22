@@ -138,7 +138,7 @@ class InteractionMessages extends React.Component {
     }
     return (
       <Box>
-        <Typography variant="h6">Version</Typography>
+        <Typography variant="h6">Model</Typography>
         <Paper square>
           <Tabs
             value={currentVersion}

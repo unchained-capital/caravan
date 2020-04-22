@@ -83,11 +83,7 @@ class Transaction extends React.Component {
             {signedTransaction && (
               <Box mt={4}>
                 <Typography variant="h6">Signed Transaction</Typography>
-                <Copyable text={signedTransactionHex}>
-                  <small>
-                    <code>{signedTransactionHex}</code>
-                  </small>
-                </Copyable>
+                <Copyable text={signedTransactionHex} code showIcon />
               </Box>
             )}
             {txid === "" ? (
@@ -110,9 +106,7 @@ class Transaction extends React.Component {
             ) : (
               <Box mt={2}>
                 <Typography variant="h5">
-                  <Copyable text={txid}>
-                    <code>{txid}</code>
-                  </Copyable>
+                  <Copyable text={txid} code showIcon />
                   &nbsp;
                   {externalLink(this.transactionURL(), <OpenInNew />)}
                 </Typography>
