@@ -8,6 +8,7 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Box,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 
@@ -88,6 +89,9 @@ const Navbar = () => {
             color="inherit"
             onClick={handleClick}
           >
+            <Box mr={3}>
+              <Typography>Menu</Typography>
+            </Box>
             <MenuIcon />
           </Button>
           <Menu
