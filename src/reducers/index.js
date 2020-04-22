@@ -15,8 +15,8 @@ import testSuiteRunReducer from "./testSuiteRunReducer";
 import errorNotificationReducer from "./errorNotificationReducer";
 
 import {
-  UPDATE_DEPOSIT_NODE,
-  UPDATE_CHANGE_NODE,
+  UPDATE_DEPOSIT_SLICE,
+  UPDATE_CHANGE_SLICE,
   RESET_WALLET,
 } from "../actions/walletActions";
 
@@ -27,8 +27,8 @@ const spendReducers = combineReducers({
 });
 
 const walletReducers = combineReducers({
-  deposits: braidReducer(UPDATE_DEPOSIT_NODE),
-  change: braidReducer(UPDATE_CHANGE_NODE),
+  deposits: braidReducer(UPDATE_DEPOSIT_SLICE),
+  change: braidReducer(UPDATE_CHANGE_SLICE),
   common: walletReducer,
 });
 
