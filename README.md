@@ -130,3 +130,7 @@ npm module. Instructions to install and run the module are on its
 If you are running a local bitcoind node on your local machine on port 8332,
 and you run `corsproxy` with the default settings, you should be able to
 point caravan at 'http://localhost:1337/localhost:8332'.
+
+## Contributing
+
+Please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) and the open [GitHub Issues](https://github.com/caravan/issues).
