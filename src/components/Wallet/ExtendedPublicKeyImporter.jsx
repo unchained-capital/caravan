@@ -249,7 +249,7 @@ class ExtendedPublicKeyImporter extends React.Component {
   //
 
   renderExtendedPublicKey = () => {
-    const { extendedPublicKeyImporter, network } = this.props;
+    const { extendedPublicKeyImporter, network, classes } = this.props;
     const { conversionMessage } = this.state;
     const conversionAppend =
       extendedPublicKeyImporter.method === HERMIT &&
@@ -259,7 +259,7 @@ class ExtendedPublicKeyImporter extends React.Component {
     return (
       <div>
         <p>The following extended public key was imported:</p>
-        <div className={this.props.classes.xpub}>
+        <div className={classes.xpub}>
           <Copyable
             text={extendedPublicKeyImporter.extendedPublicKey}
             showIcon
@@ -379,7 +379,9 @@ class ExtendedPublicKeyImporter extends React.Component {
 
 ExtendedPublicKeyImporter.propTypes = {
   addressType: PropTypes.string.isRequired,
-  classes: PropTypes.shape({}),
+  classes: PropTypes.shape({
+    xpub: PropTypes.shape({}),
+  }).isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
   extendedPublicKeyImporter: PropTypes.shape({
     bip32Path: PropTypes.string,
