@@ -21,6 +21,8 @@ import {
   YouTube,
   BugReport,
   Speed,
+  AccountBalanceWallet,
+  SportsVolleyball,
 } from "@material-ui/icons";
 import { externalLink } from "../utils";
 import Disclaimer from "./Disclaimer";
@@ -33,6 +35,43 @@ const Help = () => (
 
     <Grid container spacing={3}>
       <Grid container item md={8} spacing={2} direction="column">
+        <Grid item>
+          <Card>
+            <CardHeader title="Get Started" />
+            <CardContent>
+              <Box mb={3}>
+                <Typography>
+                  Start using caravan by choosing to either make a multisig
+                  wallet or fully stateless address.
+                </Typography>
+              </Box>
+              <Grid container alignItems="center" justify="center" spacing={3}>
+                <Grid item xs={10} md={4}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    href="/#/wallet"
+                    endIcon={<AccountBalanceWallet />}
+                  >
+                    Create Wallet
+                  </Button>
+                </Grid>
+                <Grid item xs={10} md={4}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    color="default"
+                    href="/#/create"
+                    endIcon={<SportsVolleyball />}
+                  >
+                    Create Address
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
         <Grid item>
           <Card>
             <CardHeader title="Stateless Multisig Coordinator" />
