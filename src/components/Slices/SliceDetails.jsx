@@ -114,10 +114,19 @@ const SliceDetails = ({ slice, client, network }) => {
         disabled: client.type !== "private",
       },
       panel: (
-        <ImportAddressesButton
-          addresses={[slice.multisig.address]}
-          client={client}
-        />
+        <div>
+          <Typography variant="h6">Import Watch-Only Address</Typography>
+          <Typography variant="caption">
+            Address must be imported to get accurate balance data. If this
+            address has previous history, a rescan may be required.
+          </Typography>
+          <Box my={3}>
+            <ImportAddressesButton
+              addresses={[slice.multisig.address]}
+              client={client}
+            />
+          </Box>
+        </div>
       ),
     },
   ];

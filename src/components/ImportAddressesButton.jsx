@@ -24,9 +24,6 @@ const useStyles = makeStyles(() => ({
   tooltip: {
     fontSize: ".8rem",
   },
-  container: {
-    textAlign: "left",
-  },
 }));
 /**
  * @description A button for importing a set of given addresses. Includes a switch
@@ -138,7 +135,7 @@ however to know if an address has been used prior to import, a rescan needs to t
           disabled={(!enableImport && !rescan) || !addresses.length}
           onClick={importAddresses}
         >
-          Import
+          Import {pluralOrSingularAddress(true)}
         </Button>
       </Box>
       <Box component="span" ml={2}>

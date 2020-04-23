@@ -6,21 +6,15 @@ import {
   validateExtendedPublicKey,
   satoshisToBitcoins,
 } from "unchained-bitcoin";
-import {
-  Grid,
-  Box,
-  IconButton,
-  Button,
-  FormHelperText,
-} from "@material-ui/core";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { Grid, Box, Button, FormHelperText } from "@material-ui/core";
 import { downloadFile } from "../../utils";
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,
+  resetWallet as resetWalletAction,
   updateWalletNameAction as updateWalletNameActionImport,
 } from "../../actions/walletActions";
+import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import walletSelectors from "../../selectors";
 import { CARAVAN_CONFIG } from "./constants";
 
@@ -33,6 +27,12 @@ import AddressTypePicker from "../AddressTypePicker";
 import ClientPicker from "../ClientPicker";
 import WalletGenerator from "./WalletGenerator";
 import ExtendedPublicKeyImporter from "./ExtendedPublicKeyImporter";
+import WalletActionsPanel from "./WalletActionsPanel";
+
+import {
+  getUnknownAddresses,
+  getUnknownAddressSlices,
+} from "../../selectors/wallet";
 
 // Actions
 import {
@@ -47,6 +47,7 @@ import {
   setExtendedPublicKeyImporterBIP32Path as setExtendedPublicKeyImporterBIP32PathAction,
   setExtendedPublicKeyImporterName as setExtendedPublicKeyImporterNameAction,
   setExtendedPublicKeyImporterFinalized as setExtendedPublicKeyImporterFinalizedAction,
+  setExtendedPublicKeyImporterVisible as setExtendedPublicKeyImporterVisibleAction,
 } from "../../actions/extendedPublicKeyImporterActions";
 import { wrappedActions } from "../../actions/utils";
 import {
@@ -55,6 +56,7 @@ import {
   SET_CLIENT_USERNAME,
   SET_CLIENT_PASSWORD,
 } from "../../actions/clientActions";
+import { clientPropTypes, slicePropTypes } from "../../proptypes";
 
 class CreateWallet extends React.Component {
   static validateProperties(config, properties, key) {
@@ -148,6 +150,7 @@ class CreateWallet extends React.Component {
       configError: "",
       configJson: "",
       refreshing: false,
+      generating: false,
     };
   }
 
@@ -175,6 +178,13 @@ class CreateWallet extends React.Component {
     });
   }
 
+  setGenerating(_val) {
+    const { generating } = this.state;
+    let val = _val;
+    if (_val === undefined) val = !generating;
+    this.setState({ generating: val });
+  }
+
   handleImport = ({ target }) => {
     const fileReader = new FileReader();
 
@@ -185,12 +195,7 @@ class CreateWallet extends React.Component {
     };
   };
 
-  walletActivated = () => {
-    const { nodesLoaded } = this.props;
-    return nodesLoaded;
-  };
-
-  refesh = async () => {
+  refresh = async () => {
     this.setState({ refreshing: true });
     await this.generatorRefresh();
     this.setState({ refreshing: false });
@@ -421,8 +426,39 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     return btc;
   };
 
+  clearConfig = (e) => {
+    const { setExtendedPublicKeyImporterVisible, resetWallet } = this.props;
+    e.preventDefault();
+    resetWallet();
+    setExtendedPublicKeyImporterVisible(true);
+    this.setState({ generating: false });
+  };
+
+  /**
+   * Callback function to pass to the address importer
+   * after addresses have been imported we want
+   * @param {Array<string>} importedAddresses
+   * @param {boolean} rescan - whether or not a rescan is being performed
+   */
+  async afterImportAddresses(importedAddresses, rescan) {
+    // if rescan is true then there's no point in fetching
+    // the slice data yet since we likely won't get anything
+    // until the rescan is complete
+    if (rescan) return;
+
+    const { unknownSlices, fetchSliceData } = this.props;
+    const importedSlices = unknownSlices.reduce((slices, slice) => {
+      if (importedAddresses.indexOf(slice.multisig.address) > -1)
+        slices.push(slice);
+      return slice;
+    }, []);
+
+    await fetchSliceData(importedSlices);
+  }
+
   render = () => {
     const {
+      client,
       configuring,
       walletName,
       setName,
@@ -430,9 +466,12 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
       change,
       network,
       pendingBalance,
+      nodesLoaded,
+      frozen,
+      unknownAddresses,
     } = this.props;
     const balance = this.totalBalance();
-    const { refreshing } = this.state;
+    const { refreshing, generating } = this.state;
     const walletLoadError =
       change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0
         ? "Wallet loaded with errors"
@@ -441,7 +480,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     return (
       <>
         <Box mt={3}>
-          <Grid container>
+          <Grid container spacing={3}>
             <Grid item xs={10} md={6}>
               <WalletInfoCard
                 editable={
@@ -455,22 +494,23 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
                 network={network}
               />
             </Grid>
-            <Grid item xs={1}>
-              <IconButton
-                onClick={this.refesh}
-                style={{
-                  float: "right",
-                  display: this.walletActivated() ? "block" : "none",
-                }}
-              >
-                <RefreshIcon
-                  style={{ display: refreshing ? "none" : "block" }}
+            <Grid item xs={10} md={6}>
+              {(nodesLoaded || frozen) && (
+                <WalletActionsPanel
+                  addresses={unknownAddresses}
+                  refreshing={refreshing}
+                  walletActivated={nodesLoaded}
+                  handleRefresh={() => this.refresh()}
+                  onClearConfig={(e) => {
+                    this.clearConfig(e);
+                  }}
+                  onDownloadConfig={(e) => this.downloadWalletDetails(e)}
+                  client={client}
+                  onImportAddresses={(addresses, rescan) =>
+                    this.afterImportAddresses(rescan)
+                  }
                 />
-                <CircularProgress
-                  size={24}
-                  style={{ display: refreshing ? "block" : "none" }}
-                />
-              </IconButton>
+              )}
             </Grid>
           </Grid>
         </Box>
@@ -490,6 +530,8 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
               {this.renderExtendedPublicKeyImporters()}
               <Box mt={2}>
                 <WalletGenerator
+                  generating={generating}
+                  setGenerating={(value) => this.setGenerating(value)}
                   downloadWalletDetails={this.downloadWalletDetails}
                   // eslint-disable-next-line no-return-assign
                   refreshNodes={(click) => (this.generatorRefresh = click)} // FIXME TIGHT COUPLING ALERT, this calls function downstream
@@ -511,11 +553,7 @@ CreateWallet.propTypes = {
     fetchUTXOsErrors: PropTypes.number,
     nodes: PropTypes.shape({}),
   }).isRequired,
-  client: PropTypes.shape({
-    type: PropTypes.string,
-    url: PropTypes.string,
-    username: PropTypes.string,
-  }).isRequired,
+  client: PropTypes.shape(clientPropTypes).isRequired,
   configuring: PropTypes.bool.isRequired,
   deposits: PropTypes.shape({
     balanceSats: PropTypes.shape({
@@ -525,10 +563,13 @@ CreateWallet.propTypes = {
     nodes: PropTypes.shape({}),
   }).isRequired,
   extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  frozen: PropTypes.bool.isRequired,
+  fetchSliceData: PropTypes.func.isRequired,
   network: PropTypes.string.isRequired,
   nodesLoaded: PropTypes.bool.isRequired,
   pendingBalance: PropTypes.number,
   requiredSigners: PropTypes.number.isRequired,
+  resetWallet: PropTypes.func.isRequired,
   setTotalSigners: PropTypes.func.isRequired,
   setRequiredSigners: PropTypes.func.isRequired,
   setAddressType: PropTypes.func.isRequired,
@@ -539,11 +580,14 @@ CreateWallet.propTypes = {
   setExtendedPublicKeyImporterBIP32Path: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterFinalized: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterName: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterVisible: PropTypes.func.isRequired,
   setClientType: PropTypes.func.isRequired,
   setClientUrl: PropTypes.func.isRequired,
   setClientUsername: PropTypes.func.isRequired,
   totalSigners: PropTypes.number.isRequired,
   updateWalletNameAction: PropTypes.func.isRequired,
+  unknownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
+  unknownSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   walletName: PropTypes.string.isRequired,
 };
 
@@ -561,14 +605,16 @@ function mapStateToProps(state) {
       walletMode: state.wallet.common.walletMode,
     },
     pendingBalance: walletSelectors.getPendingBalance(state),
-    changeNodes: state.wallet.change.nodes,
-    depositNodes: state.wallet.deposits.nodes,
+    unknownAddresses: getUnknownAddresses(state),
+    unknownSlices: getUnknownAddressSlices(state),
     ...state.wallet,
     client: state.client,
   };
 }
 
 const mapDispatchToProps = {
+  fetchSliceData: fetchSliceDataAction,
+  resetWallet: resetWalletAction,
   setName: updateWalletNameActionImport,
   setTotalSigners: setTotalSignersAction,
   setRequiredSigners: setRequiredSignersAction,
@@ -579,6 +625,7 @@ const mapDispatchToProps = {
   setExtendedPublicKeyImporterBIP32Path: setExtendedPublicKeyImporterBIP32PathAction,
   setExtendedPublicKeyImporterName: setExtendedPublicKeyImporterNameAction,
   setExtendedPublicKeyImporterFinalized: setExtendedPublicKeyImporterFinalizedAction,
+  setExtendedPublicKeyImporterVisible: setExtendedPublicKeyImporterVisibleAction,
   updateWalletNameAction: updateWalletNameActionImport,
   ...wrappedActions({
     setClientType: SET_CLIENT_TYPE,

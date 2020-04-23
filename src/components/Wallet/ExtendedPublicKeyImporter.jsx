@@ -380,7 +380,7 @@ class ExtendedPublicKeyImporter extends React.Component {
 ExtendedPublicKeyImporter.propTypes = {
   addressType: PropTypes.string.isRequired,
   classes: PropTypes.shape({
-    xpub: PropTypes.shape({}),
+    xpub: PropTypes.string,
   }).isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
   extendedPublicKeyImporter: PropTypes.shape({
