@@ -24,16 +24,11 @@ import {
   getAddressStatus,
   fetchFeeEstimate,
 } from "../../blockchain";
-import {
-  getUnknownAddresses,
-  getUnknownAddressSlices,
-} from "../../selectors/wallet";
 
 // Components
 import ConfirmWallet from "./ConfirmWallet";
 import WalletControl from "./WalletControl";
 import WalletConfigInteractionButtons from "./WalletConfigInteractionButtons";
-import ImportAddressesButton from "../ImportAddressesButton";
 
 // Actions
 import { setFrozen } from "../../actions/settingsActions";
@@ -57,7 +52,7 @@ class WalletGenerator extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      generating: false,
+      connectSuccess: false,
     };
   }
 
@@ -66,6 +61,7 @@ class WalletGenerator extends React.Component {
       setIsWallet,
       refreshNodes,
       common: { nodesLoaded },
+      setGenerating,
     } = this.props;
     this.debouncedTestConnection = debounce(
       (args) => this.testConnection(args),
@@ -74,7 +70,7 @@ class WalletGenerator extends React.Component {
     );
     setIsWallet();
     refreshNodes(this.refreshNodes);
-    if (nodesLoaded) this.setState({ generating: true });
+    if (nodesLoaded) setGenerating(true);
   }
 
   async componentDidUpdate(prevProps) {
@@ -129,21 +125,27 @@ class WalletGenerator extends React.Component {
 
   toggleImporters = (event) => {
     event.preventDefault();
-    const { setImportersVisible, configuring, resetWallet } = this.props;
+    const {
+      setImportersVisible,
+      configuring,
+      resetWallet,
+      setGenerating,
+    } = this.props;
 
     if (!configuring) {
-      this.setState({ generating: false }, () => {
-        resetWallet();
-      });
+      setGenerating(false);
+      resetWallet();
     }
+
     setImportersVisible(!configuring);
   };
 
   generate = () => {
-    const { setImportersVisible, freeze } = this.props;
+    const { setImportersVisible, freeze, setGenerating } = this.props;
     freeze(true);
     setImportersVisible(false);
-    this.setState({ generating: true, connectSuccess: false }, () => {
+    setGenerating(true);
+    this.setState({ connectSuccess: false }, () => {
       this.addNode(false, "m/0/0", true);
       this.addNode(true, "m/1/0", true);
     });
@@ -284,28 +286,6 @@ class WalletGenerator extends React.Component {
     }
   };
 
-  /**
-   * Callback function to pass to the address importer
-   * after addresses have been imported we want
-   * @param {Array<string>} importedAddresses
-   * @param {boolean} rescan - whether or not a rescan is being performed
-   */
-  async afterImportAddresses(importedAddresses, rescan) {
-    // if rescan is true then there's no point in fetching
-    // the slice data yet since we likely won't get anything
-    // until the rescan is complete
-    if (rescan) return;
-
-    const { unknownSlices, fetchSliceData } = this.props;
-    const importedSlices = unknownSlices.reduce((slices, slice) => {
-      if (importedAddresses.indexOf(slice.multisig.address) > -1)
-        slices.push(slice);
-      return slice;
-    }, []);
-
-    await fetchSliceData(importedSlices);
-  }
-
   async handlePasswordEnter(event) {
     event.preventDefault();
     this.debouncedTestConnection.cancel();
@@ -328,39 +308,13 @@ class WalletGenerator extends React.Component {
       configuring,
       downloadWalletDetails,
       client,
-      unknownAddresses,
+      generating,
     } = this.props;
-    const { generating, connectSuccess } = this.state;
+    const { connectSuccess } = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating && !configuring) {
         return (
-          <div>
-            <WalletControl
-              addNode={this.addNode}
-              updateNode={this.updateNode}
-            />
-            <Box mt={2} textAlign="center">
-              <Grid container>
-                <Grid item>
-                  <WalletConfigInteractionButtons
-                    onClearFn={(e) => this.toggleImporters(e)}
-                    onDownloadFn={downloadWalletDetails}
-                  />
-                </Grid>
-                {client.type === "private" && (
-                  <Grid item>
-                    <ImportAddressesButton
-                      addresses={unknownAddresses}
-                      client={client}
-                      importCallback={(addresses) =>
-                        this.afterImportAddresses(addresses)
-                      }
-                    />
-                  </Grid>
-                )}
-              </Grid>
-            </Box>
-          </div>
+          <WalletControl addNode={this.addNode} updateNode={this.updateNode} />
         );
       }
       return (
@@ -482,13 +436,13 @@ WalletGenerator.propTypes = {
   }).isRequired,
   downloadWalletDetails: PropTypes.func.isRequired,
   extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-  fetchSliceData: PropTypes.func.isRequired,
+  setGenerating: PropTypes.func.isRequired,
+  generating: PropTypes.bool.isRequired,
   totalSigners: PropTypes.number.isRequired,
   requiredSigners: PropTypes.number.isRequired,
   freeze: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
   updateChangeSlice: PropTypes.func.isRequired,
-  unknownAddresses: PropTypes.arrayOf(PropTypes.string),
   refreshNodes: PropTypes.func.isRequired,
   resetNodesFetchErrors: PropTypes.func.isRequired,
   resetWallet: PropTypes.func.isRequired,
@@ -496,11 +450,6 @@ WalletGenerator.propTypes = {
   setIsWallet: PropTypes.func.isRequired,
   setPassword: PropTypes.func.isRequired,
   setPasswordError: PropTypes.func.isRequired,
-  unknownSlices: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-};
-
-WalletGenerator.defaultProps = {
-  unknownAddresses: [],
 };
 
 function mapStateToProps(state) {
@@ -510,8 +459,6 @@ function mapStateToProps(state) {
     ...state.quorum,
     ...state.wallet,
     ...state.wallet.common,
-    unknownAddresses: getUnknownAddresses(state),
-    unknownSlices: getUnknownAddressSlices(state),
   };
 }
 

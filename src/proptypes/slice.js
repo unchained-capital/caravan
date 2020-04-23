@@ -16,7 +16,7 @@ const slicePropTypes = {
   spend: PropTypes.bool.isRequired,
   fetchUtxos: PropTypes.bool,
   fetchUTXOsError: PropTypes.string.isRequired,
-  addressUsed: PropTypes.bool.isRequired,
+  addressUsed: PropTypes.bool,
   addressKnown: PropTypes.bool.isRequired,
   lastUsed: PropTypes.string,
 };

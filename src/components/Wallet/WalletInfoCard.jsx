@@ -14,6 +14,9 @@ import BitcoinIcon from "../BitcoinIcon";
 import EditableName from "../EditableName";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100%",
+  },
   title: {
     fontSize: "2rem",
     color: "#212529",
@@ -39,7 +42,7 @@ const WalletInfoCard = ({
 }) => {
   const classes = useStyles();
   return (
-    <Card>
+    <Card className={classes.root}>
       <CardContent>
         <Grid container direction="row" alignItems="center">
           {editable ? (
