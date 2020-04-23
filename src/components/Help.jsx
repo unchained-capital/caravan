@@ -52,7 +52,7 @@ const Help = () => (
                     size="large"
                     color="primary"
                     href="#/wallet"
-                    endIcon={<AccountBalanceWallet />}
+                    startIcon={<AccountBalanceWallet />}
                   >
                     Setup Wallet
                   </Button>
@@ -63,7 +63,7 @@ const Help = () => (
                     size="large"
                     color="default"
                     href="#/address"
-                    endIcon={<SportsVolleyball />}
+                    startIcon={<SportsVolleyball />}
                   >
                     Setup Address
                   </Button>
