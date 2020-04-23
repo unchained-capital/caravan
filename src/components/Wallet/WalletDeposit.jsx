@@ -129,7 +129,7 @@ class WalletDeposit extends React.Component {
 
   render() {
     const { resetWalletView, client, network, depositableSlices } = this.props;
-    const { amount, amountError, depositIndex, slice } = this.state;
+    const { address, amount, amountError, depositIndex, slice } = this.state;
 
     return (
       <div>
@@ -143,7 +143,7 @@ class WalletDeposit extends React.Component {
               alignItems="center"
             >
               <Grid item md={6}>
-                <Copyable text={this.qrString()} newline showText={false}>
+                <Copyable text={address} newline showText={false}>
                   <QRCode size={300} value={this.qrString()} level="L" />
                 </Copyable>
               </Grid>
