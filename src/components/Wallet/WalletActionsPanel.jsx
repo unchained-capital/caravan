@@ -13,7 +13,7 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {
   RefreshOutlined,
-  DeleteOutlined,
+  ExitToAppOutlined,
   GetAppOutlined,
 } from "@material-ui/icons";
 
@@ -25,10 +25,14 @@ import ImportAddressesButton from "../ImportAddressesButton";
 const useStyles = makeStyles(() => ({
   card: {
     height: "100%",
+    flexDirection: "column",
+    display: "flex",
   },
   cardContent: {
     textAlign: "center",
     paddingTop: "0px",
+    display: "flex",
+    flex: 1,
   },
 }));
 
@@ -52,29 +56,35 @@ const WalletActionsPanel = ({
     <Card className={classes.card}>
       <CardHeader title="Wallet Actions" />
       <CardContent className={classes.cardContent}>
-        <Grid container direction="column" spacing={1}>
-          <Grid item>
+        <Grid container spacing={1} alignItems="center" justify="center">
+          <Grid item xs={12}>
             <ButtonGroup variant="outlined">
-              <Button
-                onClick={handleRefresh}
-                disabled={!walletActivated}
-                endIcon={
-                  refreshing ? (
-                    <CircularProgress size={24} />
-                  ) : (
-                    <RefreshOutlined />
-                  )
-                }
-              >
-                Refresh
-              </Button>
-              <Button endIcon={<GetAppOutlined />} onClick={onDownloadConfig}>
-                Download Configuration
-              </Button>
+              <Tooltip title="Force a refresh for latest wallet state and balance.">
+                <Button
+                  onClick={handleRefresh}
+                  disabled={!walletActivated}
+                  startIcon={
+                    refreshing ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      <RefreshOutlined />
+                    )
+                  }
+                >
+                  Refresh
+                </Button>
+              </Tooltip>
+              <Tooltip title="Download wallet configuration to local machine for backup. No security is lost with this, but access to this file provides anyone who has it information about balances.">
+                <Button
+                  startIcon={<GetAppOutlined />}
+                  onClick={onDownloadConfig}
+                >
+                  Download Configuration
+                </Button>
+              </Tooltip>
               <Tooltip title="Only clears the wallet config from browser sessions. Funds remain unaffected.">
                 <Button
-                  color="secondary"
-                  endIcon={<DeleteOutlined />}
+                  startIcon={<ExitToAppOutlined />}
                   onClick={handleClearClick}
                 >
                   Clear Wallet
