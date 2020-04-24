@@ -7,7 +7,6 @@ import {
   Button,
   Box,
   Card,
-  CardHeader,
   CardContent,
   Grid,
   InputAdornment,
@@ -128,13 +127,12 @@ class WalletDeposit extends React.Component {
   };
 
   render() {
-    const { resetWalletView, client, network, depositableSlices } = this.props;
+    const { client, network, depositableSlices } = this.props;
     const { address, amount, amountError, depositIndex, slice } = this.state;
 
     return (
       <div>
         <Card>
-          <CardHeader title="Deposit" />
           <CardContent>
             <Grid
               container
@@ -192,11 +190,6 @@ class WalletDeposit extends React.Component {
               >
                 Next Address
               </Button>
-              <Box ml={2} component="span">
-                <Button variant="contained" onClick={resetWalletView}>
-                  Return
-                </Button>
-              </Box>
             </Box>
           </CardContent>
         </Card>
@@ -211,7 +204,6 @@ WalletDeposit.propTypes = {
     .isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   network: PropTypes.string.isRequired,
-  resetWalletView: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
 };
 
