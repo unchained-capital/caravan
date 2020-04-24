@@ -11,7 +11,7 @@ const logo = require("../images/logo.png");
 const Footer = () => (
   <Box mt={2}>
     <hr />
-    <Grid container alignItems="center">
+    <Grid container justify="space-between" alignItems="center">
       <Grid item sm={2}>
         {externalLink(
           "https://www.unchained-capital.com",
@@ -32,7 +32,7 @@ const Footer = () => (
         </p>
       </Grid>
 
-      <Grid item sm={1}>
+      <Grid item sm={1} align="right">
         <p> v{version} </p>
       </Grid>
     </Grid>

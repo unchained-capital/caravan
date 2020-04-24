@@ -6,10 +6,11 @@ import BigNumber from "bignumber.js";
 // Actions
 import {
   Box,
+  Card,
+  CardContent,
   Grid,
   Switch,
   FormControlLabel,
-  Typography,
   Button,
 } from "@material-ui/core";
 import { bitcoinsToSatoshis } from "unchained-bitcoin";
@@ -194,66 +195,53 @@ class WalletSpend extends React.Component {
     } = this.props;
 
     return (
-      <Box style={{ marginLeft: "10%" }}>
-        <Grid container>
-          {spendingStep === SPEND_STEP_SIGN && (
-            <Grid item md={12}>
-              <Box>
-                <WalletSign />
-              </Box>
-            </Grid>
-          )}
-          {spendingStep === SPEND_STEP_CREATE && (
-            <Grid item md={12}>
-              <Box mt={2}>
-                <Box mb={7}>
-                  <div style={{ width: "100%" }}>
-                    <Box display="flex" p={1}>
-                      <Box p={1} flexGrow={1}>
-                        <Typography align="center" variant="h4">
-                          Create Transaction
-                        </Typography>
-                      </Box>
-                      <Box p={1}>{this.renderSpend()}</Box>
-                    </Box>
-                  </div>
-                  <Box component="div" display={autoSpend ? "none" : "block"}>
-                    <NodeSet addNode={addNode} updateNode={updateNode} />
-                  </Box>
-                  <OutputsForm />
-                  <div style={{ width: "100%" }}>
-                    <Box display="flex" p={1}>
-                      <Box p={1} flexGrow={1} mt={8}>
-                        <Typography align="center" variant="h4">
-                          <Button
-                            onClick={this.showPreview}
-                            variant="contained"
-                            color="primary"
-                            disabled={this.previewDisabled()}
-                          >
-                            Preview Transaction
-                          </Button>
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </div>
+      <Card>
+        <CardContent>
+          <Grid container>
+            {spendingStep === SPEND_STEP_SIGN && (
+              <Grid item md={12}>
+                <Box>
+                  <WalletSign />
                 </Box>
-              </Box>
-            </Grid>
-          )}
-          {spendingStep === SPEND_STEP_PREVIEW && (
-            <Grid item md={12}>
-              <Box mt={3}>
-                <TransactionPreview
-                  changeAddress={changeAddress}
-                  editTransaction={this.showCreate}
-                  signTransaction={this.signTransaction}
-                />
-              </Box>
-            </Grid>
-          )}
-        </Grid>
-      </Box>
+              </Grid>
+            )}
+            {spendingStep === SPEND_STEP_CREATE && (
+              <Grid item md={12}>
+                <Grid container direction="row-reverse">
+                  <Box display="flex-end">
+                    <Box p={1}>{this.renderSpend()}</Box>
+                  </Box>
+                </Grid>
+                <Box component="div" display={autoSpend ? "none" : "block"}>
+                  <NodeSet addNode={addNode} updateNode={updateNode} />
+                </Box>
+                <OutputsForm />
+                <Box mt={2}>
+                  <Button
+                    onClick={this.showPreview}
+                    variant="contained"
+                    color="primary"
+                    disabled={this.previewDisabled()}
+                  >
+                    Preview Transaction
+                  </Button>
+                </Box>
+              </Grid>
+            )}
+            {spendingStep === SPEND_STEP_PREVIEW && (
+              <Grid item md={12}>
+                <Box mt={3}>
+                  <TransactionPreview
+                    changeAddress={changeAddress}
+                    editTransaction={this.showCreate}
+                    signTransaction={this.signTransaction}
+                  />
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+        </CardContent>
+      </Card>
     );
   }
 }

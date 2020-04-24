@@ -30,48 +30,52 @@ class TransactionPreview extends React.Component {
 
     return (
       <Box>
-        <Button
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            editTransaction();
-          }}
-        >
-          Edit Transaction
-        </Button>
-        <h1>Transaction Preview</h1>
+        <h2>Transaction Preview</h2>
         <UnsignedTransaction />
-        <h2>Inputs</h2>
+        <h3>Inputs</h3>
         {this.renderInputs()}
-        <h2>Outputs</h2>
+        <h3>Outputs</h3>
         {this.renderOutputs()}
         <Grid container>
           <Grid item xs={4}>
-            <h2>Fee</h2>
+            <h3>Fee</h3>
             <div>{fee}</div>
           </Grid>
           <Grid item xs={4}>
-            <h2>Fee Rate</h2>
+            <h3>Fee Rate</h3>
             <div>{feeRate}</div>
           </Grid>
           <Grid item xs={4}>
-            <h2>Total</h2>
+            <h3>Total</h3>
             <div>
               {satoshisToBitcoins(BigNumber(inputsTotalSats || 0)).toString()}
             </div>
           </Grid>
         </Grid>
-        <Grid container justify="center">
-          <Box mt={5}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={signTransaction}
-            >
-              Sign Transaction
-            </Button>
-          </Box>
-        </Grid>
+        <Box mt={2}>
+          <Grid container spacing={2}>
+            <Grid item>
+              <Button
+                variant="contained"
+                onClick={(e) => {
+                  e.preventDefault();
+                  editTransaction();
+                }}
+              >
+                Edit Transaction
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={signTransaction}
+              >
+                Sign Transaction
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
       </Box>
     );
   };

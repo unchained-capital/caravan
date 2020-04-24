@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 
 import {
   Box,
+  Card,
+  CardContent,
   Checkbox,
   FormControlLabel,
   FormGroup,
@@ -56,43 +58,47 @@ class SlicesTableContainer extends React.PureComponent {
     const { client, network } = this.props;
 
     return (
-      <Grid container direction="column">
-        <Grid item>
-          <SlicesTable
-            slices={displaySlices}
-            client={client}
-            network={network}
-            paging
-          />
-        </Grid>
-        <Grid item>
-          <FormGroup row>
-            <FormLabel component="h2">
-              <Box mr={3}>Show Additional</Box>
-            </FormLabel>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={filterIncludeSpent}
-                  value="filterIncludeSpent"
-                  onChange={this.filterAddresses}
+      <Card>
+        <CardContent>
+          <Grid container direction="column">
+            <Grid item>
+              <SlicesTable
+                slices={displaySlices}
+                client={client}
+                network={network}
+                paging
+              />
+            </Grid>
+            <Grid item>
+              <FormGroup row>
+                <FormLabel component="h2">
+                  <Box mr={3}>Show Additional</Box>
+                </FormLabel>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={filterIncludeSpent}
+                      value="filterIncludeSpent"
+                      onChange={this.filterAddresses}
+                    />
+                  }
+                  label="Spent Addresses"
                 />
-              }
-              label="Spent Addresses"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={filterIncludeZeroBalance}
-                  value="filterIncludeZeroBalance"
-                  onChange={this.filterAddresses}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={filterIncludeZeroBalance}
+                      value="filterIncludeZeroBalance"
+                      onChange={this.filterAddresses}
+                    />
+                  }
+                  label="Zero Balance"
                 />
-              }
-              label="Zero Balance"
-            />
-          </FormGroup>
-        </Grid>
-      </Grid>
+              </FormGroup>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     );
   }
 }

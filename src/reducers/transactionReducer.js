@@ -439,9 +439,7 @@ function handleChangeAddressAndDust(
     const newDiff = newOutputTotalSats
       .plus(newFeeSats)
       .minus(newState.inputsTotalSats);
-    const action = newDiff.isLessThan(0)
-      ? "Increase"
-      : "Insufficient Funds, Decrease";
+    const action = newDiff.isLessThan(0) ? "Increase" : "Decrease";
 
     balanceError = `${action} by ${satoshisToBitcoins(
       newDiff.absoluteValue()
