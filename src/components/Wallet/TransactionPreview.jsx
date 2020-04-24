@@ -94,13 +94,18 @@ class TransactionPreview extends React.Component {
   };
 
   renderOutputAddresses = () => {
-    const { outputs } = this.props;
+    const { changeAddress, outputs } = this.props;
 
     return outputs.map((output) => {
       return (
         <TableRow key={output.address}>
           <TableCell>
             <code>{output.address}</code>
+            {output.address === changeAddress ? (
+              <small>&nbsp;(change)</small>
+            ) : (
+              ""
+            )}
           </TableCell>
           <TableCell>
             <code>{BigNumber(output.amount).toFixed(8)}</code>
@@ -192,6 +197,7 @@ class TransactionPreview extends React.Component {
 }
 
 TransactionPreview.propTypes = {
+  changeAddress: PropTypes.string.isRequired,
   editTransaction: PropTypes.func.isRequired,
   fee: PropTypes.string.isRequired,
   feeRate: PropTypes.string.isRequired,

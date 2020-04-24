@@ -185,7 +185,13 @@ class WalletSpend extends React.Component {
   };
 
   render() {
-    const { autoSpend, updateNode, addNode, spendingStep } = this.props;
+    const {
+      autoSpend,
+      changeAddress,
+      updateNode,
+      addNode,
+      spendingStep,
+    } = this.props;
 
     return (
       <Box style={{ marginLeft: "10%" }}>
@@ -239,6 +245,7 @@ class WalletSpend extends React.Component {
             <Grid item md={12}>
               <Box mt={3}>
                 <TransactionPreview
+                  changeAddress={changeAddress}
                   editTransaction={this.showCreate}
                   signTransaction={this.signTransaction}
                 />
@@ -261,6 +268,7 @@ WalletSpend.propTypes = {
     }),
   }).isRequired,
   changeNodes: PropTypes.shape({}),
+  changeAddress: PropTypes.string.isRequired,
   changeOutputIndex: PropTypes.number.isRequired,
   coinSelection: PropTypes.func.isRequired,
   depositNodes: PropTypes.shape({}),
