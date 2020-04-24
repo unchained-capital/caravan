@@ -58,16 +58,31 @@ export function compareSlicesByUTXOCount(a, b, orderDir = "asc") {
  * @param {object} a - slice a for comparison
  * @param {object} b - slice b for comparison
  * @param {string} [orderDir = "asc"] - direction for ordering (desc or asc)
+ * @returns {number}
  */
 export function compareSlicesByTime(a, b, orderDir = "asc") {
-  if ((!a.utxos && !b.utxos) || (!a.lastUsed && !b.lastUsed))
-    throw new Error(
-      "Cannot compare slices, missing utxo list or lastUsed property"
-    );
   const direction = initSortDir(orderDir);
+  if (!a.utxos && !b.utxos && !a.lastUsed && !b.lastUsed) return 0;
+
+  // when ascending, spent is after unused but before used and unspent
+  if (a.lastUsed === "Spent")
+    return b.lastUsed && b.lastUsed !== "Spent" ? -direction : direction;
+  if (b.lastUsed === "Spent")
+    return a.lastUsed && a.lastUsed !== "Spent" ? direction : -direction;
+
   // if there is a last used param then we should be able to compare those
-  if (a.lastUsed && b.lastUsed)
+  if (a.lastUsed && b.lastUsed) {
+    if (a.lastUsed === b.lastUsed) return 0;
     return a.lastUsed >= b.lastUsed ? direction : -direction;
+  }
+
+  if (a.lastUsed && (!b.lastUsed || b.utxos.length === 0)) {
+    return direction;
+  }
+
+  if (b.lastUsed && (!a.lastUsed || a.utxos.length === 0)) {
+    return -direction;
+  }
 
   if (a.utxos.length === 0) {
     return b.utxos.length === 0 ? 0 : direction;
@@ -77,6 +92,7 @@ export function compareSlicesByTime(a, b, orderDir = "asc") {
   }
   const amin = Math.min(...a.utxos.map((utxo) => utxo.time));
   const bmin = Math.min(...b.utxos.map((utxo) => utxo.time));
+
   if (Number.isNaN(amin) && Number.Number.isNaN(bmin)) return 0;
   if (Number.isNaN(amin)) return direction;
   if (Number.isNaN(bmin)) return -direction;
