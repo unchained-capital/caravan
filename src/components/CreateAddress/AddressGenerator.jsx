@@ -162,7 +162,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
         <Grid item>
           {requiredSigners}
           -of-
-          {totalSigners} Multisig{addressType}{" "}
+          {totalSigners} Multisig {addressType}{" "}
         </Grid>
         <Grid item>
           <small>{`Public Keys: ${this.publicKeyCount()}/${totalSigners}`}</small>
