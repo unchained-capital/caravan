@@ -369,6 +369,7 @@ class OutputsForm extends React.Component {
                     ? "Totals"
                     : "Outputs & Fee Total"}
                 </Typography>
+                <small>(including change)</small>
               </Box>
             </Grid>
             <Grid item xs={3}>
