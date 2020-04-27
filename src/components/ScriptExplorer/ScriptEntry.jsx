@@ -213,7 +213,13 @@ class ScriptEntry extends React.Component {
         fetchUTXOsError,
       });
       if (fetchUTXOsError === "") {
-        setInputs(utxos);
+        // transaction methods expect inputs to have a multisig prop
+        // that provides input info such as address
+        const inputs = utxos.map((utxo) => {
+          const input = { ...utxo, multisig };
+          return input;
+        });
+        setInputs(inputs);
         setRequiredSigners(multisigRequiredSigners(multisig));
         setTotalSigners(multisigTotalSigners(multisig));
         setFrozen(true);
