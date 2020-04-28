@@ -48,8 +48,11 @@ const SlicesTable = ({
   options.toolbar = options.showTitle && options.search;
   let columns = [
     {
-      title: "BIP32 Path",
+      title: "Path Suffix",
       field: "bip32Path",
+      render: (rowData) => (
+        <Typography>{rowData.bip32Path.replace("m", "*")}</Typography>
+      ),
       type: "string",
       defaultSort: "asc",
       customSort: compareSlicesByPath,
