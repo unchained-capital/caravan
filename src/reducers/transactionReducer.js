@@ -13,6 +13,7 @@ import {
   unsignedMultisigTransaction,
 } from "unchained-bitcoin";
 import updateState from "./utils";
+import { DUST_IN_BTC } from "../utils/constants";
 
 import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
 import {
@@ -336,7 +337,7 @@ function validateTransaction(state, finalUpdate) {
   ) {
     return {
       ...newState,
-      ...{ balanceError: "" },
+      balanceError: "",
     };
   }
   const feeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
@@ -349,12 +350,13 @@ function validateTransaction(state, finalUpdate) {
     } else if (newState.isWallet && newState.autoSpend) {
       newState = updateState(newState, { updatesComplete: finalUpdate });
       // eslint-disable-next-line no-use-before-define
-      ({ newState, balanceError } = handleChangeAddressAndDust(
+      newState = handleChangeAddressAndDust(
         newState,
         diff,
         outputTotalSats,
         finalUpdate
-      ));
+      );
+      balanceError = newState.balanceError;
     } else {
       newState = updateState(newState, { updatesComplete: true });
       const action = diff.isLessThan(0) ? "Increase" : "Decrease";
@@ -364,15 +366,18 @@ function validateTransaction(state, finalUpdate) {
     }
     return {
       ...newState,
-      ...{ balanceError },
+      balanceError,
     };
   }
+
   return {
     ...newState,
-    ...{ balanceError: "" },
+    balanceError: "",
   };
 }
 
+// TODO: Refactor: should not reference validateTransaction in which
+// this function is used. should also be easier to unit test
 function handleChangeAddressAndDust(
   _newState,
   diff,
@@ -381,7 +386,7 @@ function handleChangeAddressAndDust(
 ) {
   let changeAmount;
   let newState = _newState;
-  const dust = satoshisToBitcoins(BigNumber(546));
+
   if (newState.changeOutputIndex > 0) {
     changeAmount = satoshisToBitcoins(
       newState.outputs[newState.changeOutputIndex - 1].amountSats.minus(diff)
@@ -389,7 +394,10 @@ function handleChangeAddressAndDust(
   } else {
     changeAmount = satoshisToBitcoins(diff.times(-1));
   }
-  if (changeAmount.isLessThan(dust) && changeAmount.isGreaterThanOrEqualTo(0)) {
+  if (
+    changeAmount.isLessThan(DUST_IN_BTC) &&
+    changeAmount.isGreaterThanOrEqualTo(0)
+  ) {
     newState = deleteOutput(newState, { number: newState.changeOutputIndex });
     newState = updateState(newState, { changeOutputIndex: 0 });
     const amountWithoutFee = newState.inputsTotalSats
@@ -398,11 +406,12 @@ function handleChangeAddressAndDust(
     newState = updateFee(newState, {
       value: satoshisToBitcoins(amountWithoutFee).toFixed(8),
     });
+
     return validateTransaction(newState);
   }
   if (
     newState.changeOutputIndex === 0 &&
-    changeAmount.isGreaterThanOrEqualTo(dust)
+    changeAmount.isGreaterThanOrEqualTo(DUST_IN_BTC)
   ) {
     newState = addOutput(newState);
     newState = updateState(newState, {
@@ -419,7 +428,7 @@ function handleChangeAddressAndDust(
     return validateTransaction(newState);
   }
 
-  if (changeAmount.isGreaterThanOrEqualTo(dust)) {
+  if (changeAmount.isGreaterThanOrEqualTo(DUST_IN_BTC)) {
     newState = updateOutputAmount(newState, {
       value: changeAmount.toFixed(8),
       number: newState.changeOutputIndex,
@@ -445,7 +454,7 @@ function handleChangeAddressAndDust(
       newDiff.absoluteValue()
     ).toFixed(8)}.`;
   }
-  return { newState, balanceError };
+  return { ...newState, balanceError };
 }
 
 export default (state = initialState, action) => {
