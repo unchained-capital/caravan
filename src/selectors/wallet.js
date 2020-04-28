@@ -8,6 +8,19 @@ const getWalletSlices = (state) => [
   ...Object.values(state.wallet.change.nodes),
 ];
 
+/**
+ * @description cycle through all slices to calculate total balance of all utxos
+ * from all slices including pending.
+ */
+export const getTotalbalance = createSelector(getWalletSlices, (slices) => {
+  return slices.reduce((balance, slice) => {
+    const sliceTotal = slice.utxos.reduce((total, utxo) => {
+      return total + parseInt(utxo.amountSats, 10);
+    }, 0);
+    return balance + sliceTotal;
+  }, 0);
+});
+
 export const getPendingBalance = createSelector(
   getDepositSlices,
   // iterate through all slices to add up the pending balance
@@ -27,6 +40,15 @@ export const getPendingBalance = createSelector(
       return sliceBalance + balance;
     }, 0);
   }
+);
+
+/**
+ * @description selector that subtracts pending balance (calculated with
+ * other selector) from total balance of each braid which is stored in the state
+ */
+export const getConfirmedBalance = createSelector(
+  [getTotalbalance, getPendingBalance],
+  (totalBalance, pendingBalance) => totalBalance - pendingBalance
 );
 
 /**

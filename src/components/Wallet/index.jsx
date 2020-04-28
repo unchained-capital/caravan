@@ -460,6 +460,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     const {
       client,
       configuring,
+      confirmedBalance,
       walletName,
       setName,
       deposits,
@@ -470,7 +471,6 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
       frozen,
       unknownAddresses,
     } = this.props;
-    const balance = this.totalBalance();
     const { refreshing, generating } = this.state;
     const walletLoadError =
       change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0
@@ -489,7 +489,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
                 }
                 walletName={walletName}
                 setName={setName}
-                balance={balance}
+                balance={+satoshisToBitcoins(confirmedBalance).toFixed()}
                 pendingBalance={+satoshisToBitcoins(pendingBalance).toFixed()}
                 network={network}
               />
@@ -562,6 +562,8 @@ CreateWallet.propTypes = {
     fetchUTXOsErrors: PropTypes.number,
     nodes: PropTypes.shape({}),
   }).isRequired,
+  confirmedBalance: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
   extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
   frozen: PropTypes.bool.isRequired,
   fetchSliceData: PropTypes.func.isRequired,
@@ -604,6 +606,7 @@ function mapStateToProps(state) {
       nodesLoaded: state.wallet.common.nodesLoaded,
       walletMode: state.wallet.common.walletMode,
     },
+    confirmedBalance: walletSelectors.getConfirmedBalance(state),
     pendingBalance: walletSelectors.getPendingBalance(state),
     unknownAddresses: getUnknownAddresses(state),
     unknownSlices: getUnknownAddressSlices(state),
