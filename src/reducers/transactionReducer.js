@@ -435,10 +435,14 @@ function handleChangeAddressAndDust(
     });
   }
   const newOutputTotalSats = calcOutputTotalSats(newState);
+  const newFeeBTC = new BigNumber(
+    setFeeForRate(newState, newState.feeRate, newState.outputs.length)
+  );
   newState = updateState(newState, {
-    fee: setFeeForRate(newState, newState.feeRate, newState.outputs.length),
+    fee: newFeeBTC.toFixed(8).toString(),
   });
-  const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
+
+  const newFeeSats = bitcoinsToSatoshis(newFeeBTC);
 
   let balanceError = "";
   if (
