@@ -34,19 +34,30 @@ class SlicesTableContainer extends React.PureComponent {
     };
   }
 
-  filterAddresses = (event, checked) => {
+  componentDidUpdate(newProps) {
+    const { slicesWithBalance } = this.props;
+    if (newProps.slicesWithBalance.length !== slicesWithBalance.length) {
+      this.setDisplaySlices();
+    }
+  }
+
+  setDisplaySlices() {
     const { slicesWithBalance, zeroBalanceSlices, spentSlices } = this.props;
-    this.setState({ [event.target.value]: checked }, () => {
-      const { filterIncludeSpent, filterIncludeZeroBalance } = this.state;
-      const newDisplaySlices = [...slicesWithBalance];
-      if (filterIncludeSpent) {
-        newDisplaySlices.push(...spentSlices);
-      }
-      if (filterIncludeZeroBalance) {
-        newDisplaySlices.push(...zeroBalanceSlices);
-      }
-      this.setState({ displaySlices: newDisplaySlices });
-    });
+    const { filterIncludeSpent, filterIncludeZeroBalance } = this.state;
+    const newDisplaySlices = [...slicesWithBalance];
+    if (filterIncludeSpent) {
+      newDisplaySlices.push(...spentSlices);
+    }
+    if (filterIncludeZeroBalance) {
+      newDisplaySlices.push(...zeroBalanceSlices);
+    }
+    this.setState({ displaySlices: newDisplaySlices });
+  }
+
+  filterAddresses = (event, checked) => {
+    this.setState({ [event.target.value]: checked }, () =>
+      this.setDisplaySlices()
+    );
   };
 
   render() {

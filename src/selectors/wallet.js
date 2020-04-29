@@ -61,9 +61,20 @@ export const getSlicesWithLastUsed = createSelector(
     return slices.map((slice) => {
       if (!slice.utxos.length && slice.addressUsed)
         return { ...slice, lastUsed: "Spent" };
-      if (!slice.utxos.length) return slice;
+
+      // if no utxos and no recorded balanceSats then just return the slice unchanged
+      if (!slice.utxos.length && slice.balanceSats.isEqualTo(0)) return slice;
+
+      // find the last UTXO time for the last used time for that slice
       const maxtime = Math.max(...slice.utxos.map((utxo) => utxo.time));
-      if (Number.isNaN(maxtime)) return { ...slice, lastUsed: "Pending" };
+
+      // if no max was able to be found, but we still have a balanceSats
+      // then we can can assume the utxo is pending
+      if (
+        Number.isNaN(maxtime) ||
+        (slice.balanceSats.isGreaterThan(0) && !slice.utxos.length)
+      )
+        return { ...slice, lastUsed: "Pending" };
       return {
         ...slice,
         lastUsed: new Date(1000 * maxtime).toLocaleDateString(),
