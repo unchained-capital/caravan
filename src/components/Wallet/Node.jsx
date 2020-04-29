@@ -46,7 +46,7 @@ class Node extends React.Component {
           </TableCell>
         )}
         <TableCell>
-          <code>{bip32Path}</code>
+          <code>{bip32Path.replace("m", "*")}</code>
         </TableCell>
         <TableCell>{utxos.length}</TableCell>
         <TableCell>
