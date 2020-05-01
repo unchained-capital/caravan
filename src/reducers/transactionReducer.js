@@ -455,11 +455,9 @@ function handleChangeAddressAndDust(
     newState.outputs.length
   );
 
-  newState = updateState(newState, {
-    fee,
-  });
+  newState = updateState(newState, { fee });
 
-  const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
+  const newFeeSats = bitcoinsToSatoshis(new BigNumber(fee));
 
   let balanceError = "";
   if (

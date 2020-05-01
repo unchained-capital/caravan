@@ -303,6 +303,9 @@ class OutputsForm extends React.Component {
                 <TextField
                   fullWidth
                   value={feeRate}
+                  type="number"
+                  minimum={1}
+                  step={1}
                   name="fee_rate"
                   disabled={finalizedOutputs}
                   onChange={this.handleFeeRateChange}
