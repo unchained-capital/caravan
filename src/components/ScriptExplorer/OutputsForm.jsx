@@ -159,7 +159,11 @@ class OutputsForm extends React.Component {
 
   handleFeeRateChange = (event) => {
     const { setFeeRate, inputs } = this.props;
-    if (inputs.length) setFeeRate(event.target.value);
+    let rate = event.target.value;
+    // eslint-disable-next-line use-isnan
+    if (rate === "" || parseFloat(rate, 10) === NaN || parseFloat(rate, 10) < 1)
+      rate = "0";
+    if (inputs.length) setFeeRate(rate);
   };
 
   handleFeeChange = (event) => {
@@ -304,7 +308,7 @@ class OutputsForm extends React.Component {
                   fullWidth
                   value={feeRate}
                   type="number"
-                  minimum={1}
+                  minimum={0}
                   step={1}
                   name="fee_rate"
                   disabled={finalizedOutputs}

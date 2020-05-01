@@ -119,17 +119,15 @@ function calcOutputTotalSats(state) {
 }
 
 function setFeeForRate(state, feeRateString, nout) {
-  return new BigNumber(
-    satoshisToBitcoins(
-      estimateMultisigTransactionFee({
-        addressType: state.addressType,
-        numInputs: state.inputs.length,
-        numOutputs: nout,
-        m: state.requiredSigners,
-        n: state.totalSigners,
-        feesPerByteInSatoshis: feeRateString,
-      })
-    )
+  return satoshisToBitcoins(
+    estimateMultisigTransactionFee({
+      addressType: state.addressType,
+      numInputs: state.inputs.length,
+      numOutputs: nout,
+      m: state.requiredSigners,
+      n: state.totalSigners,
+      feesPerByteInSatoshis: feeRateString,
+    })
   )
     .toFixed(8)
     .toString();
