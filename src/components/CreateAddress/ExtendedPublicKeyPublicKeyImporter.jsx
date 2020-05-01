@@ -63,7 +63,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
             </FormHelperText>
           </Box>
         )}
-        )
+
         <Box mt={2}>
           <Grid container>
             <Grid item md={10}>
