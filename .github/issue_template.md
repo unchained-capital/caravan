@@ -64,7 +64,7 @@
   If you are running caravan locally please run the following
   and paste your output below:
   
-  npm ls caravan unchained-bitcoin unchained-wallets; echo -e npm: `npm -v` \\nnode: `node -v`; uname -srvmpio || sw_vers
+  npm ls caravan unchained-bitcoin unchained-wallets; echo -e npm: `npm -v` \\nnode: `node -v`;  uname -a | xargs echo | cut -d " " -f 1,3-15 || sw_vers
  -->
  
 <!--- 
