@@ -119,16 +119,20 @@ function calcOutputTotalSats(state) {
 }
 
 function setFeeForRate(state, feeRateString, nout) {
-  return satoshisToBitcoins(
-    estimateMultisigTransactionFee({
-      addressType: state.addressType,
-      numInputs: state.inputs.length,
-      numOutputs: nout,
-      m: state.requiredSigners,
-      n: state.totalSigners,
-      feesPerByteInSatoshis: feeRateString,
-    })
-  ).toString();
+  return new BigNumber(
+    satoshisToBitcoins(
+      estimateMultisigTransactionFee({
+        addressType: state.addressType,
+        numInputs: state.inputs.length,
+        numOutputs: nout,
+        m: state.requiredSigners,
+        n: state.totalSigners,
+        feesPerByteInSatoshis: feeRateString,
+      })
+    )
+  )
+    .toFixed(8)
+    .toString();
 }
 
 function deleteOutput(state, action) {
@@ -369,6 +373,16 @@ function validateTransaction(state, finalUpdate) {
       balanceError,
     };
   }
+  const minFee = new BigNumber(setFeeForRate(newState, "1", 0));
+
+  if (new BigNumber(newState.fee).isLessThan(minFee)) {
+    return {
+      ...newState,
+      balanceError: `Fee is too small. Should be no less than ${bitcoinsToSatoshis(
+        minFee
+      )} satoshis.`,
+    };
+  }
 
   return {
     ...newState,
@@ -435,14 +449,17 @@ function handleChangeAddressAndDust(
     });
   }
   const newOutputTotalSats = calcOutputTotalSats(newState);
-  const newFeeBTC = new BigNumber(
-    setFeeForRate(newState, newState.feeRate, newState.outputs.length)
+  const fee = setFeeForRate(
+    newState,
+    newState.feeRate,
+    newState.outputs.length
   );
+
   newState = updateState(newState, {
-    fee: newFeeBTC.toFixed(8).toString(),
+    fee,
   });
 
-  const newFeeSats = bitcoinsToSatoshis(newFeeBTC);
+  const newFeeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
 
   let balanceError = "";
   if (
