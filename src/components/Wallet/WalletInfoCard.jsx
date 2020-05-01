@@ -67,24 +67,27 @@ const WalletInfoCard = ({
                 <Grid item xs={12} mt={5}>
                   <Typography variant="subtitle1" className={classes.balance}>
                     {balance} BTC
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="caption">
                     {pendingBalance !== 0 ? (
-                      <span
-                        style={{
-                          color: pendingBalance > 0 ? "green" : "red",
-                          margin: "21px",
-                          fontSize: "1rem",
-                        }}
-                      >
-                        {pendingBalance > 0 ? "+" : ""}
-                        {pendingBalance} BTC
-                      </span>
+                      <>
+                        <span
+                          style={{
+                            color: pendingBalance > 0 ? "green" : "red",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {pendingBalance > 0 ? "+" : ""}
+                          {pendingBalance} BTC
+                        </span>{" "}
+                        (unconfirmed)
+                      </>
                     ) : (
                       ""
                     )}
                   </Typography>
-                </Grid>
-                <Grid item>
-                  <Typography variant="caption">Confirmed balance</Typography>
                 </Grid>
               </Grid>
             </>
