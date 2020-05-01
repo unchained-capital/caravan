@@ -1,4 +1,10 @@
+import assert from "assert";
 import * as sliceUtils from "./slices";
+import {
+  DEFAULT_PREFIX,
+  DEFAULT_CHANGE_PREFIX,
+  CHANGE_INDEX,
+} from "./constants";
 
 describe("slices utils", () => {
   describe("compareSlicesByTime", () => {
@@ -87,6 +93,38 @@ describe("slices utils", () => {
       b.utxos = [];
       expect(sliceUtils.compareSlicesByTime(b, c)).toEqual(-1);
       expect(sliceUtils.compareSlicesByTime(b, c, desc)).toEqual(1);
+    });
+  });
+
+  describe("isChange", () => {
+    it("should correctly indicate if a path represents a change braid", () => {
+      const validChange = [
+        `${DEFAULT_CHANGE_PREFIX}1`,
+        `${DEFAULT_CHANGE_PREFIX}50`,
+        `m/45'/0'${CHANGE_INDEX}/0`,
+      ];
+      const invalidChange = [
+        `${DEFAULT_PREFIX}/0/1`,
+        `${DEFAULT_PREFIX}/0/50`,
+        "m/45'/0'/0/0",
+        "m/45'/0'/1",
+        "0/1",
+        "1/1", // looks like change but we want to require a prefix
+      ];
+
+      validChange.forEach((path) => {
+        assert(
+          sliceUtils.isChange(path),
+          `Path ${path} should have returned true`
+        );
+      });
+
+      invalidChange.forEach((path) => {
+        assert(
+          !sliceUtils.isChange(path),
+          `Path ${path} should have returned false`
+        );
+      });
     });
   });
 });

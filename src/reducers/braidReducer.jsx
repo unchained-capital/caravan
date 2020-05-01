@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import {
   RESET_NODES_SPEND,
-  SPEND_NODES,
+  SPEND_SLICES,
   RESET_NODES_FETCH_ERRORS,
 } from "../actions/walletActions";
 import updateState from "./utils";
@@ -113,7 +113,7 @@ function updateSlice(state, action) {
   return updatedState;
 }
 
-function spendNodes(state) {
+function spendSlices(state) {
   const updatedState = { ...state };
   Object.values(updatedState.nodes).forEach((node) => {
     if (node.spend) {
@@ -140,8 +140,8 @@ export default (actionType) => (state = initialState, action) => {
   switch (action.type) {
     case RESET_NODES_SPEND:
       return resetSpend(state);
-    case SPEND_NODES:
-      return spendNodes(state);
+    case SPEND_SLICES:
+      return spendSlices(state);
     case RESET_NODES_FETCH_ERRORS:
       return updateState(state, {
         fetchUTXOsErrors: 0,

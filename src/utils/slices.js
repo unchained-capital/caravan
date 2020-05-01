@@ -1,3 +1,5 @@
+import { DEFAULT_CHANGE_PREFIX, CHANGE_INDEX } from "./constants";
+
 const initSortDir = (order) => (order === "asc" ? -1 : 1);
 
 /**
@@ -97,4 +99,33 @@ export function compareSlicesByTime(a, b, orderDir = "asc") {
   if (Number.isNaN(amin)) return direction;
   if (Number.isNaN(bmin)) return -direction;
   return amin > bmin ? direction : -direction;
+}
+
+export function isChange(path) {
+  // if the prefix matches the change prefix
+  // and there is only 1 more index after, then it is change
+  const prefixLength = DEFAULT_CHANGE_PREFIX.length;
+  if (
+    path.slice(0, prefixLength) === DEFAULT_CHANGE_PREFIX &&
+    // this checks that the only thing after the change prefix is an index
+    path.slice(prefixLength).match(/^([0-9]+)$/g)
+  )
+    return true;
+
+  // if the last two indexes are not hardened and the second to last
+  // index in the path is the change index, then it is change
+  const pathIndexMatcher = /\/([0-9]+('?))/g;
+  const indexes = path.match(pathIndexMatcher).slice(-2);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const index of indexes) {
+    // neither of the final two indexes should be hardened
+    // if it is change
+    if (index.includes("'")) return false;
+  }
+
+  // if two matching indexes found and first is change, e.g. /1/0
+  // then it is change
+  if (indexes[0] === CHANGE_INDEX && indexes.length === 2) return true;
+  return false;
 }

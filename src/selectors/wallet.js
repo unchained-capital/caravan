@@ -8,6 +8,19 @@ const getWalletSlices = (state) => [
   ...Object.values(state.wallet.change.nodes),
 ];
 
+/**
+ * @description cycle through all slices to calculate total balance of all utxos
+ * from all slices including pending.
+ */
+export const getTotalbalance = createSelector(getWalletSlices, (slices) => {
+  return slices.reduce((balance, slice) => {
+    const sliceTotal = slice.utxos.reduce((total, utxo) => {
+      return total + parseInt(utxo.amountSats, 10);
+    }, 0);
+    return balance + sliceTotal;
+  }, 0);
+});
+
 export const getPendingBalance = createSelector(
   getDepositSlices,
   // iterate through all slices to add up the pending balance
@@ -30,6 +43,15 @@ export const getPendingBalance = createSelector(
 );
 
 /**
+ * @description selector that subtracts pending balance (calculated with
+ * other selector) from total balance of each braid which is stored in the state
+ */
+export const getConfirmedBalance = createSelector(
+  [getTotalbalance, getPendingBalance],
+  (totalBalance, pendingBalance) => totalBalance - pendingBalance
+);
+
+/**
  * @description Returns a selector with all slices from both deposit and change braids
  * also adds a "lastUsed" property for each slice
  */
@@ -39,9 +61,20 @@ export const getSlicesWithLastUsed = createSelector(
     return slices.map((slice) => {
       if (!slice.utxos.length && slice.addressUsed)
         return { ...slice, lastUsed: "Spent" };
-      if (!slice.utxos.length) return slice;
+
+      // if no utxos and no recorded balanceSats then just return the slice unchanged
+      if (!slice.utxos.length && slice.balanceSats.isEqualTo(0)) return slice;
+
+      // find the last UTXO time for the last used time for that slice
       const maxtime = Math.max(...slice.utxos.map((utxo) => utxo.time));
-      if (Number.isNaN(maxtime)) return { ...slice, lastUsed: "Pending" };
+
+      // if no max was able to be found, but we still have a balanceSats
+      // then we can can assume the utxo is pending
+      if (
+        Number.isNaN(maxtime) ||
+        (slice.balanceSats.isGreaterThan(0) && !slice.utxos.length)
+      )
+        return { ...slice, lastUsed: "Pending" };
       return {
         ...slice,
         lastUsed: new Date(1000 * maxtime).toLocaleDateString(),
