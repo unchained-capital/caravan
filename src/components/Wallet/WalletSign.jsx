@@ -16,7 +16,7 @@ import {
   SPEND_STEP_CREATE,
 } from "../../actions/transactionActions";
 import {
-  spendNodes as spendNodesAction,
+  spendSlices as spendSlicesAction,
   resetWalletView as resetWalletViewAction,
   updateChangeSliceAction as updateChangeSliceActionImport,
 } from "../../actions/walletActions";
@@ -104,8 +104,8 @@ class WalletSign extends React.Component {
   transactionFinalized = () => {
     const {
       transaction,
-      spendNodes,
-      changeNode,
+      spendSlices,
+      changeSlice,
       updateChangeNode,
     } = this.props;
 
@@ -113,17 +113,17 @@ class WalletSign extends React.Component {
     const { spent } = this.state;
     if (txid !== "" && !spent) {
       this.setState({ spent: true });
-      const changeAddress = changeNode.multisig.address;
+      const changeAddress = changeSlice.multisig.address;
       for (let i = 0; i < transaction.outputs.length; i += 1) {
         if (changeAddress === transaction.outputs[i].address) {
           updateChangeNode({
-            bip32Path: changeNode.bip32Path,
+            bip32Path: changeSlice.bip32Path,
             balanceSats: transaction.outputs[i].amountSats,
           });
           break;
         }
       }
-      spendNodes();
+      spendSlices(transaction.inputs, changeSlice);
       return true;
     }
 
@@ -151,7 +151,7 @@ class WalletSign extends React.Component {
 }
 
 WalletSign.propTypes = {
-  changeNode: PropTypes.shape({
+  changeSlice: PropTypes.shape({
     bip32Path: PropTypes.string,
     multisig: PropTypes.shape({
       address: PropTypes.string,
@@ -164,8 +164,16 @@ WalletSign.propTypes = {
   setRequiredSigners: PropTypes.func.isRequired,
   setSpendStep: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
-  spendNodes: PropTypes.func.isRequired,
+  spendSlices: PropTypes.func.isRequired,
   transaction: PropTypes.shape({
+    inputs: PropTypes.arrayOf(
+      PropTypes.shape({
+        change: PropTypes.bool.isRequired,
+        multisig: PropTypes.shape({
+          address: PropTypes.string,
+        }),
+      })
+    ),
     outputs: PropTypes.arrayOf(
       PropTypes.shape({
         address: PropTypes.string,
@@ -184,14 +192,14 @@ function mapStateToProps(state) {
     ...state.quorum,
     requiredSigners: state.spend.transaction.requiredSigners,
     totalSigners: state.spend.transaction.totalSigners,
-    changeNode: state.wallet.change.nextNode,
+    changeSlice: state.wallet.change.nextNode,
   };
 }
 
 const mapDispatchToProps = {
   finalizeOutputs: finalizeOutputsAction,
   setRequiredSigners: setRequiredSignersAction,
-  spendNodes: spendNodesAction,
+  spendSlices: spendSlicesAction,
   resetTransaction: resetTransactionAction,
   resetWalletView: resetWalletViewAction,
   updateChangeNode: updateChangeSliceActionImport,
