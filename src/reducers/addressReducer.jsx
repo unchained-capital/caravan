@@ -28,30 +28,42 @@ function fingerprint(state) {
   return `${timestamp}-${publicKeys}`;
 }
 
-const initialPublicKeyImporterState = {
-  name: "",
+const initialPublicKeyImporterState = (name = "") => ({
+  name,
   bip32Path: multisigBIP32Path(P2SH, MAINNET),
   bip32PathModified: false,
   method: "",
   publicKey: "",
   finalized: false,
   conflict: false,
-};
+});
 
-const initialState = {
-  publicKeyImporters: {
-    1: { ...initialPublicKeyImporterState, ...{ name: "Public Key 1" } },
-    2: { ...initialPublicKeyImporterState, ...{ name: "Public Key 2" } },
-    3: { ...initialPublicKeyImporterState, ...{ name: "Public Key 3" } },
-  },
-  defaultBIP32Path: multisigBIP32Path(P2SH, MAINNET),
-  network: MAINNET,
-  addressType: P2SH,
-  fingerprint: "",
-  finalizedNetwork: "",
-  finalizedAddressType: "",
-  address: "",
-};
+// function to create a new initial state so that it
+// is properly initialized when the state is cleared
+// i.e. a "deep clean" through the object
+function createInitialState() {
+  // need create new objects for each pub key importer
+  // otherwise does not properly reset when state is cleared
+  const publicKeyImporters = [...Array(4).keys()]
+    .slice(1)
+    .reduce((importers, index) => {
+      return {
+        ...importers,
+        [index]: initialPublicKeyImporterState(`Public Key ${index}`),
+      };
+    }, {});
+
+  return {
+    publicKeyImporters,
+    defaultBIP32Path: multisigBIP32Path(P2SH, MAINNET),
+    network: MAINNET,
+    addressType: P2SH,
+    fingerprint: "",
+    finalizedNetwork: "",
+    finalizedAddressType: "",
+    address: "",
+  };
+}
 
 function movePublicKeyImporterUp(state, action) {
   if (action.number === 1) {
@@ -142,7 +154,7 @@ function updateTotalSigners(state, action) {
     publicKeyImporters[publicKeyImporterNum] = state.publicKeyImporters[
       publicKeyImporterNum
     ] || {
-      ...initialPublicKeyImporterState,
+      ...initialPublicKeyImporterState(),
       ...{
         name: `Public Key ${publicKeyImporterNum}`,
       },
@@ -221,7 +233,7 @@ function updateFinalizedSettings(state, action) {
   return newState;
 }
 
-export default (state = initialState, action) => {
+export default (state = createInitialState(), action) => {
   switch (action.type) {
     case SET_NETWORK:
       return updateNetwork(state, action);
