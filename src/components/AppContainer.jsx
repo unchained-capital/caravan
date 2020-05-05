@@ -11,7 +11,8 @@ class AppContainer extends Component {
   componentDidMount() {
     const { resetApp } = this.props;
     // Listen for changes to the current location
-    // and reset the redux store
+    // and reset the redux store which is needed
+    // to avoid conflicts in the state between views/pages
     this.unlisten = this.history.listen(() => {
       resetApp();
     });
