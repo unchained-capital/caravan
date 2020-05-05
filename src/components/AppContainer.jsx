@@ -14,7 +14,8 @@ class AppContainer extends Component {
     // and reset the redux store which is needed
     // to avoid conflicts in the state between views/pages
     this.unlisten = this.history.listen(() => {
-      resetApp();
+      // add delay so the form doesn't seem to flash before view changes
+      setTimeout(resetApp, 250);
     });
   }
 
