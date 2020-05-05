@@ -78,20 +78,24 @@ const Help = () => (
 
             <CardContent>
               <p>
-                Caravan is making bitcoin <strong>multisig</strong> custody
-                easier and safer through transparency and standards.
+                Caravan makes bitcoin multisig custody easier and safer through
+                transparency and standards.
               </p>
 
               <p>
-                Caravan is a <strong>coordination</strong> software. It connects
-                to a source of consensus and your keys to build and interact
-                with multisig bitcoin addresses.
+                Caravan is a <strong>coordination software</strong> for multisig
+                addresses and wallets. Caravan can be used to build a multisig
+                wallet derived from xpubs, or individual multisig addresses
+                derived from pubkeys. In both cases, in order to transact from
+                the wallet or address, you must also have your private keys and
+                BIP32 paths.
               </p>
 
               <p>
                 Caravan is <strong>stateless</strong>. It does not itself store
-                any data. You must safekeep the addresses (and redeem scripts &
-                BIP32 paths) you create.
+                any data outside your current browser session. You must safekeep
+                the wallet details (xpubs, BIP32 paths) and addresses (redeem
+                scripts, BIP32 paths) that you create.
               </p>
             </CardContent>
           </Card>
@@ -106,8 +110,9 @@ const Help = () => (
               <p>
                 Your private key may live on a piece of paper, a hardware
                 wallet, some software on a laptop, or even just in your mind.
-                Caravan, being stateless, cannot store your private key but it
-                can talk to hardware devices or software applications which do.
+                Caravan, being stateless, does not store or ask for your private
+                key but it can talk to hardware devices or software applications
+                which do.
               </p>
 
               <p>
@@ -124,16 +129,16 @@ const Help = () => (
             <CardHeader title="Consensus" />
             <CardContent>
               <p>
-                In order to look up address balances and broadcast transactions,
-                Caravan requires knowledge of the constantly changing bitcoin
-                network.
+                In order to look up wallet addresses and their balances, and
+                broadcast transactions, Caravan requires knowledge of the
+                constantly changing bitcoin network.
               </p>
 
               <p>
-                Running a full bitcoin node is the best way to determine the
-                current state of the bitcoin network. Caravan can be easily
-                configured to use your own bitcoin node for consensus
-                information and broadcasting transactions.
+                Running a full bitcoin node is the most private way to determine
+                the current state of the bitcoin network. Caravan can be easily
+                configured to use your own node for consensus information and
+                broadcasting transactions.
               </p>
 
               <p>
@@ -207,8 +212,20 @@ const Help = () => (
                 </li>
                 <li>
                   {externalLink(
+                    "https://shop.trezor.io/product/trezor-model-t",
+                    "Trezor Model T"
+                  )}
+                </li>
+                <li>
+                  {externalLink(
                     "https://www.ledger.com/products/ledger-nano-s",
                     "Ledger Nano S"
+                  )}
+                </li>
+                <li>
+                  {externalLink(
+                    "https://www.ledger.com/products/ledger-nano-x",
+                    "Ledger Nano X"
                   )}
                 </li>
               </ul>
