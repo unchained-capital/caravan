@@ -25,39 +25,39 @@ function fingerprint(state) {
   return `${timestamp}-${extendedPublicKeys}`;
 }
 
-const initialExtendedPublicKeyImporterState = {
-  name: "",
+const initialExtendedPublicKeyImporterState = (name = "") => ({
+  name,
   bip32Path: multisigBIP32Root(P2SH, MAINNET),
   bip32PathModified: false,
   method: "",
   extendedPublicKey: "",
   finalized: false,
   confliect: false,
-};
+});
 
-const initialState = {
-  extendedPublicKeyImporters: {
-    1: {
-      ...initialExtendedPublicKeyImporterState,
-      ...{ name: "Extended Public Key 1" },
-    },
-    2: {
-      ...initialExtendedPublicKeyImporterState,
-      ...{ name: "Extended Public Key 2" },
-    },
-    3: {
-      ...initialExtendedPublicKeyImporterState,
-      ...{ name: "Extended Public Key 3" },
-    },
-  },
-  defaultBIP32Path: multisigBIP32Root(P2SH, MAINNET),
-  network: MAINNET,
-  addressType: P2SH,
-  fingerprint: "",
-  finalizedNetwork: "",
-  finalizedAddressType: "",
-  configuring: true,
-};
+function createInitialState() {
+  const extendedPublicKeyImporters = [...Array(4).keys()]
+    .slice(1)
+    .reduce((importers, index) => {
+      return {
+        ...importers,
+        [index]: initialExtendedPublicKeyImporterState(
+          `Extended Public Key ${index}`
+        ),
+      };
+    }, {});
+
+  return {
+    extendedPublicKeyImporters,
+    defaultBIP32Path: multisigBIP32Root(P2SH, MAINNET),
+    network: MAINNET,
+    addressType: P2SH,
+    fingerprint: "",
+    finalizedNetwork: "",
+    finalizedAddressType: "",
+    configuring: true,
+  };
+}
 
 function setConflict(extendedPublicKeyImporter, state) {
   if (state.finalizedNetwork) {
@@ -103,13 +103,9 @@ function updateTotalSigners(state, action) {
     extendedPublicKeyImporterNum <= totalSigners;
     extendedPublicKeyImporterNum += 1
   ) {
-    extendedPublicKeyImporters[extendedPublicKeyImporterNum] = state
-      .extendedPublicKeyImporters[extendedPublicKeyImporterNum] || {
-      ...initialExtendedPublicKeyImporterState,
-      ...{
-        name: `Extended Public key ${extendedPublicKeyImporterNum}`,
-      },
-    };
+    extendedPublicKeyImporters[extendedPublicKeyImporterNum] =
+      state.extendedPublicKeyImporters[extendedPublicKeyImporterNum] ||
+      initialExtendedPublicKeyImporterState(extendedPublicKeyImporterNum);
   }
 
   return {
@@ -181,7 +177,7 @@ function updateFinalizedSettings(state, action) {
   return newState;
 }
 
-export default (state = initialState, action) => {
+export default (state = createInitialState(), action) => {
   switch (action.type) {
     case SET_NETWORK:
       return updateNetwork(state, action);
