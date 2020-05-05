@@ -48,6 +48,7 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
       // reset in case we can't import
       setEnableImport(false);
       const address = addresses[addresses.length - 1]; // TODO: loop, or maybe just check one
+      if (!address) return;
       try {
         const status = await bitcoindGetAddressStatus({
           // TODO: use this to warn if spent
@@ -88,7 +89,8 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
     ) {
       checkAddress();
     }
-  }, [addresses, client, enableImport]);
+    // eslint-disable-next-line
+  }, [addresses, client]);
 
   // return "addresses" or "address"
   const pluralOrSingularAddress = (capitalize = false) =>
