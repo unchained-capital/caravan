@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import ReduxPromise from "redux-promise";
 import thunk from "redux-thunk";
 
-import App from "./components/App";
+import App from "./components/AppContainer";
 import registerServiceWorker from "./registerServiceWorker";
 import reducers from "./reducers";
 
