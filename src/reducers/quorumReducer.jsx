@@ -105,11 +105,20 @@ function updateTotalSigners(state, action) {
   ) {
     extendedPublicKeyImporters[extendedPublicKeyImporterNum] =
       state.extendedPublicKeyImporters[extendedPublicKeyImporterNum] ||
-      initialExtendedPublicKeyImporterState(extendedPublicKeyImporterNum);
+      initialExtendedPublicKeyImporterState(
+        `Extended Public Key ${extendedPublicKeyImporterNum}`
+      );
   }
+  let finalizedCount = 0;
+
+  Object.keys(extendedPublicKeyImporters).forEach((index) => {
+    const importer = extendedPublicKeyImporters[index];
+    if (importer.finalized) finalizedCount += 1;
+  });
 
   return {
     ...state,
+    configuring: finalizedCount < totalSigners,
     ...{ extendedPublicKeyImporters },
   };
 }
