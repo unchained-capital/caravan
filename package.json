@@ -6,7 +6,7 @@
   "publicPrivate": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unchained-capital/caravan.git"
+    "url": "https://github.com/unchained-capital/caravan"
   },
   "author": "Unchained Capital",
   "license": "MIT",
@@ -16,10 +16,15 @@
   "homepage": "https://unchained-capital.github.io/caravan",
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/travis-cli": "^8.3.5",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "chai": "4.2.0",
     "commander": "^5.0.0",
+    "commitlint-config-cz": "^0.12.1",
+    "cz-customizable": "^6.2.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint-config-airbnb": "^18.1.0",
@@ -27,6 +32,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
     "gh-pages": "^2.2.0",
+    "install": "^0.13.0",
     "jest-junit": "^10.0.0",
     "mocha": "7.1.1",
     "prettier": "^2.0.2"
@@ -34,15 +40,18 @@
   "scripts": {
     "start": "HTTPS=true react-scripts start",
     "build": "npm run ci && react-scripts build",
-    "ci": "npm run lint && npm run test-ci",
+    "ci": "npm run lint:code && npm run lint:commit-travis && npm run test-ci",
     "test": "react-scripts test",
     "test-ci": "react-scripts test --reporters ./node_modules/jest-junit --coverage --coverageReporters cobertura",
-    "lint": "eslint --ext .js,.jsx src/",
-    "lint:fix": "eslint --ext .js,.jsx --fix src/",
+    "lint": "npm run lint:code && npm run lint:commit",
+    "lint:code": "eslint --ext .js,.jsx src/",
+    "lint:commit": "commitlint -e",
+    "lint:commit-travis": "commitlint-travis",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "gh-pages": "CI=true npm run build && gh-pages -d build"
+    "gh-pages": "CI=true npm run build && gh-pages -d build",
+    "commit": "./node_modules/cz-customizable/standalone.js"
   },
   "bin": {},
   "browserslist": [
