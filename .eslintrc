@@ -14,6 +14,7 @@
     "prettier/react",
     "plugin:testing-library/recommended",
     "plugin:jest-dom/recommended",
+    "plugin:jest-dom/recommended",
     "plugin:cypress/recommended"
   ],
   "rules": {

@@ -5,7 +5,7 @@ import { MAINNET } from "unchained-bitcoin";
 
 const BitcoinIcon = ({ network }) => (
   <SvgIcon
-    data-testid="bitcoin-icon"
+    data-cy="bitcoin-icon"
     htmlColor={network === MAINNET ? "orange" : "grey"}
   >
     <svg
