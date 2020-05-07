@@ -94,7 +94,6 @@ class ClientPicker extends React.Component {
 
   testConnection = async () => {
     const { network, client } = this.props;
-    console.log("testing connection...");
     this.setState({ connectError: "", connectSuccess: false });
     try {
       await fetchFeeEstimate(network, client);

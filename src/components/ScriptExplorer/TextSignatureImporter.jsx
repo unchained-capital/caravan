@@ -68,7 +68,12 @@ class TextSignatureImporter extends React.Component {
   finalize = () => {
     const { validateAndSetSignature } = this.props;
     const { signatureJSON } = this.state;
-    validateAndSetSignature(JSON.parse(signatureJSON), this.setError);
+    try {
+      const sig = JSON.parse(signatureJSON);
+      validateAndSetSignature(sig, this.setError);
+    } catch (e) {
+      this.setError(e.message);
+    }
   };
 }
 
