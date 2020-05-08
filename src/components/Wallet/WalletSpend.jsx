@@ -44,24 +44,16 @@ class WalletSpend extends React.Component {
 
   feeAmount = new BigNumber(0);
 
-  // FIXME
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.autoSpend) {
+  componentDidUpdate() {
+    const { autoSpend, finalizedOutputs } = this.props;
+    if (autoSpend && !finalizedOutputs) {
       setTimeout(this.selectCoins, 0);
     }
   }
 
   componentDidMount = () => {
-    const {
-      changeNode,
-      setChangeAddress,
-      finalizeOutputs,
-      finalizedOutputs,
-      autoSpend,
-    } = this.props;
+    const { changeNode, setChangeAddress, autoSpend } = this.props;
     if (autoSpend) setChangeAddress(changeNode.multisig.address);
-    if (finalizedOutputs) finalizeOutputs(false);
   };
 
   previewDisabled = () => {
@@ -126,13 +118,6 @@ class WalletSpend extends React.Component {
 
   handleSpendMode = (event) => {
     const { updateAutoSpend } = this.props;
-    if (event.target.checked) {
-      // select inputs for transaction
-      // select change address???,
-      // how to identify???
-      // calculate change???
-    }
-
     updateAutoSpend(!event.target.checked);
   };
 

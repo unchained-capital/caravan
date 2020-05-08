@@ -30,6 +30,12 @@ class WalletSign extends React.Component {
     };
   }
 
+  componentWillUnmount() {
+    const { resetTransaction } = this.props;
+    const { spent } = this.state;
+    if (spent) resetTransaction();
+  }
+
   render = () => {
     const { spent } = this.state;
     return (
@@ -62,13 +68,15 @@ class WalletSign extends React.Component {
         )}
 
         {(this.transactionFinalized() || spent) && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.handleReturn}
-          >
-            Return
-          </Button>
+          <Box mt={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.handleReturn}
+            >
+              Return
+            </Button>
+          </Box>
         )}
       </Box>
     );
