@@ -32,6 +32,7 @@ import {
   SPEND_STEP_SIGN,
   setSpendStep as setSpendStepAction,
 } from "../../actions/transactionActions";
+import { naiveCoinSelection } from "../../utils";
 
 // Components
 import NodeSet from "./NodeSet";
@@ -42,7 +43,14 @@ import TransactionPreview from "./TransactionPreview";
 class WalletSpend extends React.Component {
   outputsAmount = new BigNumber(0);
 
+  coinSelection = naiveCoinSelection;
+
   feeAmount = new BigNumber(0);
+
+  componentDidMount = () => {
+    const { changeNode, setChangeAddress, autoSpend } = this.props;
+    if (autoSpend) setChangeAddress(changeNode.multisig.address);
+  };
 
   componentDidUpdate() {
     const { autoSpend, finalizedOutputs } = this.props;
@@ -50,11 +58,6 @@ class WalletSpend extends React.Component {
       setTimeout(this.selectCoins, 0);
     }
   }
-
-  componentDidMount = () => {
-    const { changeNode, setChangeAddress, autoSpend } = this.props;
-    if (autoSpend) setChangeAddress(changeNode.multisig.address);
-  };
 
   previewDisabled = () => {
     const {
@@ -83,7 +86,7 @@ class WalletSpend extends React.Component {
     return false;
   };
 
-  signTransaction = () => {
+  showSignTransaction = () => {
     const { setSpendStep } = this.props;
     setSpendStep(SPEND_STEP_SIGN);
   };
@@ -97,23 +100,8 @@ class WalletSpend extends React.Component {
 
   showCreate = () => {
     const { finalizeOutputs, setSpendStep } = this.props;
-
     setSpendStep(SPEND_STEP_CREATE);
     finalizeOutputs(false);
-  };
-
-  renderSpend = () => {
-    const { autoSpend } = this.props;
-    return (
-      <Box>
-        <FormControlLabel
-          control={
-            <Switch checked={!autoSpend} onChange={this.handleSpendMode} />
-          }
-          label="Manual"
-        />
-      </Box>
-    );
   };
 
   handleSpendMode = (event) => {
@@ -135,7 +123,6 @@ class WalletSpend extends React.Component {
       updateDepositSlice,
       resetNodesSpend,
       setFeeRate,
-      coinSelection,
     } = this.props;
     const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
       return changeOutputIndex === outputIndex + 1
@@ -155,7 +142,7 @@ class WalletSpend extends React.Component {
       .filter((node) => node.balanceSats.isGreaterThan(0));
 
     resetNodesSpend();
-    const selectedInputs = coinSelection(spendableInputs, outputTotal);
+    const selectedInputs = this.coinSelection(spendableInputs, outputTotal);
 
     selectedInputs.forEach((selectedUtxo) => {
       (selectedUtxo.change ? updateChangeSlice : updateDepositSlice)({
@@ -194,7 +181,17 @@ class WalletSpend extends React.Component {
               <Grid item md={12}>
                 <Grid container direction="row-reverse">
                   <Box display="flex-end">
-                    <Box p={1}>{this.renderSpend()}</Box>
+                    <Box p={1}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={!autoSpend}
+                            onChange={this.handleSpendMode}
+                          />
+                        }
+                        label="Manual"
+                      />
+                    </Box>
                   </Box>
                 </Grid>
                 <Box component="div" display={autoSpend ? "none" : "block"}>
@@ -219,7 +216,7 @@ class WalletSpend extends React.Component {
                   <TransactionPreview
                     changeAddress={changeAddress}
                     editTransaction={this.showCreate}
-                    signTransaction={this.signTransaction}
+                    showSignTransaction={this.showSignTransaction}
                   />
                 </Box>
               </Grid>
@@ -243,7 +240,6 @@ WalletSpend.propTypes = {
   changeNodes: PropTypes.shape({}),
   changeAddress: PropTypes.string.isRequired,
   changeOutputIndex: PropTypes.number.isRequired,
-  coinSelection: PropTypes.func.isRequired,
   depositNodes: PropTypes.shape({}),
   fee: PropTypes.string.isRequired,
   feeError: PropTypes.string,
