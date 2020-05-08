@@ -182,8 +182,6 @@ class WalletGenerator extends React.Component {
     ) {
       const extendedPublicKeyImporter =
         extendedPublicKeyImporters[extendedPublicKeyImporterNumber];
-      // const path =
-      //   bip32Path.slice(0, 2) === "*/" ? bip32Path.slice(2) : bip32Path;
 
       const publicKey = deriveChildPublicKey(
         extendedPublicKeyImporter.extendedPublicKey,

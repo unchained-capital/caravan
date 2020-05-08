@@ -1,5 +1,10 @@
 import BigNumber from "bignumber.js";
-import { P2WSH, TESTNET } from "unchained-bitcoin";
+import {
+  P2WSH,
+  TESTNET,
+  satoshisToBitcoins,
+  estimateMultisigP2WSHTransactionVSize,
+} from "unchained-bitcoin";
 import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
 import {
   CHOOSE_PERFORM_SPEND,
@@ -198,7 +203,14 @@ describe("Test transactionReducer", () => {
 
   describe("Test DELETE_OUTPUT action", () => {
     it("should properly remove an output and update fee", () => {
-      const initial = [{ ...initialOutputState }, { ...initialOutputState }];
+      const initial = [
+        {
+          ...initialOutputState,
+        },
+        {
+          ...initialOutputState,
+        },
+      ];
       const r = reducer(
         {
           inputs: [{}],
@@ -213,8 +225,10 @@ describe("Test transactionReducer", () => {
           number: 1,
         }
       );
+      // test txid for reference:
+      // e5d35e77a9177e52eb2e908d133faa3c8f9dc0d5a947f25568a55f711f0ee87b
       expect(r.outputs.length).toBe(1);
-      expect(r.fee).toEqual("0.00000168");
+      expect(r.fee).toEqual("0.00000159");
     });
   });
 
@@ -235,7 +249,20 @@ describe("Test transactionReducer", () => {
         }
       );
       expect(r.feeRate).toEqual("3");
-      expect(r.fee).toEqual("0.00000504");
+      const estimatedSize = estimateMultisigP2WSHTransactionVSize({
+        numInputs: r.inputs.length,
+        numOutputs: r.outputs.length,
+        m: r.requiredSigners,
+        n: r.totalSigners,
+      });
+
+      // test txid for reference:
+      // e5d35e77a9177e52eb2e908d133faa3c8f9dc0d5a947f25568a55f711f0ee87b
+      const expectedRate = satoshisToBitcoins(
+        estimatedSize * r.feeRate
+      ).toString();
+
+      expect(r.fee).toEqual(expectedRate);
     });
   });
 
@@ -256,6 +283,7 @@ describe("Test transactionReducer", () => {
           value: "0.00000504",
         }
       );
+
       expect(r.feeRate).toEqual("3");
       expect(r.fee).toEqual("0.00000504");
     });
