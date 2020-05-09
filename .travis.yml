@@ -11,9 +11,9 @@ jobs:
 
     - stage: build
       node_js: 10
-      script: npm run build
+      script: npm run build:ci
       node_js: 12
-      script: npm run build
+      script: npm run build:ci
 
 deploy:
   provider: script
