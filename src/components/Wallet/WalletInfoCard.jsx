@@ -38,11 +38,10 @@ const WalletInfoCard = ({
   pendingBalance,
   editable,
   network,
-  children,
 }) => {
   const classes = useStyles();
   return (
-    <Card className={classes.root}>
+    <Card data-cy="wallet-info-card" className={classes.root}>
       <CardContent>
         <Grid container direction="row" alignItems="center">
           {editable ? (
@@ -65,12 +64,16 @@ const WalletInfoCard = ({
               </Grid>
               <Grid container className={classes.gutter}>
                 <Grid item xs={12} mt={5}>
-                  <Typography variant="subtitle1" className={classes.balance}>
+                  <Typography
+                    data-cy="balance"
+                    variant="subtitle1"
+                    className={classes.balance}
+                  >
                     {balance} BTC
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="caption">
+                  <Typography data-cy="pending-balance" variant="caption">
                     {pendingBalance !== 0 ? (
                       <>
                         <span
@@ -93,7 +96,6 @@ const WalletInfoCard = ({
             </>
           )}
         </Grid>
-        {children}
       </CardContent>
     </Card>
   );
@@ -106,14 +108,12 @@ WalletInfoCard.propTypes = {
   pendingBalance: PropTypes.number,
   editable: PropTypes.bool.isRequired,
   setName: PropTypes.func.isRequired,
-  children: PropTypes.node,
 };
 
 WalletInfoCard.defaultProps = {
   network: NETWORKS.TESTNET,
   balance: 0,
   pendingBalance: 0,
-  children: React.createElement("span"),
 };
 
 export default WalletInfoCard;
