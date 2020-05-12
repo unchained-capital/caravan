@@ -84,6 +84,19 @@ export const getSlicesWithLastUsed = createSelector(
 );
 
 /**
+ * Gets the set of spendable slices, i.e. ones that don't have a
+ * pending utxo and are not spent
+ */
+export const getSpendableSlices = createSelector(
+  getSlicesWithLastUsed,
+  (slices) => {
+    return slices.filter(
+      (slice) => slice.lastUsed !== "Pending" && slice.lastUsed !== "Spent"
+    );
+  }
+);
+
+/**
  * @description Returns a selector that provides all spent slices, i.e.
  * All slices that have been used but have no balance left.
  */
