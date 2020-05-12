@@ -25,7 +25,7 @@ class TransactionPreview extends React.Component {
       fee,
       inputsTotalSats,
       editTransaction,
-      signTransaction,
+      handleSignTransaction,
     } = this.props;
 
     return (
@@ -69,7 +69,7 @@ class TransactionPreview extends React.Component {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={signTransaction}
+                onClick={handleSignTransaction}
               >
                 Sign Transaction
               </Button>
@@ -208,15 +208,7 @@ TransactionPreview.propTypes = {
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  signTransaction: PropTypes.func.isRequired,
+  handleSignTransaction: PropTypes.func.isRequired,
 };
 
-function mapStateToProps(state) {
-  return {
-    ...state.spend.transaction,
-  };
-}
-
-const mapDispatchToProps = {};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TransactionPreview);
+export default TransactionPreview;

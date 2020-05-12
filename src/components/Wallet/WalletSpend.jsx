@@ -164,6 +164,11 @@ class WalletSpend extends React.Component {
       updateNode,
       addNode,
       spendingStep,
+      fee,
+      feeRate,
+      inputs,
+      inputsTotalSats,
+      outputs,
     } = this.props;
 
     return (
@@ -216,7 +221,12 @@ class WalletSpend extends React.Component {
                   <TransactionPreview
                     changeAddress={changeAddress}
                     editTransaction={this.showCreate}
-                    showSignTransaction={this.showSignTransaction}
+                    fee={fee}
+                    feeRate={feeRate}
+                    inputs={inputs}
+                    inputsTotalSats={inputsTotalSats}
+                    outputs={outputs}
+                    handleSignTransaction={() => this.showSignTransaction()}
                   />
                 </Box>
               </Grid>
@@ -248,6 +258,7 @@ WalletSpend.propTypes = {
   finalizeOutputs: PropTypes.func.isRequired,
   finalizedOutputs: PropTypes.bool,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  inputsTotalSats: PropTypes.string.isRequired,
   outputs: PropTypes.arrayOf(
     PropTypes.shape({
       address: PropTypes.string,
