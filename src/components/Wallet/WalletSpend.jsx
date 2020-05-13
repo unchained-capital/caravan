@@ -47,28 +47,26 @@ class WalletSpend extends React.Component {
 
   feeAmount = new BigNumber(0);
 
-  componentDidMount = () => {
-    const { changeNode, setChangeAddress, autoSpend } = this.props;
-    if (autoSpend) setChangeAddress(changeNode.multisig.address);
-  };
+  // componentDidMount = () => {
+  //   const { changeNode, setChangeAddress, autoSpend } = this.props;
+  //   if (autoSpend) setChangeAddress(changeNode.multisig.address);
+  // };
 
-  componentDidUpdate() {
-    const { autoSpend, finalizedOutputs } = this.props;
-    if (autoSpend && !finalizedOutputs) {
-      setTimeout(this.selectCoins, 0);
-    }
-  }
+  // componentDidUpdate() {
+  //   const { autoSpend, finalizedOutputs } = this.props;
+  //   if (autoSpend && !finalizedOutputs) {
+  //     setTimeout(this.selectCoins, 0);
+  //   }
+  // }
 
   previewDisabled = () => {
     const {
       finalizedOutputs,
       outputs,
-      inputs,
       feeRateError,
       feeError,
       balanceError,
     } = this.props;
-    if (inputs.length === 0) return true;
     if (finalizedOutputs || feeRateError || feeError || balanceError) {
       return true;
     }
@@ -268,7 +266,6 @@ WalletSpend.propTypes = {
     })
   ).isRequired,
   resetNodesSpend: PropTypes.func.isRequired,
-  setChangeAddress: PropTypes.func.isRequired,
   setInputs: PropTypes.func.isRequired,
   setFeeRate: PropTypes.func.isRequired,
   setSpendStep: PropTypes.func.isRequired,

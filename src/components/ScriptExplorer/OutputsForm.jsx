@@ -105,8 +105,7 @@ class OutputsForm extends React.Component {
   };
 
   outputsAndFeeTotal = () => {
-    const { outputs, fee, inputs, updatesComplete } = this.props;
-    if (!inputs.length) return "";
+    const { outputs, fee, updatesComplete } = this.props;
 
     const total = outputs
       .map((output) => new BigNumber(output.amount || 0))
@@ -339,31 +338,34 @@ class OutputsForm extends React.Component {
             <Grid item xs={4}>
               <Box mt={feeMt}>&nbsp;</Box>
             </Grid>
-
-            <Grid item xs={3}>
-              <Box mt={feeMt}>
-                <Typography
-                  variant="caption"
-                  className={styles.outputsFormLabel}
-                >
-                  Estimated Fees
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="fee_total"
-                  disabled={finalizedOutputs}
-                  value={feeDisplay}
-                  onChange={this.handleFeeChange}
-                  error={this.hasFeeError()}
-                  helperText={feeError}
-                  InputProps={OutputsForm.unitLabel("BTC", {
-                    readOnly: true,
-                    disableUnderline: true,
-                    style: { color: "gray" },
-                  })}
-                />
-              </Box>
-            </Grid>
+            {!isWallet || (isWallet && !autoSpend) ? (
+              <Grid item xs={3}>
+                <Box mt={feeMt}>
+                  <Typography
+                    variant="caption"
+                    className={styles.outputsFormLabel}
+                  >
+                    Estimated Fees
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="fee_total"
+                    disabled={finalizedOutputs}
+                    value={feeDisplay}
+                    onChange={this.handleFeeChange}
+                    error={this.hasFeeError()}
+                    helperText={feeError}
+                    InputProps={OutputsForm.unitLabel("BTC", {
+                      readOnly: true,
+                      disableUnderline: true,
+                      style: { color: "gray" },
+                    })}
+                  />
+                </Box>
+              </Grid>
+            ) : (
+              ""
+            )}
 
             <Grid item xs={2} />
           </Grid>
@@ -376,7 +378,6 @@ class OutputsForm extends React.Component {
                     ? "Totals"
                     : "Outputs & Fee Total"}
                 </Typography>
-                <small>(including change)</small>
               </Box>
             </Grid>
             <Grid item xs={3}>

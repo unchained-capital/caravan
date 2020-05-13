@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
 import { satoshisToBitcoins } from "unchained-bitcoin";

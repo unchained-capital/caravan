@@ -91,7 +91,10 @@ export const getSpendableSlices = createSelector(
   getSlicesWithLastUsed,
   (slices) => {
     return slices.filter(
-      (slice) => slice.lastUsed !== "Pending" && slice.lastUsed !== "Spent"
+      (slice) =>
+        slice.lastUsed !== "Pending" &&
+        slice.lastUsed !== "Spent" &&
+        slice.utxos.length
     );
   }
 );

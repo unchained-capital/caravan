@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import BigNumber from "bignumber.js";
 
 import {
@@ -8,65 +7,18 @@ import {
   getSpendableSlices,
 } from "./wallet";
 
+import { getMockState } from "../utils/fixtures";
+
 describe("wallet selectors", () => {
   let state;
-  let utxosConfirmed;
-  let utxosUnconfirmed;
   let confirmedBalance;
   let pendingBalance;
   beforeEach(() => {
     confirmedBalance = 5000;
     pendingBalance = 1000;
-    utxosConfirmed = Array(5).fill({
-      confirmed: true,
-      amountSats: confirmedBalance / 5,
-      time: Date.now() - Math.floor(Math.random() * 10000),
-    });
-    utxosUnconfirmed = Array(2).fill({
-      confirmed: false,
-      amountSats: pendingBalance / 2,
-    });
-
-    // we'll put half of the confirmed utxos in a deposit slice
-    // and half in change. All unconfirmed will go in one deposit slice
-    state = {
-      wallet: {
-        deposits: {
-          nodes: [
-            {
-              utxos: utxosConfirmed.slice(
-                Math.floor(utxosConfirmed.length / 2)
-              ),
-            },
-            {
-              utxos: utxosUnconfirmed,
-            },
-          ],
-        },
-        change: {
-          nodes: [
-            {
-              utxos: utxosConfirmed.slice(Math.ceil(utxosConfirmed.length / 2)),
-            },
-          ],
-        },
-      },
-    };
-    // set slice balances
-    state.wallet.deposits.nodes.forEach((slice) => {
-      slice.balanceSats = slice.utxos.reduce((balance, utxo) => {
-        if (utxo.confirmed) balance.plus(utxo.amountSats);
-        return balance;
-      }, new BigNumber(0));
-    });
-
-    state.wallet.change.nodes.forEach((slice) => {
-      slice.balanceSats = slice.utxos.reduce((balance, utxo) => {
-        if (utxo.confirmed) balance.plus(utxo.amountSats);
-        return balance;
-      }, new BigNumber(0));
-    });
+    state = getMockState({ confirmedBalance, pendingBalance });
   });
+
   describe("getPendingBalance", () => {
     it("should return total balance of unconfirmed UTXOs", () => {
       const actualPending = getPendingBalance(state);
@@ -87,12 +39,17 @@ describe("wallet selectors", () => {
   });
   describe("getSpendableSlices", () => {
     it("should return slices that are neither pending or spent", () => {
+      // add unused slice to make sure it's not included
+      state.wallet.deposits.nodes.push({
+        utxos: [],
+        balanceSats: new BigNumber(0),
+      });
       const actuallySpendable = getSpendableSlices(state);
 
       actuallySpendable.forEach((slice) => {
+        expect(slice.utxos.length).toBeGreaterThan(0);
         slice.utxos.forEach((utxo) => expect(utxo.confirmed).toBeTruthy());
         expect(slice.lastUsed !== "Pending").toBeTruthy();
-        expect(slice.utxos.length).toBeGreaterThan(0);
       });
     });
   });
