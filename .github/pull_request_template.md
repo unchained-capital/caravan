@@ -1,21 +1,5 @@
 <!--- Provide a general summary of your changes in the Title above -->
 
-## PR Type
-
-<!---
-  What types of change(s) does your code introduce?
-  Put an `x` in all the boxes that apply:
--->
-
-* [ ] Bug fix
-* [ ] Feature
-* [ ] Code style update (whitespace, formatting, missing semicolons, etc.)
-* [ ] Refactor (i.e., no functional changes)
-* [ ] Build related changes
-* [ ] CI related changes
-* [ ] Documentation changes
-* [ ] Other (please describe below):
-
 ## Description
 
 <!---
