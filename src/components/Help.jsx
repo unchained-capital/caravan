@@ -49,6 +49,7 @@ const Help = () => (
                 <Grid item xs={10} md={4}>
                   <Button
                     variant="contained"
+                    data-cy="setup-wallet-button"
                     size="large"
                     color="primary"
                     href="#/wallet"
@@ -60,6 +61,7 @@ const Help = () => (
                 <Grid item xs={10} md={4}>
                   <Button
                     variant="contained"
+                    data-cy="setup-address-button"
                     size="large"
                     color="default"
                     href="#/address"
@@ -247,7 +249,7 @@ const Help = () => (
               <Button href="https://github.com/unchained-capital/caravan/issues">
                 <BugReport /> &nbsp; Report Issue
               </Button>
-              <Button href="#/test">
+              <Button data-cy="run-tests-button" href="#/test">
                 <Speed /> &nbsp; Run Tests
               </Button>
             </CardActions>
