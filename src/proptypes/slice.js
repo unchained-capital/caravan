@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { bigNumberPropTypes } from "./utils";
 
 const slicePropTypes = {
   present: PropTypes.bool,
@@ -6,11 +7,7 @@ const slicePropTypes = {
   publicKeys: PropTypes.array,
   multisig: PropTypes.shape({}),
   address: PropTypes.string.isRequired,
-  balanceSats: PropTypes.shape({
-    s: PropTypes.number,
-    e: PropTypes.number,
-    c: PropTypes.array,
-  }),
+  balanceSats: PropTypes.shape(bigNumberPropTypes),
   utxos: PropTypes.array,
   change: PropTypes.bool.isRequired,
   spend: PropTypes.bool.isRequired,

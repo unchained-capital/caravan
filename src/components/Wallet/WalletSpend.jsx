@@ -13,11 +13,12 @@ import {
   FormControlLabel,
   Button,
 } from "@material-ui/core";
-import { bitcoinsToSatoshis } from "unchained-bitcoin";
+
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,
   resetNodesSpend as resetNodesSpendAction,
+  autoSelectCoins as autoSelectCoinsAction,
 } from "../../actions/walletActions";
 import {
   setInputs as setInputsAction,
@@ -31,6 +32,7 @@ import {
   SPEND_STEP_PREVIEW,
   SPEND_STEP_SIGN,
   setSpendStep as setSpendStepAction,
+  deleteChangeOutput as deleteChangeOutputAction,
 } from "../../actions/transactionActions";
 import { naiveCoinSelection } from "../../utils";
 
@@ -39,6 +41,7 @@ import NodeSet from "./NodeSet";
 import OutputsForm from "../ScriptExplorer/OutputsForm";
 import WalletSign from "./WalletSign";
 import TransactionPreview from "./TransactionPreview";
+import { bigNumberPropTypes } from "../../proptypes/utils";
 
 class WalletSpend extends React.Component {
   outputsAmount = new BigNumber(0);
@@ -47,17 +50,12 @@ class WalletSpend extends React.Component {
 
   feeAmount = new BigNumber(0);
 
-  // componentDidMount = () => {
-  //   const { changeNode, setChangeAddress, autoSpend } = this.props;
-  //   if (autoSpend) setChangeAddress(changeNode.multisig.address);
-  // };
-
-  // componentDidUpdate() {
-  //   const { autoSpend, finalizedOutputs } = this.props;
-  //   if (autoSpend && !finalizedOutputs) {
-  //     setTimeout(this.selectCoins, 0);
-  //   }
-  // }
+  componentDidUpdate = (prevProps) => {
+    const { finalizedOutputs } = this.props;
+    if (finalizedOutputs && !prevProps.finalizedOutputs) {
+      this.showPreview();
+    }
+  };
 
   previewDisabled = () => {
     const {
@@ -65,8 +63,12 @@ class WalletSpend extends React.Component {
       outputs,
       feeRateError,
       feeError,
+      inputs,
       balanceError,
+      autoSpend,
     } = this.props;
+
+    if (inputs.length === 0 && !autoSpend) return true;
     if (finalizedOutputs || feeRateError || feeError || balanceError) {
       return true;
     }
@@ -89,70 +91,41 @@ class WalletSpend extends React.Component {
     setSpendStep(SPEND_STEP_SIGN);
   };
 
-  showPreview = () => {
-    const { finalizeOutputs, setSpendStep } = this.props;
+  handleShowPreview = () => {
+    const { autoSelectCoins, autoSpend, finalizeOutputs } = this.props;
+    if (autoSpend) autoSelectCoins();
+    else finalizeOutputs(true);
+  };
 
+  showPreview = () => {
+    const { setSpendStep } = this.props;
     setSpendStep(SPEND_STEP_PREVIEW);
-    finalizeOutputs(true);
   };
 
   showCreate = () => {
-    const { finalizeOutputs, setSpendStep } = this.props;
+    const {
+      finalizeOutputs,
+      setSpendStep,
+      resetNodesSpend,
+      autoSpend,
+      deleteChangeOutput,
+    } = this.props;
     setSpendStep(SPEND_STEP_CREATE);
     finalizeOutputs(false);
+
+    // for auto spend view, user doesn't have direct knowledge of
+    // input nodes and change. So when going back to edit a transaction
+    // we want to clear these from the state, since these are added automatically
+    // when going from output form to transaction preview
+    if (autoSpend) {
+      resetNodesSpend();
+      deleteChangeOutput();
+    }
   };
 
   handleSpendMode = (event) => {
     const { updateAutoSpend } = this.props;
     updateAutoSpend(!event.target.checked);
-  };
-
-  selectCoins = () => {
-    const {
-      outputs,
-      setInputs,
-      fee,
-      depositNodes,
-      changeNodes,
-      feeRate,
-      changeOutputIndex,
-      autoSpend,
-      updateChangeSlice,
-      updateDepositSlice,
-      resetNodesSpend,
-      setFeeRate,
-    } = this.props;
-    const outputsAmount = outputs.reduce((sum, output, outputIndex) => {
-      return changeOutputIndex === outputIndex + 1
-        ? sum
-        : sum.plus(output.amountSats);
-    }, new BigNumber(0));
-    if (outputsAmount.isNaN()) return;
-    const feeAmount = bitcoinsToSatoshis(new BigNumber(fee));
-    if (
-      outputsAmount.isEqualTo(this.outputsAmount) &&
-      feeAmount.isEqualTo(this.feeAmount)
-    )
-      return;
-    const outputTotal = outputsAmount.plus(feeAmount);
-    const spendableInputs = Object.values(depositNodes)
-      .concat(Object.values(changeNodes))
-      .filter((node) => node.balanceSats.isGreaterThan(0));
-
-    resetNodesSpend();
-    const selectedInputs = this.coinSelection(spendableInputs, outputTotal);
-
-    selectedInputs.forEach((selectedUtxo) => {
-      (selectedUtxo.change ? updateChangeSlice : updateDepositSlice)({
-        bip32Path: selectedUtxo.bip32Path,
-        spend: true,
-      });
-    });
-
-    this.outputsAmount = outputsAmount;
-    this.feeAmount = feeAmount;
-    setInputs(selectedInputs);
-    if (changeOutputIndex > 0 || !autoSpend) setFeeRate(feeRate); // recalulate fee
   };
 
   render() {
@@ -203,7 +176,7 @@ class WalletSpend extends React.Component {
                 <OutputsForm />
                 <Box mt={2}>
                   <Button
-                    onClick={this.showPreview}
+                    onClick={this.handleShowPreview}
                     variant="contained"
                     color="primary"
                     disabled={this.previewDisabled()}
@@ -239,6 +212,7 @@ class WalletSpend extends React.Component {
 WalletSpend.propTypes = {
   addNode: PropTypes.func.isRequired,
   autoSpend: PropTypes.bool,
+  autoSelectCoins: PropTypes.func.isRequired,
   balanceError: PropTypes.string,
   changeNode: PropTypes.shape({
     multisig: PropTypes.shape({
@@ -247,7 +221,7 @@ WalletSpend.propTypes = {
   }).isRequired,
   changeNodes: PropTypes.shape({}),
   changeAddress: PropTypes.string.isRequired,
-  changeOutputIndex: PropTypes.number.isRequired,
+  deleteChangeOutput: PropTypes.func.isRequired,
   depositNodes: PropTypes.shape({}),
   fee: PropTypes.string.isRequired,
   feeError: PropTypes.string,
@@ -256,7 +230,7 @@ WalletSpend.propTypes = {
   finalizeOutputs: PropTypes.func.isRequired,
   finalizedOutputs: PropTypes.bool,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  inputsTotalSats: PropTypes.string.isRequired,
+  inputsTotalSats: PropTypes.shape(bigNumberPropTypes).isRequired,
   outputs: PropTypes.arrayOf(
     PropTypes.shape({
       address: PropTypes.string,
@@ -266,13 +240,9 @@ WalletSpend.propTypes = {
     })
   ).isRequired,
   resetNodesSpend: PropTypes.func.isRequired,
-  setInputs: PropTypes.func.isRequired,
-  setFeeRate: PropTypes.func.isRequired,
   setSpendStep: PropTypes.func.isRequired,
   spendingStep: PropTypes.number,
   updateAutoSpend: PropTypes.func.isRequired,
-  updateChangeSlice: PropTypes.func.isRequired,
-  updateDepositSlice: PropTypes.func.isRequired,
   updateNode: PropTypes.func.isRequired,
 };
 
@@ -298,6 +268,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
+  autoSelectCoins: autoSelectCoinsAction,
+  deleteChangeOutput: deleteChangeOutputAction,
   updateAutoSpend: updateAutoSpendAction,
   setInputs: setInputsAction,
   updateChangeSlice: updateChangeSliceAction,

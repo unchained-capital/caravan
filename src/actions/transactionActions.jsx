@@ -24,7 +24,7 @@ export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const SET_CHANGE_ADDRESS = "SET_CHANGE_ADDRESS";
 export const SET_SIGNING_KEY = "SET_SIGNING_KEY";
 export const SET_SPEND_STEP = "SET_SPEND_STEP";
-
+export const SET_BALANCE_ERROR = "SET_BALANCE_ERROR";
 export const SPEND_STEP_CREATE = 0;
 export const SPEND_STEP_PREVIEW = 1;
 export const SPEND_STEP_SIGN = 2;
@@ -85,10 +85,47 @@ export function setOutputAmount(number, amountString) {
   };
 }
 
+export function setChangeAddressAction(value) {
+  return {
+    type: SET_CHANGE_ADDRESS,
+    value,
+  };
+}
+
+export function setChangeOutput({ value, address }) {
+  return (dispatch, getState) => {
+    const {
+      spend: {
+        transaction: { outputs, changeOutputIndex },
+      },
+    } = getState();
+    // add output for change if there's none set (or it's set to zero)
+    // if there's a change index then we use that
+    // otherwise put it at the end of the outputs
+    if (!changeOutputIndex) dispatch(addOutput());
+
+    // output/change indexes are not zero-indexed
+    const index = changeOutputIndex || outputs.length + 1;
+    dispatch(setChangeOutputIndex(index));
+    dispatch(setChangeAddressAction(address));
+    dispatch(setOutputAddress(index, address));
+    dispatch(setOutputAmount(index, value));
+  };
+}
+
 export function deleteOutput(number) {
   return {
     type: DELETE_OUTPUT,
     number,
+  };
+}
+
+export function deleteChangeOutput() {
+  return (dispatch, getState) => {
+    const { changeOutputIndex } = getState().spend.transaction;
+    if (!changeOutputIndex) return;
+
+    dispatch(deleteOutput(changeOutputIndex));
   };
 }
 
@@ -119,6 +156,13 @@ export function resetOutputs() {
   };
 }
 
+export function setBalanceError(message) {
+  return {
+    type: SET_BALANCE_ERROR,
+    value: message,
+  };
+}
+
 export function resetTransaction() {
   return {
     type: RESET_TRANSACTION,
@@ -141,13 +185,6 @@ export function setIsWallet() {
 export function updateAutoSpendAction(value) {
   return {
     type: UPDATE_AUTO_SPEND,
-    value,
-  };
-}
-
-export function setChangeAddressAction(value) {
-  return {
-    type: SET_CHANGE_ADDRESS,
     value,
   };
 }

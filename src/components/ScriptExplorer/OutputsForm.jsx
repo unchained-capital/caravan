@@ -24,12 +24,10 @@ import AddIcon from "@material-ui/icons/Add";
 import {
   addOutput as addOutputAction,
   setOutputAmount as setOutputAmountAction,
-  setOutputAddress as setOutputAddressAction,
   setFeeRate as setFeeRateAction,
   setFee as setFeeAction,
   finalizeOutputs as finalizeOutputsAction,
   resetOutputs as resetOutputsAction,
-  setChangeOutputIndex as setChangeOutputIndexAction,
 } from "../../actions/transactionActions";
 import { fetchFeeEstimate } from "../../blockchain";
 import OutputEntry from "./OutputEntry";
@@ -105,21 +103,28 @@ class OutputsForm extends React.Component {
   };
 
   outputsAndFeeTotal = () => {
-    const { outputs, fee, updatesComplete } = this.props;
-
-    const total = outputs
-      .map((output) => new BigNumber(output.amount || 0))
+    const { outputs, fee, updatesComplete, inputs } = this.props;
+    let total = outputs
+      .map((output) => {
+        let { amount } = output;
+        // eslint-disable-next-line no-restricted-globals
+        if (!amount || !amount.length || isNaN(amount)) amount = 0;
+        return new BigNumber(amount);
+      })
       .reduce(
         (accumulator, currentValue) => accumulator.plus(currentValue),
         new BigNumber(0)
-      )
-      .plus(new BigNumber(fee));
+      );
+
+    // only care to add fee if we have inputs
+    // which we won't have in auto-spend wallet output form
+    if (fee && inputs.length) total = total.plus(fee);
 
     if (updatesComplete) {
       this.outputsTotal = total;
-      return total;
+      return total.toFixed(8);
     }
-    return this.outputsTotal;
+    return "0.00000000";
   };
 
   hasFeeRateFetchError = () => {
@@ -157,12 +162,13 @@ class OutputsForm extends React.Component {
   };
 
   handleFeeRateChange = (event) => {
-    const { setFeeRate, inputs } = this.props;
+    const { setFeeRate } = this.props;
     let rate = event.target.value;
+
     // eslint-disable-next-line use-isnan
     if (rate === "" || parseFloat(rate, 10) === NaN || parseFloat(rate, 10) < 1)
       rate = "0";
-    if (inputs.length) setFeeRate(rate);
+    setFeeRate(rate);
   };
 
   handleFeeChange = (event) => {
@@ -218,16 +224,7 @@ class OutputsForm extends React.Component {
   };
 
   async initialOutputState() {
-    const {
-      inputs,
-      outputs,
-      isWallet,
-      change,
-      setChangeOutputIndex,
-      addOutput,
-      setOutputAddress,
-      changeOutputIndex,
-    } = this.props;
+    const { inputs, outputs } = this.props;
     await this.getFeeEstimate();
     const { inputsTotalSats, fee, setOutputAmount } = this.props;
     const feeSats = bitcoinsToSatoshis(new BigNumber(fee));
@@ -235,13 +232,6 @@ class OutputsForm extends React.Component {
     // only initialize once so we don't lose state
     if (inputs.length && outputs[0].amount === "")
       setOutputAmount(1, outputAmount.toFixed(8));
-
-    if (isWallet && changeOutputIndex === 0) {
-      addOutput();
-      setOutputAddress(2, change.nextNode.multisig.address);
-      setChangeOutputIndex(2);
-      setOutputAmount(2, BigNumber(0).toFixed(8));
-    }
   }
 
   render() {
@@ -376,8 +366,11 @@ class OutputsForm extends React.Component {
                 <Typography variant="h6">
                   {!isWallet || (isWallet && !autoSpend)
                     ? "Totals"
-                    : "Outputs & Fee Total"}
+                    : "Output Total"}
                 </Typography>
+                {isWallet && autoSpend && (
+                  <small>(change and fees calculated in next step)</small>
+                )}
               </Box>
             </Grid>
             <Grid item xs={3}>
@@ -391,7 +384,7 @@ class OutputsForm extends React.Component {
                   fullWidth
                   label="Inputs Total"
                   readOnly
-                  value={this.inputsTotal().toString()}
+                  value={this.inputsTotal().toFixed(8)}
                   disabled={finalizedOutputs}
                   InputProps={OutputsForm.unitLabel("BTC", { readOnly: true })}
                 />
@@ -406,7 +399,7 @@ class OutputsForm extends React.Component {
                       ? "Outputs & Fee Total"
                       : ""
                   }
-                  value={this.outputsAndFeeTotal().toString() || "0.0000"}
+                  value={this.outputsAndFeeTotal()}
                   error={this.hasBalanceError()}
                   disabled={finalizedOutputs}
                   helperText={balanceError}
@@ -419,10 +412,6 @@ class OutputsForm extends React.Component {
             </Grid>
             <Grid item xs={2} />
           </Grid>
-
-          {/* <Grid item> */}
-
-          {/* </Grid> */}
         </Box>
 
         {!isWallet && (
@@ -493,8 +482,6 @@ OutputsForm.propTypes = {
   resetOutputs: PropTypes.func.isRequired,
   setFeeRate: PropTypes.func.isRequired,
   setFee: PropTypes.func.isRequired,
-  setChangeOutputIndex: PropTypes.func.isRequired,
-  setOutputAddress: PropTypes.func.isRequired,
   setOutputAmount: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
   updatesComplete: PropTypes.bool,
@@ -524,8 +511,6 @@ const mapDispatchToProps = {
   setFee: setFeeAction,
   finalizeOutputs: finalizeOutputsAction,
   resetOutputs: resetOutputsAction,
-  setChangeOutputIndex: setChangeOutputIndexAction,
-  setOutputAddress: setOutputAddressAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(OutputsForm);

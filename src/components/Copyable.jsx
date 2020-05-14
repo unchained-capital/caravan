@@ -72,7 +72,10 @@ const Copyable = ({
         options={{ format: "text/plain" }}
       >
         <span
-          style={{ fontStyle: copied ? "italic" : "inherit" }}
+          style={{
+            fontStyle: copied ? "italic" : "inherit",
+            overflowWrap: "break-word",
+          }}
           className={`copyable ${classes.copyText}`}
         >
           {children}

@@ -3,7 +3,6 @@ import {
   MAINNET,
   P2SH,
   estimateMultisigTransactionFee,
-  estimateMultisigTransactionFeeRate,
   validateFeeRate,
   validateFee,
   validateOutputAmount,
@@ -13,7 +12,6 @@ import {
   unsignedMultisigTransaction,
 } from "unchained-bitcoin";
 import updateState from "./utils";
-import { DUST_IN_BTC } from "../utils/constants";
 
 import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
 import {
@@ -36,6 +34,7 @@ import {
   UPDATE_AUTO_SPEND,
   SET_SIGNING_KEY,
   SET_CHANGE_ADDRESS,
+  SET_BALANCE_ERROR,
   SET_SPEND_STEP,
   SPEND_STEP_CREATE,
 } from "../actions/transactionActions";
@@ -60,17 +59,17 @@ function sortInputs(a, b) {
   return 0;
 }
 
-export const initialOutputState = {
+export const initialOutputState = () => ({
   address: "",
   amount: "",
   amountSats: "",
   addressError: "",
   amountError: "",
-};
+});
 
-const initialOutputsState = () => [{ ...initialOutputState }];
+const initialOutputsState = () => [initialOutputState()];
 
-export const initialState = {
+export const initialState = () => ({
   chosen: false,
   network: MAINNET,
   inputs: [],
@@ -94,15 +93,13 @@ export const initialState = {
   updatesComplete: true,
   signingKeys: [0, 0], // default 2 required signers
   spendingStep: SPEND_STEP_CREATE,
-};
+});
 
 function updateInputs(state, action) {
-  const inputsTotalSats = action.value
-    .map((input) => input.amountSats)
-    .reduce(
-      (accumulator, currentValue) => accumulator.plus(currentValue),
-      new BigNumber(0)
-    );
+  const inputsTotalSats = action.value.reduce(
+    (accumulator, input) => accumulator.plus(input.amountSats),
+    new BigNumber(0)
+  );
   return updateState(state, {
     inputs: action.value.sort(sortInputs),
     inputsTotalSats,
@@ -110,12 +107,11 @@ function updateInputs(state, action) {
 }
 
 function calcOutputTotalSats(state) {
-  return state.outputs
-    .map((output) => bitcoinsToSatoshis(new BigNumber(output.amount || 0)))
-    .reduce(
-      (accumulator, currentValue) => accumulator.plus(currentValue),
-      new BigNumber(0)
-    );
+  return state.outputs.reduce(
+    (accumulator, { amount }) =>
+      accumulator.plus(bitcoinsToSatoshis(new BigNumber(amount || 0))),
+    new BigNumber(0)
+  );
 }
 
 function setFeeForRate(state, feeRateString, nout) {
@@ -174,28 +170,16 @@ function updateFee(state, action) {
   const feeString = action.value;
   const feeSats = bitcoinsToSatoshis(feeString);
   const feeError = validateFee(feeSats, state.inputsTotalSats);
-  const feeRate =
-    feeError === ""
-      ? estimateMultisigTransactionFeeRate({
-          addressType: state.addressType,
-          numInputs: state.inputs.length,
-          numOutputs: state.outputs.length,
-          m: state.requiredSigners,
-          n: state.totalSigners,
-          feesInSatoshis: feeSats,
-        }).toFixed(0)
-      : "";
 
   return updateState(state, {
     fee: feeString,
     feeError,
-    feeRate,
     feeRateError: "",
   });
 }
 
 function addOutput(state) {
-  const newOutputs = state.outputs.concat({ ...initialOutputState });
+  const newOutputs = state.outputs.concat(initialOutputState());
   return {
     ...state,
     ...{
@@ -314,7 +298,7 @@ function outputInitialStateForMode(state) {
 
 function resetTransactionState(state) {
   let newState = updateState(state, {
-    ...initialState,
+    ...initialState(),
     totalSigners: state.totalSigners,
     network: state.network,
     addressType: state.addressType,
@@ -326,7 +310,7 @@ function resetTransactionState(state) {
   return newState;
 }
 
-function validateTransaction(state, finalUpdate) {
+function validateTransaction(state) {
   let newState = { ...state };
   // TODO: need less hacky way to supress error
   if (
@@ -349,16 +333,6 @@ function validateTransaction(state, finalUpdate) {
     let balanceError = "";
     if (diff.isNaN()) {
       balanceError = "Cannot calculate total.";
-    } else if (newState.isWallet && newState.autoSpend) {
-      newState = updateState(newState, { updatesComplete: finalUpdate });
-      // eslint-disable-next-line no-use-before-define
-      newState = handleChangeAddressAndDust(
-        newState,
-        diff,
-        outputTotalSats,
-        finalUpdate
-      );
-      balanceError = newState.balanceError;
     } else {
       newState = updateState(newState, { updatesComplete: true });
       const action = diff.isLessThan(0) ? "Increase" : "Decrease";
@@ -388,93 +362,7 @@ function validateTransaction(state, finalUpdate) {
   };
 }
 
-// TODO: Refactor: should not reference validateTransaction in which
-// this function is used. should also be easier to unit test
-function handleChangeAddressAndDust(
-  _newState,
-  diff,
-  outputTotalSats,
-  finalUpdate
-) {
-  let changeAmount;
-  let newState = _newState;
-
-  if (newState.changeOutputIndex > 0) {
-    changeAmount = satoshisToBitcoins(
-      newState.outputs[newState.changeOutputIndex - 1].amountSats.minus(diff)
-    );
-  } else {
-    changeAmount = satoshisToBitcoins(diff.times(-1));
-  }
-  if (
-    changeAmount.isLessThan(DUST_IN_BTC) &&
-    changeAmount.isGreaterThanOrEqualTo(0)
-  ) {
-    newState = deleteOutput(newState, { number: newState.changeOutputIndex });
-    newState = updateState(newState, { changeOutputIndex: 0 });
-    const amountWithoutFee = newState.inputsTotalSats
-      .minus(outputTotalSats)
-      .abs();
-    newState = updateFee(newState, {
-      value: satoshisToBitcoins(amountWithoutFee).toFixed(8),
-    });
-
-    return validateTransaction(newState);
-  }
-  if (
-    newState.changeOutputIndex === 0 &&
-    changeAmount.isGreaterThanOrEqualTo(DUST_IN_BTC)
-  ) {
-    newState = addOutput(newState);
-    newState = updateState(newState, {
-      changeOutputIndex: newState.outputs.length,
-    });
-    newState = updateOutputAddress(newState, {
-      number: newState.outputs.length,
-      value: newState.changeAddress,
-    });
-    newState = updateOutputAmount(newState, {
-      number: newState.outputs.length,
-      value: "0",
-    });
-    return validateTransaction(newState);
-  }
-
-  if (changeAmount.isGreaterThanOrEqualTo(DUST_IN_BTC)) {
-    newState = updateOutputAmount(newState, {
-      value: changeAmount.toFixed(8),
-      number: newState.changeOutputIndex,
-    });
-  }
-  const newOutputTotalSats = calcOutputTotalSats(newState);
-  const fee = setFeeForRate(
-    newState,
-    newState.feeRate,
-    newState.outputs.length
-  );
-
-  newState = updateState(newState, { fee });
-
-  const newFeeSats = bitcoinsToSatoshis(new BigNumber(fee));
-
-  let balanceError = "";
-  if (
-    !newState.inputsTotalSats.isEqualTo(newOutputTotalSats.plus(newFeeSats)) &&
-    finalUpdate
-  ) {
-    const newDiff = newOutputTotalSats
-      .plus(newFeeSats)
-      .minus(newState.inputsTotalSats);
-    const action = newDiff.isLessThan(0) ? "Increase" : "Decrease";
-
-    balanceError = `${action} by ${satoshisToBitcoins(
-      newDiff.absoluteValue()
-    ).toFixed(8)}.`;
-  }
-  return { ...newState, balanceError };
-}
-
-export default (state = initialState, action) => {
+export default (state = initialState(), action) => {
   switch (action.type) {
     case CHOOSE_PERFORM_SPEND:
       return updateState(state, { chosen: true });
@@ -499,7 +387,7 @@ export default (state = initialState, action) => {
     case DELETE_OUTPUT:
       return validateTransaction(deleteOutput(state, action));
     case SET_FEE_RATE:
-      return validateTransaction(updateFeeRate(state, action), true);
+      return validateTransaction(updateFeeRate(state, action));
     case SET_FEE:
       return validateTransaction(updateFee(state, action));
     case FINALIZE_OUTPUTS:
@@ -520,6 +408,8 @@ export default (state = initialState, action) => {
       return updateState(state, { changeAddress: action.value });
     case RESET_NODES_SPEND:
       return updateInputs(state, { value: [] });
+    case SET_BALANCE_ERROR:
+      return updateState(state, { balanceError: action.value });
     case SET_SPEND_STEP:
       return updateState(state, { spendingStep: action.value });
     default:
