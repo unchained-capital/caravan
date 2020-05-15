@@ -92,7 +92,8 @@ export const getSpendableSlices = createSelector(
   (slices) => {
     return slices.filter(
       (slice) =>
-        slice.lastUsed !== "Pending" &&
+        // pending change is considered spendable
+        (slice.lastUsed !== "Pending" || slice.change) &&
         slice.lastUsed !== "Spent" &&
         slice.utxos.length
     );

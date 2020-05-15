@@ -33,8 +33,8 @@ export function getMockState(walletBalance) {
         })
       : [];
 
-  // we'll put half of the confirmed utxos in a deposit slice
-  // and half in change. All unconfirmed will go in one deposit slice
+  // we'll put half of the confirmed and unconfirme utxos in a deposit slice
+  // and half in change.
   const state = {
     wallet: {
       deposits: {
@@ -44,7 +44,9 @@ export function getMockState(walletBalance) {
             change: false,
           },
           {
-            utxos: utxosUnconfirmed,
+            utxos: utxosUnconfirmed.slice(
+              Math.floor(utxosUnconfirmed.length / 2)
+            ),
             change: false,
           },
         ],
@@ -55,6 +57,12 @@ export function getMockState(walletBalance) {
             utxos: utxosConfirmed.slice(Math.ceil(utxosConfirmed.length / 2)),
             change: true,
           },
+          {
+            utxos: utxosUnconfirmed.slice(
+              Math.ceil(utxosUnconfirmed.length / 2)
+            ),
+            change: true,
+          },
         ],
       },
     },
@@ -62,17 +70,17 @@ export function getMockState(walletBalance) {
 
   // set slice balances
   state.wallet.deposits.nodes.forEach((slice) => {
-    slice.balanceSats = slice.utxos.reduce((balance, utxo) => {
-      if (utxo.confirmed) return balance.plus(utxo.amountSats);
-      return balance;
-    }, new BigNumber(0));
+    slice.balanceSats = slice.utxos.reduce(
+      (balance, utxo) => balance.plus(utxo.amountSats),
+      new BigNumber(0)
+    );
   });
 
   state.wallet.change.nodes.forEach((slice) => {
-    slice.balanceSats = slice.utxos.reduce((balance, utxo) => {
-      if (utxo.confirmed) return balance.plus(utxo.amountSats);
-      return balance;
-    }, new BigNumber(0));
+    slice.balanceSats = slice.utxos.reduce(
+      (balance, utxo) => balance.plus(utxo.amountSats),
+      new BigNumber(0)
+    );
   });
   return state;
 }
