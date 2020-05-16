@@ -18,6 +18,7 @@ import {
   IconButton,
   InputAdornment,
   FormHelperText,
+  Typography,
 } from "@material-ui/core";
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWallet";
 import { Delete, AddCircle, RemoveCircle } from "@material-ui/icons";
@@ -26,6 +27,7 @@ import {
   setOutputAmount,
   deleteOutput,
   setChangeOutputIndex,
+  setMaxSpendOnOutput,
 } from "../../actions/transactionActions";
 
 // Assets
@@ -202,6 +204,12 @@ class OutputEntry extends React.Component {
     remove(number);
   };
 
+  handleMaxSpend = (e) => {
+    e.preventDefault();
+    const { number, setMaxSpend } = this.props;
+    setMaxSpend(number);
+  };
+
   render() {
     const {
       outputs,
@@ -213,6 +221,7 @@ class OutputEntry extends React.Component {
       changeOutputIndex,
       autoSpend,
       isWallet,
+      number,
     } = this.props;
 
     const gridSpacing = isWallet ? 10 : 1;
@@ -246,6 +255,21 @@ class OutputEntry extends React.Component {
             error={this.hasAmountError()}
             helperText={amountError}
             InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  {isWallet &&
+                    autoSpend &&
+                    number === outputs.length &&
+                    number !== changeOutputIndex && (
+                      <Typography
+                        onClick={this.handleMaxSpend}
+                        className={styles.maxSpend}
+                      >
+                        MAX
+                      </Typography>
+                    )}
+                </InputAdornment>
+              ),
               endAdornment: (
                 <InputAdornment position="end">
                   <FormHelperText>BTC</FormHelperText>
@@ -254,7 +278,6 @@ class OutputEntry extends React.Component {
             }}
           />
         </Grid>
-
         {this.displayBalanceAction() && (
           <Grid item xs={1}>
             <Tooltip
@@ -319,6 +342,7 @@ OutputEntry.propTypes = {
   remove: PropTypes.func.isRequired,
   setAddress: PropTypes.func.isRequired,
   setAmount: PropTypes.func.isRequired,
+  setMaxSpend: PropTypes.func.isRequired,
   setChangeOutput: PropTypes.func.isRequired,
 };
 
@@ -339,6 +363,7 @@ const mapDispatchToProps = {
   setAmount: setOutputAmount,
   remove: deleteOutput,
   setChangeOutput: setChangeOutputIndex,
+  setMaxSpend: setMaxSpendOnOutput,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(OutputEntry);

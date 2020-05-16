@@ -25,3 +25,13 @@
 .outputsFormLabel {
   color: rgba(0, 0, 0, 0.54);
 }
+
+.maxSpend {
+  color: grey;
+  font-size: .7rem!important;
+  text-decoration: underline;
+  &:hover {
+    cursor: pointer;
+    text-decoration: none;
+  }
+}
