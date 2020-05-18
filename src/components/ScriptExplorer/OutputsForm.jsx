@@ -368,9 +368,6 @@ class OutputsForm extends React.Component {
                     ? "Totals"
                     : "Output Total"}
                 </Typography>
-                {isWallet && autoSpend && (
-                  <small>(change and fees calculated in next step)</small>
-                )}
               </Box>
             </Grid>
             <Grid item xs={3}>

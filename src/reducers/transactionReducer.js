@@ -232,11 +232,11 @@ function updateOutputAmount(state, action) {
   const newOutputs = [...state.outputs];
   let amount = action.value;
   const amountSats = bitcoinsToSatoshis(BigNumber(amount));
-  let error = state.inputs.length
-    ? validateOutputAmount(amountSats, state.inputsTotalSats)
-    : "";
+  let error = validateOutputAmount(amountSats, state.inputsTotalSats);
+
+  if (state.isWallet && error === "Total input amount must be positive.")
+    error = "";
   if (state.isWallet && error === "Output amount is too large.") error = "";
-  if (state.isWallet && action.number === state.changeOutputIndex) error = "";
 
   const dp = BigNumber(amount).dp();
   if (dp > 8) amount = amount.slice(0, 8 - dp);
@@ -276,24 +276,12 @@ function updateSigningKey(state, action) {
 }
 
 function outputInitialStateForMode(state) {
-  let newState = updateState(state, {
+  return updateState(state, {
     outputs: initialOutputsState(),
     fee: "",
     balanceError: "",
     changeOutputIndex: 0,
   });
-
-  if (newState.isWallet) {
-    newState = addOutput(newState);
-    newState = updateState(newState, { changeOutputIndex: 2 });
-    newState = updateOutputAmount(newState, { number: 2, value: "0" });
-    newState = updateOutputAddress(newState, {
-      number: 2,
-      value: newState.changeAddress,
-    });
-  }
-
-  return newState;
 }
 
 function resetTransactionState(state) {

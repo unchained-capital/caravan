@@ -264,6 +264,7 @@ class OutputEntry extends React.Component {
                       <Typography
                         onClick={this.handleMaxSpend}
                         className={styles.maxSpend}
+                        style={{ fontSize: ".7rem" }}
                       >
                         MAX
                       </Typography>
