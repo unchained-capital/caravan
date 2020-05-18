@@ -2,11 +2,17 @@
   "parser": "babel-eslint",
   "env": {
     "browser": true,
-    "node": true,
-    "jasmine": true
+    "cypress/globals": true,
+    "jasmine": true,
+    "node": true
   },
   "plugins": ["prettier"],
-  "extends": ["airbnb", "prettier", "prettier/react"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "prettier/react",
+    "plugin:cypress/recommended"
+  ],
   "rules": {
     "prettier/prettier": "error",
     "react/jsx-props-no-spreading": "off"

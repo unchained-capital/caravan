@@ -19,3 +19,6 @@ build/
 # misc
 .DS_Store
 junit.xml
+
+# cypress
+cypress/videos/
