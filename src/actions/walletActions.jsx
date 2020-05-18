@@ -1,5 +1,20 @@
+import {
+  estimateMultisigTransactionFee,
+  satoshisToBitcoins,
+} from "unchained-bitcoin";
+
+import BigNumber from "bignumber.js";
 import { fetchAddressUTXOs } from "../blockchain";
 import { isChange } from "../utils/slices";
+import { naiveCoinSelection } from "../utils";
+import {
+  setBalanceError,
+  setChangeOutput,
+  setInputs,
+  setFee,
+  finalizeOutputs,
+} from "./transactionActions";
+import { getSpendableSlices } from "../selectors/wallet";
 
 export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
 export const UPDATE_CHANGE_SLICE = "UPDATE_CHANGE_SLICE";
@@ -41,6 +56,102 @@ export function updateChangeSliceAction(value) {
 export function resetNodesSpend() {
   return {
     type: RESET_NODES_SPEND,
+  };
+}
+
+/**
+ * @description This dispatcher goes through the necessary steps and dispatching
+ * related actions for the process of selecting coins for a transaction.
+ * 1. Get all spendable slices that can be used for inputs
+ * 2. Select the utxos needed to fund the tx and determine if change is needed
+ * 3. Set a change output if necessary
+ * 4. Determine and set fee
+ * 5. Mark all slices being spent so the store is aware that they've been selected
+ */
+export function autoSelectCoins() {
+  // eslint-disable-next-line consistent-return
+  return (dispatch, getState) => {
+    const {
+      settings,
+      spend: { transaction },
+      wallet: {
+        change: {
+          nextNode: {
+            multisig: { address: changeAddress },
+          },
+        },
+      },
+    } = getState();
+    const { totalSigners: n, requiredSigners: m, addressType } = settings;
+    const { outputs, feeRate: feesPerByteInSatoshis } = transaction;
+    const spendableSlices = getSpendableSlices(getState());
+
+    let selectedUtxos;
+    let changeRequired;
+
+    // select coins and catch error if any occurs during selection
+    try {
+      [selectedUtxos, changeRequired] = naiveCoinSelection({
+        outputs,
+        feesPerByteInSatoshis,
+        m,
+        n,
+        addressType,
+        slices: spendableSlices,
+      });
+    } catch (e) {
+      return dispatch(setBalanceError(e.message));
+    }
+
+    // determine fee based on rate, selected utxos and
+    // if change output is required
+    let fee;
+    const options = {
+      addressType,
+      numInputs: selectedUtxos.length,
+      m,
+      n,
+      feesPerByteInSatoshis,
+    };
+
+    // add change output if necessary and make fee calculation
+    if (changeRequired) {
+      // calculate output, input, and fee totals to determine change amount
+      const outputsTotal = outputs.reduce(
+        (total, output) => total.plus(output.amountSats),
+        new BigNumber(0)
+      );
+      const inputsTotalSats = selectedUtxos.reduce(
+        (total, utxo) => total.plus(utxo.amountSats),
+        new BigNumber(0)
+      );
+      fee = estimateMultisigTransactionFee({
+        ...options,
+        numOutputs: outputs.length + 1,
+      });
+
+      const changeAmount = inputsTotalSats
+        .minus(fee)
+        .minus(outputsTotal)
+        .toFixed(8);
+
+      dispatch(
+        setChangeOutput({
+          address: changeAddress,
+          value: satoshisToBitcoins(changeAmount).toFixed(),
+        })
+      );
+    } else {
+      fee = estimateMultisigTransactionFee({
+        ...options,
+        numOutputs: outputs.length,
+      });
+    }
+
+    dispatch(setFee(satoshisToBitcoins(fee).toFixed()));
+    // set chosen selectedUtxos in the transaction store
+    dispatch(setInputs(selectedUtxos));
+    dispatch(finalizeOutputs(true));
   };
 }
 

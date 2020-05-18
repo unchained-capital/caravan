@@ -8,7 +8,6 @@ import {
   WALLET_MODES,
 } from "../../actions/walletActions";
 import { setRequiredSigners as setRequiredSignersAction } from "../../actions/transactionActions";
-import { naiveCoinSelection } from "../../utils";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
 
 // Components
@@ -50,13 +49,7 @@ class WalletControl extends React.Component {
     if (this.addressesAreLoaded()) {
       if (walletMode === WALLET_MODES.DEPOSIT) return <WalletDeposit />;
       if (walletMode === WALLET_MODES.SPEND)
-        return (
-          <WalletSpend
-            addNode={addNode}
-            updateNode={updateNode}
-            coinSelection={naiveCoinSelection}
-          />
-        );
+        return <WalletSpend addNode={addNode} updateNode={updateNode} />;
       if (walletMode === WALLET_MODES.VIEW) return <SlicesTableContainer />;
       return "";
     }

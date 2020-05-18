@@ -125,7 +125,7 @@ describe("Test transactionReducer", () => {
 
   describe("Test SET_OUTPUT_ADDRESS action", () => {
     it("should properly set output address", () => {
-      const initial = { ...initialOutputState };
+      const initial = initialOutputState();
       const address = "2MzZgrQq6Qa7U1p24eNx6N2wrpCr8bEpdeH";
       const r = reducer(
         {
@@ -142,13 +142,13 @@ describe("Test transactionReducer", () => {
     });
 
     it("should properly reject duplicate output address", () => {
-      const initial = { ...initialOutputState };
+      const initial = initialOutputState();
       const address = "2MzZgrQq6Qa7U1p24eNx6N2wrpCr8bEpdeH";
       initial.address = address;
       const r = reducer(
         {
           inputs: [],
-          outputs: [{ address }, { ...initialOutputState }],
+          outputs: [{ address }, initialOutputState()],
           network: TESTNET,
         },
         {
@@ -161,14 +161,14 @@ describe("Test transactionReducer", () => {
     });
 
     it("should properly reject output address equal to input address", () => {
-      const initial = { ...initialOutputState };
+      const initial = initialOutputState();
       const address = "2MzZgrQq6Qa7U1p24eNx6N2wrpCr8bEpdeH";
       initial.address = address;
       const input = { multisig: { address } };
       const r = reducer(
         {
           inputs: [input],
-          outputs: [{ ...initialOutputState }],
+          outputs: [initialOutputState()],
           network: TESTNET,
         },
         {
@@ -185,7 +185,7 @@ describe("Test transactionReducer", () => {
 
   describe("Test SET_OUTPUT_AMOUNT action", () => {
     it("should properly set output amount", () => {
-      const initial = { ...initialOutputState };
+      const initial = initialOutputState();
       const r = reducer(
         {
           inputs: [],
@@ -203,14 +203,7 @@ describe("Test transactionReducer", () => {
 
   describe("Test DELETE_OUTPUT action", () => {
     it("should properly remove an output and update fee", () => {
-      const initial = [
-        {
-          ...initialOutputState,
-        },
-        {
-          ...initialOutputState,
-        },
-      ];
+      const initial = [initialOutputState(), initialOutputState()];
       const r = reducer(
         {
           inputs: [{}],
@@ -270,7 +263,7 @@ describe("Test transactionReducer", () => {
     it("should properly set fee and update fee rate", () => {
       const r = reducer(
         {
-          ...initialState,
+          ...initialState(),
           inputs: [{}],
           outputs: [{}],
           addressType: P2WSH,
@@ -284,7 +277,6 @@ describe("Test transactionReducer", () => {
         }
       );
 
-      expect(r.feeRate).toEqual("3");
       expect(r.fee).toEqual("0.00000504");
     });
   });
@@ -297,7 +289,7 @@ describe("Test transactionReducer", () => {
       };
       const r = reducer(
         {
-          ...initialState,
+          ...initialState(),
           inputs: [
             {
               txid:
@@ -341,7 +333,7 @@ describe("Test transactionReducer", () => {
           type: RESET_OUTPUTS,
         }
       );
-      expect(r.outputs).toEqual([initialOutputState]);
+      expect(r.outputs).toEqual([initialOutputState()]);
       expect(r.fee).toEqual("");
       expect(r.balanceError).toEqual("");
     });

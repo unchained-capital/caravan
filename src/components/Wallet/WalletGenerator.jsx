@@ -58,7 +58,6 @@ class WalletGenerator extends React.Component {
 
   componentDidMount() {
     const {
-      setIsWallet,
       refreshNodes,
       common: { nodesLoaded },
       setGenerating,
@@ -68,20 +67,29 @@ class WalletGenerator extends React.Component {
       500,
       { trailing: true, leading: false }
     );
-    setIsWallet();
     refreshNodes(this.refreshNodes);
     if (nodesLoaded) setGenerating(true);
   }
 
   async componentDidUpdate(prevProps) {
     const prevPassword = prevProps.client.password;
-    const { setPasswordError, network, client } = this.props;
+    const {
+      setPasswordError,
+      network,
+      client,
+      common: { nodesLoaded },
+      setIsWallet,
+    } = this.props;
     // if the password was updated
     if (prevPassword !== client.password && client.password.length) {
       // test the connection using the set password
       // but only if the password field hasn't been changed for 500ms
       this.debouncedTestConnection({ network, client, setPasswordError });
     }
+
+    // make sure the spend view knows it's a wallet view once nodes
+    // are loaded
+    if (!prevProps.common.nodesLoaded && nodesLoaded) setIsWallet();
   }
 
   title = () => {
