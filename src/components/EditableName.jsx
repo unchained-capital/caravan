@@ -29,6 +29,7 @@ class EditableName extends React.Component {
         <Grid container alignItems="center">
           <Grid item>
             <TextField
+              autoFocus
               label="Name"
               value={newName}
               onChange={this.handleChange}
@@ -39,6 +40,7 @@ class EditableName extends React.Component {
 
           <Grid item>
             <IconButton
+              data-cy="save-button"
               size="small"
               onClick={this.submit}
               disabled={this.hasError()}
@@ -48,7 +50,12 @@ class EditableName extends React.Component {
           </Grid>
 
           <Grid item>
-            <IconButton color="secondary" size="small" onClick={this.cancel}>
+            <IconButton
+              data-cy="cancel-button"
+              color="secondary"
+              size="small"
+              onClick={this.cancel}
+            >
               <Clear />
             </IconButton>
           </Grid>
@@ -57,11 +64,15 @@ class EditableName extends React.Component {
     }
     return (
       <span>
-        <IconButton size="small" onClick={this.startEditing}>
+        <IconButton
+          data-cy="edit-button"
+          size="small"
+          onClick={this.startEditing}
+        >
           <Edit />
         </IconButton>
         &nbsp;
-        {name}
+        <span data-cy="editable-name-value">{name}</span>
       </span>
     );
   };
