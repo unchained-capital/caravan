@@ -1,30 +1,10 @@
-import React from "react";
 import BigNumber from "bignumber.js";
 import { estimateMultisigTransactionFee } from "unchained-bitcoin/lib/fees";
 
 import { DUST_IN_SATOSHIS } from "./constants";
 
-export function externalLink(url, text) {
-  return (
-    <a href={url} target="_blank" rel="noopener noreferrer">
-      {text}
-    </a>
-  );
-}
-
-export function wrapText(text, columns) {
-  const lines = [];
-  let index = 0;
-  let element = 0;
-  while (index <= text.length) {
-    lines.push(
-      <span key={element}>{text.slice(index, (index += columns || 64))}</span>
-    );
-    lines.push(<br key={element + 1} />);
-    element += 2;
-  }
-  return lines;
-}
+export { default as externalLink } from "./ExternalLink";
+export { default as wrapText } from "./WrapText";
 
 export function validatePositiveInteger(numberString) {
   if (
