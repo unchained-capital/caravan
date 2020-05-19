@@ -31,9 +31,19 @@ class WalletSign extends React.Component {
   }
 
   componentWillUnmount() {
-    const { resetTransaction } = this.props;
+    const {
+      resetTransaction,
+      transaction,
+      changeSlice,
+      spendSlices,
+    } = this.props;
     const { spent } = this.state;
-    if (spent) resetTransaction();
+    if (spent) {
+      // have a brief delay to make sure the queried node had enough time
+      // to update
+      setTimeout(() => spendSlices(transaction.inputs, changeSlice), 1000);
+      resetTransaction();
+    }
   }
 
   render = () => {
@@ -110,12 +120,7 @@ class WalletSign extends React.Component {
   };
 
   transactionFinalized = () => {
-    const {
-      transaction,
-      spendSlices,
-      changeSlice,
-      updateChangeNode,
-    } = this.props;
+    const { transaction, changeSlice, updateChangeNode } = this.props;
 
     const { txid } = transaction;
     const { spent } = this.state;
@@ -131,7 +136,6 @@ class WalletSign extends React.Component {
           break;
         }
       }
-      spendSlices(transaction.inputs, changeSlice);
       return true;
     }
 
