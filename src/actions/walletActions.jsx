@@ -163,6 +163,9 @@ export function spendSlices(inputs, changeSlice) {
       spend: {
         transaction: { changeAddress },
       },
+      wallet: {
+        deposits: { nextNode },
+      },
     } = getState();
 
     const sliceUpdates = [];
@@ -195,6 +198,13 @@ export function spendSlices(inputs, changeSlice) {
       addressSet.add(changeAddress);
       sliceUpdates.push(fetchSliceStatus(changeAddress, changeSlice.bip32Path));
     }
+
+    // check the next deposit slice just in case a spend is to own wallet
+    // this doesn't catch all self-spend cases but should catch the majority
+    // to avoid any confusion for less technical users.
+    sliceUpdates.push(
+      fetchSliceStatus(nextNode.multisig.address, nextNode.bip32Path)
+    );
 
     const updatedSlices = await Promise.all(sliceUpdates);
 
