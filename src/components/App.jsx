@@ -1,5 +1,10 @@
 import React from "react";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 
 // Components
 import { CssBaseline, Container } from "@material-ui/core";
@@ -26,6 +31,7 @@ const App = () => (
             <Switch>
               <Route path="/test" component={TestSuiteRun} />
               <Route path="/address" component={CreateAddress} />
+              <Redirect from="/spend" to="/script" />
               <Route path="/script" component={ScriptExplorer} />
               <Route path="/wallet" component={Wallet} />
               <Route path="/help" component={Help} />
