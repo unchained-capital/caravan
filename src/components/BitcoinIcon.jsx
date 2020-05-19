@@ -4,7 +4,10 @@ import { SvgIcon } from "@material-ui/core";
 import { MAINNET } from "unchained-bitcoin";
 
 const BitcoinIcon = ({ network }) => (
-  <SvgIcon htmlColor={network === MAINNET ? "orange" : "grey"}>
+  <SvgIcon
+    data-cy="bitcoin-icon"
+    htmlColor={network === MAINNET ? "orange" : "grey"}
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
