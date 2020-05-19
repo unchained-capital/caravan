@@ -165,7 +165,7 @@ const Help = () => (
                   </ListItemIcon>
                   <ListItemText>
                     {externalLink(
-                      "https://www.unchained-capital.com/blog/the-caravan-arrives/",
+                      "https://unchained-capital.com/blog/gearing-up-the-caravan/",
                       "Blog Post"
                     )}
                   </ListItemText>
