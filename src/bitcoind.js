@@ -135,9 +135,10 @@ export function bitcoindImportMulti({ url, auth, addresses, label, rescan }) {
       timestamp: 0, // TODO: better option to ensure address history is picked up?
     };
   });
+  const params = [url, auth, "importmulti", [imports, { rescan }]];
   if (rescan) {
-    callBitcoind(url, auth, "importmulti", [imports, { rescan }]); // TODO: what to do on catch?
+    callBitcoind(...params); // TODO: what to do on catch?
     return new Promise((resolve) => resolve({ result: [] }));
   }
-  return callBitcoind(url, auth, "importmulti", [imports, { rescan }]);
+  return callBitcoind(...params);
 }
