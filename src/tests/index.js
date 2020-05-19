@@ -1,4 +1,5 @@
 import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
+import { TEST_FIXTURES } from "unchained-bitcoin";
 
 import trezorTests from "./trezor";
 import ledgerTests from "./ledger";
@@ -10,31 +11,6 @@ SUITE[TREZOR] = trezorTests;
 SUITE[LEDGER] = ledgerTests;
 SUITE[HERMIT] = hermitTests;
 
-const SEED = [
-  "merge",
-  "alley",
-  "lucky",
-  "axis",
-  "penalty",
-  "manage",
-  "latin",
-  "gasp",
-  "virus",
-  "captain",
-  "wheel",
-  "deal",
-  "chase",
-  "fragile",
-  "chapter",
-  "boss",
-  "zero",
-  "dirt",
-  "stadium",
-  "tooth",
-  "physical",
-  "valve",
-  "kid",
-  "plunge",
-];
+const SEED = TEST_FIXTURES.bip39Phrase;
 
 export { SUITE, SEED };

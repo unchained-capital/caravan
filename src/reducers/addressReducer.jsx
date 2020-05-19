@@ -120,26 +120,31 @@ function sortPublicKeyImporters(state) {
   return updateState(newState, { fingerprint: fingerprint(newState) });
 }
 
-function setConflict(publicKeyImporter, state) {
+function setConflict(publicKeyImporterIndex, state) {
   if (state.finalizedNetwork) {
-    // eslint-disable-next-line no-param-reassign
+    const publicKeyImporters = { ...state.publicKeyImporters };
+    const publicKeyImporter = publicKeyImporters[publicKeyImporterIndex];
+
     publicKeyImporter.conflict =
       state.finalizedNetwork !== state.network ||
       state.finalizedAddressType !== state.addressType;
+
+    return updateState(state, { publicKeyImporters });
   }
+  return state;
 }
 
 function updatePublicKeyImporterState(state, action, field) {
   const publicKeyImporterChange = {};
   publicKeyImporterChange[field] = action.value;
-  const newState = {
+  let newState = {
     ...state,
   };
   newState.publicKeyImporters[action.number] = updateState(
     state.publicKeyImporters[action.number],
     publicKeyImporterChange
   );
-  setConflict(newState.publicKeyImporters[action.number], state);
+  newState = setConflict(action.number, state);
   return updateState(newState, { fingerprint: fingerprint(newState) });
 }
 
@@ -167,7 +172,8 @@ function updateTotalSigners(state, action) {
   return updateState(newState, { fingerprint: fingerprint(newState) });
 }
 
-function updateImporterPaths(state, newState, bip32Path) {
+function updateImporterPaths(state, bip32Path) {
+  let newState = { ...state };
   for (
     let publicKeyImporterNum = 1;
     publicKeyImporterNum <= Object.values(state.publicKeyImporters).length;
@@ -177,16 +183,17 @@ function updateImporterPaths(state, newState, bip32Path) {
     if (!publicKeyImporter.bip32PathModified) {
       if (!publicKeyImporter.finalized) publicKeyImporter.bip32Path = bip32Path;
     }
-    setConflict(publicKeyImporter, newState);
+    newState = setConflict(publicKeyImporterNum, newState);
   }
+  return newState;
 }
 
 function updateNetwork(state, action) {
   const network = action.value;
   const { addressType } = state;
   const bip32Path = multisigBIP32Path(addressType, network);
-  const newState = { ...state, ...{ network, defaultBIP32Path: bip32Path } };
-  updateImporterPaths(state, newState, bip32Path);
+  let newState = { ...state, ...{ network, defaultBIP32Path: bip32Path } };
+  newState = updateImporterPaths(newState, bip32Path);
   return newState;
 }
 
@@ -194,11 +201,11 @@ function updateAddressType(state, action) {
   const { network } = state;
   const addressType = action.value;
   const bip32Path = multisigBIP32Path(addressType, network);
-  const newState = {
+  let newState = {
     ...state,
     ...{ addressType, defaultBIP32Path: bip32Path },
   };
-  updateImporterPaths(state, newState, bip32Path);
+  newState = updateImporterPaths(newState, bip32Path);
   return newState;
 }
 
