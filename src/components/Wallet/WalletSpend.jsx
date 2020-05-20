@@ -124,8 +124,11 @@ class WalletSpend extends React.Component {
   };
 
   handleSpendMode = (event) => {
-    const { updateAutoSpend } = this.props;
+    const { updateAutoSpend, resetNodesSpend, deleteChangeOutput } = this.props;
     updateAutoSpend(!event.target.checked);
+    updateAutoSpend(!event.target.checked);
+    resetNodesSpend();
+    deleteChangeOutput();
   };
 
   render() {
