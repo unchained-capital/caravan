@@ -14,6 +14,7 @@ import {
   setFee,
   finalizeOutputs,
 } from "./transactionActions";
+import { setErrorNotification } from "./errorNotificationActions";
 import { getSpendableSlices } from "../selectors/wallet";
 
 export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
@@ -155,16 +156,22 @@ export function autoSelectCoins() {
   };
 }
 
-export function spendSlices(inputs, changeSlice) {
+/**
+ * @description Given the state of the transaction store, check status of
+ * the slices being used in the spend tx and update them once changed state is confirmed.
+ * @param {Object} changeSlice - the slice that was chosen as the change output
+ */
+export function updateTxSlices(changeSlice, retries = 5) {
   return async (dispatch, getState) => {
     const {
       settings: { network },
       client,
       spend: {
-        transaction: { changeAddress },
+        transaction: { changeAddress, inputs, txid },
       },
       wallet: {
-        deposits: { nextNode },
+        deposits: { nextNode, nodes: depositNodes },
+        change: { nodes: changeNodes },
       },
     } = getState();
 
@@ -192,8 +199,8 @@ export function spendSlices(inputs, changeSlice) {
       }
     });
 
-    // if we have a change slice, then let's query an update for
-    // that slice too
+    // if we have a change slice and it matches the change address in the transaction
+    // then let's query an update for that slice too
     if (changeSlice && changeSlice.multisig.address === changeAddress) {
       addressSet.add(changeAddress);
       sliceUpdates.push(fetchSliceStatus(changeAddress, changeSlice.bip32Path));
@@ -207,18 +214,41 @@ export function spendSlices(inputs, changeSlice) {
     );
 
     const updatedSlices = await Promise.all(sliceUpdates);
+    const firstSlice = updatedSlices[0];
+    const utxoCount = firstSlice.change
+      ? changeNodes[firstSlice.bip32Path].utxos.length
+      : depositNodes[firstSlice.bip32Path].utxos.length;
 
-    updatedSlices.forEach((slice) => {
+    // want to make sure we only update the slices if they
+    // have changed states, i.e. the number utxos is different from what we have
+    // so if the slice state isn't reporting as changed after fetching
+    // we will try a few more times
+    if (firstSlice.utxos.length === utxoCount && retries)
+      return setTimeout(
+        () => dispatch(updateTxSlices(changeSlice, retries - 1)),
+        750
+      );
+
+    // if we're out of retries and counts are still the same
+    // then we're done trying and should show an error
+    if (firstSlice.utxos.length === utxoCount && !retries) {
+      let message = `There was a problem updating the wallet. 
+It's possible your transaction did not broadcast correctly. Please confirm 
+the state of the transaction with an external block explorer, then refresh the wallet and try again.`;
+      if (txid && txid.length) message += ` Transaction ID: ${txid}`;
+      return dispatch(setErrorNotification(message));
+    }
+
+    return updatedSlices.forEach((slice) => {
       if (slice.change)
-        dispatch({
+        return dispatch({
           type: UPDATE_CHANGE_SLICE,
-          value: slice,
+          value: { ...slice, spend: true },
         });
-      else
-        dispatch({
-          type: UPDATE_DEPOSIT_SLICE,
-          value: slice,
-        });
+      return dispatch({
+        type: UPDATE_DEPOSIT_SLICE,
+        value: { ...slice, spend: true },
+      });
     });
   };
 }
