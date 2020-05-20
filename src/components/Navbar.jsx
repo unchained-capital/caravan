@@ -39,7 +39,12 @@ class NavItem extends React.Component {
   render() {
     const { href, title, classes, handleClose } = this.props;
     return (
-      <a href={href} className={classes.menuLink}>
+      <a
+        href={href}
+        className={classes.menuLink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <MenuItem className={classes.menuItem} onClick={handleClose}>
           {title}
         </MenuItem>
