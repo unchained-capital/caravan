@@ -55,7 +55,7 @@ const Help = () => (
                     href="#/wallet"
                     startIcon={<AccountBalanceWallet />}
                   >
-                    Setup Wallet
+                    Wallet
                   </Button>
                 </Grid>
                 <Grid item xs={10} md={4}>
@@ -67,7 +67,7 @@ const Help = () => (
                     href="#/address"
                     startIcon={<SportsVolleyball />}
                   >
-                    Setup Address
+                    Address
                   </Button>
                 </Grid>
               </Grid>
