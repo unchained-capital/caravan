@@ -1,0 +1,27 @@
+.TestRun-success {
+    color: green;
+}
+
+.TestRun-failure {
+    color: orange;
+}
+
+.TestRun-error {
+    color: red;
+}
+
+.TestRun-diff-segment-added {
+    color: green;
+}
+
+.TestRun-diff-segment-removed {
+    color: red;
+}
+
+.TestRun-diff-segment-common {
+    color: gray;
+}
+
+.TestRun-wrap {
+    word-break: break-word;
+}

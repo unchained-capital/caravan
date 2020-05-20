@@ -1,26 +1,63 @@
 language: node_js
-node_js:
-  - 8
-
-script:
-  - CI=true npm run build
-
-deploy:
-  provider: script
-  script: "npm run deploy"
-  skip_cleanup: true
-  on:
-    tags: true
-
 notifications:
   email:
     recipients:
-    - chris@unchained-capital.com
+    - bugs@unchained-capital.com
     on_success: change
     on_failure: always
 
-before_deploy:
-- git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-- git config --global user.email "Travis CI<ci@unchained-capital.com>"
-- git config --global user.name "TravisCI"
-
+jobs:
+  include:
+    - stage: "Tests"
+      node_js: 8
+      name: "Node JS 8"
+      script: npm run test
+    - node_js: 10
+      name: "Node JS 10"
+      script: npm run test
+    - node_js: 12
+      name: "Node JS 12"
+      script: npm run ci
+    - stage: "Cypress Tests"
+      node_js: 10
+      addons:
+        apt:
+          packages:
+            # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
+            - libgconf-2-4
+      cache:
+        # Caches $HOME/.npm when npm ci is default script commandK
+        # Caches node_modules in all other cases
+        npm: true
+        directories:
+          # we also need to cache folder with Cypress binary
+          - ~/.cache
+      install:
+        - npm ci
+      before_script:
+        - npm run build:ci
+        # The server from create-react-app doesn't work well with travis
+        - npm i -g http-server
+        # Necessary because create-react-app assumes you want to deploy to /caravan
+        - mkdir ./build/caravan
+        - shopt -s extglob
+        - mv ./build/!(caravan) ./build/caravan/
+        - http-server build -p 3000 -c-1 --silent &
+      script:
+        - $(npm bin)/cypress run --env configFile=travis
+    - stage: build
+      node_js: 10
+      script: npm run build:ci
+      node_js: 12
+      script: npm run build:ci
+      before_deploy:
+        - git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git config --global user.email "Travis CI<ci@unchained-capital.com>"
+        - git config --global user.name "TravisCI"
+      deploy:
+        provider: script
+        script: "npm run deploy"
+        skip_cleanup: true
+        on:
+          tags: true
+          branch: master

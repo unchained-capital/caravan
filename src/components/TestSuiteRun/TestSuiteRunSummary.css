@@ -1,0 +1,15 @@
+.TestSuiteRunSummary-success {
+    color: green;
+}
+
+.TestSuiteRunSummary-failure {
+    color: orange;
+}
+
+.TestSuiteRunSummary-error {
+    color: red;
+}
+
+.TestSuiteRunSummary-pending {
+    color: gray;
+}

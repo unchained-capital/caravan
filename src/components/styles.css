@@ -5,3 +5,12 @@
 .copyable code {
     overflow-wrap: break-word;
 }
+
+.MuiMenu-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.MuiMenu-list .MuiListItem-root {
+  padding: 16px 40px;
+}

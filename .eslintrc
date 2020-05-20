@@ -1,0 +1,26 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "cypress/globals": true,
+    "jasmine": true,
+    "node": true,
+    "jest": true
+  },
+  "plugins": ["prettier"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "prettier/react",
+    "plugin:testing-library/recommended",
+    "plugin:jest-dom/recommended",
+    "plugin:cypress/recommended"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "react/jsx-props-no-spreading": "off"
+  },
+  "settings": {
+    "import/core-modules": ["test-utils"]
+  }
+}

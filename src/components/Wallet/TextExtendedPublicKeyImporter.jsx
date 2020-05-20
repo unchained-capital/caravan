@@ -1,59 +1,54 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 // Components
-import {
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormText,
-} from 'react-bootstrap';
+import { TextField, Box } from "@material-ui/core";
 
 class TextExtendedPublicKeyImporter extends React.Component {
-
-  static propTypes =  {
-    extendedPublicKeyImporter: PropTypes.shape({}).isRequired,
-    validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
-  };
-
-  state = {
-    error: '',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: "",
+    };
+  }
 
   render = () => {
     const { extendedPublicKeyImporter } = this.props;
     const { error } = this.state;
     return (
-      <FormGroup>
-        <FormGroup>
-          <FormLabel>Extended Public Key</FormLabel>
-          <FormControl
-            name="publicKey"
-            type="text"
-            value={extendedPublicKeyImporter.extendedPublicKey}
-            onChange={this.handleChange}
-            isValid={extendedPublicKeyImporter.extendedPublicKey && !this.hasError()}
-          />
-          <FormText className="text-danger">{error}</FormText>
-        </FormGroup>
-
-      </FormGroup>
+      <Box mt={2}>
+        <TextField
+          fullWidth
+          name="publicKey"
+          label="Extended Public Key"
+          value={extendedPublicKeyImporter.extendedPublicKey}
+          onChange={this.handleChange}
+          error={this.hasError()}
+          helperText={error}
+        />
+      </Box>
     );
-  }
+  };
 
   hasError = () => {
-    return this.state.error !== '';
-  }
+    const { error } = this.state;
+    return error !== "";
+  };
 
   setError = (value) => {
-    this.setState({error: value});
-  }
+    this.setState({ error: value });
+  };
 
   handleChange = (event) => {
-    const {validateAndSetExtendedPublicKey} = this.props;
+    const { validateAndSetExtendedPublicKey } = this.props;
     validateAndSetExtendedPublicKey(event.target.value, this.setError);
-  }
-
+  };
 }
+TextExtendedPublicKeyImporter.propTypes = {
+  extendedPublicKeyImporter: PropTypes.shape({
+    extendedPublicKey: PropTypes.string,
+  }).isRequired,
+  validateAndSetExtendedPublicKey: PropTypes.func.isRequired,
+};
 
 export default TextExtendedPublicKeyImporter;

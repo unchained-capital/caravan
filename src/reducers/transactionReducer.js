@@ -1,196 +1,191 @@
-import BigNumber from 'bignumber.js';
-import { updateState } from './utils';
-import { 
+import BigNumber from "bignumber.js";
+import {
   MAINNET,
   P2SH,
   estimateMultisigTransactionFee,
-  estimateMultisigTransactionFeeRate,
   validateFeeRate,
-  validateFeeBTC,
-  validateOutputAmountBTC,
-  satoshisToBitcoins, 
-  bitcoinsToSatoshis, 
+  validateFee,
+  validateOutputAmount,
+  satoshisToBitcoins,
+  bitcoinsToSatoshis,
   validateAddress,
   unsignedMultisigTransaction,
 } from "unchained-bitcoin";
+import updateState from "./utils";
 
-import {
-  SET_NETWORK,
-  SET_ADDRESS_TYPE,
-} from "../actions/settingsActions";
+import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
 import {
   CHOOSE_PERFORM_SPEND,
-
   SET_REQUIRED_SIGNERS,
   SET_TOTAL_SIGNERS,
-
   SET_INPUTS,
-
   ADD_OUTPUT,
   SET_OUTPUT_ADDRESS,
   SET_OUTPUT_AMOUNT,
   DELETE_OUTPUT,
-
   SET_FEE_RATE,
   SET_FEE,
-
   FINALIZE_OUTPUTS,
   RESET_OUTPUTS,
-
   SET_TXID,
-} from '../actions/transactionActions';
+  RESET_TRANSACTION,
+  SET_IS_WALLET,
+  SET_CHANGE_OUTPUT_INDEX,
+  UPDATE_AUTO_SPEND,
+  SET_SIGNING_KEY,
+  SET_CHANGE_ADDRESS,
+  SET_BALANCE_ERROR,
+  SET_SPEND_STEP,
+  SPEND_STEP_CREATE,
+} from "../actions/transactionActions";
+
+import { RESET_NODES_SPEND } from "../actions/walletActions";
 
 function sortInputs(a, b) {
-  var x = a.txid.toLowerCase();
-  var y = b.txid.toLowerCase();
-  if (x < y) {return -1;}
-  if (x > y) {return 1;}
-  if (a.n < b.n) {return -1;}
-  if (a.n > b.n) {return 1;}    
+  const x = a.txid.toLowerCase();
+  const y = b.txid.toLowerCase();
+  if (x < y) {
+    return -1;
+  }
+  if (x > y) {
+    return 1;
+  }
+  if (a.n < b.n) {
+    return -1;
+  }
+  if (a.n > b.n) {
+    return 1;
+  }
   return 0;
-};
+}
 
-const initialOutputState  = {
-  address: '',
-  amount: '',
-  amountSats: '',
-  addressError: '',
-  amountError: '',
-};
+export const initialOutputState = () => ({
+  address: "",
+  amount: "",
+  amountSats: "",
+  addressError: "",
+  amountError: "",
+});
 
-const initialOutputsState = [
-  {...initialOutputState}
-];
+const initialOutputsState = () => [initialOutputState()];
 
-const initialState = {
+export const initialState = () => ({
   chosen: false,
   network: MAINNET,
   inputs: [],
   inputsTotalSats: new BigNumber(0),
-  outputs: [...initialOutputsState],
-  feeRate: '',
-  feeRateError: '',
-  fee: '',
-  feeError: '',
+  outputs: initialOutputsState(),
+  changeOutputIndex: 0,
+  feeRate: "",
+  feeRateError: "",
+  fee: "",
+  feeError: "",
   finalizedOutputs: false,
-  txid: '',
-  balanceError: '',
+  txid: "",
+  balanceError: "",
   addressType: P2SH,
   requiredSigners: 2,
   totalSigners: 3,
   unsignedTransaction: {},
-};
+  isWallet: false,
+  autoSpend: true,
+  changeAddress: "",
+  updatesComplete: true,
+  signingKeys: [0, 0], // default 2 required signers
+  spendingStep: SPEND_STEP_CREATE,
+});
 
 function updateInputs(state, action) {
-  const inputsTotalSats = action.value
-        .map((input) => input.amountSats)
-        .reduce(
-          (accumulator, currentValue) => accumulator.plus(currentValue),
-          new BigNumber(0));
-  return updateState(
-    state,
-    {
-      inputs: action.value.sort(sortInputs),
-      inputsTotalSats,
-    });
+  const inputsTotalSats = action.value.reduce(
+    (accumulator, input) => accumulator.plus(input.amountSats),
+    new BigNumber(0)
+  );
+  return updateState(state, {
+    inputs: action.value.sort(sortInputs),
+    inputsTotalSats,
+  });
 }
 
-function validateTransaction(state) {
-  if (
-    state.outputs.find((output) => (output.addressError !== '' || output.amountError  !== '')) 
-      || state.feeError !== '' 
-      || state.feeRateError !== ''
-  ) {
-    return {
-      ...state,
-      ...{balanceError: ""},
-    };
-  }
-  const feeSats = bitcoinsToSatoshis(new BigNumber(state.fee));
-  const outputTotalSats = state.outputs
-        .map((output) => bitcoinsToSatoshis(new BigNumber(output.amount || 0)))
-        .reduce(
-          (accumulator, currentValue) => accumulator.plus(currentValue),
-          new BigNumber(0));
-  if (! state.inputsTotalSats.isEqualTo(outputTotalSats.plus(feeSats))) {
-    const diff = outputTotalSats.plus(feeSats).minus(state.inputsTotalSats);
-    let balanceError;
-    if (diff.isNaN()) {
-      balanceError = "Cannot calculate total.";
-    } else{
-      const action = diff.isLessThan(0) ? 'Increase' : 'Decrease';
-      balanceError =`${action} by ${satoshisToBitcoins(diff.absoluteValue()).toFixed(8)}.`;
-    } 
-    return {
-      ...state,
-      ...{balanceError},
-    };
-  } else {
-    return {
-      ...state,
-      ...{balanceError: ''},
-    };
-  }
+function calcOutputTotalSats(state) {
+  return state.outputs.reduce(
+    (accumulator, { amount }) =>
+      accumulator.plus(bitcoinsToSatoshis(new BigNumber(amount || 0))),
+    new BigNumber(0)
+  );
 }
 
 function setFeeForRate(state, feeRateString, nout) {
-  return satoshisToBitcoins(estimateMultisigTransactionFee(
-    {
+  return satoshisToBitcoins(
+    estimateMultisigTransactionFee({
       addressType: state.addressType,
       numInputs: state.inputs.length,
       numOutputs: nout,
       m: state.requiredSigners,
       n: state.totalSigners,
-      feesPerByteInSatoshis: feeRateString
-    })).toString()
+      feesPerByteInSatoshis: feeRateString,
+    })
+  )
+    .toFixed(8)
+    .toString();
+}
+
+function deleteOutput(state, action) {
+  const newState = { ...state };
+  const newOutputs = [];
+  for (let i = 0; i < newState.outputs.length; i += 1) {
+    if (i !== action.number - 1) {
+      newOutputs.push(newState.outputs[i]);
+    } else if (action.number === newState.changeOutputIndex) {
+      newState.changeOutputIndex = 0;
+    }
+    if (action.number < newState.changeOutputIndex)
+      newState.changeOutputIndex -= 1;
+  }
+  return {
+    ...newState,
+    ...{
+      outputs: newOutputs,
+      fee: setFeeForRate(newState, newState.feeRate, newOutputs.length),
+    },
+  };
 }
 
 function updateFeeRate(state, action) {
   const feeRateString = action.value;
   const feeRateError = validateFeeRate(feeRateString);
-  const fee = (
-    feeRateError === '' ? 
-      setFeeForRate(state, feeRateString, state.outputs.length) :
-      '');
-    
+  const fee =
+    feeRateError === ""
+      ? setFeeForRate(state, feeRateString, state.outputs.length)
+      : "";
+
   return updateState(state, {
     feeRate: feeRateString,
     feeRateError,
     fee,
-    feeError: '',
+    feeError: "",
   });
 }
 
 function updateFee(state, action) {
   const feeString = action.value;
-  const feeError = validateFeeBTC(feeString, state.inputsTotalSats);
-  const feeRate = (
-    feeError === '' ? 
-      estimateMultisigTransactionFeeRate(
-        {
-          addressType: state.addressType,
-          numInputs: state.inputs.length,
-          numOutputs: state.outputs.length,
-          m: state.requiredSigners,
-          n: state.totalSigners,
-          feesInSatoshis: bitcoinsToSatoshis(new BigNumber(feeString))
-        }).toString() 
-      :
-      '');
-    
+  const feeSats = bitcoinsToSatoshis(feeString);
+  const feeError = validateFee(feeSats, state.inputsTotalSats);
+
   return updateState(state, {
     fee: feeString,
     feeError,
-    feeRate,
-    feeRateError: '',
+    feeRateError: "",
   });
 }
 
-function addOutput(state, action) {
-  const newOutputs = state.outputs.concat({...initialOutputState});
+function addOutput(state) {
+  const newOutputs = state.outputs.concat(initialOutputState());
   return {
     ...state,
-    ...{outputs: newOutputs, fee: setFeeForRate(state, state.feeRate, newOutputs.length)},
+    ...{
+      outputs: newOutputs,
+      fee: setFeeForRate(state, state.feeRate, newOutputs.length),
+    },
   };
 }
 
@@ -198,18 +193,26 @@ function updateOutputAddress(state, action) {
   const newOutputs = [...state.outputs];
   const address = action.value;
   let error = validateAddress(address, state.network);
-  if (error === '') {
-    for (var inputIndex=0; inputIndex < state.inputs.length; inputIndex++) {
+  if (error === "") {
+    for (
+      let inputIndex = 0;
+      inputIndex < state.inputs.length;
+      inputIndex += 1
+    ) {
       const input = state.inputs[inputIndex];
-      if (address === input.address) {
+      if (input.multisig && address === input.multisig.address) {
         error = "Output address cannot equal input address.";
         break;
       }
     }
   }
-  if (error === '') {
-    for (var outputIndex=0; outputIndex < state.outputs.length; outputIndex++) {
-      if (outputIndex !== (action.number - 1)) {
+  if (error === "") {
+    for (
+      let outputIndex = 0;
+      outputIndex < state.outputs.length;
+      outputIndex += 1
+    ) {
+      if (outputIndex !== action.number - 1) {
         if (state.outputs[outputIndex].address === address) {
           error = "Duplicate output address.";
           break;
@@ -221,82 +224,183 @@ function updateOutputAddress(state, action) {
   newOutputs[action.number - 1].addressError = error;
   return {
     ...state,
-    ...{outputs: newOutputs},
+    ...{ outputs: newOutputs },
   };
 }
 
 function updateOutputAmount(state, action) {
   const newOutputs = [...state.outputs];
-  const amount = action.value;
-  let error = validateOutputAmountBTC(amount, state.inputsTotalSats);
+  let amount = action.value;
+  const amountSats = bitcoinsToSatoshis(BigNumber(amount));
+  let error = validateOutputAmount(amountSats, state.inputsTotalSats);
+
+  if (state.isWallet && error === "Total input amount must be positive.")
+    error = "";
+  if (state.isWallet && error === "Output amount is too large.") error = "";
+
+  const dp = BigNumber(amount).dp();
+  if (dp > 8) amount = amount.slice(0, 8 - dp);
+
   newOutputs[action.number - 1].amount = amount;
   newOutputs[action.number - 1].amountError = error;
-  newOutputs[action.number - 1].amountSats = (error ? '' : bitcoinsToSatoshis(new BigNumber(action.value)));
+  newOutputs[action.number - 1].amountSats = error ? "" : amountSats;
   return {
     ...state,
-    ...{outputs: newOutputs},
+    ...{ outputs: newOutputs },
   };
 }
 
-function deleteOutput(state, action) {
-  const newOutputs = [];
-  for (var i = 0; i < state.outputs.length; i++) {
-    if (i !== (action.number - 1)) {
-      newOutputs.push(state.outputs[i]);
-    }
+function finalizeOutputs(state, action) {
+  const unsignedTransaction = unsignedMultisigTransaction(
+    state.network,
+    state.inputs,
+    state.outputs
+  );
+  return {
+    ...state,
+    ...{ finalizedOutputs: action.value, unsignedTransaction },
+  };
+}
+
+function updateRequiredSigners(state, action) {
+  return updateState(state, {
+    requiredSigners: action.value,
+    signingKeys: Array(action.value).fill(0),
+  });
+}
+
+function updateSigningKey(state, action) {
+  const signingKeys = [...state.signingKeys];
+  signingKeys[action.number - 1] = action.value;
+  return updateState(state, { signingKeys });
+}
+
+function outputInitialStateForMode(state) {
+  return updateState(state, {
+    outputs: initialOutputsState(),
+    fee: "",
+    balanceError: "",
+    changeOutputIndex: 0,
+  });
+}
+
+function resetTransactionState(state) {
+  let newState = updateState(state, {
+    ...initialState(),
+    totalSigners: state.totalSigners,
+    network: state.network,
+    addressType: state.addressType,
+    isWallet: state.isWallet,
+    changeAddress: state.changeAddress,
+  });
+  newState = updateRequiredSigners(newState, { value: state.requiredSigners });
+  newState = outputInitialStateForMode(newState);
+  return newState;
+}
+
+function validateTransaction(state) {
+  let newState = { ...state };
+  // TODO: need less hacky way to supress error
+  if (
+    newState.outputs.find(
+      (output) => output.addressError !== "" || output.amountError !== ""
+    ) ||
+    newState.feeError !== "" ||
+    newState.feeRateError !== "" ||
+    newState.inputs.length === 0
+  ) {
+    return {
+      ...newState,
+      balanceError: "",
+    };
   }
+  const feeSats = bitcoinsToSatoshis(new BigNumber(newState.fee));
+  const outputTotalSats = calcOutputTotalSats(newState);
+  if (!newState.inputsTotalSats.isEqualTo(outputTotalSats.plus(feeSats))) {
+    const diff = outputTotalSats.plus(feeSats).minus(newState.inputsTotalSats);
+    let balanceError = "";
+    if (diff.isNaN()) {
+      balanceError = "Cannot calculate total.";
+    } else {
+      newState = updateState(newState, { updatesComplete: true });
+      const action = diff.isLessThan(0) ? "Increase" : "Decrease";
+      balanceError = `${action} by ${satoshisToBitcoins(
+        diff.absoluteValue()
+      ).toFixed(8)}.`;
+    }
+    return {
+      ...newState,
+      balanceError,
+    };
+  }
+  const minFee = new BigNumber(setFeeForRate(newState, "1", 0));
+
+  if (new BigNumber(newState.fee).isLessThan(minFee)) {
+    return {
+      ...newState,
+      balanceError: `Fee is too small. Should be no less than ${bitcoinsToSatoshis(
+        minFee
+      )} satoshis.`,
+    };
+  }
+
   return {
-    ...state,
-    ...{outputs: newOutputs, fee: setFeeForRate(state, state.feeRate, newOutputs.length)},
+    ...newState,
+    balanceError: "",
   };
 }
 
-function finalizeOutputs(state) {
-  const unsignedTransaction = unsignedMultisigTransaction(state.network, state.inputs, state.outputs);
-  return {
-    ...state,
-    ...{finalizedOutputs: true, unsignedTransaction},
-  };
-}
-
-export default (state = initialState, action) => {
+export default (state = initialState(), action) => {
   switch (action.type) {
-  case CHOOSE_PERFORM_SPEND:
-    return updateState(state, { chosen: true} );
-  case SET_NETWORK:
-    return updateState(state, { network: action.value });
-  case SET_ADDRESS_TYPE:
-    return updateState(state, { addressType: action.value });
-  case SET_REQUIRED_SIGNERS:
-    return updateState(state, { requiredSigners: action.value });
-  case SET_TOTAL_SIGNERS:
-    return updateState(state, { totalSigners: action.value });
-  case SET_INPUTS:
-    return updateInputs(state, action);
-  case ADD_OUTPUT:
-    return validateTransaction(addOutput(state, action));
-  case SET_OUTPUT_ADDRESS:
-    return validateTransaction(updateOutputAddress(state, action));
-  case SET_OUTPUT_AMOUNT:
-    return validateTransaction(updateOutputAmount(state, action));
-  case DELETE_OUTPUT:
-    return validateTransaction(deleteOutput(state, action));
-  case SET_FEE_RATE:
-    return validateTransaction(updateFeeRate(state, action));
-  case SET_FEE:
-    return validateTransaction(updateFee(state, action));
-  case FINALIZE_OUTPUTS:
-    return finalizeOutputs(state);
-  case RESET_OUTPUTS:
-    return updateState(state, {
-      outputs: initialOutputsState, 
-      fee: '',
-      balanceError: '',
-      // FIXME what about feeRate ?
-    }); 
-  case SET_TXID:
-    return updateState(state, { txid: action.value });
-  default:
-    return state;
+    case CHOOSE_PERFORM_SPEND:
+      return updateState(state, { chosen: true });
+    case SET_NETWORK:
+      return updateState(state, { network: action.value });
+    case SET_ADDRESS_TYPE:
+      return updateState(state, { addressType: action.value });
+    case SET_REQUIRED_SIGNERS:
+      return updateRequiredSigners(state, action);
+    case SET_TOTAL_SIGNERS:
+      return updateState(state, { totalSigners: action.value });
+    case SET_INPUTS:
+      return validateTransaction(updateInputs(state, action));
+    case ADD_OUTPUT:
+      return validateTransaction(addOutput(state, action));
+    case SET_CHANGE_OUTPUT_INDEX:
+      return updateState(state, { changeOutputIndex: action.value });
+    case SET_OUTPUT_ADDRESS:
+      return validateTransaction(updateOutputAddress(state, action));
+    case SET_OUTPUT_AMOUNT:
+      return validateTransaction(updateOutputAmount(state, action));
+    case DELETE_OUTPUT:
+      return validateTransaction(deleteOutput(state, action));
+    case SET_FEE_RATE:
+      return validateTransaction(updateFeeRate(state, action));
+    case SET_FEE:
+      return validateTransaction(updateFee(state, action));
+    case FINALIZE_OUTPUTS:
+      return finalizeOutputs(state, action);
+    case RESET_OUTPUTS:
+      return outputInitialStateForMode(state);
+    case SET_TXID:
+      return updateState(state, { txid: action.value });
+    case SET_IS_WALLET:
+      return updateState(state, { isWallet: true });
+    case RESET_TRANSACTION:
+      return resetTransactionState(state);
+    case UPDATE_AUTO_SPEND:
+      return updateState(state, { autoSpend: action.value });
+    case SET_SIGNING_KEY:
+      return updateSigningKey(state, action);
+    case SET_CHANGE_ADDRESS:
+      return updateState(state, { changeAddress: action.value });
+    case RESET_NODES_SPEND:
+      return updateInputs(state, { value: [] });
+    case SET_BALANCE_ERROR:
+      return updateState(state, { balanceError: action.value });
+    case SET_SPEND_STEP:
+      return updateState(state, { spendingStep: action.value });
+    default:
+      return state;
   }
 };
