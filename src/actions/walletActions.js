@@ -232,9 +232,8 @@ export function updateTxSlices(changeSlice, retries = 5) {
     // if we're out of retries and counts are still the same
     // then we're done trying and should show an error
     if (firstSlice.utxos.length === utxoCount && !retries) {
-      let message = `There was a problem updating the wallet. 
-It's possible your transaction did not broadcast correctly. Please confirm 
-the state of the transaction with an external block explorer, then refresh the wallet and try again.`;
+      let message = `There was a problem updating the wallet balance. 
+      It is recommended you refresh the wallet to make sure UTXO current set is up to date.`;
       if (txid && txid.length) message += ` Transaction ID: ${txid}`;
       return dispatch(setErrorNotification(message));
     }
