@@ -14,10 +14,7 @@ import {
   setFee,
   finalizeOutputs,
 } from "./transactionActions";
-import {
-  setErrorNotification,
-  clearErrorNotification,
-} from "./errorNotificationActions";
+import { setErrorNotification } from "./errorNotificationActions";
 import { getSpendableSlices } from "../selectors/wallet";
 
 export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
@@ -169,6 +166,7 @@ export function updateTxSlices(
   retries = 10,
   skipAddresses = new Set()
 ) {
+  // eslint-disable-next-line consistent-return
   return async (dispatch, getState) => {
     const {
       settings: { network },
@@ -225,9 +223,19 @@ export function updateTxSlices(
       }
     });
 
-    // once all queries have completed we can confirm which have been updated
-    const queriedSlices = await Promise.all(sliceUpdates);
+    let queriedSlices;
+    try {
+      queriedSlices = await Promise.all(sliceUpdates);
+    } catch (e) {
+      return dispatch(
+        setErrorNotification(
+          `There was a problem updating wallet state. Try a refresh. Error: ${e.message}`
+        )
+      );
+    }
 
+    // once all queries have completed we can confirm which have been updated
+    // and dispatch the changes to the store
     for (let i = 0; i < queriedSlices.length; i += 1) {
       const slice = queriedSlices[i];
       const utxoCount = slice.change
@@ -247,13 +255,15 @@ export function updateTxSlices(
 
     // if not all slices queried were successful, then we want to recursively call
     // updateTxSlices, counting down retries and with the full set of successful queries
+    // ALL input slices must return a different utxo set otherwise something went wrong
     if (skipAddresses.size !== queriedSlices.length && retries)
       return setTimeout(
         () => dispatch(updateTxSlices(changeSlice, retries - 1, skipAddresses)),
         750
       );
-    // // if we're out of retries and counts are still the same
-    // // then we're done trying and should show an error
+
+    // if we're out of retries and counts are still the same
+    // then we're done trying and should show an error
     if (!retries) {
       let message = `There was a problem updating the wallet balance.
       It is recommended you refresh the wallet to make sure UTXO current set is up to date.`;
@@ -261,8 +271,8 @@ export function updateTxSlices(
       return dispatch(setErrorNotification(message));
     }
 
-    // check the next deposit slice just in case a spend is to own wallet
-    // this doesn't catch all self-spend cases but should catch the majority
+    // Check the next deposit slice just in case a spend is to own wallet.
+    // This doesn't catch all self-spend cases but should catch the majority
     // to avoid any confusion for less technical users.
     const updatedSlice = await fetchSliceStatus(
       nextDepositSlice.multisig.address,
@@ -276,9 +286,6 @@ export function updateTxSlices(
       depositSlices[updatedSlice.bip32Path].utxos.length
     )
       return dispatch({ type: UPDATE_DEPOSIT_SLICE, value: updatedSlice });
-
-    dispatch(setErrorNotification("Wallet addresses updated"));
-    return setTimeout(() => dispatch(clearErrorNotification()), 2000);
   };
 }
 
