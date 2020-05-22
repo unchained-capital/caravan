@@ -38,16 +38,17 @@ class TransactionPreview extends React.Component {
         <Grid container>
           <Grid item xs={4}>
             <h3>Fee</h3>
-            <div>{fee}</div>
+            <div>{BigNumber(fee).toFixed(8)} BTC </div>
           </Grid>
           <Grid item xs={4}>
             <h3>Fee Rate</h3>
-            <div>{feeRate}</div>
+            <div>{feeRate} sats/byte</div>
           </Grid>
           <Grid item xs={4}>
             <h3>Total</h3>
             <div>
-              {satoshisToBitcoins(BigNumber(inputsTotalSats || 0)).toString()}
+              {satoshisToBitcoins(BigNumber(inputsTotalSats || 0)).toFixed(8)}{" "}
+              BTC
             </div>
           </Grid>
         </Grid>

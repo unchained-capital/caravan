@@ -16,9 +16,8 @@ import {
   SPEND_STEP_CREATE,
 } from "../../actions/transactionActions";
 import {
-  spendSlices as spendSlicesAction,
+  updateTxSlices as updateTxSlicesAction,
   resetWalletView as resetWalletViewAction,
-  updateChangeSliceAction as updateChangeSliceActionImport,
 } from "../../actions/walletActions";
 import UnsignedTransaction from "../UnsignedTransaction";
 
@@ -30,67 +29,26 @@ class WalletSign extends React.Component {
     };
   }
 
+  static getDerivedStateFromProps(props, state) {
+    const { txid, changeSlice, updateTxSlices } = props;
+    if (txid.length && !state.spent) {
+      updateTxSlices(changeSlice);
+      return {
+        spent: true,
+      };
+    }
+    return null;
+  }
+
   componentWillUnmount() {
-    const {
-      resetTransaction,
-      transaction,
-      changeSlice,
-      spendSlices,
-    } = this.props;
+    const { resetTransaction } = this.props;
     const { spent } = this.state;
+
+    // reset the transaction when we leave the view if tx is spent
     if (spent) {
-      // have a brief delay to make sure the queried node had enough time
-      // to update
-      setTimeout(() => spendSlices(transaction.inputs, changeSlice), 1000);
       resetTransaction();
     }
   }
-
-  render = () => {
-    const { spent } = this.state;
-    return (
-      <Box>
-        <Button href="#" onClick={this.handleCancel}>
-          Edit Transaction
-        </Button>
-
-        <Box mt={2}>
-          <UnsignedTransaction />
-        </Box>
-        {this.renderKeySelectors()}
-
-        <Box mt={2}>
-          <Button
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              this.handleReturn();
-            }}
-          >
-            Abandon Transaction
-          </Button>
-        </Box>
-
-        {this.signaturesFinalized() && (
-          <Box mt={2}>
-            <Transaction />
-          </Box>
-        )}
-
-        {(this.transactionFinalized() || spent) && (
-          <Box mt={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.handleReturn}
-            >
-              Return
-            </Button>
-          </Box>
-        )}
-      </Box>
-    );
-  };
 
   renderKeySelectors = () => {
     const { requiredSigners } = this.props;
@@ -119,29 +77,6 @@ class WalletSign extends React.Component {
     );
   };
 
-  transactionFinalized = () => {
-    const { transaction, changeSlice, updateChangeNode } = this.props;
-
-    const { txid } = transaction;
-    const { spent } = this.state;
-    if (txid !== "" && !spent) {
-      this.setState({ spent: true });
-      const changeAddress = changeSlice.multisig.address;
-      for (let i = 0; i < transaction.outputs.length; i += 1) {
-        if (changeAddress === transaction.outputs[i].address) {
-          updateChangeNode({
-            bip32Path: changeSlice.bip32Path,
-            balanceSats: transaction.outputs[i].amountSats,
-          });
-          break;
-        }
-      }
-      return true;
-    }
-
-    return false;
-  };
-
   handleReturn = () => {
     const { resetTransaction, resetWalletView } = this.props;
     resetTransaction();
@@ -160,6 +95,51 @@ class WalletSign extends React.Component {
     finalizeOutputs(false);
     setSpendStep(SPEND_STEP_CREATE);
   };
+
+  render = () => {
+    const { spent } = this.state;
+    return (
+      <Box>
+        <Button href="#" onClick={this.handleCancel}>
+          Edit Transaction
+        </Button>
+        <Box mt={2}>
+          <UnsignedTransaction />
+        </Box>
+        {this.renderKeySelectors()}
+
+        <Box mt={2}>
+          <Button
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              this.handleReturn();
+            }}
+          >
+            Abandon Transaction
+          </Button>
+        </Box>
+
+        {this.signaturesFinalized() && (
+          <Box mt={2}>
+            <Transaction />
+          </Box>
+        )}
+
+        {spent && (
+          <Box mt={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.handleReturn}
+            >
+              Return
+            </Button>
+          </Box>
+        )}
+      </Box>
+    );
+  };
 }
 
 WalletSign.propTypes = {
@@ -176,25 +156,8 @@ WalletSign.propTypes = {
   setRequiredSigners: PropTypes.func.isRequired,
   setSpendStep: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
-  spendSlices: PropTypes.func.isRequired,
-  transaction: PropTypes.shape({
-    inputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        change: PropTypes.bool.isRequired,
-        multisig: PropTypes.shape({
-          address: PropTypes.string,
-        }),
-      })
-    ),
-    outputs: PropTypes.arrayOf(
-      PropTypes.shape({
-        address: PropTypes.string,
-        amountSats: PropTypes.shape({}),
-      })
-    ),
-    txid: PropTypes.string,
-  }).isRequired,
-  updateChangeNode: PropTypes.func.isRequired,
+  updateTxSlices: PropTypes.func.isRequired,
+  txid: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -202,6 +165,7 @@ function mapStateToProps(state) {
     ...state.wallet,
     ...state.spend,
     ...state.quorum,
+    txid: state.spend.transaction.txid,
     requiredSigners: state.spend.transaction.requiredSigners,
     totalSigners: state.spend.transaction.totalSigners,
     changeSlice: state.wallet.change.nextNode,
@@ -211,10 +175,9 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   finalizeOutputs: finalizeOutputsAction,
   setRequiredSigners: setRequiredSignersAction,
-  spendSlices: spendSlicesAction,
+  updateTxSlices: updateTxSlicesAction,
   resetTransaction: resetTransactionAction,
   resetWalletView: resetWalletViewAction,
-  updateChangeNode: updateChangeSliceActionImport,
   setSpendStep: setSpendStepAction,
 };
 

@@ -1,7 +1,6 @@
 import BigNumber from "bignumber.js";
 import {
   RESET_NODES_SPEND,
-  SPEND_SLICES,
   RESET_NODES_FETCH_ERRORS,
 } from "../actions/walletActions";
 import updateState from "./utils";
@@ -60,7 +59,6 @@ function updateSlice(state, action) {
       },
     },
   };
-
   if (typeof action.value.spend !== "undefined") {
     // TODO (BUCK): I'm not sure this works. If you change
     // the output value of a spend before spending, this will just
@@ -113,21 +111,6 @@ function updateSlice(state, action) {
   return updatedState;
 }
 
-function spendSlices(state) {
-  const updatedState = { ...state };
-  Object.values(updatedState.nodes).forEach((node) => {
-    if (node.spend) {
-      updatedState.balanceSats = updatedState.balanceSats.minus(
-        node.balanceSats
-      );
-      node.balanceSats = new BigNumber(0); // eslint-disable-line no-param-reassign
-      node.spend = false; // eslint-disable-line no-param-reassign
-      node.utxos = []; // eslint-disable-line no-param-reassign
-    }
-  });
-  return updatedState;
-}
-
 function resetSpend(state) {
   const updatedState = { ...state };
   Object.values(updatedState.nodes).forEach((node) => {
@@ -140,8 +123,6 @@ export default (actionType) => (state = initialState, action) => {
   switch (action.type) {
     case RESET_NODES_SPEND:
       return resetSpend(state);
-    case SPEND_SLICES:
-      return spendSlices(state);
     case RESET_NODES_FETCH_ERRORS:
       return updateState(state, {
         fetchUTXOsErrors: 0,
