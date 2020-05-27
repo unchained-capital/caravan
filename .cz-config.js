@@ -28,13 +28,15 @@ const messages = {
 };
 
 const scopes = [
-  "card",
+  "address",
   "clientpicker",
-  "createaddress",
   "hermit",
+  "pubkeyimporter",
   "slices",
+  "scriptexplorer",
   "testrunner",
   "wallet",
+  "xpubimporter",
   "other",
 ];
 
