@@ -231,6 +231,7 @@ class OutputEntry extends React.Component {
         <Grid item xs={7}>
           <TextField
             fullWidth
+            data-cy="output-address-field"
             placeholder="Address"
             name="destination"
             className={styles.outputsFormInput}
@@ -246,6 +247,7 @@ class OutputEntry extends React.Component {
         <Grid item xs={3}>
           <TextField
             fullWidth
+            data-cy="output-amount-field"
             placeholder="Amount"
             className={styles.outputsFormInput}
             name="amount"

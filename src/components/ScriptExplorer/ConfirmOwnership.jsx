@@ -206,7 +206,7 @@ class ConfirmOwnership extends React.Component {
     const selectLabelId = `${labelId}-select`;
 
     return (
-      <Card>
+      <Card data-cy="confirm-ownership-card">
         <CardHeader ref={this.titleRef} title="Confirm Ownership" />
         <CardContent>
           <form>
@@ -218,14 +218,21 @@ class ConfirmOwnership extends React.Component {
               <Select
                 labelId={selectLabelId}
                 id="public-key-importer-select"
+                data-cy="key-method-select"
                 disabled={disableChangeMethod}
                 value={publicKeyImporter.method}
                 onChange={this.handleMethodChange}
               >
                 <MenuItem value="">{"< Select method >"}</MenuItem>
-                <MenuItem value={TREZOR}>Trezor</MenuItem>
-                <MenuItem value={LEDGER}>Ledger</MenuItem>
-                <MenuItem value={HERMIT}>Hermit</MenuItem>
+                <MenuItem data-cy="method-trezor" value={TREZOR}>
+                  Trezor
+                </MenuItem>
+                <MenuItem data-cy="method-ledger" value={LEDGER}>
+                  Ledger
+                </MenuItem>
+                <MenuItem data-cy="method-hermit" value={HERMIT}>
+                  Hermit
+                </MenuItem>
               </Select>
             </FormControl>
 

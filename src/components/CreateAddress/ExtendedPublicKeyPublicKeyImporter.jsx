@@ -100,6 +100,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
               variant="contained"
               color="primary"
               size="large"
+              data-cy="import-public-key-button"
               onClick={this.import}
               disabled={extendedPublicKey === "" || this.hasError()}
             >

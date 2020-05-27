@@ -16,49 +16,33 @@ describe("Help Page", () => {
   it("Has links to Learn More resources", () => {
     cy.get(
       'a[href="https://unchained-capital.com/blog/gearing-up-the-caravan/"]'
-    ).should("have.attr", "target", "_blank");
+    ).linkOpensInNewTab();
     cy.get(
       'a[href="https://www.youtube.com/playlist?list=PLUM8mrUjWoPRsVGEZ1gTntqPd4xrQZoiH"]'
-    ).should("have.attr", "target", "_blank");
-    cy.get('a[href="https://github.com/unchained-capital/caravan"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
+    ).linkOpensInNewTab();
+    cy.get(
+      'a[href="https://github.com/unchained-capital/caravan"]'
+    ).linkOpensInNewTab();
   });
 
   it("Has links to supported devices and browsers", () => {
-    cy.get('a[href="https://shop.trezor.io/product/trezor-one-white"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
-    cy.get('a[href="https://shop.trezor.io/product/trezor-model-t"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
-    cy.get('a[href="https://www.ledger.com/products/ledger-nano-s"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
-    cy.get('a[href="https://www.ledger.com/products/ledger-nano-x"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
+    cy.get(
+      'a[href="https://shop.trezor.io/product/trezor-one-white"]'
+    ).linkOpensInNewTab();
+    cy.get(
+      'a[href="https://shop.trezor.io/product/trezor-model-t"]'
+    ).linkOpensInNewTab();
+    cy.get(
+      'a[href="https://www.ledger.com/products/ledger-nano-s"]'
+    ).linkOpensInNewTab();
+    cy.get(
+      'a[href="https://www.ledger.com/products/ledger-nano-x"]'
+    ).linkOpensInNewTab();
 
-    cy.get('a[href="https://www.google.com/chrome/"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
-    cy.get('a[href="https://www.mozilla.org/en-US/firefox/new/"]').should(
-      "have.attr",
-      "target",
-      "_blank"
-    );
+    cy.get('a[href="https://www.google.com/chrome/"]').linkOpensInNewTab();
+    cy.get(
+      'a[href="https://www.mozilla.org/en-US/firefox/new/"]'
+    ).linkOpensInNewTab();
   });
 
   it("Has a link to report an issue and run tests", () => {

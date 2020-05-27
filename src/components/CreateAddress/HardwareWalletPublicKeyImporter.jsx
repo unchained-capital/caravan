@@ -60,6 +60,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
             <TextField
               fullWidth
               label="BIP32 Path"
+              data-cy="bip32-path-input"
               value={publicKeyImporter.bip32Path}
               onChange={this.handleBIP32PathChange}
               disabled={status !== PENDING}
@@ -73,6 +74,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
                 type="button"
                 variant="contained"
                 size="small"
+                data-cy="bip32-default-button"
                 onClick={this.resetBIP32Path}
                 disabled={status !== PENDING}
               >
@@ -90,6 +92,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
             variant="contained"
             color="primary"
             size="large"
+            data-cy="import-public-key-button"
             onClick={this.import}
             disabled={this.hasBIP32PathError() || status === ACTIVE}
           >

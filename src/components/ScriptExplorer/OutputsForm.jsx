@@ -91,7 +91,7 @@ class OutputsForm extends React.Component {
         display={autoSpend && changeOutputIndex === i + 1 ? "none" : "block"}
       >
         <Grid container>
-          <OutputEntry number={i + 1} />
+          <OutputEntry data-cy={`output-${i + 1}`} number={i + 1} />
         </Grid>
       </Box>
     ));
@@ -380,6 +380,7 @@ class OutputsForm extends React.Component {
                 <TextField
                   fullWidth
                   label="Inputs Total"
+                  data-cy="inputs-total-field"
                   readOnly
                   value={this.inputsTotal().toFixed(8)}
                   disabled={finalizedOutputs}
@@ -390,6 +391,7 @@ class OutputsForm extends React.Component {
             <Grid item xs={3}>
               <Box mt={totalMt}>
                 <TextField
+                  data-cy="outputs-total"
                   fullWidth
                   label={
                     !isWallet || (isWallet && !autoSpend)
@@ -427,6 +429,7 @@ class OutputsForm extends React.Component {
 
               <Grid item>
                 <Button
+                  data-cy="reset-outputs-button"
                   variant="contained"
                   color="secondary"
                   disabled={finalizedOutputs}

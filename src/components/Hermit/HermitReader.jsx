@@ -45,6 +45,7 @@ class HermitReader extends Component {
               color="primary"
               className="mt-2"
               size="large"
+              data-cy="hermit-start-button"
               onClick={this.handleStart}
             >
               {startText}

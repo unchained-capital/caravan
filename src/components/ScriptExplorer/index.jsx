@@ -20,7 +20,7 @@ class Spend extends React.Component {
   render = () => {
     return (
       <Box mt={2}>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} data-cy="script-explorer">
           <Grid item md={8}>
             <Box>
               <ScriptEntry />
@@ -57,7 +57,7 @@ class Spend extends React.Component {
         {this.spendable() && (
           <Box>
             <Box mt={2}>
-              <Card>
+              <Card data-cy="utxo-card">
                 <CardContent>
                   <UTXOSet
                     inputs={transaction.inputs}
@@ -67,7 +67,7 @@ class Spend extends React.Component {
               </Card>
             </Box>
             <Box mt={2}>
-              <Card>
+              <Card data-cy="outputs-card">
                 <CardContent>
                   <Typography variant="h5">Define Outputs</Typography>
                   <OutputsForm />

@@ -34,7 +34,7 @@ class NetworkPicker extends React.Component {
           <FormControl component="fieldset">
             <RadioGroup>
               <FormControlLabel
-                id="mainnet"
+                id={MAINNET}
                 control={<Radio color="primary" />}
                 name="network"
                 value="mainnet"
@@ -44,7 +44,7 @@ class NetworkPicker extends React.Component {
                 disabled={frozen}
               />
               <FormControlLabel
-                id="testnet"
+                id={TESTNET}
                 control={<Radio color="primary" />}
                 name="network"
                 value="testnet"

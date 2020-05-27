@@ -154,6 +154,7 @@ class ScriptEntry extends React.Component {
           <Grid container spacing={3}>
             <Grid item>
               <Button
+                data-cy="spend-from-address-button"
                 variant="contained"
                 color="primary"
                 size="large"
@@ -165,6 +166,7 @@ class ScriptEntry extends React.Component {
             </Grid>
             <Grid item>
               <Button
+                data-cy="confirm-ownership-button"
                 variant="contained"
                 size="large"
                 onClick={this.confirmOwnership}
@@ -269,14 +271,17 @@ class ScriptEntry extends React.Component {
     const { scriptHex, scriptError, fetchedUTXOs } = this.state;
 
     return (
-      <Card>
+      <Card data-cy="script-card">
         <CardHeader title={`Enter ${this.scriptTitle()} Script`} />
         <CardContent>
           <form>
             <TextField
+              id="script-entry-field"
+              data-cy="script-entry-field"
               fullWidth
               multiline
               autoFocus
+              inputProps={{ "data-cy": "script-entry-input" }}
               variant="outlined"
               label={`${this.scriptTitle()} Script`}
               value={scriptHex}
