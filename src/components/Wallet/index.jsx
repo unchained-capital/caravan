@@ -77,7 +77,6 @@ class CreateWallet extends React.Component {
       "name",
       "addressType",
       "network",
-      "client",
       "quorum",
       "extendedPublicKeys",
     ];
@@ -88,14 +87,18 @@ class CreateWallet extends React.Component {
     );
     if (validProperties !== "") return validProperties;
 
-    const clientProperties =
-      config.client.type === "public" ? ["type"] : ["type", "url", "username"];
-    const validClient = CreateWallet.validateProperties(
-      config,
-      clientProperties,
-      "client"
-    );
-    if (validClient !== "") return validClient;
+    if (config.client) {
+      const clientProperties =
+        config.client.type === "public"
+          ? ["type"]
+          : ["type", "url", "username"];
+      const validClient = CreateWallet.validateProperties(
+        config,
+        clientProperties,
+        "client"
+      );
+      if (validClient !== "") return validClient;
+    }
 
     const quorumProperties = ["requiredSigners", "totalSigners"];
     const validQuorum = CreateWallet.validateProperties(
@@ -112,6 +115,10 @@ class CreateWallet extends React.Component {
   }
 
   static validateExtendedPublicKeys(xpubs, network) {
+    let tmpNetwork = network;
+    if (network === "regtest") {
+      tmpNetwork = "testnet";
+    }
     const xpubFields = {
       name: (name, index) =>
         typeof name === "string"
@@ -119,15 +126,18 @@ class CreateWallet extends React.Component {
           : `Extended public key ${index} name must be a string`,
       bip32Path: (bip32Path, index) => {
         if (xpubs[index - 1].method === "text") return "";
+        if (typeof xpubs[index - 1].method === "undefined") return "";
         const pathError = validateBIP32Path(bip32Path);
         if (pathError !== "")
           return `Extended public key ${index} error: ${pathError}`;
         return "";
       },
-      xpub: (xpub) => validateExtendedPublicKey(xpub, network),
+      xpub: (xpub) => validateExtendedPublicKey(xpub, tmpNetwork),
       method: (method, index) =>
         // eslint-disable-next-line no-bitwise
-        ~["trezor", "ledger", "hermit", "xpub", "text"].indexOf(method) // FIXME
+        ~["trezor", "ledger", "hermit", "xpub", "text", undefined].indexOf(
+          method
+        )
           ? ""
           : `Invalid method for extended public key ${index}`,
     };
@@ -167,7 +177,7 @@ class CreateWallet extends React.Component {
       const config = JSON.parse(configJson);
       configError = CreateWallet.validateConfig(config);
     } catch (parseError) {
-      configError = "Invlaid JSON";
+      configError = "Invalid JSON";
     }
 
     if (sessionStorage) sessionStorage.setItem(CARAVAN_CONFIG, configJson);
@@ -223,18 +233,32 @@ class CreateWallet extends React.Component {
     setTotalSigners(walletConfiguration.quorum.totalSigners);
     setRequiredSigners(walletConfiguration.quorum.requiredSigners);
     setAddressType(walletConfiguration.addressType);
-    setNetwork(walletConfiguration.network);
+    if (walletConfiguration.network === "regtest") {
+      setNetwork("testnet");
+    } else {
+      setNetwork(walletConfiguration.network);
+    }
     updateWalletNameAction(0, walletConfiguration.name);
-    setClientType(walletConfiguration.client.type);
-    if (walletConfiguration.client.type === "private") {
-      setClientUrl(walletConfiguration.client.url);
-      setClientUsername(walletConfiguration.client.username);
+    // set client to unknown
+    if (walletConfiguration.client) {
+      setClientType(walletConfiguration.client.type);
+      if (walletConfiguration.client.type === "private") {
+        setClientUrl(walletConfiguration.client.url);
+        setClientUsername(walletConfiguration.client.username);
+      }
+    } else {
+      setClientType("unknown");
     }
     walletConfiguration.extendedPublicKeys.forEach(
       (extendedPublicKey, index) => {
         const number = index + 1;
         setExtendedPublicKeyImporterName(number, extendedPublicKey.name);
-        setExtendedPublicKeyImporterMethod(number, extendedPublicKey.method);
+        if (extendedPublicKey.method) {
+          setExtendedPublicKeyImporterMethod(number, extendedPublicKey.method);
+        } else {
+          setExtendedPublicKeyImporterMethod(number, "unknown");
+        }
+
         setExtendedPublicKeyImporterBIP32Path(
           number,
           extendedPublicKey.bip32Path
@@ -248,6 +272,7 @@ class CreateWallet extends React.Component {
     );
   };
 
+  // add client picker if client === 'unknown'
   renderWalletImporter = () => {
     const { configError } = this.state;
     const { configuring } = this.props;
@@ -301,7 +326,6 @@ class CreateWallet extends React.Component {
           </Box>
         </Grid>
       );
-
     return settings;
   };
 
@@ -399,12 +423,20 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
       extendedPublicKeyImporter.method === "text"
         ? "Unknown (make sure you have written this down previously!)"
         : extendedPublicKeyImporter.bip32Path;
-    return `    {
-      "name": "${extendedPublicKeyImporter.name}",
-      "bip32Path": "${bip32Path}",
-      "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
-      "method": "${extendedPublicKeyImporter.method}"
-    }`;
+    const importer =
+      extendedPublicKeyImporter.method === "unknown"
+        ? `    {
+        "name": "${extendedPublicKeyImporter.name}",
+        "bip32Path": "${bip32Path}",
+        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}"
+        }`
+        : `    {
+        "name": "${extendedPublicKeyImporter.name}",
+        "bip32Path": "${bip32Path}",
+        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
+        "method": "${extendedPublicKeyImporter.method}"
+      }`;
+    return importer;
   };
 
   walletDetailsFilename = () => {

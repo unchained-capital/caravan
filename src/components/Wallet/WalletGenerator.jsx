@@ -26,6 +26,7 @@ import {
 } from "../../blockchain";
 
 // Components
+import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
 import WalletControl from "./WalletControl";
 import WalletConfigInteractionButtons from "./WalletConfigInteractionButtons";
@@ -53,6 +54,7 @@ class WalletGenerator extends React.Component {
     super(props);
     this.state = {
       connectSuccess: false,
+      unknownClient: false,
     };
   }
 
@@ -79,7 +81,17 @@ class WalletGenerator extends React.Component {
       client,
       common: { nodesLoaded },
       setIsWallet,
+      configuring,
     } = this.props;
+    const { unknownClient } = this.state;
+    if (client.type === "unknown" && prevProps.client.type === "public") {
+      this.setState({ unknownClient: true }); // eslint-disable-line react/no-did-update-set-state
+    } else if (configuring && client.type !== "unknown" && unknownClient) {
+      // re-initializes the state if we're in the configuring stage.
+      // catches situation where wallet is cleared and new one is added
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ unknownClient: false });
+    }
     // if the password was updated
     if (prevPassword !== client.password && client.password.length) {
       // test the connection using the set password
@@ -319,7 +331,7 @@ class WalletGenerator extends React.Component {
       client,
       generating,
     } = this.props;
-    const { connectSuccess } = this.state;
+    const { connectSuccess, unknownClient } = this.state;
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating && !configuring) {
         return (
@@ -343,7 +355,16 @@ class WalletGenerator extends React.Component {
               onClearFn={(e) => this.toggleImporters(e)}
               onDownloadFn={downloadWalletDetails}
             />
-            {client.type === "private" && (
+            {unknownClient && (
+              <Box my={5}>
+                <Typography variant="subtitle1">
+                  This config does not contain client information. Please choose
+                  a client to connect to before importing your wallet.
+                </Typography>
+                <ClientPicker />
+              </Box>
+            )}
+            {client.type === "private" && !unknownClient && (
               <Box my={5}>
                 <Grid container spacing={2} alignItems="center">
                   <Grid item xs={12}>
@@ -401,7 +422,10 @@ class WalletGenerator extends React.Component {
               variant="contained"
               color="primary"
               onClick={this.generate}
-              disabled={client.type === "private" && !connectSuccess}
+              disabled={
+                (client.type === "private" && !connectSuccess) ||
+                client.type === "unknown"
+              }
             >
               Confirm
             </Button>

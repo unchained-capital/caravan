@@ -133,4 +133,4 @@ point caravan at 'http://localhost:1337/localhost:8332'.
 
 ## Contributing
 
-Please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) and the open [GitHub Issues](https://github.com/caravan/issues).
+Please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) and the open [GitHub Issues](https://github.com/caravan/issues)
