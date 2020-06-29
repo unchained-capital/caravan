@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/unchained-capital/caravan/compare/v0.2.0...v.0.2.1) (2020-06-29)
+
+### Features
+* update unchained-wallets for webusb support and improved ledger interactions ([df66943](https://github.com/unchained-capital/caravan/commit/df6694350f20284d4e892dd232d7807c4403204f))
+* update config requirements to allow for unknown signing method and empty client ([bcada9d](https://github.com/unchained-capital/caravan/commit/bcada9d1199dc35d29736270e827bfc536149807))
+
+
+
 ## [0.2.0](https://github.com/unchained-capital/caravan/compare/v0.1.5...v0.2.0) (2020-05-20)
 
 ### Features
