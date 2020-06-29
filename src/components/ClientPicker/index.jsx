@@ -140,7 +140,7 @@ class ClientPicker extends React.Component {
                   checked={client.type === "private"}
                 />
               </RadioGroup>
-              {client.type === "public" ? (
+              {client.type === "public" && (
                 <FormHelperText>
                   {"'Public' uses the "}
                   <code>blockstream.info</code>
@@ -148,7 +148,8 @@ class ClientPicker extends React.Component {
                   <code>bitcoind</code>
                   {" node."}
                 </FormHelperText>
-              ) : (
+              )}
+              {client.type === "private" && (
                 <PrivateClientSettings
                   handleUrlChange={(event) => this.handleUrlChange(event)}
                   handleUsernameChange={(event) =>

@@ -42,6 +42,7 @@ import {
 import "react-table/react-table.css";
 
 const TEXT = "text";
+const UNKNOWN = "unknown";
 
 class SignatureImporter extends React.Component {
   titleRef = React.createRef();
@@ -106,7 +107,8 @@ class SignatureImporter extends React.Component {
       <form>
         {(extendedPublicKeyImporter === null ||
           typeof extendedPublicKeyImporter === "undefined" ||
-          extendedPublicKeyImporter.method === TEXT) && (
+          extendedPublicKeyImporter.method === TEXT ||
+          extendedPublicKeyImporter.method === UNKNOWN) && (
           <FormControl fullWidth>
             <InputLabel id={labelId}>Select Method</InputLabel>
 
