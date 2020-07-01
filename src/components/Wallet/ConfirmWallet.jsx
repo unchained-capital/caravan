@@ -10,11 +10,18 @@ import {
   TableCell,
   Box,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
 class WalletConfirmation extends React.Component {
   render = () => {
+    const { startingAddressIndex } = this.props;
     return (
       <Box>
+        {startingAddressIndex > 0 && (
+          <Alert severity="info">
+            Starting Address Index set to {startingAddressIndex}
+          </Alert>
+        )}
         <Table>
           <TableHead>
             <TableRow>
@@ -44,11 +51,13 @@ class WalletConfirmation extends React.Component {
 }
 
 WalletConfirmation.propTypes = {
+  startingAddressIndex: PropTypes.number.isRequired,
   extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
 };
 
 function mapStateToProps(state) {
   return {
+    startingAddressIndex: state.settings.startingAddressIndex,
     extendedPublicKeyImporters: state.quorum.extendedPublicKeyImporters,
   };
 }

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
+  validateBIP32Index,
   validateBIP32Path,
   validateExtendedPublicKey,
   satoshisToBitcoins,
@@ -25,6 +26,7 @@ import NetworkPicker from "../NetworkPicker";
 import QuorumPicker from "../QuorumPicker";
 import AddressTypePicker from "../AddressTypePicker";
 import ClientPicker from "../ClientPicker";
+import StartingAddressIndexPicker from "../StartingAddressIndexPicker";
 import WalletGenerator from "./WalletGenerator";
 import ExtendedPublicKeyImporter from "./ExtendedPublicKeyImporter";
 import WalletActionsPanel from "./WalletActionsPanel";
@@ -40,6 +42,7 @@ import {
   setRequiredSigners as setRequiredSignersAction,
   setAddressType as setAddressTypeAction,
   setNetwork as setNetworkAction,
+  setStartingAddressIndex as setStartingAddressIndexAction,
 } from "../../actions/settingsActions";
 import {
   setExtendedPublicKeyImporterMethod as setExtendedPublicKeyImporterMethodAction,
@@ -86,6 +89,14 @@ class CreateWallet extends React.Component {
       ""
     );
     if (validProperties !== "") return validProperties;
+
+    if (config.startingAddressIndex !== undefined) {
+      const startingAddressIndexError = validateBIP32Index(
+        String(config.startingAddressIndex),
+        { mode: "unhardened " }
+      ).replace("BIP32", "Starting Address");
+      if (startingAddressIndexError !== "") return startingAddressIndexError;
+    }
 
     if (config.client) {
       const clientProperties =
@@ -218,6 +229,7 @@ class CreateWallet extends React.Component {
       setRequiredSigners,
       setAddressType,
       setNetwork,
+      setStartingAddressIndex,
       setExtendedPublicKeyImporterMethod,
       setExtendedPublicKeyImporterExtendedPublicKey,
       setExtendedPublicKeyImporterBIP32Path,
@@ -248,6 +260,10 @@ class CreateWallet extends React.Component {
       }
     } else {
       setClientType("unknown");
+    }
+    // optionally, set starting address index
+    if (walletConfiguration.startingAddressIndex) {
+      setStartingAddressIndex(walletConfiguration.startingAddressIndex);
     }
     walletConfiguration.extendedPublicKeys.forEach(
       (extendedPublicKey, index) => {
@@ -324,6 +340,9 @@ class CreateWallet extends React.Component {
           <Box mt={2}>
             <ClientPicker />
           </Box>
+          <Box mt={2}>
+            <StartingAddressIndexPicker />
+          </Box>
         </Grid>
       );
     return settings;
@@ -367,6 +386,7 @@ class CreateWallet extends React.Component {
       totalSigners,
       requiredSigners,
       walletName,
+      startingAddressIndex,
     } = this.props;
     return `{
   "name": "${walletName}",
@@ -379,9 +399,9 @@ class CreateWallet extends React.Component {
   },
   "extendedPublicKeys": [
 ${this.extendedPublicKeyImporterBIP32Paths()}
-  ]
-}
-`;
+  ],
+  "startingAddressIndex": ${startingAddressIndex}
+}`;
   };
 
   clientDetails = () => {
@@ -580,6 +600,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
 
 CreateWallet.propTypes = {
   addressType: PropTypes.string.isRequired,
+  startingAddressIndex: PropTypes.number.isRequired,
   change: PropTypes.shape({
     balanceSats: PropTypes.shape({}),
     fetchUTXOsErrors: PropTypes.number,
@@ -609,6 +630,7 @@ CreateWallet.propTypes = {
   setAddressType: PropTypes.func.isRequired,
   setName: PropTypes.func.isRequired,
   setNetwork: PropTypes.func.isRequired,
+  setStartingAddressIndex: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterMethod: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterExtendedPublicKey: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterBIP32Path: PropTypes.func.isRequired,
@@ -655,6 +677,7 @@ const mapDispatchToProps = {
   setRequiredSigners: setRequiredSignersAction,
   setAddressType: setAddressTypeAction,
   setNetwork: setNetworkAction,
+  setStartingAddressIndex: setStartingAddressIndexAction,
   setExtendedPublicKeyImporterMethod: setExtendedPublicKeyImporterMethodAction,
   setExtendedPublicKeyImporterExtendedPublicKey: setExtendedPublicKeyImporterExtendedPublicKeyAction,
   setExtendedPublicKeyImporterBIP32Path: setExtendedPublicKeyImporterBIP32PathAction,

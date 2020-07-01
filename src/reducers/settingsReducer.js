@@ -5,6 +5,7 @@ import {
   SET_NETWORK,
   SET_TOTAL_SIGNERS,
   SET_REQUIRED_SIGNERS,
+  SET_STARTING_ADDRESS_INDEX,
   SET_ADDRESS_TYPE,
   SET_FROZEN,
 } from "../actions/settingsActions";
@@ -14,6 +15,7 @@ const initialState = {
   totalSigners: 3,
   requiredSigners: 2,
   addressType: P2SH,
+  startingAddressIndex: 0,
   frozen: false,
 };
 
@@ -25,6 +27,8 @@ export default (state = initialState, action) => {
       return updateState(state, { totalSigners: action.value });
     case SET_REQUIRED_SIGNERS:
       return updateState(state, { requiredSigners: action.value });
+    case SET_STARTING_ADDRESS_INDEX:
+      return updateState(state, { startingAddressIndex: action.value });
     case SET_ADDRESS_TYPE:
       return updateState(state, { addressType: action.value });
     case SET_FROZEN:

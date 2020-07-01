@@ -161,13 +161,20 @@ class WalletGenerator extends React.Component {
   };
 
   generate = () => {
-    const { setImportersVisible, freeze, setGenerating } = this.props;
+    const {
+      setImportersVisible,
+      freeze,
+      setGenerating,
+      startingAddressIndex,
+    } = this.props;
+    const startingDepositBIP32Suffix = `m/0/${startingAddressIndex}`;
+    const startingChangeBIP32Suffix = `m/1/${startingAddressIndex}`;
     freeze(true);
     setImportersVisible(false);
     setGenerating(true);
     this.setState({ connectSuccess: false }, () => {
-      this.addNode(false, "m/0/0", true);
-      this.addNode(true, "m/1/0", true);
+      this.addNode(false, startingDepositBIP32Suffix, true);
+      this.addNode(true, startingChangeBIP32Suffix, true);
     });
   };
 
@@ -449,6 +456,7 @@ class WalletGenerator extends React.Component {
 WalletGenerator.propTypes = {
   network: PropTypes.string.isRequired,
   addressType: PropTypes.string.isRequired,
+  startingAddressIndex: PropTypes.number.isRequired,
   client: PropTypes.shape({
     password: PropTypes.string,
     passwordError: PropTypes.string,
