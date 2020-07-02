@@ -41,28 +41,30 @@
     "install": "^0.13.0",
     "jest-junit": "^11.0.1",
     "mocha": "7.1.1",
-    "prettier": "^2.0.2"
+    "prettier": "^2.0.2",
+    "standard-version": "^8.0.0"
   },
   "scripts": {
-    "start": "HTTPS=true react-scripts start",
     "build": "npm run check && react-scripts build",
     "build:ci": "npm run ci && react-scripts build",
     "check": "npm run lint && npm run test:ci",
     "ci": "npm run lint:code && npm run lint:commit-travis && npm run test:ci",
-    "test": "react-scripts test",
+    "commit": "./node_modules/cz-customizable/standalone.js",
     "cypress:open": "$(npm bin)/cypress open",
     "cypress:run": "$(npm bin)/cypress run",
     "cypress:run:record": "$(npm bin)/cypress run --record",
-    "test:ci": "CI=true react-scripts test --coverage",
+    "deploy": "gh-pages -d build",
+    "eject": "react-scripts eject",
+    "gh-pages": "CI=true npm run build && gh-pages -d build",
     "lint": "npm run lint:code && npm run lint:commit",
     "lint:code": "eslint --ext .js,.jsx src/",
     "lint:commit": "commitlint -e",
     "lint:commit-travis": "commitlint-travis",
-    "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "gh-pages": "CI=true npm run build && gh-pages -d build",
-    "commit": "./node_modules/cz-customizable/standalone.js"
+    "release": "standard-version",
+    "start": "HTTPS=true react-scripts start",
+    "test": "react-scripts test",
+    "test:ci": "CI=true react-scripts test --coverage"
   },
   "bin": {},
   "browserslist": [

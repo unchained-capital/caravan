@@ -67,6 +67,16 @@ git push origin my-branch
 
 5. Open [this project on GitHub](https://github.com/unchained-capital/caravan), then click “Compare & pull request”.
 
+## Releasing Caravan
+
+Caravan is released to Unchained Capital's GitHub Pages (https://unchained-capital.github.io/) by using the following:
+
+```sh
+npm run release
+git push --follow-tags origin master
+npm run gh-pages
+```
+
 ## Help needed
 
 Please checkout the open issues for ideas of things to work on.
