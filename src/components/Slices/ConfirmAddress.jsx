@@ -5,10 +5,14 @@ import {
   Box,
   Typography,
   Button,
+  FormControl,
+  Select,
   Table,
   TableBody,
   TableRow,
   TableCell,
+  MenuItem,
+  InputLabel,
 } from "@material-ui/core";
 import { ThumbUp as SuccessIcon, Error as ErrorIcon } from "@material-ui/icons";
 import {
@@ -16,14 +20,26 @@ import {
   multisigRequiredSigners,
   multisigTotalSigners,
 } from "unchained-bitcoin";
-import { ACTIVE, PENDING, ConfirmMultisigAddress } from "unchained-wallets";
+import {
+  TREZOR,
+  LEDGER,
+  HERMIT,
+  ACTIVE,
+  PENDING,
+  ConfirmMultisigAddress,
+} from "unchained-wallets";
 
 import ExtendedPublicKeySelector from "../Wallet/ExtendedPublicKeySelector";
 import InteractionMessages from "../InteractionMessages";
 
 import { slicePropTypes } from "../../proptypes";
 
+const TEXT = "text";
+
 const initialInteractionState = {
+  keySelected: false,
+  deviceType: "unknown",
+  bip32Path: "",
   hasInteraction: false,
   interactionState: PENDING,
   interactionError: "",
@@ -39,6 +55,12 @@ const interactionReducer = (state, action) => {
         interactionMessage: "",
         interactionState: PENDING,
       };
+    case "SET_KEY_SELECTED":
+      return { ...state, keySelected: true };
+    case "SET_DEVICE_TYPE":
+      return { ...state, deviceType: action.value };
+    case "SET_BIP32_PATH":
+      return { ...state, bip32Path: action.value };
     case "SET_ACTIVE":
       return { ...state, interactionState: ACTIVE };
     case "HAS_INTERACTION":
@@ -72,15 +94,57 @@ const ConfirmAddress = ({ slice, network }) => {
   const totalSigners = multisigTotalSigners(slice.multisig);
 
   // Sets device interaction for component based on xpub selected
-  function keySelected(_event, extendedPublicKeyImporter) {
+  function handleKeySelected(_event, extendedPublicKeyImporter) {
     const { multisig, bip32Path } = slice;
+    dispatch({ type: "SET_KEY_SELECTED" });
+    dispatch({
+      type: "SET_DEVICE_TYPE",
+      value: extendedPublicKeyImporter.method,
+    });
+    const fullBip32Path = `${
+      extendedPublicKeyImporter.bip32Path
+    }${bip32Path.slice(1)}`;
+    if (extendedPublicKeyImporter.bip32Path !== "Unknown") {
+      dispatch({
+        type: "SET_BIP32_PATH",
+        value: fullBip32Path,
+      });
+    } else {
+      dispatch({
+        type: "SET_BIP32_PATH",
+        value: "",
+      });
+    }
+    if (extendedPublicKeyImporter.method !== "unknown") {
+      setInteraction(
+        ConfirmMultisigAddress({
+          keystore: extendedPublicKeyImporter.method,
+          network,
+          bip32Path: fullBip32Path,
+          multisig,
+        })
+      );
+      dispatch({ type: "HAS_INTERACTION", value: true });
+      dispatch({ type: "RESET" });
+    } else {
+      setInteraction(null);
+      dispatch({ type: "HAS_INTERACTION", value: false });
+      dispatch({ type: "RESET" });
+    }
+  }
+
+  // Sets device interaction for component based on xpub selected
+  function handleMethodChange(event) {
+    dispatch({
+      type: "SET_DEVICE_TYPE",
+      value: event.target.value,
+    });
+    const { multisig } = slice;
     setInteraction(
       ConfirmMultisigAddress({
-        keystore: extendedPublicKeyImporter.method,
+        keystore: event.target.value,
         network,
-        bip32Path: `${extendedPublicKeyImporter.bip32Path}${bip32Path.slice(
-          1
-        )}`,
+        bip32Path: state.bip32Path,
         multisig,
       })
     );
@@ -110,17 +174,40 @@ const ConfirmAddress = ({ slice, network }) => {
 
   return (
     <Grid item md={12}>
-      <ExtendedPublicKeySelector number={0} onChange={keySelected} />
+      <ExtendedPublicKeySelector number={0} onChange={handleKeySelected} />
+      {state.deviceType === "unknown" && state.keySelected && (
+        <form>
+          <FormControl fullWidth>
+            <InputLabel>Select Method</InputLabel>
+
+            <Select
+              id="confirm-importer-select"
+              value=""
+              onChange={handleMethodChange}
+            >
+              <MenuItem value="">{"< Select method >"}</MenuItem>
+              <MenuItem value={TREZOR}>Trezor</MenuItem>
+              <MenuItem value={LEDGER} disabled>
+                Ledger
+              </MenuItem>
+              <MenuItem value={HERMIT} disabled>
+                Hermit
+              </MenuItem>
+              <MenuItem value={TEXT} disabled>
+                Enter as text
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </form>
+      )}
       {state.hasInteraction && (
         <>
           <Box>
             <p>
-              Confirm the following{network.length ? network : ""} {addressType}{" "}
-              {requiredSigners}
-              -of-
+              Confirm the following {network.length ? network : ""}{" "}
+              {addressType} {requiredSigners} -of-
               {totalSigners} multisig address on your device:
             </p>
-
             <Table>
               <TableBody>
                 <TableRow>
@@ -133,7 +220,7 @@ const ConfirmAddress = ({ slice, network }) => {
                 <TableRow>
                   <TableCell>BIP32 Path:</TableCell>
                   <TableCell>
-                    <code>{interaction.bip32Path}</code>
+                    <code>{state.bip32Path}</code>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -169,7 +256,7 @@ const ConfirmAddress = ({ slice, network }) => {
             variant="contained"
             size="large"
             onClick={confirmOnDevice}
-            disabled={state.interactionState === ACTIVE}
+            disabled={state.interactionState === ACTIVE || !state.bip32Path}
           >
             Confirm
           </Button>
@@ -193,4 +280,5 @@ ConfirmAddress.propTypes = {
 ConfirmAddress.defaultProps = {
   network: "",
 };
+
 export default ConfirmAddress;
