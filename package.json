@@ -116,6 +116,6 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "unchained-bitcoin": "0.0.14",
-    "unchained-wallets": "0.1.1"
+    "unchained-wallets": "0.1.2"
   }
 }
