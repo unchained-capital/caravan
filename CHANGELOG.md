@@ -1,7 +1,29 @@
-# Change Log
+# Changelog
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.3.0](https://github.com/unchained-capital/caravan/compare/v0.2.1...v0.3.0) (2020-07-09)
+
+### SUMMARY
+
+Adds the ability to provide a starting address index with which to load addresses.  This is useful if the user started at a higher bip32 suffix than `0/0` (the default).
+
+Also fixes a bug in confirm on device.
+
+
+### ⚠ BREAKING CHANGES
+
+* **wallet:** None
+* **slices:** None
+
+### Features
+
+* **wallet:** starting Address Index loading, picking, exporting ([653132a](https://github.com/unchained-capital/caravan/commit/653132aba3ac1fe19945b79c2f906ee311c9b8aa)), closes [#149](https://github.com/unchained-capital/caravan/issues/149)
+
+
+### Bug Fixes
+
+* **slices:** confirmAddress can handle unknown method ([fb31758](https://github.com/unchained-capital/caravan/commit/fb31758033df16c2d3545bfc95dd8f7267e416c4))
 
 ## [0.2.1](https://github.com/unchained-capital/caravan/compare/v0.2.0...v.0.2.1) (2020-06-29)
 
