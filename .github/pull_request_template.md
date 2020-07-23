@@ -18,7 +18,7 @@
 * [ ] Yes
 * [ ] No
 
-## Does this PR fixes open issues?
+## Does this PR fix an open issue?
 
 <!-- If this PR contain fixes to open issues please link them here -->
 
