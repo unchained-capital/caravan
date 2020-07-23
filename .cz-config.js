@@ -1,6 +1,7 @@
 const types = [
   ` feat:     A new feature`,
-  ` fix:      A bug fix`,
+  ` fix:      A bug fix (or dependency update)`,
+  ` build:    Changes that affect the build system or external dependencies`,
   ` docs:     Documentation only changes`,
   ` style:    Changes that do not affect the meaning of the code
              (white-space, formatting, missing semi-colons, etc)`,
@@ -8,9 +9,7 @@ const types = [
   ` perf:     A code change that improves performance`,
   ` test:     Adding missing tests`,
   ` revert:   Revert to a commit`,
-  ` WIP:      Work in progress`,
-  ` chore:    Changes to the build process or auxiliary tools
-             and libraries such as documentation generation`
+  ` WIP:      Work in progress`
 ];
 
 const messages = {
@@ -37,6 +36,7 @@ const scopes = [
   "testrunner",
   "wallet",
   "xpubimporter",
+  "dependencies",
   "other",
 ];
 
