@@ -4,11 +4,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.3.2](https://github.com/unchained-capital/caravan/compare/v0.3.1...v0.3.2) (2020-07-27)
 
+### Features
+
+* **dependencies:** update unchained-wallets to 0.1.6 ([6eb62bc](https://github.com/unchained-capital/caravan/commit/6eb62bc7f46b789a2610af8e51aa846cff25f777))
+
+
+
 ### [0.3.1](https://github.com/unchained-capital/caravan/compare/v0.2.1...v0.3.1) (2020-07-14)
 
 ### Features
 
-* **other:** update unchained-wallets to 0.1.3 ([6abefcc](https://github.com/unchained-capital/caravan/commit/6abefcc49c6c997b827079c0120ce2790c7aaadd))
+* **dependencies:** update unchained-wallets to 0.1.3 ([6abefcc](https://github.com/unchained-capital/caravan/commit/6abefcc49c6c997b827079c0120ce2790c7aaadd))
 
 
 
@@ -34,6 +40,8 @@ Also fixes a bug in confirm on device.
 ### Bug Fixes
 
 * **slices:** confirmAddress can handle unknown method ([fb31758](https://github.com/unchained-capital/caravan/commit/fb31758033df16c2d3545bfc95dd8f7267e416c4))
+
+
 
 ## [0.2.1](https://github.com/unchained-capital/caravan/compare/v0.2.0...v.0.2.1) (2020-06-29)
 
@@ -64,8 +72,6 @@ Also fixes a bug in confirm on device.
 
 
 
-
-
 ## [0.1.5](https://github.com/unchained-capital/caravan/compare/v0.1.4...v0.1.5) (2019-11-14)
 
 
@@ -78,8 +84,6 @@ Also fixes a bug in confirm on device.
 
 
 
-
-
 ## [0.1.4](https://github.com/unchained-capital/caravan/compare/v0.1.3...v0.1.4) (2019-11-13)
 
 
@@ -89,16 +93,12 @@ Also fixes a bug in confirm on device.
 
 
 
-
-
 ## [0.1.3](https://github.com/unchained-capital/caravan/compare/v0.1.2...v0.1.3) (2019-11-13)
 
 
 ### Bug Fixes
 
 * Adding README, fixed broken CORS doc link. ([2c23cc9](https://github.com/unchained-capital/caravan/commit/2c23cc94f667506d1be7ce7e3d9a82f81f48eaa2))
-
-
 
 
 
@@ -112,8 +112,6 @@ Also fixes a bug in confirm on device.
 ### Bug Fixes
 
 * fix readme links ([a9249d2](https://github.com/unchained-capital/caravan/commit/a9249d2cd6b164d3ac04934ea8de047982beab3e))
-
-
 
 
 
