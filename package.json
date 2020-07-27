@@ -16,7 +16,7 @@
   "homepage": "https://unchained-capital.github.io/caravan",
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@commitlint/cli": "^9.0.1",
+    "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.0.1",
     "@commitlint/travis-cli": "^9.0.1",
     "@testing-library/jest-dom": "^5.6.0",
@@ -26,7 +26,7 @@
     "chai": "4.2.0",
     "commander": "^5.0.0",
     "commitlint-config-cz": "^0.13.1",
-    "cypress": "^4.5.0",
+    "cypress": "^4.11.0",
     "cz-customizable": "^6.2.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
@@ -42,7 +42,7 @@
     "jest-junit": "^11.0.1",
     "mocha": "7.1.1",
     "prettier": "^2.0.2",
-    "standard-version": "^8.0.0"
+    "standard-version": "^8.0.2"
   },
   "scripts": {
     "build": "npm run check && react-scripts build",
@@ -89,7 +89,7 @@
     "fs-extra": "^9.0.0",
     "hi-base32": "^0.5.0",
     "history": "^5.0.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "material-table": "^1.57.2",
     "moment": "^2.24.0",
     "node-sass": "^4.14.1",
