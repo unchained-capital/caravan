@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/unchained-capital/caravan/compare/v0.3.2...v0.3.3) (2020-08-03)
+
+
+### Bug Fixes
+
+* **dependencies:** update unchained libraries ([4f77ff5](https://github.com/unchained-capital/caravan/commit/4f77ff5317e5260420e376f2b694cd2f90bb36a1))
+* **other:** fix npm packages with low severity vulnerabilities ([#167](https://github.com/unchained-capital/caravan/issues/167)) ([44cedd0](https://github.com/unchained-capital/caravan/commit/44cedd0d732faca4df45260be66e63206115507b)), closes [#134](https://github.com/unchained-capital/caravan/issues/134)
+
 ### [0.3.2](https://github.com/unchained-capital/caravan/compare/v0.3.1...v0.3.2) (2020-07-27)
 
 ### Features
