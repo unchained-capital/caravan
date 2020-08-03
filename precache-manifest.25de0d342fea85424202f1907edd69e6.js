@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "b2697951f43aae5868f2331ddebb7e9a",
+    "revision": "6a6cd1ef22445e87c168f2cf2b0cdb26",
     "url": "/caravan/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/caravan/static/css/2.d694ff75.chunk.css"
   },
   {
-    "revision": "cc42c5bbf305bdca1f1b",
+    "revision": "194d188d60e8f1ded208",
     "url": "/caravan/static/css/main.a7b7f3be.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/caravan/static/js/2.7488c81c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "cc42c5bbf305bdca1f1b",
-    "url": "/caravan/static/js/main.e80f27c8.chunk.js"
+    "revision": "194d188d60e8f1ded208",
+    "url": "/caravan/static/js/main.196b33cd.chunk.js"
   },
   {
     "revision": "c0d23c29dff07aa0630e",
