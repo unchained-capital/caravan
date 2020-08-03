@@ -58,7 +58,7 @@
     "gh-pages": "CI=true npm run build && gh-pages -d build",
     "lint": "npm run lint:code && npm run lint:commit",
     "lint:code": "eslint --ext .js,.jsx src/",
-    "lint:commit": "commitlint -e",
+    "lint:commit": "commitlint --from=HEAD~1",
     "lint:commit-travis": "commitlint-travis",
     "predeploy": "npm run build",
     "release": "standard-version",
