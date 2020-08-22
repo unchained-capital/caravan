@@ -16,6 +16,7 @@ describe("slices utils", () => {
       a = {
         bip32Path: "m/0/5",
         lastUsed: "04/20/2020",
+        lastUsedTime: 1587458800000,
         utxos: [
           {
             time: 1587358800000,
@@ -28,6 +29,7 @@ describe("slices utils", () => {
       b = {
         bip32Path: "m/0/6",
         lastUsed: "04/23/2020",
+        lastUsedTime: 1587758800000,
         utxos: [
           {
             time: 1587458800000,
@@ -50,27 +52,35 @@ describe("slices utils", () => {
 
       // b is before a
       a.lastUsed = "04/23/2020";
+      a.lastUsedTime = 1587758800000;
       b.lastUsed = "04/20/2020";
+      b.lastUsedTime = 1587458800000;
       expect(sliceUtils.compareSlicesByTime(a, b)).toEqual(-1);
 
       // a and b are at the same time
       b.lastUsed = a.lastUsed;
+      b.lastUsedTime = a.lastUsedTime;
       expect(sliceUtils.compareSlicesByTime(a, b)).toEqual(0);
 
       // b is undefined
       b.lastUsed = undefined;
+      b.lastUsedTime = undefined;
       expect(sliceUtils.compareSlicesByTime(a, b)).toEqual(-1);
 
       // a is undefined
       b.lastUsed = a.lastUsed;
+      b.lastUsedTime = a.lastUsedTime;
       a.lastUsed = undefined;
+      a.lastUsedTime = undefined;
       expect(sliceUtils.compareSlicesByTime(a, b)).toEqual(1);
     });
 
     it("should correctly compare by utxo list", () => {
       // lastUsed is checked first so need to reset to get to utxo checks
       a.lastUsed = undefined;
+      a.lastUsedTime = undefined;
       b.lastUsed = undefined;
+      b.lastUsedTime = undefined;
 
       expect(sliceUtils.compareSlicesByTime(a, b)).toEqual(1);
       expect(sliceUtils.compareSlicesByTime(a, b, desc)).toEqual(-1);

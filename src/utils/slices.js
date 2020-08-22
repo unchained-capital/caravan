@@ -72,17 +72,17 @@ export function compareSlicesByTime(a, b, orderDir = "asc") {
   if (b.lastUsed === "Spent")
     return a.lastUsed && a.lastUsed !== "Spent" ? direction : -direction;
 
-  // if there is a last used param then we should be able to compare those
-  if (a.lastUsed && b.lastUsed) {
-    if (a.lastUsed === b.lastUsed) return 0;
-    return a.lastUsed >= b.lastUsed ? direction : -direction;
+  // if there is a lastUsedTime param then we should be able to compare those
+  if (a.lastUsedTime && b.lastUsedTime) {
+    if (a.lastUsedTime === b.lastUsedTime) return 0;
+    return a.lastUsedTime >= b.lastUsedTime ? direction : -direction;
   }
 
-  if (a.lastUsed && (!b.lastUsed || b.utxos.length === 0)) {
+  if (a.lastUsedTime && (!b.lastUsedTime || b.utxos.length === 0)) {
     return direction;
   }
 
-  if (b.lastUsed && (!a.lastUsed || a.utxos.length === 0)) {
+  if (b.lastUsedTime && (!a.lastUsedTime || a.utxos.length === 0)) {
     return -direction;
   }
 
@@ -92,13 +92,13 @@ export function compareSlicesByTime(a, b, orderDir = "asc") {
   if (b.utxos.length === 0) {
     return a.utxos.length === 0 ? 0 : -direction;
   }
-  const amin = Math.min(...a.utxos.map((utxo) => utxo.time));
-  const bmin = Math.min(...b.utxos.map((utxo) => utxo.time));
+  const amax = Math.max(...a.utxos.map((utxo) => utxo.time));
+  const bmax = Math.max(...b.utxos.map((utxo) => utxo.time));
 
-  if (Number.isNaN(amin) && Number.Number.isNaN(bmin)) return 0;
-  if (Number.isNaN(amin)) return direction;
-  if (Number.isNaN(bmin)) return -direction;
-  return amin > bmin ? direction : -direction;
+  if (Number.isNaN(amax) && Number.Number.isNaN(bmax)) return 0;
+  if (Number.isNaN(amax)) return direction;
+  if (Number.isNaN(bmax)) return -direction;
+  return amax > bmax ? direction : -direction;
 }
 
 export function isChange(path) {
