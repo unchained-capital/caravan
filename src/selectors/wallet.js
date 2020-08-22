@@ -78,6 +78,7 @@ export const getSlicesWithLastUsed = createSelector(
       return {
         ...slice,
         lastUsed: new Date(1000 * maxtime).toLocaleDateString(),
+        lastUsedTime: maxtime,
       };
     });
   }
