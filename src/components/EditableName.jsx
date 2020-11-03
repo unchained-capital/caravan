@@ -1,7 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-
-// Components
 import { Grid, IconButton, TextField } from "@material-ui/core";
 import { Check, Clear, Edit } from "@material-ui/icons";
 
@@ -33,6 +31,10 @@ class EditableName extends React.Component {
               label="Name"
               value={newName}
               onChange={this.handleChange}
+              onFocus={(event) => {
+                setTimeout(event.target.select.bind(event.target), 20);
+              }}
+              onKeyDown={(e) => (e.key === "Enter" ? this.submit() : null)}
               error={this.hasError()}
               helperText={error}
             />
@@ -72,7 +74,14 @@ class EditableName extends React.Component {
           <Edit />
         </IconButton>
         &nbsp;
-        <span data-cy="editable-name-value">{name}</span>
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+        <span
+          data-cy="editable-name-value"
+          style={{ cursor: "pointer" }}
+          onClick={this.startEditing}
+        >
+          {name}
+        </span>
       </span>
     );
   };

@@ -1,4 +1,4 @@
-import { diffChars, diffArrays, diffJSON } from "diff";
+import { diffChars, diffArrays, diffJson } from "diff";
 
 const SUCCESS = "success";
 const FAILURE = "failure";
@@ -23,6 +23,11 @@ class Test {
 
   // eslint-disable-next-line class-methods-use-this
   matches(expected, actual) {
+    if (typeof expected === "object" && typeof actual === "object") {
+      return Object.keys(actual).every((key) => {
+        return expected[key] === actual[key];
+      });
+    }
     return expected === actual;
   }
 
@@ -40,7 +45,7 @@ class Test {
         return diffArrays(expected, actual);
       }
       if (expected.length === undefined && actual.length === undefined) {
-        return diffJSON(expected, actual);
+        return diffJson(expected, actual);
       }
     }
     return null;
@@ -63,14 +68,38 @@ class Test {
     return this.params.expected;
   }
 
-  async actual() {
-    return this.postprocess(this.interaction().run());
+  async actual(data) {
+    return this.postprocess(
+      data ? this.interaction().parse(data) : this.interaction().run()
+    );
   }
 
   async run() {
     try {
       const actual = await this.actual();
       return this.resolve(actual);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return { status: ERROR, message: e.message };
+    }
+  }
+
+  async runParse(data) {
+    try {
+      const actual = await this.actual(data);
+      // Both Coldcard responses include Objects
+      // but the xpub object includes a rootFingerprint
+      // while signatures only includes pubkeys and signatures
+      const sendToResolver = actual.rootFingerprint
+        ? {
+            // Either an xpub or a pubkey
+            pubkey: actual.pubkey,
+            xpub: actual.xpub || actual.tpub,
+            rootFingerprint: actual.rootFingerprint,
+          }
+        : Object.values(actual)[0];
+      return this.resolve(sendToResolver);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);

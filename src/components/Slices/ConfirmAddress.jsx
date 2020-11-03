@@ -23,6 +23,7 @@ import {
 import {
   TREZOR,
   LEDGER,
+  COLDCARD,
   HERMIT,
   ACTIVE,
   PENDING,
@@ -57,6 +58,8 @@ const interactionReducer = (state, action) => {
       };
     case "SET_KEY_SELECTED":
       return { ...state, keySelected: true };
+    case "SET_KEY_UNSELECTED":
+      return { ...state, keySelected: false };
     case "SET_DEVICE_TYPE":
       return { ...state, deviceType: action.value };
     case "SET_BIP32_PATH":
@@ -96,60 +99,70 @@ const ConfirmAddress = ({ slice, network }) => {
   // Sets device interaction for component based on xpub selected
   function handleKeySelected(_event, extendedPublicKeyImporter) {
     const { multisig, bip32Path } = slice;
-    dispatch({ type: "SET_KEY_SELECTED" });
-    dispatch({
-      type: "SET_DEVICE_TYPE",
-      value: extendedPublicKeyImporter.method,
-    });
-    const fullBip32Path = `${
-      extendedPublicKeyImporter.bip32Path
-    }${bip32Path.slice(1)}`;
-    if (extendedPublicKeyImporter.bip32Path !== "Unknown") {
+    if (extendedPublicKeyImporter) {
+      dispatch({ type: "SET_KEY_SELECTED" });
       dispatch({
-        type: "SET_BIP32_PATH",
-        value: fullBip32Path,
+        type: "SET_DEVICE_TYPE",
+        value: extendedPublicKeyImporter.method,
       });
-    } else {
-      dispatch({
-        type: "SET_BIP32_PATH",
-        value: "",
-      });
-    }
-    if (extendedPublicKeyImporter.method !== "unknown") {
-      setInteraction(
-        ConfirmMultisigAddress({
-          keystore: extendedPublicKeyImporter.method,
-          network,
-          bip32Path: fullBip32Path,
-          multisig,
-        })
-      );
-      dispatch({ type: "HAS_INTERACTION", value: true });
-      dispatch({ type: "RESET" });
+      const fullBip32Path = `${
+        extendedPublicKeyImporter.bip32Path
+      }${bip32Path.slice(1)}`;
+      if (extendedPublicKeyImporter.bip32Path !== "Unknown") {
+        dispatch({
+          type: "SET_BIP32_PATH",
+          value: fullBip32Path,
+        });
+      } else {
+        dispatch({
+          type: "SET_BIP32_PATH",
+          value: "",
+        });
+      }
+      // FIXME - hardcoded to just show up for trezor
+      if (extendedPublicKeyImporter.method === "trezor") {
+        setInteraction(
+          ConfirmMultisigAddress({
+            keystore: extendedPublicKeyImporter.method,
+            network,
+            bip32Path: fullBip32Path,
+            multisig,
+          })
+        );
+        dispatch({ type: "HAS_INTERACTION", value: true });
+        dispatch({ type: "RESET" });
+      } else {
+        setInteraction(null);
+        dispatch({ type: "HAS_INTERACTION", value: false });
+        dispatch({ type: "RESET" });
+      }
     } else {
       setInteraction(null);
       dispatch({ type: "HAS_INTERACTION", value: false });
       dispatch({ type: "RESET" });
+      dispatch({ type: "SET_KEY_UNSELECTED" });
     }
   }
 
   // Sets device interaction for component based on xpub selected
   function handleMethodChange(event) {
-    dispatch({
-      type: "SET_DEVICE_TYPE",
-      value: event.target.value,
-    });
-    const { multisig } = slice;
-    setInteraction(
-      ConfirmMultisigAddress({
-        keystore: event.target.value,
-        network,
-        bip32Path: state.bip32Path,
-        multisig,
-      })
-    );
-    dispatch({ type: "HAS_INTERACTION", value: true });
-    dispatch({ type: "RESET" });
+    if (event.target.value !== "") {
+      dispatch({
+        type: "SET_DEVICE_TYPE",
+        value: event.target.value,
+      });
+      const { multisig } = slice;
+      setInteraction(
+        ConfirmMultisigAddress({
+          keystore: event.target.value,
+          network,
+          bip32Path: state.bip32Path,
+          multisig,
+        })
+      );
+      dispatch({ type: "HAS_INTERACTION", value: true });
+      dispatch({ type: "RESET" });
+    }
   }
 
   // run interaction and see if address confirms
@@ -175,7 +188,7 @@ const ConfirmAddress = ({ slice, network }) => {
   return (
     <Grid item md={12}>
       <ExtendedPublicKeySelector number={0} onChange={handleKeySelected} />
-      {state.deviceType === "unknown" && state.keySelected && (
+      {state.keySelected && (
         <form>
           <FormControl fullWidth>
             <InputLabel>Select Method</InputLabel>
@@ -187,6 +200,9 @@ const ConfirmAddress = ({ slice, network }) => {
             >
               <MenuItem value="">{"< Select method >"}</MenuItem>
               <MenuItem value={TREZOR}>Trezor</MenuItem>
+              <MenuItem value={COLDCARD} disabled>
+                Coldcard
+              </MenuItem>
               <MenuItem value={LEDGER} disabled>
                 Ledger
               </MenuItem>

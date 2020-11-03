@@ -82,7 +82,7 @@ export async function bitcoindListUnspent({ url, auth, address, addresses }) {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error("There was a problem:", e.message);
-    return e;
+    throw e;
   }
 }
 

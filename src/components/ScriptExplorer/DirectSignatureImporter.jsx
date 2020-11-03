@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-
 import { satoshisToBitcoins } from "unchained-bitcoin";
 import {
   PENDING,
@@ -9,8 +8,6 @@ import {
   ERROR,
   SignMultisigTransaction,
 } from "unchained-wallets";
-
-// Components
 import {
   Button,
   TextField,
@@ -25,13 +22,13 @@ import {
 } from "@material-ui/core";
 import InteractionMessages from "../InteractionMessages";
 
-class HardwareWalletSignatureImporter extends React.Component {
+class DirectSignatureImporter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       signatureError: "",
       bip32PathError: "",
-      status: this.interaction(true).isSupported() ? PENDING : UNSUPPORTED,
+      status: this.interaction().isSupported() ? PENDING : UNSUPPORTED,
     };
   }
 
@@ -265,7 +262,7 @@ class HardwareWalletSignatureImporter extends React.Component {
   };
 }
 
-HardwareWalletSignatureImporter.propTypes = {
+DirectSignatureImporter.propTypes = {
   defaultBIP32Path: PropTypes.string.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,
@@ -287,4 +284,4 @@ HardwareWalletSignatureImporter.propTypes = {
   validateAndSetSignature: PropTypes.func.isRequired,
 };
 
-export default HardwareWalletSignatureImporter;
+export default DirectSignatureImporter;

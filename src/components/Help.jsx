@@ -230,6 +230,12 @@ const Help = () => (
                     "Ledger Nano X"
                   )}
                 </li>
+                <li>
+                  {externalLink(
+                    "https://coldcardwallet.com",
+                    "Coldcard Mk2 & Mk3"
+                  )}
+                </li>
               </ul>
               And web browsers:
               <ul>

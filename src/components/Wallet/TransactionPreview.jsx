@@ -1,9 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import BigNumber from "bignumber.js";
 import { satoshisToBitcoins } from "unchained-bitcoin";
-
-// Components
 import {
   Button,
   Box,
@@ -16,69 +15,23 @@ import {
   Grid,
 } from "@material-ui/core";
 import UnsignedTransaction from "../UnsignedTransaction";
+import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../actions/transactionActions";
 
 class TransactionPreview extends React.Component {
-  render = () => {
+  componentDidMount() {
     const {
-      feeRate,
-      fee,
-      inputsTotalSats,
-      editTransaction,
-      handleSignTransaction,
+      outputs,
+      changeAddress,
+      changeOutputIndex,
+      changeNode,
+      setChangeOutputMultisig,
     } = this.props;
-
-    return (
-      <Box>
-        <h2>Transaction Preview</h2>
-        <UnsignedTransaction />
-        <h3>Inputs</h3>
-        {this.renderInputs()}
-        <h3>Outputs</h3>
-        {this.renderOutputs()}
-        <Grid container>
-          <Grid item xs={4}>
-            <h3>Fee</h3>
-            <div>{BigNumber(fee).toFixed(8)} BTC </div>
-          </Grid>
-          <Grid item xs={4}>
-            <h3>Fee Rate</h3>
-            <div>{feeRate} sats/byte</div>
-          </Grid>
-          <Grid item xs={4}>
-            <h3>Total</h3>
-            <div>
-              {satoshisToBitcoins(BigNumber(inputsTotalSats || 0)).toFixed(8)}{" "}
-              BTC
-            </div>
-          </Grid>
-        </Grid>
-        <Box mt={2}>
-          <Grid container spacing={2}>
-            <Grid item>
-              <Button
-                variant="contained"
-                onClick={(e) => {
-                  e.preventDefault();
-                  editTransaction();
-                }}
-              >
-                Edit Transaction
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSignTransaction}
-              >
-                Sign Transaction
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
-    );
-  };
+    outputs.forEach((output) => {
+      if (output.address === changeAddress) {
+        setChangeOutputMultisig(changeOutputIndex, changeNode.multisig);
+      }
+    });
+  }
 
   renderAddresses = () => {
     const addressWithUtxos = this.mapAddresses();
@@ -198,10 +151,76 @@ class TransactionPreview extends React.Component {
       )
     ).toString();
   };
+
+  render = () => {
+    const {
+      feeRate,
+      fee,
+      inputsTotalSats,
+      editTransaction,
+      handleSignTransaction,
+    } = this.props;
+
+    return (
+      <Box>
+        <h2>Transaction Preview</h2>
+        <UnsignedTransaction />
+        <h3>Inputs</h3>
+        {this.renderInputs()}
+        <h3>Outputs</h3>
+        {this.renderOutputs()}
+        <Grid container>
+          <Grid item xs={4}>
+            <h3>Fee</h3>
+            <div>{BigNumber(fee).toFixed(8)} BTC </div>
+          </Grid>
+          <Grid item xs={4}>
+            <h3>Fee Rate</h3>
+            <div>{feeRate} sats/byte</div>
+          </Grid>
+          <Grid item xs={4}>
+            <h3>Total</h3>
+            <div>
+              {satoshisToBitcoins(BigNumber(inputsTotalSats || 0)).toFixed(8)}{" "}
+              BTC
+            </div>
+          </Grid>
+        </Grid>
+        <Box mt={2}>
+          <Grid container spacing={2}>
+            <Grid item>
+              <Button
+                variant="contained"
+                onClick={(e) => {
+                  e.preventDefault();
+                  editTransaction();
+                }}
+              >
+                Edit Transaction
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSignTransaction}
+              >
+                Sign Transaction
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    );
+  };
 }
 
 TransactionPreview.propTypes = {
   changeAddress: PropTypes.string.isRequired,
+  changeNode: PropTypes.shape({
+    multisig: PropTypes.shape({}),
+  }).isRequired,
+  changeOutputIndex: PropTypes.number.isRequired,
   editTransaction: PropTypes.func.isRequired,
   fee: PropTypes.string.isRequired,
   feeRate: PropTypes.string.isRequired,
@@ -209,6 +228,17 @@ TransactionPreview.propTypes = {
   inputsTotalSats: PropTypes.shape({}).isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSignTransaction: PropTypes.func.isRequired,
+  setChangeOutputMultisig: PropTypes.func.isRequired,
 };
 
-export default TransactionPreview;
+function mapStateToProps(state) {
+  return {
+    changeOutputIndex: state.spend.transaction.changeOutputIndex,
+  };
+}
+
+const mapDispatchToProps = {
+  setChangeOutputMultisig: setChangeOutputMultisigAction,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TransactionPreview);

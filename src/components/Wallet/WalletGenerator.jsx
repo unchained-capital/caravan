@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { debounce } from "lodash";
 import {
-  deriveChildPublicKey,
-  generateMultisigFromPublicKeys,
+  deriveMultisigByPath,
+  ExtendedPublicKey,
+  generateBraid,
 } from "unchained-bitcoin";
 import {
   Button,
@@ -24,20 +25,17 @@ import {
   getAddressStatus,
   fetchFeeEstimate,
 } from "../../blockchain";
-
-// Components
 import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
 import WalletControl from "./WalletControl";
 import WalletConfigInteractionButtons from "./WalletConfigInteractionButtons";
-
-// Actions
 import { setFrozen } from "../../actions/settingsActions";
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,
   resetNodesFetchErrors as resetNodesFetchErrorsAction,
   resetWallet as resetWalletAction,
+  initialLoadComplete as initialLoadCompleteAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import { setExtendedPublicKeyImporterVisible } from "../../actions/extendedPublicKeyImporterActions";
@@ -48,6 +46,8 @@ import {
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
+
+// const bitcoin = require('bitcoinjs-lib');
 
 class WalletGenerator extends React.Component {
   constructor(props) {
@@ -196,36 +196,29 @@ class WalletGenerator extends React.Component {
   generateMultisig = async (isChange, bip32Path, attemptToKeepGenerating) => {
     const {
       extendedPublicKeyImporters,
-      totalSigners,
       network,
       addressType,
       requiredSigners,
     } = this.props;
-    const publicKeys = [];
-    for (
-      let extendedPublicKeyImporterNumber = 1;
-      extendedPublicKeyImporterNumber <= totalSigners;
-      extendedPublicKeyImporterNumber += 1
-    ) {
-      const extendedPublicKeyImporter =
-        extendedPublicKeyImporters[extendedPublicKeyImporterNumber];
 
-      const publicKey = deriveChildPublicKey(
-        extendedPublicKeyImporter.extendedPublicKey,
-        bip32Path,
-        network
-      );
-      publicKeys.push(publicKey);
-    }
-    publicKeys.sort(); // BIP67
-
-    const multisig = generateMultisigFromPublicKeys(
+    const extendedPublicKeys = this.generateRichExtendedPublicKeys(
+      extendedPublicKeyImporters
+    );
+    const index = isChange ? "1" : "0";
+    const braid = generateBraid(
       network,
       addressType,
+      extendedPublicKeys,
       requiredSigners,
-      ...publicKeys
+      index
     );
+    const multisig = deriveMultisigByPath(braid, bip32Path);
 
+    // FIXME: Add regtest option for private node, if you're on regtest have to change the prefix for p2wsh addresses.
+    // if (true) {
+    //   const multisigAddress = bitcoin.address.fromBech32(multisig.address);
+    //   multisig.address = bitcoin.address.toBech32(multisigAddress.data, multisigAddress.version, 'bcrt');
+    // }
     const utxoUpdates = await this.fetchUTXOs(
       isChange,
       multisig,
@@ -255,7 +248,7 @@ class WalletGenerator extends React.Component {
   };
 
   generateNextNodeIfNecessary = (isChange) => {
-    const { change, deposits } = this.props;
+    const { change, deposits, initialLoadComplete } = this.props;
     const { trailingEmptyNodes } = isChange ? change : deposits;
     const { fetchUTXOsErrors } = isChange ? change : deposits;
     const allBIP32Paths = Object.keys((isChange ? change : deposits).nodes);
@@ -263,6 +256,7 @@ class WalletGenerator extends React.Component {
       trailingEmptyNodes >= MAX_TRAILING_EMPTY_NODES ||
       fetchUTXOsErrors >= MAX_FETCH_UTXOS_ERRORS
     ) {
+      initialLoadComplete();
       return;
     }
 
@@ -314,6 +308,27 @@ class WalletGenerator extends React.Component {
     }
   };
 
+  // eslint-disable-next-line class-methods-use-this
+  generateRichExtendedPublicKeys(extendedPublicKeyImporters) {
+    return Object.values(extendedPublicKeyImporters).map((importer) => {
+      const extendedPublicKey = ExtendedPublicKey.fromBase58(
+        importer.extendedPublicKey
+      );
+      extendedPublicKey.setRootFingerprint(
+        importer.rootXfp && importer.rootXfp.toLowerCase() !== "unknown"
+          ? importer.rootXfp
+          : "00000000"
+      );
+      extendedPublicKey.setBip32Path(
+        importer.bip32Path && importer.bip32Path.toLowerCase() !== "unknown"
+          ? importer.bip32Path
+          : `m${"/0".repeat(extendedPublicKey.depth)}`
+      );
+      extendedPublicKey.addBase58String();
+      return extendedPublicKey;
+    });
+  }
+
   async handlePasswordEnter(event) {
     event.preventDefault();
     this.debouncedTestConnection.cancel();
@@ -337,113 +352,125 @@ class WalletGenerator extends React.Component {
       downloadWalletDetails,
       client,
       generating,
+      extendedPublicKeyImporters,
     } = this.props;
     const { connectSuccess, unknownClient } = this.state;
+    const hasConflict = Object.values(extendedPublicKeyImporters).some(
+      (xpub) => xpub.conflict
+    );
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating && !configuring) {
         return (
           <WalletControl addNode={this.addNode} updateNode={this.updateNode} />
         );
       }
-      return (
-        <Card>
-          <CardHeader title={this.title()} />
-          <CardContent>
-            <Button href="#" onClick={this.toggleImporters}>
-              {configuring ? "Hide Key Selection" : "Edit Details"}
-            </Button>
-            <ConfirmWallet />
-            <p>
-              You have imported all&nbsp;
-              {totalSigners} extended public keys. You will need to save this
-              information.
-            </p>
-            <WalletConfigInteractionButtons
-              onClearFn={(e) => this.toggleImporters(e)}
-              onDownloadFn={downloadWalletDetails}
-            />
-            {unknownClient && (
-              <Box my={5}>
-                <Typography variant="subtitle1">
-                  This config does not contain client information. Please choose
-                  a client to connect to before importing your wallet.
-                </Typography>
-                <ClientPicker />
-              </Box>
-            )}
-            {client.type === "private" && !unknownClient && (
-              <Box my={5}>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1">
-                      This config uses a private client. Please enter password
-                      if not set.
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      id="client-username"
-                      label="Username"
-                      defaultValue={client.username}
-                      InputProps={{
-                        readOnly: true,
-                        disabled: true,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <AccountCircleIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={4} xs={10}>
-                    <form onSubmit={(event) => this.handlePasswordEnter(event)}>
+      if (!hasConflict) {
+        return (
+          <Card>
+            <CardHeader title={this.title()} />
+            <CardContent>
+              <Button href="#" onClick={this.toggleImporters}>
+                {configuring ? "Hide Key Selection" : "Edit Details"}
+              </Button>
+              <ConfirmWallet />
+              <p>
+                You have imported all&nbsp;
+                {totalSigners} extended public keys. You will need to save this
+                information.
+              </p>
+              <WalletConfigInteractionButtons
+                onClearFn={(e) => this.toggleImporters(e)}
+                onDownloadFn={downloadWalletDetails}
+              />
+              {unknownClient && (
+                <Box my={5}>
+                  <Typography variant="subtitle1">
+                    This config does not contain client information. Please
+                    choose a client to connect to before importing your wallet.
+                  </Typography>
+                  <ClientPicker
+                    onSuccess={() => this.setState({ connectSuccess: true })}
+                  />
+                </Box>
+              )}
+              {client.type === "private" && !unknownClient && (
+                <Box my={5}>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle1">
+                        This config uses a private client. Please enter password
+                        if not set.
+                      </Typography>
+                    </Grid>
+                    <Grid item>
                       <TextField
-                        id="bitcoind-password"
-                        fullWidth
-                        type="password"
-                        label="Password"
-                        placeholder="Enter bitcoind password"
-                        value={client.password}
-                        onChange={(event) => this.handlePasswordChange(event)}
-                        error={client.passwordError.length > 0}
-                        helperText={client.passwordError}
+                        id="client-username"
+                        label="Username"
+                        defaultValue={client.username}
+                        InputProps={{
+                          readOnly: true,
+                          disabled: true,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccountCircleIcon />
+                            </InputAdornment>
+                          ),
+                        }}
                       />
-                      {connectSuccess && (
-                        <FormHelperText>
-                          Connection confirmed with password!
-                        </FormHelperText>
-                      )}
-                    </form>
+                    </Grid>
+                    <Grid item md={4} xs={10}>
+                      <form
+                        onSubmit={(event) => this.handlePasswordEnter(event)}
+                      >
+                        <TextField
+                          id="bitcoind-password"
+                          fullWidth
+                          type="password"
+                          label="Password"
+                          placeholder="Enter bitcoind password"
+                          value={client.password}
+                          onChange={(event) => this.handlePasswordChange(event)}
+                          error={client.passwordError.length > 0}
+                          helperText={client.passwordError}
+                        />
+                        {connectSuccess && (
+                          <FormHelperText>
+                            Connection confirmed with password!
+                          </FormHelperText>
+                        )}
+                      </form>
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Box>
-            )}
-            <p>
-              Please confirm that the above information is correct and you wish
-              to generate your wallet.
-            </p>
-            <Button
-              id="confirm-wallet"
-              type="button"
-              variant="contained"
-              color="primary"
-              onClick={this.generate}
-              disabled={
-                (client.type === "private" && !connectSuccess) ||
-                client.type === "unknown"
-              }
-            >
-              Confirm
-            </Button>
-          </CardContent>
-        </Card>
+                </Box>
+              )}
+              <p>
+                Please confirm that the above information is correct and you
+                wish to generate your wallet.
+              </p>
+              <Button
+                id="confirm-wallet"
+                type="button"
+                variant="contained"
+                color="primary"
+                onClick={this.generate}
+                disabled={client.type !== "public" && !connectSuccess}
+              >
+                Confirm
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      }
+      return (
+        <p>You must correct the conflict before the wallet can be generated.</p>
       );
     }
     return (
       <p>
         {`Once you have imported all ${totalSigners} extended public keys, `}
         {"your wallet will be generated here."}
+        {hasConflict && ` You will not be able to continue until you address `}
+        {`the conflict.`}
       </p>
     );
   }
@@ -454,43 +481,44 @@ class WalletGenerator extends React.Component {
 }
 
 WalletGenerator.propTypes = {
-  network: PropTypes.string.isRequired,
   addressType: PropTypes.string.isRequired,
-  startingAddressIndex: PropTypes.number.isRequired,
+  change: PropTypes.shape({
+    nodes: PropTypes.shape({}),
+    fetchUTXOsErrors: PropTypes.number,
+  }).isRequired,
   client: PropTypes.shape({
     password: PropTypes.string,
     passwordError: PropTypes.string,
     type: PropTypes.string,
     username: PropTypes.string,
   }).isRequired,
-  change: PropTypes.shape({
-    nodes: PropTypes.shape({}),
-    fetchUTXOsErrors: PropTypes.number,
+  common: PropTypes.shape({
+    nodesLoaded: PropTypes.bool,
   }).isRequired,
+  configuring: PropTypes.bool.isRequired,
   deposits: PropTypes.shape({
     nodes: PropTypes.shape({}),
     fetchUTXOsErrors: PropTypes.number,
   }).isRequired,
-  configuring: PropTypes.bool.isRequired,
-  common: PropTypes.shape({
-    nodesLoaded: PropTypes.bool,
-  }).isRequired,
   downloadWalletDetails: PropTypes.func.isRequired,
   extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
-  setGenerating: PropTypes.func.isRequired,
-  generating: PropTypes.bool.isRequired,
-  totalSigners: PropTypes.number.isRequired,
-  requiredSigners: PropTypes.number.isRequired,
   freeze: PropTypes.func.isRequired,
-  updateDepositSlice: PropTypes.func.isRequired,
-  updateChangeSlice: PropTypes.func.isRequired,
+  generating: PropTypes.bool.isRequired,
+  initialLoadComplete: PropTypes.func.isRequired,
+  network: PropTypes.string.isRequired,
+  setGenerating: PropTypes.func.isRequired,
+  startingAddressIndex: PropTypes.number.isRequired,
   refreshNodes: PropTypes.func.isRequired,
+  requiredSigners: PropTypes.number.isRequired,
   resetNodesFetchErrors: PropTypes.func.isRequired,
   resetWallet: PropTypes.func.isRequired,
   setImportersVisible: PropTypes.func.isRequired,
   setIsWallet: PropTypes.func.isRequired,
   setPassword: PropTypes.func.isRequired,
   setPasswordError: PropTypes.func.isRequired,
+  totalSigners: PropTypes.number.isRequired,
+  updateChangeSlice: PropTypes.func.isRequired,
+  updateDepositSlice: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -516,6 +544,7 @@ const mapDispatchToProps = {
     setPassword: SET_CLIENT_PASSWORD,
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
   }),
+  initialLoadComplete: initialLoadCompleteAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);

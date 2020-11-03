@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 
 import {
   getConfirmedBalance,
-  getTotalbalance,
+  getTotalBalance,
   getPendingBalance,
   getSpendableSlices,
 } from "./wallet";
@@ -43,7 +43,7 @@ describe("wallet selectors", () => {
   });
   describe("getTotalBalance", () => {
     it("should return total balance of confirmed and unconfirmed UTXOs", () => {
-      const actualTotal = getTotalbalance(state);
+      const actualTotal = getTotalBalance(state);
       expect(actualTotal).toEqual(pendingBalance + confirmedBalance);
     });
   });

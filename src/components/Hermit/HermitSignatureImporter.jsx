@@ -6,8 +6,6 @@ import {
   UNSUPPORTED,
   SignMultisigTransaction,
 } from "unchained-wallets";
-
-// Components
 import {
   Grid,
   Box,
@@ -15,8 +13,8 @@ import {
   Button,
   FormHelperText,
 } from "@material-ui/core";
-import HermitReader from "../Hermit/HermitReader";
-import HermitDisplayer from "../Hermit/HermitDisplayer";
+import HermitReader from "./HermitReader";
+import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
 
 class HermitSignatureImporter extends React.Component {
