@@ -1,0 +1,31 @@
+.uploadIcon {
+  margin-top: 0.1rem;
+  margin-bottom: 0;
+}
+.instruction {
+  margin-top: 0.1rem;
+}
+
+.dropzone {
+  text-align:center;
+  height: 6rem;
+  border-width: 2px;
+  border-radius: 30px;
+  border-color: #7d7770;
+  border-style: dashed;
+  padding: 1.2rem;
+  margin-left: 3rem;
+  margin-right: 3rem;
+  cursor: pointer;
+}
+
+.dropzoneDull {
+  composes: dropzone;
+  border-color: #c6c3c0;
+  color: #c6c3c0;
+  cursor: default;
+}
+
+.uploadContainer {
+  margin: .5rem 0;
+}

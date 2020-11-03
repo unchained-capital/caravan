@@ -6,6 +6,7 @@ import {
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_BIP32_PATH,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_METHOD,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY,
+  SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY_ROOT_FINGERPRINT,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED,
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_VISIBLE,
 } from "../actions/extendedPublicKeyImporterActions";
@@ -31,8 +32,9 @@ const initialExtendedPublicKeyImporterState = (name = "") => ({
   bip32PathModified: false,
   method: "",
   extendedPublicKey: "",
+  rootXfp: "",
   finalized: false,
-  confliect: false,
+  conflict: false,
 });
 
 function createInitialState() {
@@ -87,7 +89,10 @@ function updateExtendedPublicKeyImporterState(state, action, field) {
   );
   if (
     importCount === Object.keys(newState.extendedPublicKeyImporters).length &&
-    field === "finalized"
+    field === "finalized" &&
+    Object.values(newState.extendedPublicKeyImporters).every(
+      (xpub) => !xpub.conflict
+    )
   ) {
     newState.configuring = false;
   }
@@ -220,6 +225,8 @@ export default (state = createInitialState(), action) => {
         action,
         "extendedPublicKey"
       );
+    case SET_EXTENDED_PUBLIC_KEY_IMPORTER_EXTENDED_PUBLIC_KEY_ROOT_FINGERPRINT:
+      return updateExtendedPublicKeyImporterState(state, action, "rootXfp");
     case SET_EXTENDED_PUBLIC_KEY_IMPORTER_FINALIZED:
       return updateExtendedPublicKeyImporterState(
         updateFinalizedSettings(state, action),

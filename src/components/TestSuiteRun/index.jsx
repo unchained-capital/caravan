@@ -125,6 +125,7 @@ class TestSuiteRunBase extends React.Component {
   };
 
   renderSetup = () => {
+    const { keystore } = this.props;
     return (
       <Grid container direction="column" spacing={3}>
         <Grid item>
@@ -155,7 +156,7 @@ class TestSuiteRunBase extends React.Component {
                 Ensure your keystore has been initialized with the following
                 seed:
               </p>
-              <Seed />
+              <Seed keystore={keystore} />
             </CardContent>
           </Card>
         </Grid>

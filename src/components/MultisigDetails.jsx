@@ -44,7 +44,7 @@ class MultisigDetails extends React.Component {
     const redeemScript = multisigRedeemScript(multisig);
     const witnessScript = multisigWitnessScript(multisig);
     return (
-      <Box mt={2}>
+      <Box mt={2} style={{ maxWidth: "1080px" }}>
         {showAddress && <Typography variant="h6">Address</Typography>}
 
         <Typography align="center" variant="h5">

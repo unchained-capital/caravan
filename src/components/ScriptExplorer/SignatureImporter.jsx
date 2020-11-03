@@ -8,9 +8,7 @@ import {
   multisigBIP32Root,
   validateBIP32Path,
 } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
-
-// Components
+import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
   Card,
   CardHeader,
@@ -24,11 +22,10 @@ import {
 } from "@material-ui/core";
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
-import HermitSignatureImporter from "./HermitSignatureImporter";
-import HardwareWalletSignatureImporter from "./HardwareWalletSignatureImporter";
+import DirectSignatureImporter from "./DirectSignatureImporter";
+import HermitSignatureImporter from "../Hermit/HermitSignatureImporter";
+import ColdcardSignatureImporter from "../Coldcard/ColdcardSignatureImporter";
 import EditableName from "../EditableName";
-
-// Actions
 import {
   setSignatureImporterName,
   setSignatureImporterMethod,
@@ -38,8 +35,8 @@ import {
   setSignatureImporterFinalized,
   setSignatureImporterComplete,
 } from "../../actions/signatureImporterActions";
-
 import "react-table/react-table.css";
+import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
 
 const TEXT = "text";
 const UNKNOWN = "unknown";
@@ -89,7 +86,7 @@ class SignatureImporter extends React.Component {
   };
 
   renderImport = () => {
-    const { signatureImporter, number, extendedPublicKeyImporter } = this.props;
+    const { signatureImporter, number, isWallet } = this.props;
     const currentNumber = this.getCurrent();
     const notMyTurn = number > currentNumber;
     const { disableChangeMethod } = this.state;
@@ -105,28 +102,26 @@ class SignatureImporter extends React.Component {
 
     return (
       <form>
-        {(extendedPublicKeyImporter === null ||
-          typeof extendedPublicKeyImporter === "undefined" ||
-          extendedPublicKeyImporter.method === TEXT ||
-          extendedPublicKeyImporter.method === UNKNOWN) && (
-          <FormControl fullWidth>
-            <InputLabel id={labelId}>Select Method</InputLabel>
+        <FormControl fullWidth>
+          <InputLabel id={labelId}>Select Method</InputLabel>
 
-            <Select
-              labelId={labelId}
-              id={`signature-${number}-importer-select`}
-              disabled={disableChangeMethod}
-              value={signatureImporter.method}
-              onChange={this.handleMethodChange}
-            >
-              <MenuItem value="">{"< Select method >"}</MenuItem>
-              <MenuItem value={TREZOR}>Trezor</MenuItem>
-              <MenuItem value={LEDGER}>Ledger</MenuItem>
-              <MenuItem value={HERMIT}>Hermit</MenuItem>
-              <MenuItem value={TEXT}>Enter as text</MenuItem>
-            </Select>
-          </FormControl>
-        )}
+          <Select
+            labelId={labelId}
+            id={`signature-${number}-importer-select`}
+            disabled={disableChangeMethod}
+            value={signatureImporter.method}
+            onChange={this.handleMethodChange}
+          >
+            <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
+            <MenuItem value={TREZOR}>Trezor</MenuItem>
+            <MenuItem value={LEDGER}>Ledger</MenuItem>
+            <MenuItem value={COLDCARD} disabled={!isWallet}>
+              Coldcard
+            </MenuItem>
+            <MenuItem value={HERMIT}>Hermit</MenuItem>
+            <MenuItem value={TEXT}>Enter as text</MenuItem>
+          </Select>
+        </FormControl>
 
         {this.renderImportByMethod()}
       </form>
@@ -145,36 +140,11 @@ class SignatureImporter extends React.Component {
       isWallet,
       extendedPublicKeyImporter,
     } = this.props;
-    if (signatureImporter.method === TEXT) {
+    const { method } = signatureImporter;
+
+    if (method === TREZOR || method === LEDGER) {
       return (
-        <TextSignatureImporter
-          signatureImporter={signatureImporter}
-          validateAndSetSignature={this.validateAndSetSignature}
-        />
-      );
-    }
-    if (signatureImporter.method === HERMIT) {
-      return (
-        <HermitSignatureImporter
-          network={network}
-          signatureImporter={signatureImporter}
-          inputs={inputs}
-          outputs={outputs}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
-          resetBIP32Path={this.resetBIP32Path}
-          defaultBIP32Path={this.defaultBIP32Path()}
-          validateAndSetSignature={this.validateAndSetSignature}
-          enableChangeMethod={this.enableChangeMethod}
-          disableChangeMethod={this.disableChangeMethod}
-        />
-      );
-    }
-    if (
-      signatureImporter.method === TREZOR ||
-      signatureImporter.method === LEDGER
-    ) {
-      return (
-        <HardwareWalletSignatureImporter
+        <DirectSignatureImporter
           network={network}
           signatureImporter={signatureImporter}
           signatureImporters={signatureImporters}
@@ -190,6 +160,47 @@ class SignatureImporter extends React.Component {
           validateAndSetSignature={this.validateAndSetSignature}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
+        />
+      );
+    }
+    if (method === HERMIT) {
+      return (
+        <HermitSignatureImporter
+          network={network}
+          signatureImporter={signatureImporter}
+          inputs={inputs}
+          outputs={outputs}
+          inputsTotalSats={inputsTotalSats}
+          fee={fee}
+          extendedPublicKeyImporter={extendedPublicKeyImporter}
+          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          resetBIP32Path={this.resetBIP32Path}
+          defaultBIP32Path={this.defaultBIP32Path()}
+          validateAndSetSignature={this.validateAndSetSignature}
+          enableChangeMethod={this.enableChangeMethod}
+          disableChangeMethod={this.disableChangeMethod}
+        />
+      );
+    }
+    if (method === COLDCARD) {
+      return (
+        <ColdcardSignatureImporter
+          network={network}
+          signatureImporter={signatureImporter}
+          inputs={inputs}
+          outputs={outputs}
+          inputsTotalSats={inputsTotalSats}
+          fee={fee}
+          extendedPublicKeyImporter={extendedPublicKeyImporter}
+          validateAndSetSignature={this.validateAndSetSignature}
+        />
+      );
+    }
+    if (method === TEXT) {
+      return (
+        <TextSignatureImporter
+          signatureImporter={signatureImporter}
+          validateAndSetSignature={this.validateAndSetSignature}
         />
       );
     }
@@ -240,7 +251,11 @@ class SignatureImporter extends React.Component {
     const { number, setBIP32Path, isWallet } = this.props;
     if (isWallet) {
       const { extendedPublicKeyImporter } = this.props;
-      if (extendedPublicKeyImporter.method !== "text") return;
+      if (
+        extendedPublicKeyImporter &&
+        extendedPublicKeyImporter.method !== "text"
+      )
+        return;
     }
     setBIP32Path(number, this.defaultBIP32Path());
   };
@@ -293,83 +308,212 @@ class SignatureImporter extends React.Component {
       setComplete,
       network,
       outputs,
+      setSigningKey,
     } = this.props;
-
     if (!Array.isArray(inputsSignatures)) {
       errback("Signature is not an array of strings.");
       return;
     }
 
     if (inputsSignatures.length < inputs.length) {
-      errback("Not enough signatures (must be exactly one for each input).");
-      return;
-    }
-    if (inputsSignatures.length > inputs.length) {
-      errback("Too many signatures (must be exactly one for each input).");
+      errback(
+        "Not enough signatures (must be at least one signature for each input)."
+      );
       return;
     }
 
+    if (inputsSignatures.length % inputs.length !== 0) {
+      errback("Number of signatures must be a multiple of number of inputs.");
+      return;
+    }
+
+    const numSignatureSets = inputsSignatures.length / inputs.length;
+
+    if (numSignatureSets > Object.values(signatureImporters).length) {
+      errback(
+        "Too many signatures. Max one set of signatures per required signer."
+      );
+      return;
+    }
     const publicKeys = [];
-    const finalizedSignatureImporters = Object.values(
-      signatureImporters
-    ).filter((signatureImporter) => signatureImporter.finalized);
-    for (
-      let inputIndex = 0;
-      inputIndex < inputsSignatures.length;
-      inputIndex += 1
-    ) {
-      const inputNumber = inputIndex + 1;
-      const inputSignature = inputsSignatures[inputIndex];
-      if (validateHex(inputSignature) !== "") {
-        errback(`Signature for input ${inputNumber} is not valid hex.`);
-        return;
-      }
+    if (numSignatureSets === 1) {
+      const finalizedSignatureImporters = Object.values(
+        signatureImporters
+      ).filter((signatureImporter) => signatureImporter.finalized);
+      for (
+        let inputIndex = 0;
+        inputIndex < inputsSignatures.length;
+        inputIndex += 1
+      ) {
+        const inputNumber = inputIndex + 1;
+        const inputSignature = inputsSignatures[inputIndex];
+        if (validateHex(inputSignature) !== "") {
+          errback(`Signature for input ${inputNumber} is not valid hex.`);
+          return;
+        }
 
-      let publicKey;
-      try {
-        publicKey = validateMultisigSignature(
-          network,
-          inputs,
-          outputs,
-          inputIndex,
-          inputSignature
-        );
-      } catch (e) {
-        errback(`Signature for input ${inputNumber} is invalid.`);
-        return;
-      }
-      if (publicKey) {
-        for (
-          let finalizedSignatureImporterNum = 0;
-          finalizedSignatureImporterNum < finalizedSignatureImporters.length;
-          finalizedSignatureImporterNum += 1
-        ) {
-          const finalizedSignatureImporter =
-            finalizedSignatureImporters[finalizedSignatureImporterNum];
-
-          if (
-            finalizedSignatureImporter.signature[inputIndex] ===
-              inputSignature ||
-            finalizedSignatureImporter.publicKeys[inputIndex] === publicKey
+        let publicKey;
+        try {
+          publicKey = validateMultisigSignature(
+            network,
+            inputs,
+            outputs,
+            inputIndex,
+            inputSignature
+          );
+        } catch (e) {
+          errback(`Signature for input ${inputNumber} is invalid.`);
+          return;
+        }
+        if (publicKey) {
+          for (
+            let finalizedSignatureImporterNum = 0;
+            finalizedSignatureImporterNum < finalizedSignatureImporters.length;
+            finalizedSignatureImporterNum += 1
           ) {
-            errback(
-              `Signature for input ${inputNumber} is a duplicate of a previously provided signature.`
-            );
+            const finalizedSignatureImporter =
+              finalizedSignatureImporters[finalizedSignatureImporterNum];
+
+            if (
+              finalizedSignatureImporter.signature[inputIndex] ===
+                inputSignature ||
+              finalizedSignatureImporter.publicKeys[inputIndex] === publicKey
+            ) {
+              errback(
+                `Signature for input ${inputNumber} is a duplicate of a previously provided signature.`
+              );
+              return;
+            }
+          }
+          publicKeys.push(publicKey);
+        } else {
+          errback(`Signature for input ${inputNumber} is invalid.`);
+          return;
+        }
+      }
+      setComplete(number, {
+        signature: inputsSignatures,
+        publicKeys,
+        finalized: true,
+      });
+    } else {
+      // We land here if a PSBT has been uploaded with multiple signature sets.
+      // In case we already have some signatures saved, e.g. first a singly-signed
+      // PSBT was uploaded, and now a doubly-signed PSBT was uploaded, filter out
+      // the known signatures.
+      let signaturesToCheck = this.filterKnownSignatures(inputsSignatures);
+      let signatureSetNumber = number; // so we can iterate, number is a const from props.
+
+      while (
+        signatureSetNumber <= Object.keys(signatureImporters).length &&
+        signaturesToCheck.length > 0
+      ) {
+        setSigningKey(signatureSetNumber, signatureSetNumber - 1);
+        const signatureSet = [];
+        const publicKeySet = [];
+
+        // Loop over inputs and check the sigs array to see if you can find a public key or not.
+        // NOTE - signaturesToCheck.length could be much larger than inputs.length!
+        // This is *not* efficient, but it will work as a temporary solution until we refactor
+        // the signatures data structure returned from unchained-bitcoin or change how caravan
+        // validates signatures.
+
+        // The "sets" of signatures that come out of this process are not all connected /  tied to the same root xpub
+        // because we've truncated a little information in the psbt parsing => signature return process
+        // We can re-generate that information later but for now this should work. There are
+        // bugs in edge cases that need to be handled better.
+        for (let inputIndex = 0; inputIndex < inputs.length; inputIndex += 1) {
+          let publicKey;
+
+          // THIS NEEDS TO BE MORE OPINIONATED ABOUT *WHICH* SIGNING DEVICE ARE THESE PUBKEYS COMING FROM
+          // e.g. after the first round of this loop if you successfully find a public key -- that public key
+          // is derived from some root xpub with a particular fingerprint, as you move along this loop to the
+          // next input, you want to *keep* searching until you find a public key that's from the same root fingerprint.
+          // Meaning a member of the same signatureSet. All of the remaining publicKey solutions in this round of
+          // signature validation should be derived from the *same* xpub.
+          //
+          // This assumption is not held if you're just blindly searching for *any* (or the first) valid public key
+          // within the list of signatures. E.g. there are multiple *valid* publicKeys for every input if we're at
+          // this point in the code. But if you don't pay attention to the root xpub as you assign public keys to
+          // a signatureSet, you will get a row of public keys that *may not* all be associated with any particular
+          // ExtendedPublicKey. Obviously that's not quite right. But if uploaded PSBT is fully signed, then this
+          // should not matter and the transaction should validate, build, and be able to be broadcast.
+          for (let i = 0; i < signaturesToCheck.length; i += 1) {
+            const inputSignature = signaturesToCheck[i];
+            if (validateHex(inputSignature) !== "") {
+              errback(
+                `Signature for input at index ${inputIndex} is not valid hex.`
+              );
+              return;
+            }
+            try {
+              // This returns false if it completes with no error
+              publicKey = validateMultisigSignature(
+                network,
+                inputs,
+                outputs,
+                inputIndex,
+                inputSignature
+              );
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error(e);
+            }
+            // FIXME `&& publicKey is member of a particular root xpub/fingerprint` should be added here!
+            if (publicKey) {
+              // We know inputSignature is a signature for publicKey but we aren't keeping root xpub/xfp info around
+              publicKeySet.push(publicKey);
+              signatureSet.push(inputSignature);
+              break;
+            }
+          }
+          if (!publicKey) {
+            errback(`No valid signature for input ${inputIndex} found.`);
             return;
           }
         }
-        publicKeys.push(publicKey);
-      } else {
-        errback(`Signature for input ${inputNumber} is invalid.`);
-        return;
+        if (
+          publicKeySet.length !== inputs.length ||
+          signatureSet.length !== inputs.length
+        ) {
+          errback(`There was an error in validating the transaction.`);
+          return;
+        }
+        // Set the signatureSetNumber we're currently on to complete and include publicKeySet/signatureSet
+        setComplete(signatureSetNumber, {
+          signature: signatureSet,
+          publicKeySet,
+          finalized: true,
+        });
+        // Send signatures to this method again, since now some of them are marked
+        // as finalized, and they will be filtered out.
+        signaturesToCheck = this.filterKnownSignatures(inputsSignatures);
+        // increment which signature number we're working on next.
+        signatureSetNumber += 1;
       }
     }
+  };
 
-    setComplete(number, {
-      signature: inputsSignatures,
-      publicKeys,
-      finalized: true,
-    });
+  filterKnownSignatures = (inputsSignatures) => {
+    const { inputs, signatureImporters } = this.props;
+    const finalizedSignatureImporters = Object.values(
+      signatureImporters
+    ).filter((signatureImporter) => signatureImporter.finalized);
+    const knownSignatures = [];
+    for (let inputIndex = 0; inputIndex < inputs.length; inputIndex += 1) {
+      for (
+        let finalizedSignatureImporterNum = 0;
+        finalizedSignatureImporterNum < finalizedSignatureImporters.length;
+        finalizedSignatureImporterNum += 1
+      ) {
+        const finalizedSignatureImporter =
+          finalizedSignatureImporters[finalizedSignatureImporterNum];
+
+        knownSignatures.push(finalizedSignatureImporter.signature[inputIndex]);
+      }
+    }
+    // diff out any signature we've seen before
+    return inputsSignatures.filter((x) => !knownSignatures.includes(x));
   };
 
   render() {
@@ -391,7 +535,7 @@ SignatureImporter.propTypes = {
   addressType: PropTypes.string.isRequired,
   extendedPublicKeyImporter: PropTypes.shape({
     method: PropTypes.string,
-  }).isRequired,
+  }),
   fee: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
@@ -418,6 +562,11 @@ SignatureImporter.propTypes = {
   signatureImporters: PropTypes.shape({}).isRequired,
   txid: PropTypes.string.isRequired,
   unsignedTransaction: PropTypes.shape({}).isRequired,
+  setSigningKey: PropTypes.func.isRequired,
+};
+
+SignatureImporter.defaultProps = {
+  extendedPublicKeyImporter: {},
 };
 
 function mapStateToProps(state, ownProps) {
@@ -440,6 +589,7 @@ const mapDispatchToProps = {
   setSignature: setSignatureImporterSignature,
   setFinalized: setSignatureImporterFinalized,
   setComplete: setSignatureImporterComplete,
+  setSigningKey: setSigningKeyAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignatureImporter);

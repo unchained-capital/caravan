@@ -10,9 +10,10 @@ import {
   bitcoinsToSatoshis,
   validateAddress,
   unsignedMultisigTransaction,
+  unsignedMultisigPSBT,
+  unsignedTransactionObjectFromPSBT,
 } from "unchained-bitcoin";
 import updateState from "./utils";
-
 import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
 import {
   CHOOSE_PERFORM_SPEND,
@@ -31,6 +32,7 @@ import {
   RESET_TRANSACTION,
   SET_IS_WALLET,
   SET_CHANGE_OUTPUT_INDEX,
+  SET_CHANGE_OUTPUT_MULTISIG,
   UPDATE_AUTO_SPEND,
   SET_SIGNING_KEY,
   SET_CHANGE_ADDRESS,
@@ -38,7 +40,6 @@ import {
   SET_SPEND_STEP,
   SPEND_STEP_CREATE,
 } from "../actions/transactionActions";
-
 import { RESET_NODES_SPEND } from "../actions/walletActions";
 
 function sortInputs(a, b) {
@@ -228,6 +229,15 @@ function updateOutputAddress(state, action) {
   };
 }
 
+function updateOutputMultisig(state, action) {
+  const newOutputs = [...state.outputs];
+  newOutputs[action.number - 1].multisig = action.value;
+  return {
+    ...state,
+    ...{ outputs: newOutputs },
+  };
+}
+
 function updateOutputAmount(state, action) {
   const newOutputs = [...state.outputs];
   let amount = action.value;
@@ -251,11 +261,26 @@ function updateOutputAmount(state, action) {
 }
 
 function finalizeOutputs(state, action) {
-  const unsignedTransaction = unsignedMultisigTransaction(
-    state.network,
-    state.inputs,
-    state.outputs
-  );
+  let unsignedTransaction;
+  // First try to build the transaction via PSBT, if that fails (e.g. an input doesn't know about its braid),
+  // then try to build it using the old TransactionBuilder plumbing.
+  try {
+    const unsignedTransactionPSBT = unsignedMultisigPSBT(
+      state.network,
+      state.inputs,
+      state.outputs
+    );
+    unsignedTransaction = unsignedTransactionObjectFromPSBT(
+      unsignedTransactionPSBT
+    );
+  } catch (e) {
+    // probably has an input that isn't braid aware.
+    unsignedTransaction = unsignedMultisigTransaction(
+      state.network,
+      state.inputs,
+      state.outputs
+    ); // bitcoinjs-lib will throw a Deprecation warning for using TransactionBuilder
+  }
   return {
     ...state,
     ...{ finalizedOutputs: action.value, unsignedTransaction },
@@ -318,7 +343,7 @@ function validateTransaction(state) {
   const outputTotalSats = calcOutputTotalSats(newState);
   if (!newState.inputsTotalSats.isEqualTo(outputTotalSats.plus(feeSats))) {
     const diff = outputTotalSats.plus(feeSats).minus(newState.inputsTotalSats);
-    let balanceError = "";
+    let balanceError;
     if (diff.isNaN()) {
       balanceError = "Cannot calculate total.";
     } else {
@@ -368,6 +393,8 @@ export default (state = initialState(), action) => {
       return validateTransaction(addOutput(state, action));
     case SET_CHANGE_OUTPUT_INDEX:
       return updateState(state, { changeOutputIndex: action.value });
+    case SET_CHANGE_OUTPUT_MULTISIG:
+      return updateOutputMultisig(state, action);
     case SET_OUTPUT_ADDRESS:
       return validateTransaction(updateOutputAddress(state, action));
     case SET_OUTPUT_AMOUNT:

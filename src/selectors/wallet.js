@@ -8,11 +8,70 @@ const getWalletSlices = (state) => [
   ...Object.values(state.wallet.change.nodes),
 ];
 
+const getAddressType = (state) => state.settings.addressType;
+const getNetwork = (state) => state.settings.network;
+const getTotalSigners = (state) => state.settings.totalSigners;
+const getRequiredSigners = (state) => state.settings.requiredSigners;
+const getStartingAddressIndex = (state) => state.settings.startingAddressIndex;
+const getWalletName = (state) => state.wallet.common.walletName;
+const getClientDetails = (state) => {
+  if (state.client.type === "private") {
+    return `{
+    "type": "private",
+    "url": "${state.client.url}",
+    "username": "${state.client.username}"
+  }`;
+  }
+  return `{
+    "type": "public"
+  }`;
+};
+
+const extendedPublicKeyImporterBIP32Path = (state, number) => {
+  const { extendedPublicKeyImporters } = state.quorum;
+  const extendedPublicKeyImporter = extendedPublicKeyImporters[number];
+  const bip32Path =
+    extendedPublicKeyImporter.method === "text"
+      ? "Unknown (make sure you have written this down previously!)"
+      : extendedPublicKeyImporter.bip32Path;
+  const rootFingerprint =
+    extendedPublicKeyImporter.rootXfp === "Unknown"
+      ? "00000000"
+      : extendedPublicKeyImporter.rootXfp;
+  return extendedPublicKeyImporter.method === "unknown"
+    ? `    {
+        "name": "${extendedPublicKeyImporter.name}",
+        "bip32Path": "${bip32Path}",
+        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
+        "xfp" : "${rootFingerprint}"
+        }`
+    : `    {
+        "name": "${extendedPublicKeyImporter.name}",
+        "bip32Path": "${bip32Path}",
+        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
+        "xfp" : "${rootFingerprint}",
+        "method": "${extendedPublicKeyImporter.method}"
+      }`;
+};
+
+const getExtendedPublicKeysBIP32Paths = (state) => {
+  const totalSigners = getTotalSigners(state);
+  const extendedPublicKeyImporterBIP32Paths = [];
+  for (let i = 1; i <= totalSigners; i += 1) {
+    extendedPublicKeyImporterBIP32Paths.push(
+      `${extendedPublicKeyImporterBIP32Path(state, i)}${
+        i < totalSigners ? "," : ""
+      }`
+    );
+  }
+  return extendedPublicKeyImporterBIP32Paths.join("\n");
+};
+
 /**
  * @description cycle through all slices to calculate total balance of all utxos
  * from all slices including pending.
  */
-export const getTotalbalance = createSelector(getWalletSlices, (slices) => {
+export const getTotalBalance = createSelector(getWalletSlices, (slices) => {
   return slices.reduce((balance, slice) => {
     const sliceTotal = slice.utxos.reduce((total, utxo) => {
       return total + parseInt(utxo.amountSats, 10);
@@ -47,7 +106,7 @@ export const getPendingBalance = createSelector(
  * other selector) from total balance of each braid which is stored in the state
  */
 export const getConfirmedBalance = createSelector(
-  [getTotalbalance, getPendingBalance],
+  [getTotalBalance, getPendingBalance],
   (totalBalance, pendingBalance) => totalBalance - pendingBalance
 );
 
@@ -153,4 +212,46 @@ export const getUnknownAddresses = createSelector(
  */
 export const getDepositableSlices = createSelector(getDepositSlices, (slices) =>
   slices.filter((slice) => slice.balanceSats.isEqualTo(0) && !slice.addressUsed)
+);
+
+/**
+ * @description Returns a selector of the text needed to construct a wallet
+ * details file.
+ */
+export const getWalletDetailsText = createSelector(
+  [
+    getWalletName,
+    getAddressType,
+    getNetwork,
+    getClientDetails,
+    getRequiredSigners,
+    getTotalSigners,
+    getExtendedPublicKeysBIP32Paths,
+    getStartingAddressIndex,
+  ],
+  (
+    walletName,
+    addressType,
+    network,
+    clientDetails,
+    requiredSigners,
+    totalSigners,
+    extendedPublicKeys,
+    startingAddressIndex
+  ) => {
+    return `{
+  "name": "${walletName}",
+  "addressType": "${addressType}",
+  "network": "${network}",
+  "client":  ${clientDetails},
+  "quorum": {
+    "requiredSigners": ${requiredSigners},
+    "totalSigners": ${totalSigners}
+  },
+  "extendedPublicKeys": [
+    ${extendedPublicKeys}
+  ],
+  "startingAddressIndex": ${startingAddressIndex}
+}`;
+  }
 );

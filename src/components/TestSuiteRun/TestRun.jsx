@@ -1,8 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-
-import { PENDING, ACTIVE, HERMIT } from "unchained-wallets";
+import {
+  PENDING,
+  ACTIVE,
+  HERMIT,
+  COLDCARD,
+  INDIRECT_KEYSTORES,
+} from "unchained-wallets";
 import {
   Box,
   Typography,
@@ -18,16 +23,20 @@ import {
   ThumbDown as FailureIcon,
   Error as ErrorIcon,
 } from "@material-ui/icons";
+import moment from "moment";
 import Test from "../../tests/Test";
-
 import * as testRunActions from "../../actions/testRunActions";
 import * as errorNotificationActions from "../../actions/errorNotificationActions";
-
 import InteractionMessages from "../InteractionMessages";
 import { TestRunNote } from "./Note";
 import { HermitReader, HermitDisplayer } from "../Hermit";
-
+import {
+  ColdcardJSONReader,
+  ColdcardPSBTReader,
+  ColdcardSigningButtons,
+} from "../Coldcard";
 import "./TestRun.css";
+import { downloadFile } from "../../utils";
 
 const SPACEBAR_CODE = 32;
 
@@ -59,6 +68,40 @@ class TestRunBase extends React.Component {
     }
   };
 
+  handleDownloadPSBTClick = () => {
+    const { test } = this.props;
+    const interaction = test.interaction();
+    const nameBits = test.name().split(" ");
+    const body = interaction.request().toBase64();
+    const timestamp = moment().format("HHmm");
+    const filename = `${timestamp}-${nameBits[2]}-${nameBits[1][0]}.psbt`;
+    downloadFile(body, filename);
+  };
+
+  handledDownloadWalletConfigClick = () => {
+    const { test } = this.props;
+    const nameBits = test.name().split(" ");
+    const name = `${nameBits[2].toLowerCase()}-${nameBits[1][0]}`;
+    // FIXME - need to know firmware version and then set P2WSH-P2SH vs P2SH-P2WSH appropriately
+    //   leaving it as P2WSH-P2SH for now.
+    let output = `# Coldcard Multisig setup file for test suite
+#
+Name: ${name}
+Policy: 2 of 2
+Format: ${test.params.format.includes("-") ? "P2WSH-P2SH" : test.params.format}
+Derivation: ${test.params.derivation}
+
+`;
+    // We need to loop over xpubs and output `xfp: xpub` for each
+    const xpubs = test.params.extendedPublicKeys.map(
+      (xpub) => `${xpub.rootFingerprint}: ${xpub.base58String}`
+    );
+    output += xpubs.join("\r\n");
+    output += "\r\n";
+    const filename = `wc-${name}.txt`;
+    downloadFile(output, filename);
+  };
+
   render = () => {
     const { test, testRunIndex, status, keystore } = this.props;
     if (!test) {
@@ -77,7 +120,48 @@ class TestRunBase extends React.Component {
           />
           <CardContent>
             {test.description()}
+            {keystore.type === COLDCARD && !test.unsignedTransaction && (
+              <Box align="center">
+                <ColdcardJSONReader
+                  interaction={test.interaction()}
+                  onReceive={this.startParse}
+                  onStart={this.start}
+                  setError={this.reset}
+                  isTest
+                />
+              </Box>
+            )}
+            {keystore.type === COLDCARD && test.unsignedTransaction && (
+              <Box align="center" style={{ marginTop: "2em" }}>
+                <ColdcardSigningButtons
+                  handlePSBTDownloadClick={this.handleDownloadPSBTClick}
+                  handleWalletConfigDownloadClick={
+                    this.handledDownloadWalletConfigClick
+                  }
+                />
+                <ColdcardPSBTReader
+                  interaction={test.interaction()}
+                  onReceivePSBT={this.startParse}
+                  onStart={this.start}
+                  setError={this.reset}
+                  fileType="PSBT"
+                  validFileFormats=".psbt"
+                />
+              </Box>
+            )}
             {this.renderInteractionMessages()}
+            {status === PENDING &&
+              !Object.values(INDIRECT_KEYSTORES).includes(keystore.type) && (
+                <Box align="center">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={this.start}
+                  >
+                    Start Test
+                  </Button>
+                </Box>
+              )}
             {keystore.type === HERMIT &&
               test.interaction().displayer &&
               status === PENDING && (
@@ -88,17 +172,6 @@ class TestRunBase extends React.Component {
                   />
                 </Box>
               )}
-            {status === PENDING && keystore.type !== HERMIT && (
-              <Box align="center">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={this.start}
-                >
-                  Start Test
-                </Button>
-              </Box>
-            )}
             {keystore.type === HERMIT && !this.testComplete() && (
               <Box>
                 <HermitReader
@@ -202,6 +275,13 @@ class TestRunBase extends React.Component {
       return;
     }
     const result = await test.run();
+    this.handleResult(result);
+  };
+
+  startParse = async (data) => {
+    const { test, testRunIndex, startTestRun } = this.props;
+    startTestRun(testRunIndex);
+    const result = await test.runParse(data);
     this.handleResult(result);
   };
 
@@ -326,9 +406,16 @@ TestRunBase.propTypes = {
     name: PropTypes.func.isRequired,
     description: PropTypes.func.isRequired,
     interaction: PropTypes.func.isRequired,
+    params: PropTypes.shape({
+      format: PropTypes.string,
+      derivation: PropTypes.string,
+      extendedPublicKeys: PropTypes.array,
+    }),
     run: PropTypes.func.isRequired,
+    runParse: PropTypes.func.isRequired,
     resolve: PropTypes.func.isRequired,
     postprocess: PropTypes.func.isRequired,
+    unsignedTransaction: PropTypes.func,
   }),
   setErrorNotification: PropTypes.func.isRequired,
   startTestRun: PropTypes.func.isRequired,
@@ -336,7 +423,10 @@ TestRunBase.propTypes = {
 };
 
 TestRunBase.defaultProps = {
-  test: {},
+  test: {
+    unsignedTransaction: null,
+    params: {},
+  },
 };
 
 export default TestRun;

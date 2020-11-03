@@ -4,14 +4,10 @@ import { connect } from "react-redux";
 import { Tabs, Tab, Box, LinearProgress } from "@material-ui/core";
 import {
   setWalletModeAction as setWalletModeActionImport,
-  initialLoadComplete as initialLoadCompleteAction,
   WALLET_MODES,
 } from "../../actions/walletActions";
 import { setRequiredSigners as setRequiredSignersAction } from "../../actions/transactionActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
-
-// Components
-
 import WalletDeposit from "./WalletDeposit";
 import WalletSpend from "./WalletSpend";
 import { SlicesTableContainer } from "../Slices";
@@ -35,9 +31,11 @@ class WalletControl extends React.Component {
           textColor="primary"
           variant="fullWidth"
         >
-          <Tab label="Addresses" value={WALLET_MODES.VIEW} />
-          <Tab label="Receive" value={WALLET_MODES.DEPOSIT} />
-          <Tab label="Send" value={WALLET_MODES.SPEND} />
+          {this.addressesAreLoaded() && [
+            <Tab label="Addresses" value={WALLET_MODES.VIEW} key={0} />,
+            <Tab label="Receive" value={WALLET_MODES.DEPOSIT} key={1} />,
+            <Tab label="Send" value={WALLET_MODES.SPEND} key={2} />,
+          ]}
         </Tabs>
         <Box mt={2}>{this.renderModeComponent()}</Box>
       </div>
@@ -66,18 +64,14 @@ class WalletControl extends React.Component {
   };
 
   addressesAreLoaded = () => {
-    const { change, deposits, nodesLoaded, initialLoadComplete } = this.props;
+    const { change, deposits, nodesLoaded } = this.props;
     if (nodesLoaded) return true;
-    if (
+    return (
       (deposits.trailingEmptyNodes >= MAX_TRAILING_EMPTY_NODES ||
         deposits.fetchUTXOsErrors >= MAX_FETCH_UTXOS_ERRORS) &&
       (change.trailingEmptyNodes >= MAX_TRAILING_EMPTY_NODES ||
         change.fetchUTXOsErrors >= MAX_FETCH_UTXOS_ERRORS)
-    ) {
-      initialLoadComplete();
-      return true;
-    }
-    return false;
+    );
   };
 
   handleModeChange = (_event, mode) => {
@@ -107,7 +101,6 @@ WalletControl.propTypes = {
     trailingEmptyNodes: PropTypes.number,
     fetchUTXOsErrors: PropTypes.number,
   }).isRequired,
-  initialLoadComplete: PropTypes.func.isRequired,
   nodesLoaded: PropTypes.bool.isRequired,
   requiredSigners: PropTypes.number.isRequired,
   setMode: PropTypes.func.isRequired,
@@ -129,7 +122,6 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   setMode: setWalletModeActionImport,
   setRequiredSigners: setRequiredSignersAction,
-  initialLoadComplete: initialLoadCompleteAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletControl);

@@ -36,13 +36,19 @@ class ExtendedPublicKeySelector extends React.Component {
       this.updateKeySelection(signingKeys[number - 1]);
   };
 
+  // There can be a situation where a signatureImporter is in the finalized
+  // state, but it was never actually selected as a key. This can
+  // happen when a signed PSBT is uploaded that has more than one set of
+  // signatures, given all of the assumptions around transaction signing flow
+  // and signature validation
   render = () => {
     const { selection } = this.state;
-    const { number } = this.props;
+    const { number, signatureImporter } = this.props;
     return (
       <div>
         {this.renderKeySelectorMenu()}
-        {selection > 0 && number > 0 && this.renderSignatureImporter()}
+        {((selection > 0 && number > 0) || signatureImporter.finalized) &&
+          this.renderSignatureImporter()}
       </div>
     );
   };
@@ -213,21 +219,26 @@ ExtendedPublicKeySelector.propTypes = {
   setMethod: PropTypes.func.isRequired,
   setSigningKey: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
+  signatureImporter: PropTypes.shape({
+    finalized: PropTypes.bool,
+  }),
   signingKeys: PropTypes.arrayOf(PropTypes.number).isRequired,
   totalSigners: PropTypes.number.isRequired,
 };
 
 ExtendedPublicKeySelector.defaultProps = {
   onChange: null,
+  signatureImporter: null,
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
     ...state.quorum,
     totalSigners: state.spend.transaction.totalSigners,
     inputs: state.spend.transaction.inputs,
     network: state.settings.network,
     signatureImporters: state.spend.signatureImporters,
+    signatureImporter: state.spend.signatureImporters[ownProps.number],
     signingKeys: state.spend.transaction.signingKeys,
   };
 }

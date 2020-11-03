@@ -2,8 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import BigNumber from "bignumber.js";
-
-// Actions
 import {
   Box,
   Card,
@@ -13,7 +11,6 @@ import {
   FormControlLabel,
   Button,
 } from "@material-ui/core";
-
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,
@@ -35,8 +32,6 @@ import {
   deleteChangeOutput as deleteChangeOutputAction,
 } from "../../actions/transactionActions";
 import { naiveCoinSelection } from "../../utils";
-
-// Components
 import NodeSet from "./NodeSet";
 import OutputsForm from "../ScriptExplorer/OutputsForm";
 import WalletSign from "./WalletSign";
@@ -135,6 +130,7 @@ class WalletSpend extends React.Component {
     const {
       autoSpend,
       changeAddress,
+      changeNode,
       updateNode,
       addNode,
       spendingStep,
@@ -194,6 +190,7 @@ class WalletSpend extends React.Component {
                 <Box mt={3}>
                   <TransactionPreview
                     changeAddress={changeAddress}
+                    changeNode={changeNode}
                     editTransaction={this.showCreate}
                     fee={fee}
                     feeRate={feeRate}

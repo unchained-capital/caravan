@@ -3,13 +3,12 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
   validateBIP32Path,
+  validateRootFingerprint,
   convertExtendedPublicKey,
   validateExtendedPublicKey,
   NETWORKS,
 } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
-
-// Components
+import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
   Card,
   CardHeader,
@@ -24,25 +23,24 @@ import {
   withStyles,
 } from "@material-ui/core";
 import Copyable from "../Copyable";
-import ExtendedPublicKeyExtendedPublicKeyImporter from "./ExtendedPublicKeyExtendedPublicKeyImporter";
+import DirectExtendedPublicKeyImporter from "./DirectExtendedPublicKeyImporter";
 import TextExtendedPublicKeyImporter from "./TextExtendedPublicKeyImporter";
-import HermitExtendedPublicKeyImporter from "./HermitExtendedPublicKeyImporter";
-import HardwareWalletExtendedPublicKeyImporter from "./HardwareWalletExtendedPublicKeyImporter";
 import EditableName from "../EditableName";
 import Conflict from "../CreateAddress/Conflict";
-
-// Actions
 import {
   setExtendedPublicKeyImporterName,
   resetExtendedPublicKeyImporterBIP32Path,
   setExtendedPublicKeyImporterBIP32Path,
   setExtendedPublicKeyImporterMethod,
   setExtendedPublicKeyImporterExtendedPublicKey,
+  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint,
   setExtendedPublicKeyImporterFinalized,
 } from "../../actions/extendedPublicKeyImporterActions";
+import ColdcardExtendedPublicKeyImporter from "../Coldcard/ColdcardExtendedPublicKeyImporter";
+import HermitExtendedPublicKeyImporter from "../Hermit/HermitExtendedPublicKeyImporter";
 
-const XPUB = "xpub";
 const TEXT = "text";
+const UNKNOWN = "unknown";
 
 const useStyles = () => ({
   xpub: {
@@ -87,11 +85,11 @@ class ExtendedPublicKeyImporter extends React.Component {
             value={extendedPublicKeyImporter.method}
             onChange={this.handleMethodChange}
           >
-            <MenuItem value="">{"< Select method >"}</MenuItem>
+            <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
+            <MenuItem value={COLDCARD}>Coldcard</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
             <MenuItem value={HERMIT}>Hermit</MenuItem>
-            <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
           </Select>
         </FormControl>
@@ -103,21 +101,20 @@ class ExtendedPublicKeyImporter extends React.Component {
 
   renderImportByMethod = () => {
     const {
-      extendedPublicKeyImporters,
       extendedPublicKeyImporter,
       network,
       addressType,
       defaultBIP32Path,
     } = this.props;
-    if (
-      extendedPublicKeyImporter.method === TREZOR ||
-      extendedPublicKeyImporter.method === LEDGER
-    ) {
+    const { method } = extendedPublicKeyImporter;
+
+    if (method === TREZOR || method === LEDGER) {
       return (
-        <HardwareWalletExtendedPublicKeyImporter
+        <DirectExtendedPublicKeyImporter
           extendedPublicKeyImporter={extendedPublicKeyImporter}
           validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
           validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          validateAndSetRootFingerprint={this.validateAndSetRootFingerprint}
           resetBIP32Path={this.resetBIP32Path}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
@@ -127,31 +124,37 @@ class ExtendedPublicKeyImporter extends React.Component {
         />
       );
     }
-    if (extendedPublicKeyImporter.method === HERMIT) {
+    if (method === HERMIT) {
       return (
         <HermitExtendedPublicKeyImporter
           extendedPublicKeyImporter={extendedPublicKeyImporter}
           validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
           validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          validateAndSetRootFingerprint={this.validateAndSetRootFingerprint}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
+          addressType={addressType}
+          defaultBIP32Path={defaultBIP32Path}
+          network={network}
           resetBIP32Path={this.resetBIP32Path}
           reset={this.reset}
         />
       );
     }
-    if (extendedPublicKeyImporter.method === XPUB) {
+    if (method === COLDCARD) {
       return (
-        <ExtendedPublicKeyExtendedPublicKeyImporter
+        <ColdcardExtendedPublicKeyImporter
           extendedPublicKeyImporter={extendedPublicKeyImporter}
-          extendedPublicKeyImporters={extendedPublicKeyImporters}
           validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
-          network={network}
           validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          validateAndSetRootFingerprint={this.validateAndSetRootFingerprint}
+          addressType={addressType}
+          defaultBIP32Path={defaultBIP32Path}
+          network={network}
         />
       );
     }
-    if (extendedPublicKeyImporter.method === TEXT) {
+    if (method === TEXT) {
       return (
         <TextExtendedPublicKeyImporter
           extendedPublicKeyImporter={extendedPublicKeyImporter}
@@ -348,6 +351,16 @@ class ExtendedPublicKeyImporter extends React.Component {
     }
   };
 
+  validateAndSetRootFingerprint = (rootFingerprint, errback) => {
+    const { number, setExtendedPublicKeyRootXfp } = this.props;
+    const error = validateRootFingerprint(rootFingerprint);
+    if (error) {
+      errback(error);
+    } else {
+      setExtendedPublicKeyRootXfp(number, rootFingerprint);
+    }
+  };
+
   render() {
     const { extendedPublicKeyImporter, finalizedNetwork, network } = this.props;
     const hasConflict =
@@ -398,6 +411,7 @@ ExtendedPublicKeyImporter.propTypes = {
   resetBIP32Path: PropTypes.func.isRequired,
   setBIP32Path: PropTypes.func.isRequired,
   setExtendedPublicKey: PropTypes.func.isRequired,
+  setExtendedPublicKeyRootXfp: PropTypes.func.isRequired,
   setFinalized: PropTypes.func.isRequired,
   setName: PropTypes.func.isRequired,
   setMethod: PropTypes.func.isRequired,
@@ -420,6 +434,7 @@ const mapDispatchToProps = {
   setBIP32Path: setExtendedPublicKeyImporterBIP32Path,
   setMethod: setExtendedPublicKeyImporterMethod,
   setExtendedPublicKey: setExtendedPublicKeyImporterExtendedPublicKey,
+  setExtendedPublicKeyRootXfp: setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint,
   setFinalized: setExtendedPublicKeyImporterFinalized,
 };
 

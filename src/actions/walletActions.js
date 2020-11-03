@@ -160,6 +160,8 @@ export function autoSelectCoins() {
  * @description Given the state of the transaction store, check status of
  * the slices being used in the spend tx and update them once changed state is confirmed.
  * @param {Object} changeSlice - the slice that was chosen as the change output
+ * @param {number} retries - number of retries
+ * @param {Set} skipAddresses - set of addresses to skip
  */
 export function updateTxSlices(
   changeSlice,

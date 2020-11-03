@@ -1,11 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { HermitExportExtendedPublicKey } from "unchained-wallets";
-
-// Components
 import { FormGroup, FormHelperText } from "@material-ui/core";
 
-import HermitReader from "../Hermit/HermitReader";
+import HermitReader from "./HermitReader";
 
 class HermitExtendedPublicKeyImporter extends React.Component {
   constructor(props) {
@@ -31,6 +29,9 @@ class HermitExtendedPublicKeyImporter extends React.Component {
   render = () => {
     const { disableChangeMethod } = this.props;
     const { extendedPublicKeyError } = this.state;
+    // Here we are using the HermitReader directly instead of using the
+    // shared `Indirect` helper component class. This is because Hermit does
+    // not need any of the bip32 stuff that is useful from the indirect helper.
     return (
       <FormGroup>
         <HermitReader

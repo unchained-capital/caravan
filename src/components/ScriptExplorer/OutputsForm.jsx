@@ -4,10 +4,6 @@ import { connect } from "react-redux";
 import { map } from "lodash";
 import BigNumber from "bignumber.js";
 import { bitcoinsToSatoshis, satoshisToBitcoins } from "unchained-bitcoin";
-
-// Actions
-
-// Components
 import {
   Grid,
   Button,
@@ -30,9 +26,8 @@ import {
   resetOutputs as resetOutputsAction,
 } from "../../actions/transactionActions";
 import { fetchFeeEstimate } from "../../blockchain";
+import { MIN_SATS_PER_BYTE_FEE } from "../Wallet/constants";
 import OutputEntry from "./OutputEntry";
-
-// Assets
 import styles from "./styles.module.scss";
 
 class OutputsForm extends React.Component {
@@ -107,8 +102,7 @@ class OutputsForm extends React.Component {
     let total = outputs
       .map((output) => {
         let { amount } = output;
-        // eslint-disable-next-line no-restricted-globals
-        if (!amount || !amount.length || isNaN(amount)) amount = 0;
+        if (!amount || !amount.length || Number.isNaN(amount)) amount = 0;
         return new BigNumber(amount);
       })
       .reduce(
@@ -165,8 +159,11 @@ class OutputsForm extends React.Component {
     const { setFeeRate } = this.props;
     let rate = event.target.value;
 
-    // eslint-disable-next-line use-isnan
-    if (rate === "" || parseFloat(rate, 10) === NaN || parseFloat(rate, 10) < 1)
+    if (
+      rate === "" ||
+      Number.isNaN(parseFloat(rate, 10)) ||
+      parseFloat(rate, 10) < 1
+    )
       rate = "0";
     setFeeRate(rate);
   };
@@ -189,16 +186,18 @@ class OutputsForm extends React.Component {
 
   getFeeEstimate = async () => {
     const { client, network, setFeeRate } = this.props;
-    let newFeeRate = 1;
+    let feeEstimate;
     let feeRateFetchError = "";
     try {
-      newFeeRate = await fetchFeeEstimate(network, client);
+      feeEstimate = await fetchFeeEstimate(network, client);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
       feeRateFetchError = "There was an error fetching the fee rate.";
     } finally {
-      setFeeRate(newFeeRate.toString());
+      setFeeRate(
+        !Number.isNaN(feeEstimate)
+          ? feeEstimate.toString()
+          : MIN_SATS_PER_BYTE_FEE.toString()
+      );
       this.setState({ feeRateFetchError });
     }
   };

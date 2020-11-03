@@ -7,6 +7,7 @@ import {
   TREZOR,
   LEDGER,
   HERMIT,
+  COLDCARD,
   PENDING,
   ACTIVE,
   VERSION as UNCHAINED_WALLETS_VERSION,
@@ -232,6 +233,8 @@ class TestSuiteRunSummaryBase extends React.Component {
         return "Ledger";
       case HERMIT:
         return "Hermit";
+      case COLDCARD:
+        return "Coldcard";
       default:
         return "";
     }

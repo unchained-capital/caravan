@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { PENDING, ACTIVE } from "unchained-wallets";
-
-// Components
 import QrReader from "react-qr-reader";
 import { Grid, Button, Box, FormHelperText } from "@material-ui/core";
 import Copyable from "../Copyable";

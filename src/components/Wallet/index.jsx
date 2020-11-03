@@ -2,25 +2,22 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
+  satoshisToBitcoins,
   validateBIP32Index,
   validateBIP32Path,
   validateExtendedPublicKey,
-  satoshisToBitcoins,
 } from "unchained-bitcoin";
-import { Grid, Box, Button, FormHelperText } from "@material-ui/core";
+import { Box, Button, FormHelperText, Grid } from "@material-ui/core";
 import { downloadFile } from "../../utils";
 import {
-  updateDepositSliceAction,
-  updateChangeSliceAction,
   resetWallet as resetWalletAction,
+  updateChangeSliceAction,
+  updateDepositSliceAction,
   updateWalletNameAction as updateWalletNameActionImport,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import walletSelectors from "../../selectors";
 import { CARAVAN_CONFIG } from "./constants";
-
-// Components
-
 import WalletInfoCard from "./WalletInfoCard";
 import NetworkPicker from "../NetworkPicker";
 import QuorumPicker from "../QuorumPicker";
@@ -30,34 +27,33 @@ import StartingAddressIndexPicker from "../StartingAddressIndexPicker";
 import WalletGenerator from "./WalletGenerator";
 import ExtendedPublicKeyImporter from "./ExtendedPublicKeyImporter";
 import WalletActionsPanel from "./WalletActionsPanel";
-
 import {
   getUnknownAddresses,
   getUnknownAddressSlices,
+  getWalletDetailsText,
 } from "../../selectors/wallet";
-
-// Actions
 import {
-  setTotalSigners as setTotalSignersAction,
-  setRequiredSigners as setRequiredSignersAction,
   setAddressType as setAddressTypeAction,
   setNetwork as setNetworkAction,
+  setRequiredSigners as setRequiredSignersAction,
   setStartingAddressIndex as setStartingAddressIndexAction,
+  setTotalSigners as setTotalSignersAction,
 } from "../../actions/settingsActions";
 import {
-  setExtendedPublicKeyImporterMethod as setExtendedPublicKeyImporterMethodAction,
-  setExtendedPublicKeyImporterExtendedPublicKey as setExtendedPublicKeyImporterExtendedPublicKeyAction,
   setExtendedPublicKeyImporterBIP32Path as setExtendedPublicKeyImporterBIP32PathAction,
-  setExtendedPublicKeyImporterName as setExtendedPublicKeyImporterNameAction,
+  setExtendedPublicKeyImporterExtendedPublicKey as setExtendedPublicKeyImporterExtendedPublicKeyAction,
+  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint as setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprintAction,
   setExtendedPublicKeyImporterFinalized as setExtendedPublicKeyImporterFinalizedAction,
+  setExtendedPublicKeyImporterMethod as setExtendedPublicKeyImporterMethodAction,
+  setExtendedPublicKeyImporterName as setExtendedPublicKeyImporterNameAction,
   setExtendedPublicKeyImporterVisible as setExtendedPublicKeyImporterVisibleAction,
 } from "../../actions/extendedPublicKeyImporterActions";
 import { wrappedActions } from "../../actions/utils";
 import {
+  SET_CLIENT_PASSWORD,
   SET_CLIENT_TYPE,
   SET_CLIENT_URL,
   SET_CLIENT_USERNAME,
-  SET_CLIENT_PASSWORD,
 } from "../../actions/clientActions";
 import { clientPropTypes, slicePropTypes } from "../../proptypes";
 
@@ -144,17 +140,32 @@ class CreateWallet extends React.Component {
         return "";
       },
       xpub: (xpub) => validateExtendedPublicKey(xpub, tmpNetwork),
-      method: (method, index) =>
-        // eslint-disable-next-line no-bitwise
-        ~["trezor", "ledger", "hermit", "xpub", "text", undefined].indexOf(
-          method
-        )
-          ? ""
-          : `Invalid method for extended public key ${index}`,
+      method: (method, index) => {
+        if (
+          [
+            "trezor",
+            "coldcard",
+            "ledger",
+            "hermit",
+            "xpub",
+            "text",
+            undefined,
+          ].includes(method)
+        ) {
+          return "";
+        }
+        return `Invalid method for extended public key ${index}`;
+      },
     };
 
     const keys = Object.keys(xpubFields);
+    const seen = [];
     for (let xpubIndex = 0; xpubIndex < xpubs.length; xpubIndex += 1) {
+      if (!seen.includes(xpubs[xpubIndex].xpub)) {
+        seen.push(xpubs[xpubIndex].xpub);
+      } else {
+        return "Duplicate xpub found.";
+      }
       for (let keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
         const key = keys[keyIndex];
         const value = xpubs[xpubIndex][key];
@@ -191,7 +202,9 @@ class CreateWallet extends React.Component {
       configError = "Invalid JSON";
     }
 
-    if (sessionStorage) sessionStorage.setItem(CARAVAN_CONFIG, configJson);
+    if (sessionStorage && configError === "") {
+      sessionStorage.setItem(CARAVAN_CONFIG, configJson);
+    }
 
     // async since importDetails needs the updated state for it to work
     this.setState({ configJson, configError }, () => {
@@ -208,18 +221,27 @@ class CreateWallet extends React.Component {
 
   handleImport = ({ target }) => {
     const fileReader = new FileReader();
-
-    fileReader.readAsText(target.files[0]);
-    fileReader.onload = (event) => {
-      const configJson = event.target.result;
-      this.setConfigJson(configJson);
-    };
+    if (target.files[0] && target.files[0].size < 1048576) {
+      fileReader.onload = (event) => {
+        const configJson = event.target.result;
+        this.setConfigJson(configJson);
+      };
+      fileReader.readAsText(target.files[0]);
+    } else {
+      this.setState({ configError: "Problem uploading file." });
+    }
   };
 
   refresh = async () => {
     this.setState({ refreshing: true });
     await this.generatorRefresh();
     this.setState({ refreshing: false });
+  };
+
+  resetErrorAndClearTargetValue = (event) => {
+    // eslint-disable-next-line no-param-reassign
+    event.target.value = "";
+    this.setState({ configError: "" });
   };
 
   importDetails = () => {
@@ -232,6 +254,7 @@ class CreateWallet extends React.Component {
       setStartingAddressIndex,
       setExtendedPublicKeyImporterMethod,
       setExtendedPublicKeyImporterExtendedPublicKey,
+      setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint,
       setExtendedPublicKeyImporterBIP32Path,
       setExtendedPublicKeyImporterFinalized,
       setExtendedPublicKeyImporterName,
@@ -283,6 +306,18 @@ class CreateWallet extends React.Component {
           number,
           extendedPublicKey.xpub
         );
+        if (extendedPublicKey.xfp) {
+          setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint(
+            number,
+            extendedPublicKey.xfp
+          );
+        } else {
+          setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint(
+            number,
+            "unknown"
+          );
+        }
+
         setExtendedPublicKeyImporterFinalized(number, true);
       }
     );
@@ -303,6 +338,7 @@ class CreateWallet extends React.Component {
               name="upload-config"
               accept="application/json"
               onChange={this.handleImport}
+              onClick={this.resetErrorAndClearTargetValue}
               type="file"
             />
 
@@ -373,90 +409,10 @@ class CreateWallet extends React.Component {
   };
 
   downloadWalletDetails = (event) => {
+    const { walletDetailsText } = this.props;
     event.preventDefault();
-    const body = this.walletDetailsText();
     const filename = this.walletDetailsFilename();
-    downloadFile(body, filename);
-  };
-
-  walletDetailsText = () => {
-    const {
-      addressType,
-      network,
-      totalSigners,
-      requiredSigners,
-      walletName,
-      startingAddressIndex,
-    } = this.props;
-    return `{
-  "name": "${walletName}",
-  "addressType": "${addressType}",
-  "network": "${network}",
-  "client":  ${this.clientDetails()},
-  "quorum": {
-    "requiredSigners": ${requiredSigners},
-    "totalSigners": ${totalSigners}
-  },
-  "extendedPublicKeys": [
-${this.extendedPublicKeyImporterBIP32Paths()}
-  ],
-  "startingAddressIndex": ${startingAddressIndex}
-}`;
-  };
-
-  clientDetails = () => {
-    const { client } = this.props;
-
-    if (client.type === "private") {
-      return `{
-    "type": "private",
-    "url": "${client.url}",
-    "username": "${client.username}"
-  }`;
-    }
-    return `{
-    "type": "public"
-  }`;
-  };
-
-  extendedPublicKeyImporterBIP32Paths = () => {
-    const { totalSigners } = this.props;
-    const extendedPublicKeyImporterBIP32Paths = [];
-    for (
-      let extendedPublicKeyImporterNum = 1;
-      extendedPublicKeyImporterNum <= totalSigners;
-      extendedPublicKeyImporterNum += 1
-    ) {
-      extendedPublicKeyImporterBIP32Paths.push(
-        `${this.extendedPublicKeyImporterBIP32Path(
-          extendedPublicKeyImporterNum
-        )}${extendedPublicKeyImporterNum < totalSigners ? "," : ""}`
-      );
-    }
-    return extendedPublicKeyImporterBIP32Paths.join("\n");
-  };
-
-  extendedPublicKeyImporterBIP32Path = (number) => {
-    const { extendedPublicKeyImporters } = this.props;
-    const extendedPublicKeyImporter = extendedPublicKeyImporters[number];
-    const bip32Path =
-      extendedPublicKeyImporter.method === "text"
-        ? "Unknown (make sure you have written this down previously!)"
-        : extendedPublicKeyImporter.bip32Path;
-    const importer =
-      extendedPublicKeyImporter.method === "unknown"
-        ? `    {
-        "name": "${extendedPublicKeyImporter.name}",
-        "bip32Path": "${bip32Path}",
-        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}"
-        }`
-        : `    {
-        "name": "${extendedPublicKeyImporter.name}",
-        "bip32Path": "${bip32Path}",
-        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
-        "method": "${extendedPublicKeyImporter.method}"
-      }`;
-    return importer;
+    downloadFile(walletDetailsText, filename);
   };
 
   walletDetailsFilename = () => {
@@ -472,10 +428,9 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
   totalBalance = () => {
     const { deposits, change } = this.props;
     if (!Object.keys(deposits.nodes).length) return "";
-    const btc = satoshisToBitcoins(
+    return satoshisToBitcoins(
       deposits.balanceSats.plus(change.balanceSats)
     ).toFixed();
-    return btc;
   };
 
   clearConfig = (e) => {
@@ -526,7 +481,7 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
     const { refreshing, generating } = this.state;
     const walletLoadError =
       change.fetchUTXOsErrors + deposits.fetchUTXOsErrors > 0
-        ? "Wallet loaded with errors"
+        ? "Wallet loaded, but with errors..."
         : "";
 
     return (
@@ -567,7 +522,10 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
           </Grid>
         </Box>
         {walletLoadError.length ? (
-          <FormHelperText style={{ float: "right", padding: "11px" }} error>
+          <FormHelperText
+            style={{ float: "right", padding: "11px", fontSize: "1.5em" }}
+            error
+          >
             {walletLoadError}
           </FormHelperText>
         ) : (
@@ -600,7 +558,6 @@ ${this.extendedPublicKeyImporterBIP32Paths()}
 
 CreateWallet.propTypes = {
   addressType: PropTypes.string.isRequired,
-  startingAddressIndex: PropTypes.number.isRequired,
   change: PropTypes.shape({
     balanceSats: PropTypes.shape({}),
     fetchUTXOsErrors: PropTypes.number,
@@ -633,6 +590,8 @@ CreateWallet.propTypes = {
   setStartingAddressIndex: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterMethod: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterExtendedPublicKey: PropTypes.func.isRequired,
+  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint:
+    PropTypes.func.isRequired,
   setExtendedPublicKeyImporterBIP32Path: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterFinalized: PropTypes.func.isRequired,
   setExtendedPublicKeyImporterName: PropTypes.func.isRequired,
@@ -645,6 +604,7 @@ CreateWallet.propTypes = {
   unknownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
   unknownSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   walletName: PropTypes.string.isRequired,
+  walletDetailsText: PropTypes.string.isRequired,
 };
 
 CreateWallet.defaultProps = {
@@ -662,6 +622,7 @@ function mapStateToProps(state) {
     },
     confirmedBalance: walletSelectors.getConfirmedBalance(state),
     pendingBalance: walletSelectors.getPendingBalance(state),
+    walletDetailsText: getWalletDetailsText(state),
     unknownAddresses: getUnknownAddresses(state),
     unknownSlices: getUnknownAddressSlices(state),
     ...state.wallet,
@@ -681,6 +642,7 @@ const mapDispatchToProps = {
   setExtendedPublicKeyImporterMethod: setExtendedPublicKeyImporterMethodAction,
   setExtendedPublicKeyImporterExtendedPublicKey: setExtendedPublicKeyImporterExtendedPublicKeyAction,
   setExtendedPublicKeyImporterBIP32Path: setExtendedPublicKeyImporterBIP32PathAction,
+  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint: setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprintAction,
   setExtendedPublicKeyImporterName: setExtendedPublicKeyImporterNameAction,
   setExtendedPublicKeyImporterFinalized: setExtendedPublicKeyImporterFinalizedAction,
   setExtendedPublicKeyImporterVisible: setExtendedPublicKeyImporterVisibleAction,
