@@ -1,7 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Tabs, Tab, Box, LinearProgress } from "@material-ui/core";
+import {
+  Tabs,
+  Tab,
+  Box,
+  LinearProgress,
+  CircularProgress,
+} from "@material-ui/core";
 import {
   setWalletModeAction as setWalletModeActionImport,
   WALLET_MODES,
@@ -49,10 +55,14 @@ class WalletControl extends React.Component {
       if (walletMode === WALLET_MODES.SPEND)
         return <WalletSpend addNode={addNode} updateNode={updateNode} />;
       if (walletMode === WALLET_MODES.VIEW) return <SlicesTableContainer />;
-      return "";
     }
     const progress = this.progress();
-    return <LinearProgress variant="determinate" value={progress} />;
+    return [
+      <div style={{ textAlign: "center", marginBottom: "5em" }} key={0}>
+        <CircularProgress variant="indeterminate" />
+      </div>,
+      <LinearProgress variant="determinate" value={progress} key={1} />,
+    ];
   };
 
   progress = () => {
