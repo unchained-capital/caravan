@@ -47,7 +47,8 @@ class ExtendedPublicKeySelector extends React.Component {
     return (
       <div>
         {this.renderKeySelectorMenu()}
-        {((selection > 0 && number > 0) || signatureImporter.finalized) &&
+        {((selection > 0 && number > 0) ||
+          (signatureImporter && signatureImporter.finalized)) &&
           this.renderSignatureImporter()}
       </div>
     );

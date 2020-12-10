@@ -315,12 +315,13 @@ class WalletGenerator extends React.Component {
         importer.extendedPublicKey
       );
       extendedPublicKey.setRootFingerprint(
-        importer.rootXfp && importer.rootXfp.toLowerCase() !== "unknown"
+        importer.rootXfp && !importer.rootXfp.toLowerCase().includes("unknown")
           ? importer.rootXfp
           : "00000000"
       );
       extendedPublicKey.setBip32Path(
-        importer.bip32Path && importer.bip32Path.toLowerCase() !== "unknown"
+        importer.bip32Path &&
+          !importer.bip32Path.toLowerCase().includes("unknown")
           ? importer.bip32Path
           : `m${"/0".repeat(extendedPublicKey.depth)}`
       );
