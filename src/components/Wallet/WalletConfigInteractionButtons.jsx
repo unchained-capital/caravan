@@ -2,8 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Grid } from "@material-ui/core";
 import { CARAVAN_CONFIG } from "./constants";
+import { CoboVaultDisplayer } from "../CoboVault";
 
-const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
+const WalletConfigInteractionButtons = ({
+  onClearFn,
+  onDownloadFn,
+  shouldRenderURButton,
+  walletDetailsText,
+  CoboVaultWalletVerifyCode,
+}) => {
   const handleClearClick = (e) => {
     e.preventDefault();
     if (sessionStorage) sessionStorage.removeItem(CARAVAN_CONFIG);
@@ -17,6 +24,20 @@ const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
           Download Wallet Details
         </Button>
       </Grid>
+      {shouldRenderURButton && (
+        <Grid item>
+          <CoboVaultDisplayer
+            data={Buffer.from(walletDetailsText, "utf-8").toString("hex")}
+            title="Scan the QR Code with Cobo Vault"
+            description={
+              `Wallet Verification Code: ${CoboVaultWalletVerifyCode}.` +
+              `When importing, please check whether the verification code is consistent,
+                                import after ensuring consistency.`
+            }
+            startText="Show Wallet For Cobo Vault"
+          />
+        </Grid>
+      )}
       <Grid item>
         <Button
           onClick={(e) => handleClearClick(e)}
@@ -33,6 +54,9 @@ const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
 WalletConfigInteractionButtons.propTypes = {
   onClearFn: PropTypes.func.isRequired,
   onDownloadFn: PropTypes.func.isRequired,
+  shouldRenderURButton: PropTypes.bool.isRequired,
+  walletDetailsText: PropTypes.string.isRequired,
+  CoboVaultWalletVerifyCode: PropTypes.string.isRequired,
 };
 
 export default WalletConfigInteractionButtons;
