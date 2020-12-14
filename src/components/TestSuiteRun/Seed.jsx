@@ -42,10 +42,12 @@ class SeedBase extends React.Component {
         </Grid>
         {keystore && keystore.type === COLDCARD && (
           <Grid style={{ marginTop: "2em", marginBottom: "2em" }}>
-            If using the simulator, here&pos;s a handy command with the same
+            If using the simulator, here&apos;s a handy command with the same
             seed phrase:
             <br />
-            <code>./simulator.py --seed &pos;{bip39Phrase.join(" ")}&pos;</code>
+            <code>
+              ./simulator.py --seed &apos;{bip39Phrase.join(" ")}&apos;
+            </code>
           </Grid>
         )}
       </>
