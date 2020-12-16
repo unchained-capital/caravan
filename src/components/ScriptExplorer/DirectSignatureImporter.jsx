@@ -54,7 +54,11 @@ class DirectSignatureImporter extends React.Component {
   };
 
   render = () => {
-    const { signatureImporter, extendedPublicKeyImporter } = this.props;
+    const {
+      signatureImporter,
+      extendedPublicKeyImporter,
+      isWallet,
+    } = this.props;
     const { status } = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
@@ -66,7 +70,8 @@ class DirectSignatureImporter extends React.Component {
     }
     return (
       <Box mt={2}>
-        {(extendedPublicKeyImporter === null ||
+        {(!isWallet ||
+          extendedPublicKeyImporter === null ||
           typeof extendedPublicKeyImporter === "undefined" ||
           extendedPublicKeyImporter.method === "text") && (
           <>
@@ -272,6 +277,7 @@ DirectSignatureImporter.propTypes = {
   fee: PropTypes.string.isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  isWallet: PropTypes.bool.isRequired,
   network: PropTypes.string.isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   resetBIP32Path: PropTypes.func.isRequired,
