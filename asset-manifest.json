@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/caravan/static/css/main.a26c6f63.chunk.css",
-    "main.js": "/caravan/static/js/main.e7535b23.chunk.js",
-    "main.js.map": "/caravan/static/js/main.e7535b23.chunk.js.map",
+    "main.js": "/caravan/static/js/main.9d36a0b2.chunk.js",
+    "main.js.map": "/caravan/static/js/main.9d36a0b2.chunk.js.map",
     "runtime-main.js": "/caravan/static/js/runtime-main.7ddb6876.js",
     "runtime-main.js.map": "/caravan/static/js/runtime-main.7ddb6876.js.map",
     "static/css/2.f2850afe.chunk.css": "/caravan/static/css/2.f2850afe.chunk.css",
     "static/js/2.6f9b22af.chunk.js": "/caravan/static/js/2.6f9b22af.chunk.js",
     "static/js/2.6f9b22af.chunk.js.map": "/caravan/static/js/2.6f9b22af.chunk.js.map",
     "index.html": "/caravan/index.html",
-    "precache-manifest.84ad2056bb337bd4ad392f378ee969c6.js": "/caravan/precache-manifest.84ad2056bb337bd4ad392f378ee969c6.js",
+    "precache-manifest.a72c6a217662799189cda947aad3bf8d.js": "/caravan/precache-manifest.a72c6a217662799189cda947aad3bf8d.js",
     "service-worker.js": "/caravan/service-worker.js",
     "static/css/2.f2850afe.chunk.css.map": "/caravan/static/css/2.f2850afe.chunk.css.map",
     "static/css/main.a26c6f63.chunk.css.map": "/caravan/static/css/main.a26c6f63.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.f2850afe.chunk.css",
     "static/js/2.6f9b22af.chunk.js",
     "static/css/main.a26c6f63.chunk.css",
-    "static/js/main.e7535b23.chunk.js"
+    "static/js/main.9d36a0b2.chunk.js"
   ]
 }
