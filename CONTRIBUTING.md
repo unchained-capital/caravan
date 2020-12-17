@@ -69,13 +69,15 @@ git push origin my-branch
 
 ## Releasing Caravan
 
-Caravan is released to Unchained Capital's GitHub Pages (https://unchained-capital.github.io/) by using the following:
+Caravan is released to GitHub Pages (https://unchained-capital.github.io/) by using the following:
 
 ```sh
 npm run release
 git push --follow-tags origin master
-npm run gh-pages
 ```
+
+Then go to GitHub and create a release in the UI.  This will trigger a build and deployment to GitHub pages.
+
 
 ## Help needed
 
