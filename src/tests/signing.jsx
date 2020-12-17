@@ -7,7 +7,7 @@ import {
   unsignedTransactionObjectFromPSBT,
   TEST_FIXTURES,
 } from "unchained-bitcoin";
-import { SignMultisigTransaction } from "unchained-wallets";
+import { HERMIT, SignMultisigTransaction } from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
 import { externalLink } from "../utils";
 import Test from "./Test";
@@ -148,12 +148,29 @@ class SignMultisigTransactionTest extends Test {
 }
 
 export function signingTests(keystore) {
-  return TEST_FIXTURES.transactions.map((fixture) => {
-    return new SignMultisigTransactionTest({
-      ...fixture,
-      ...{ keystore },
-    });
-  });
+  const transactions = [];
+
+  switch (keystore) {
+    case HERMIT:
+      TEST_FIXTURES.transactions.forEach((fixture) => {
+        if (!fixture.segwit) {
+          transactions.push(
+            new SignMultisigTransactionTest({
+              ...fixture,
+              ...{ keystore },
+            })
+          );
+        }
+      });
+      return transactions;
+    default:
+      return TEST_FIXTURES.transactions.map((fixture) => {
+        return new SignMultisigTransactionTest({
+          ...fixture,
+          ...{ keystore },
+        });
+      });
+  }
 }
 
 export default signingTests;

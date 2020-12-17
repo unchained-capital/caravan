@@ -5,6 +5,7 @@ import {
   TREZOR,
   COLDCARD,
   ExportExtendedPublicKey,
+  HERMIT,
 } from "unchained-wallets";
 import Test from "./Test";
 
@@ -43,6 +44,9 @@ class ExportExtendedPublicKeyTest extends Test {
       rootFingerprint,
     } = TEST_FIXTURES.keys.open_source.nodes[this.params.bip32Path];
 
+    if (this.params.keystore === HERMIT) {
+      return { xpub, bip32Path: this.params.bip32Path };
+    }
     if (this.params.network === MAINNET || this.params.keystore === TREZOR)
       return { xpub, rootFingerprint };
     if (this.params.keystore === LEDGER || this.params.keystore === COLDCARD)
