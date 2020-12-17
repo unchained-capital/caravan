@@ -1,6 +1,6 @@
 import React from "react";
 import { MAINNET, TESTNET, TEST_FIXTURES } from "unchained-bitcoin";
-import { COLDCARD, ExportPublicKey } from "unchained-wallets";
+import { COLDCARD, ExportPublicKey, HERMIT } from "unchained-wallets";
 
 import Test from "./Test";
 
@@ -36,6 +36,9 @@ class ExportPublicKeyTest extends Test {
     const { pub, rootFingerprint } = TEST_FIXTURES.keys.open_source.nodes[
       this.params.bip32Path
     ];
+    if (this.params.keystore === HERMIT) {
+      return pub;
+    }
     return { publicKey: pub, rootFingerprint };
   }
 }
