@@ -33,6 +33,13 @@ class ColdcardSigner extends Component {
         ? walletConfig.name
         : `${walletConfig.name}_${startingAddressIndex.toString()}`;
 
+    // At the moment (2020-Dec), Coldcard has just released a new firmware version
+    // which addresses the following problem:  that they inverted the ordering
+    // for p2sh-p2wsh as p2wsh-p2sh but we need to support the older firmware.
+    walletConfig.addressType = walletConfig.addressType.includes("-")
+      ? "P2WSH-P2SH"
+      : walletConfig.addressType;
+
     const interaction = ConfigAdapter({
       KEYSTORE: COLDCARD,
       jsonConfig: walletConfig,
