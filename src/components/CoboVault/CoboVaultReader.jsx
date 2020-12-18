@@ -23,6 +23,7 @@ class CoboVaultReader extends Component {
       qrStartText,
       fileStartText,
       shouldShowFileReader,
+      fileType,
     } = this.props;
 
     if (status === PENDING) {
@@ -46,6 +47,7 @@ class CoboVaultReader extends Component {
               handleError={this.handleError}
               handleSuccess={this.handleSuccess}
               handleStop={this.handleStop}
+              fileType={fileType}
             />
           </Grid>
         </div>
@@ -116,11 +118,13 @@ CoboVaultReader.propTypes = {
     messageFor: PropTypes.func,
     parse: PropTypes.func,
   }).isRequired,
+  fileType: PropTypes.string,
 };
 
 CoboVaultReader.defaultProps = {
   qrStartText: "",
   fileStartText: "",
+  fileType: "json",
 };
 
 export default CoboVaultReader;

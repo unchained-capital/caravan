@@ -109,7 +109,13 @@ QRReader.propTypes = {
 };
 
 const FileScanner = (props) => {
-  const { startText, interaction, handleSuccess, handleError } = props;
+  const {
+    startText,
+    interaction,
+    handleSuccess,
+    handleError,
+    fileType,
+  } = props;
   const handleReadFile = ({ target }) => {
     try {
       const fileReader = new FileReader();
@@ -125,13 +131,15 @@ const FileScanner = (props) => {
     }
   };
 
+  const accept = fileType === "json" ? "application/json" : ".psbt";
+
   return (
     <label htmlFor="upload-cobo-xpub">
       <input
         style={{ display: "none" }}
         id="upload-cobo-xpub"
         name="upload-cobo-xpub"
-        accept="application/json"
+        accept={accept}
         onChange={handleReadFile}
         type="file"
       />
@@ -150,11 +158,13 @@ FileScanner.propTypes = {
   }).isRequired,
   handleSuccess: PropTypes.func.isRequired,
   handleError: PropTypes.func.isRequired,
+  fileType: PropTypes.string.isRequired,
 };
 
 const CoboVaultRawReader = (props) => {
   const {
     shouldShowFileReader,
+    fileType,
     fileStartText,
     qrStartText,
     interaction,
@@ -180,6 +190,7 @@ const CoboVaultRawReader = (props) => {
             interaction={interaction}
             handleSuccess={handleSuccess}
             handleError={handleError}
+            fileType={fileType}
           />
         </Grid>
       )}
@@ -199,10 +210,12 @@ CoboVaultRawReader.propTypes = {
   handleError: PropTypes.func,
   handleSuccess: PropTypes.func,
   handleStop: PropTypes.func,
+  fileType: PropTypes.string,
 };
 
 CoboVaultRawReader.defaultProps = {
   shouldShowFileReader: false,
+  fileType: "json",
   fileStartText: "",
   qrStartText: "",
   handleError: () => {},

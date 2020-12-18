@@ -40,8 +40,8 @@ class CoboVaultExtendedPublicKeyImporter extends React.Component {
           onStart={disableChangeMethod}
           onSuccess={this.import}
           onClear={this.onClear}
-          type="json"
           shouldShowFileReader
+          fileType="json"
         />
         <FormHelperText className="text-danger">
           {extendedPublicKeyError}

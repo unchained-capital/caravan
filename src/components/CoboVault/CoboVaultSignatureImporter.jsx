@@ -8,10 +8,13 @@ import {
 } from "unchained-wallets";
 
 // Components
-import { Grid, Box, FormHelperText } from "@material-ui/core";
+import { Grid, Box, FormHelperText, Button } from "@material-ui/core";
 
+import moment from "moment";
+import { connect } from "react-redux";
 import InteractionMessages from "../InteractionMessages";
 import { CoboVaultDisplayer, CoboVaultReader } from "./index";
+import { downloadFile } from "../../utils";
 
 class CoboVaultSignatureImporter extends React.Component {
   constructor(props) {
@@ -40,6 +43,14 @@ class CoboVaultSignatureImporter extends React.Component {
     });
   };
 
+  handleDownloadPSBT = () => {
+    const { walletName } = this.props;
+    const body = Buffer.from(this.interaction().request(), "hex");
+    const timestamp = moment().format("HHmm");
+    const filename = `${timestamp}-${walletName}.psbt`;
+    downloadFile(body, filename);
+  };
+
   render = () => {
     const { disableChangeMethod } = this.props;
     const { signatureError, status } = this.state;
@@ -55,12 +66,17 @@ class CoboVaultSignatureImporter extends React.Component {
     return (
       <Box mt={2}>
         <Box mt={2}>
-          <Grid container>
+          <Grid container spacing={2}>
             <Grid item>
               <CoboVaultDisplayer
                 data={interaction.request()}
                 startText="Show Transaction QRCode"
               />
+            </Grid>
+            <Grid item>
+              <Button onClick={this.handleDownloadPSBT} variant="outlined">
+                Export Transaction
+              </Button>
             </Grid>
           </Grid>
 
@@ -73,6 +89,7 @@ class CoboVaultSignatureImporter extends React.Component {
             onClear={this.clear}
             showFileReader={false}
             shouldShowFileReader
+            fileType="psbt"
           />
 
           <InteractionMessages
@@ -129,6 +146,7 @@ class CoboVaultSignatureImporter extends React.Component {
 }
 
 CoboVaultSignatureImporter.propTypes = {
+  walletName: PropTypes.string.isRequired,
   network: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
@@ -143,4 +161,15 @@ CoboVaultSignatureImporter.propTypes = {
   disableChangeMethod: PropTypes.func.isRequired,
 };
 
-export default CoboVaultSignatureImporter;
+function mapStateToProps(state) {
+  return {
+    walletName: state.wallet.common.walletName,
+  };
+}
+
+const mapDispatchToProps = {};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CoboVaultSignatureImporter);
