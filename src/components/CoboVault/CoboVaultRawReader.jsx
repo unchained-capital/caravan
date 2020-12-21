@@ -116,16 +116,39 @@ const FileScanner = (props) => {
     handleError,
     fileType,
   } = props;
+
+  const handleReadJSON = (targetFile) => {
+    const fileReader = new FileReader();
+    fileReader.readAsText(targetFile);
+    fileReader.onload = (event) => {
+      const file = event.target.result;
+      const data = interaction.parseFile(file);
+      const { result } = data;
+      handleSuccess(result);
+    };
+  };
+
+  const handleReadPSBT = (targetFile) => {
+    const fileReader = new FileReader();
+    fileReader.readAsArrayBuffer(targetFile);
+    fileReader.onload = (event) => {
+      const file = event.target.result;
+      console.log(file);
+      console.log(Buffer.from(file));
+      console.log(Buffer.from(file).toString("hex"));
+      const data = interaction.parseFile(Buffer.from(file).toString("hex"));
+      const { result } = data;
+      handleSuccess(result);
+    };
+  };
+
   const handleReadFile = ({ target }) => {
     try {
-      const fileReader = new FileReader();
-      fileReader.readAsText(target.files[0]);
-      fileReader.onload = (event) => {
-        const file = event.target.result;
-        const data = interaction.parseFile(file);
-        const { result } = data;
-        handleSuccess(result);
-      };
+      if (fileType === "json") {
+        handleReadJSON(target.files[0]);
+      } else {
+        handleReadPSBT(target.files[0]);
+      }
     } catch (e) {
       handleError(e);
     }
