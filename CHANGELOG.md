@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.4](https://github.com/unchained-capital/caravan/compare/v0.3.3...v0.3.4) (2020-12-21)
+
+
+### Features
+
+* **wallet:** bugfixes, bump uc libs, adds coldcard support ([ac11da6](https://github.com/unchained-capital/caravan/commit/ac11da676e6eca7044aa9652c0019dcf864e10ec))
+
+
+### Bug Fixes
+
+* **dependencies:** two deps with breaking changes ([14b4f8d](https://github.com/unchained-capital/caravan/commit/14b4f8df2538eb4403db7c8f4eeb005bc5616175))
+* **dependencies:** unchained-wallets to 0.1.14 ([3dc473e](https://github.com/unchained-capital/caravan/commit/3dc473e3e7cf3937a03162954f8ab86baba949f7))
+* **dependencies:** update deps with npm audit fix ([df6ff18](https://github.com/unchained-capital/caravan/commit/df6ff185ef4374bfbbb3f789b2e9dd9e7f52cb69))
+* **dependencies:** update uc-b to 0.1.2 ([d99d46a](https://github.com/unchained-capital/caravan/commit/d99d46af6d228f1dfb5a2fc2623c10c8f0eb4105))
+* **slices:** use unixtime to compare lastUsed dates ([d4983ff](https://github.com/unchained-capital/caravan/commit/d4983ff5a07e22046e51962aeeb8c62a420f0cb2))
+* **testrunner:** fix typos on cc test runner ([6be96aa](https://github.com/unchained-capital/caravan/commit/6be96aa2960ca1a46a44122e5506ab1ad3fb1dc0))
+* **wallet:** bug with coldcard wallet config p2sh-p2wsh ordering ([f599c03](https://github.com/unchained-capital/caravan/commit/f599c03e104eaa62b227756595f32b1bb7f30e43))
+* **wallet:** handle old config files properly, guard against unknown/null ([a70d78d](https://github.com/unchained-capital/caravan/commit/a70d78d65e1a93f795b47427146e8e2315b848cd))
+* **wallet:** hermit test suite updates ([5d97ed3](https://github.com/unchained-capital/caravan/commit/5d97ed3fadf0f93c1bf08255cd8100975d83f377))
+* **wallet:** show bip32path if signing via redeem_script interface ([19e69a5](https://github.com/unchained-capital/caravan/commit/19e69a56d8c2165a55664204c0903c8ab84662b4))
+
 ### [0.3.3](https://github.com/unchained-capital/caravan/compare/v0.3.2...v0.3.3) (2020-08-03)
 
 
