@@ -5,6 +5,7 @@ import { P2SH, P2SH_P2WSH, P2WSH } from "unchained-bitcoin";
 
 // Components
 import {
+  Box,
   Card,
   CardHeader,
   CardContent,
@@ -24,9 +25,20 @@ class AddressTypePicker extends React.Component {
   };
 
   render() {
-    const { addressType, frozen } = this.props;
+    const {
+      addressType,
+      frozen,
+      nextBtn,
+      prevBtn,
+      wizardCurrentStep,
+    } = this.props;
+
+    if (wizardCurrentStep !== 2) {
+      return null;
+    }
+
     return (
-      <Card>
+      <Card className="wizard-card-wrapper">
         <CardHeader title="Address Type" />
         <CardContent>
           <FormControl component="fieldset">
@@ -72,6 +84,10 @@ class AddressTypePicker extends React.Component {
               </small>
             </FormHelperText>
           </FormControl>
+          <Box mt={3} id="wallet-wizard-nav-btn-wrapper">
+            {prevBtn}
+            {nextBtn}
+          </Box>
         </CardContent>
       </Card>
     );
@@ -82,10 +98,23 @@ AddressTypePicker.propTypes = {
   addressType: PropTypes.string.isRequired,
   frozen: PropTypes.bool.isRequired,
   setType: PropTypes.func.isRequired,
+  nextBtn: PropTypes.shape({ $$typeof: PropTypes.symbol }),
+  prevBtn: PropTypes.shape({ $$typeof: PropTypes.symbol }),
+  wizardCurrentStep: PropTypes.number.isRequired,
+};
+
+AddressTypePicker.defaultProps = {
+  nextBtn: null,
+  prevBtn: null,
 };
 
 function mapStateToProps(state) {
-  return state.settings;
+  return {
+    ...state.settings,
+    ...{
+      wizardCurrentStep: state.wallet.common.wizardCurrentStep,
+    },
+  };
 }
 
 const mapDispatchToProps = {

@@ -14,11 +14,13 @@ import {
   updateChangeSliceAction,
   updateDepositSliceAction,
   updateWalletNameAction as updateWalletNameActionImport,
+  updateWizardCurrentStep as updateWizardCurrentStepAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import walletSelectors from "../../selectors";
 import { CARAVAN_CONFIG } from "./constants";
 import WalletInfoCard from "./WalletInfoCard";
+import WizardIntro from "../WizardIntro";
 import NetworkPicker from "../NetworkPicker";
 import QuorumPicker from "../QuorumPicker";
 import AddressTypePicker from "../AddressTypePicker";
@@ -56,6 +58,7 @@ import {
   SET_CLIENT_USERNAME,
 } from "../../actions/clientActions";
 import { clientPropTypes, slicePropTypes } from "../../proptypes";
+import "./walletstyles.css";
 
 class CreateWallet extends React.Component {
   static validateProperties(config, properties, key) {
@@ -184,6 +187,9 @@ class CreateWallet extends React.Component {
       refreshing: false,
       generating: false,
     };
+
+    this.next = this.next.bind(this);
+    this.prev = this.prev.bind(this);
   }
 
   componentDidMount() {
@@ -191,6 +197,48 @@ class CreateWallet extends React.Component {
       const configJson = sessionStorage.getItem(CARAVAN_CONFIG);
       if (configJson) this.setConfigJson(configJson);
     }
+  }
+
+  get previousButton() {
+    const { wizardCurrentStep } = this.props;
+    const currentStep = wizardCurrentStep;
+
+    if (currentStep !== 0) {
+      return (
+        <Button
+          id="btn-previous"
+          type="button"
+          variant="contained"
+          color="primary"
+          onClick={this.prev}
+        >
+          Back
+        </Button>
+      );
+    }
+    return null;
+  }
+
+  get nextButton() {
+    const { wizardCurrentStep } = this.props;
+    const currentStep = wizardCurrentStep;
+    const buttonText =
+      currentStep > 0 ? "Next" : "Manually Enter Wallet Details";
+
+    if (currentStep < 6) {
+      return (
+        <Button
+          id="btn-next"
+          type="button"
+          variant="contained"
+          color="primary"
+          onClick={this.next}
+        >
+          {buttonText}
+        </Button>
+      );
+    }
+    return null;
   }
 
   setConfigJson(configJson) {
@@ -357,33 +405,6 @@ class CreateWallet extends React.Component {
     return "";
   };
 
-  renderSettings = () => {
-    const { configuring } = this.props;
-    let settings = null;
-
-    if (configuring)
-      settings = (
-        <Grid item md={4}>
-          <Box>
-            <QuorumPicker />
-          </Box>
-          <Box mt={2}>
-            <AddressTypePicker />
-          </Box>
-          <Box mt={2}>
-            <NetworkPicker />
-          </Box>
-          <Box mt={2}>
-            <ClientPicker />
-          </Box>
-          <Box mt={2}>
-            <StartingAddressIndexPicker />
-          </Box>
-        </Grid>
-      );
-    return settings;
-  };
-
   renderExtendedPublicKeyImporters = () => {
     const { totalSigners, configuring } = this.props;
     const extendedPublicKeyImporters = [];
@@ -441,12 +462,27 @@ class CreateWallet extends React.Component {
     this.setState({ generating: false });
   };
 
+  next() {
+    const { wizardCurrentStep, updateWizardCurrentStep } = this.props;
+    let currentStep = wizardCurrentStep;
+    currentStep = currentStep >= 5 ? 6 : currentStep + 1;
+    updateWizardCurrentStep(currentStep);
+  }
+
+  prev() {
+    const { wizardCurrentStep, updateWizardCurrentStep } = this.props;
+    let currentStep = wizardCurrentStep;
+    currentStep = currentStep <= 0 ? 1 : currentStep - 1;
+    updateWizardCurrentStep(currentStep);
+  }
+
   /**
    * Callback function to pass to the address importer
    * after addresses have been imported we want
    * @param {Array<string>} importedAddresses
    * @param {boolean} rescan - whether or not a rescan is being performed
    */
+
   async afterImportAddresses(importedAddresses, rescan) {
     // if rescan is true then there's no point in fetching
     // the slice data yet since we likely won't get anything
@@ -477,6 +513,7 @@ class CreateWallet extends React.Component {
       nodesLoaded,
       frozen,
       unknownAddresses,
+      wizardCurrentStep,
     } = this.props;
     const { refreshing, generating } = this.state;
     const walletLoadError =
@@ -531,25 +568,56 @@ class CreateWallet extends React.Component {
         ) : (
           ""
         )}
-        <Box>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              {this.renderWalletImporter()}
-            </Grid>
-            <Grid item md={configuring ? 8 : 12}>
-              {this.renderExtendedPublicKeyImporters()}
-              <Box mt={2}>
-                <WalletGenerator
-                  generating={generating}
-                  setGenerating={(value) => this.setGenerating(value)}
-                  downloadWalletDetails={this.downloadWalletDetails}
-                  // eslint-disable-next-line no-return-assign
-                  refreshNodes={(click) => (this.generatorRefresh = click)} // FIXME TIGHT COUPLING ALERT, this calls function downstream
-                />
-              </Box>
-            </Grid>
-            {this.renderSettings()}
-          </Grid>
+
+        <Box mt={2}>
+          {!configuring ? null : (
+            <div>
+              <WizardIntro
+                renderWalletImporter={this.renderWalletImporter}
+                nextBtn={this.nextButton}
+                prevBtn={this.previousButton}
+              />
+              <QuorumPicker
+                nextBtn={this.nextButton}
+                prevBtn={this.previousButton}
+              />
+              <AddressTypePicker
+                nextBtn={this.nextButton}
+                prevBtn={this.previousButton}
+              />
+              <ClientPicker
+                nextBtn={this.nextButton}
+                prevBtn={this.previousButton}
+              />
+              <NetworkPicker
+                nextBtn={this.nextButton}
+                prevBtn={this.previousButton}
+              />
+              <StartingAddressIndexPicker
+                nextBtn={this.nextButton}
+                prevBtn={this.previousButton}
+              />
+              {wizardCurrentStep < 6 ? null : (
+                <Grid>
+                  <Box mt={3}>{this.renderWalletImporter()}</Box>
+                  <Box mt={3}>
+                    <Grid item md={configuring ? 8 : 12}>
+                      {this.renderExtendedPublicKeyImporters()}
+                    </Grid>
+                  </Box>
+                </Grid>
+              )}
+            </div>
+          )}
+          <Box mt={2}>
+            <WalletGenerator
+              generating={generating}
+              setGenerating={(value) => this.setGenerating(value)}
+              downloadWalletDetails={this.downloadWalletDetails}
+              // eslint-disable-next-line no-return-assign
+              refreshNodes={(click) => (this.generatorRefresh = click)} // FIXME TIGHT COUPLING ALERT, this calls function downstream
+            />
+          </Box>
         </Box>
       </>
     );
@@ -601,10 +669,12 @@ CreateWallet.propTypes = {
   setClientUsername: PropTypes.func.isRequired,
   totalSigners: PropTypes.number.isRequired,
   updateWalletNameAction: PropTypes.func.isRequired,
+  updateWizardCurrentStep: PropTypes.func.isRequired,
   unknownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
   unknownSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   walletName: PropTypes.string.isRequired,
   walletDetailsText: PropTypes.string.isRequired,
+  wizardCurrentStep: PropTypes.number.isRequired,
 };
 
 CreateWallet.defaultProps = {
@@ -619,6 +689,7 @@ function mapStateToProps(state) {
       walletName: state.wallet.common.walletName,
       nodesLoaded: state.wallet.common.nodesLoaded,
       walletMode: state.wallet.common.walletMode,
+      wizardCurrentStep: state.wallet.common.wizardCurrentStep,
     },
     confirmedBalance: walletSelectors.getConfirmedBalance(state),
     pendingBalance: walletSelectors.getPendingBalance(state),
@@ -647,6 +718,7 @@ const mapDispatchToProps = {
   setExtendedPublicKeyImporterFinalized: setExtendedPublicKeyImporterFinalizedAction,
   setExtendedPublicKeyImporterVisible: setExtendedPublicKeyImporterVisibleAction,
   updateWalletNameAction: updateWalletNameActionImport,
+  updateWizardCurrentStep: updateWizardCurrentStepAction,
   ...wrappedActions({
     setClientType: SET_CLIENT_TYPE,
     setClientUrl: SET_CLIENT_URL,

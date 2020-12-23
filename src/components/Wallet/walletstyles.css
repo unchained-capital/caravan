@@ -1,0 +1,15 @@
+.wizard-card-wrapper {
+    display: grid;
+    grid-template-rows: 30% 70%;
+    text-align: center;
+    min-height: 60vh;
+}
+
+#wallet-wizard-nav-btn-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+#btn-previous {
+    margin-right: 1em;
+}
