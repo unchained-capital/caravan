@@ -26,6 +26,7 @@ import HermitPublicKeyImporter from "./HermitPublicKeyImporter";
 import HardwareWalletPublicKeyImporter from "./HardwareWalletPublicKeyImporter";
 import EditableName from "../EditableName";
 import Conflict from "./Conflict";
+import { uncompressedPublicKeyError } from "../../utils";
 
 // Actions
 import {
@@ -49,6 +50,17 @@ class PublicKeyImporter extends React.Component {
     this.state = {
       disableChangeMethod: false,
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { number, setFinalized, addressType, publicKeyImporter } = this.props;
+    if (prevProps.addressType !== addressType) {
+      if (
+        uncompressedPublicKeyError(publicKeyImporter.publicKey, addressType)
+      ) {
+        setFinalized(number, false);
+      }
+    }
   }
 
   title = () => {
@@ -300,7 +312,12 @@ class PublicKeyImporter extends React.Component {
   };
 
   validateAndSetPublicKey = (publicKey, errback, callback) => {
-    const { number, publicKeyImporters, setPublicKey } = this.props;
+    const {
+      number,
+      publicKeyImporters,
+      setPublicKey,
+      addressType,
+    } = this.props;
     const error = validatePublicKey(publicKey);
     setPublicKey(number, publicKey);
     if (error) {
@@ -314,6 +331,8 @@ class PublicKeyImporter extends React.Component {
       )
     ) {
       if (errback) errback("This public key has already been imported.");
+    } else if (uncompressedPublicKeyError(publicKey, addressType)) {
+      if (errback) errback(`Please use a compressed public key.`);
     } else {
       if (errback) errback("");
       this.finalize();
@@ -322,7 +341,7 @@ class PublicKeyImporter extends React.Component {
   };
 
   render() {
-    const { publicKeyImporter } = this.props;
+    const { publicKeyImporter, addressType } = this.props;
     return (
       <Card>
         <CardHeader title={this.title()} />
@@ -332,6 +351,14 @@ class PublicKeyImporter extends React.Component {
             publicKeyImporter.conflict && (
               <Conflict message="Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!" />
             )}
+          {uncompressedPublicKeyError(
+            publicKeyImporter.publicKey,
+            addressType
+          ) && (
+            <Conflict
+              message={`Uncompressed public keys cannot be used for ${addressType}!`}
+            />
+          )}
           {publicKeyImporter.finalized
             ? this.renderPublicKey()
             : this.renderImport()}

@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { estimateMultisigTransactionFee } from "unchained-bitcoin/lib/fees";
+import { P2SH_P2WSH, P2WSH, validatePublicKey } from "unchained-bitcoin";
 
 import { DUST_IN_SATOSHIS } from "./constants";
 
@@ -179,4 +180,24 @@ export function naiveCoinSelection(options) {
     }
   }
   return [selectedUtxos, changeRequired];
+}
+
+/**
+ * @description A utility function that determines if a valid uncompressed
+ * public key (04...) is incompatible with a given address type
+ * @param {string} publicKey - compressed, uncompressed or invalid
+ * @param {string} addressType - one of P2SH, P2SH-P2WSH, P2WSH
+ * @returns {boolean} whether or not an uncompressed publicKey is incompatible
+ * for the given addressType
+ */
+export function uncompressedPublicKeyError(publicKey, addressType) {
+  const publicKeyError = validatePublicKey(publicKey);
+  if (
+    [P2SH_P2WSH, P2WSH].includes(addressType) &&
+    !publicKeyError &&
+    publicKey.substring(0, 2) === "04"
+  ) {
+    return true;
+  }
+  return false;
 }

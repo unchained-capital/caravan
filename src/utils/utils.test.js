@@ -3,11 +3,17 @@ import BigNumber from "bignumber.js";
 import {
   TEST_FIXTURES,
   estimateMultisigTransactionFee,
+  P2SH,
+  P2SH_P2WSH,
   P2WSH,
 } from "unchained-bitcoin";
 
 import { DUST_IN_SATOSHIS } from "./constants";
-import { isSpendAll, naiveCoinSelection } from "./index";
+import {
+  isSpendAll,
+  naiveCoinSelection,
+  uncompressedPublicKeyError,
+} from "./index";
 import { getMockState } from "./fixtures";
 import { getSpendableSlices } from "../selectors/wallet";
 
@@ -230,7 +236,7 @@ describe("utils", () => {
           .minus(fee)
           .minus(output.amountSats)
           .isGreaterThan(DUST_IN_SATOSHIS),
-        `Test slices balance amount minus fee and output 
+        `Test slices balance amount minus fee and output
  should be greater than dust so that change is required`
       );
 
@@ -250,6 +256,81 @@ describe("utils", () => {
       options.outputs = [output];
       const test = () => naiveCoinSelection(options);
       expect(test).toThrow();
+    });
+  });
+
+  describe("uncompressedPublicKeyError", () => {
+    const compressedPublicKey =
+      "0239b046b986903f1f4dc3c81e2e113718ad7e9ea9f4740a39fbc89974f65391bd";
+    const uncompressedPublicKey =
+      "04a17f3ad2ecde2fff2abd1b9ca77f35d5449a3b50a8b2dc9a0b5432d6596afd01ee884006f7e7191f430c7881626b95ae1bcacf9b54d7073519673edaea71ee53";
+    const invalidPublicKey =
+      "0139b046b986903f1f4dc3c81e2e113718ad7e9ea9f4740a39fbc89974f65391bd";
+    // P2SH
+    it("should correctly indentify that a compressed public used for P2SH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(compressedPublicKey, P2SH),
+        false,
+        `Should be false for a compressed public key and a ${P2SH} address type`
+      );
+    });
+    it("should correctly indentify that an uncompressed public used for P2SH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(uncompressedPublicKey, P2SH),
+        false,
+        `Should be false for an uncompressed public key and a ${P2SH} address type`
+      );
+    });
+    it("should correctly indentify that an invalid public used for P2SH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(invalidPublicKey, P2SH),
+        false,
+        `Should be false for a invalid public key and a ${P2SH} address type`
+      );
+    });
+    // P2SH-P2WSH
+    it("should correctly indentify that a compressed public used for P2SH-P2WSH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(compressedPublicKey, P2SH_P2WSH),
+        false,
+        `Should be false for a compressed public key and a ${P2SH_P2WSH} address type`
+      );
+    });
+    it("should correctly indentify that an compressed public used for P2SH-P2WSH is erroneous", () => {
+      assert.equal(
+        uncompressedPublicKeyError(uncompressedPublicKey, P2SH_P2WSH),
+        true,
+        `Should be false for a invalid public key and a ${P2SH_P2WSH} address type`
+      );
+    });
+    it("should correctly indentify that an invalid public used for P2SH-P2WSH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(invalidPublicKey, P2SH_P2WSH),
+        false,
+        `Should be false for a invalid public key and a ${P2SH_P2WSH} address type`
+      );
+    });
+    // P2WSH
+    it("should correctly indentify that a compressed public used for P2WSH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(compressedPublicKey, P2WSH),
+        false,
+        `Should be false for a compressed public key and a ${P2WSH} address type`
+      );
+    });
+    it("should correctly indentify that an compressed public used for P2WSH is erroneous", () => {
+      assert.equal(
+        uncompressedPublicKeyError(uncompressedPublicKey, P2WSH),
+        true,
+        `Should be false for a invalid public key and a ${P2WSH} address type`
+      );
+    });
+    it("should correctly indentify that an invalid public used for P2WSH has no error", () => {
+      assert.equal(
+        uncompressedPublicKeyError(invalidPublicKey, P2WSH),
+        false,
+        `Should be false for a invalid public key and a ${P2WSH} address type`
+      );
     });
   });
 });

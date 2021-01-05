@@ -16,7 +16,11 @@ import {
   CardContent,
   FormHelperText,
 } from "@material-ui/core";
-import { externalLink, downloadFile } from "../../utils";
+import {
+  externalLink,
+  downloadFile,
+  uncompressedPublicKeyError,
+} from "../../utils";
 
 // Actions
 import {
@@ -37,10 +41,13 @@ class AddressGenerator extends React.Component {
   };
 
   publicKeyCount = () => {
-    const { publicKeyImporters } = this.props;
-    return Object.values(publicKeyImporters).filter(
-      (publicKeyImporter) => publicKeyImporter.finalized
-    ).length;
+    const { publicKeyImporters, addressType } = this.props;
+    return Object.values(publicKeyImporters).filter((publicKeyImporter) => {
+      return (
+        publicKeyImporter.finalized &&
+        !uncompressedPublicKeyError(publicKeyImporter.publicKey, addressType)
+      );
+    }).length;
   };
 
   publicKeysAreCanonicallySorted = () => {
