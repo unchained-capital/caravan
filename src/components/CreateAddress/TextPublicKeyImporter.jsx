@@ -61,7 +61,8 @@ class TextPublicKeyImporter extends React.Component {
 
   handleChange = (event) => {
     const publicKey = event.target.value;
-    const error = validatePublicKey(publicKey);
+    const { addressType } = this.props;
+    const error = validatePublicKey(publicKey, addressType);
     this.setState({ publicKey, error });
   };
 }
@@ -69,6 +70,7 @@ class TextPublicKeyImporter extends React.Component {
 TextPublicKeyImporter.propTypes = {
   publicKeyImporter: PropTypes.shape({}).isRequired,
   validateAndSetPublicKey: PropTypes.func.isRequired,
+  addressType: PropTypes.string.isRequired,
 };
 
 export default TextPublicKeyImporter;

@@ -6,6 +6,7 @@ import {
   scriptToHex,
   multisigRedeemScript,
   multisigWitnessScript,
+  validatePublicKey,
 } from "unchained-bitcoin";
 import {
   Box,
@@ -16,11 +17,7 @@ import {
   CardContent,
   FormHelperText,
 } from "@material-ui/core";
-import {
-  externalLink,
-  downloadFile,
-  uncompressedPublicKeyError,
-} from "../../utils";
+import { externalLink, downloadFile } from "../../utils";
 
 // Actions
 import {
@@ -43,10 +40,11 @@ class AddressGenerator extends React.Component {
   publicKeyCount = () => {
     const { publicKeyImporters, addressType } = this.props;
     return Object.values(publicKeyImporters).filter((publicKeyImporter) => {
-      return (
-        publicKeyImporter.finalized &&
-        !uncompressedPublicKeyError(publicKeyImporter.publicKey, addressType)
+      const publicKeyError = validatePublicKey(
+        publicKeyImporter.publicKey,
+        addressType
       );
+      return publicKeyImporter.finalized && !publicKeyError;
     }).length;
   };
 

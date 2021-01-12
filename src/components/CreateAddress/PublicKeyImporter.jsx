@@ -26,7 +26,6 @@ import HermitPublicKeyImporter from "./HermitPublicKeyImporter";
 import HardwareWalletPublicKeyImporter from "./HardwareWalletPublicKeyImporter";
 import EditableName from "../EditableName";
 import Conflict from "./Conflict";
-import { uncompressedPublicKeyError } from "../../utils";
 
 // Actions
 import {
@@ -55,9 +54,11 @@ class PublicKeyImporter extends React.Component {
   componentDidUpdate(prevProps) {
     const { number, setFinalized, addressType, publicKeyImporter } = this.props;
     if (prevProps.addressType !== addressType) {
-      if (
-        uncompressedPublicKeyError(publicKeyImporter.publicKey, addressType)
-      ) {
+      const publicKeyError = validatePublicKey(
+        publicKeyImporter.publicKey,
+        addressType
+      );
+      if (publicKeyError) {
         setFinalized(number, false);
       }
     }
@@ -182,6 +183,7 @@ class PublicKeyImporter extends React.Component {
         <TextPublicKeyImporter
           publicKeyImporter={publicKeyImporter}
           validateAndSetPublicKey={this.validateAndSetPublicKey}
+          addressType={addressType}
         />
       );
     }
@@ -312,12 +314,7 @@ class PublicKeyImporter extends React.Component {
   };
 
   validateAndSetPublicKey = (publicKey, errback, callback) => {
-    const {
-      number,
-      publicKeyImporters,
-      setPublicKey,
-      addressType,
-    } = this.props;
+    const { number, publicKeyImporters, setPublicKey } = this.props;
     const error = validatePublicKey(publicKey);
     setPublicKey(number, publicKey);
     if (error) {
@@ -331,8 +328,6 @@ class PublicKeyImporter extends React.Component {
       )
     ) {
       if (errback) errback("This public key has already been imported.");
-    } else if (uncompressedPublicKeyError(publicKey, addressType)) {
-      if (errback) errback(`Please use a compressed public key.`);
     } else {
       if (errback) errback("");
       this.finalize();
@@ -351,12 +346,14 @@ class PublicKeyImporter extends React.Component {
             publicKeyImporter.conflict && (
               <Conflict message="Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!" />
             )}
-          {uncompressedPublicKeyError(
-            publicKeyImporter.publicKey,
-            addressType
+          {validatePublicKey(publicKeyImporter.publicKey, addressType).includes(
+            "does not support uncompressed public keys"
           ) && (
             <Conflict
-              message={`Uncompressed public keys cannot be used for ${addressType}!`}
+              message={validatePublicKey(
+                publicKeyImporter.publicKey,
+                addressType
+              )}
             />
           )}
           {publicKeyImporter.finalized
