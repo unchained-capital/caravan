@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.5](https://github.com/unchained-capital/caravan/compare/v0.3.4...v0.3.5) (2021-01-12)
+
+
+### Bug Fixes
+
+* **deps:** upgrade unchained-wallets to 0.1.15 ([fdce789](https://github.com/unchained-capital/caravan/commit/fdce789f087b776f430651b8decc08c110ba59d2))
+* **wallet:** direct Edit Details btn to editable pubkey page ([6fc3d84](https://github.com/unchained-capital/caravan/commit/6fc3d84a93dcbc5a688470d2a1328e7aade065b3)), closes [#109](https://github.com/unchained-capital/caravan/issues/109)
+
 ### [0.3.4](https://github.com/unchained-capital/caravan/compare/v0.3.3...v0.3.4) (2020-12-21)
 
 

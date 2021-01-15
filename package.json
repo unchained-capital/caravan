@@ -1,6 +1,6 @@
 {
   "name": "caravan",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Unchained Capital's Bitcoin Multisig Application",
   "main": "index.jsx",
   "publicPrivate": true,
@@ -81,7 +81,7 @@
     "@material-ui/core": "^4.9.11",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "base58check": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "bip32": "^2.0.4",
@@ -120,6 +120,6 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "unchained-bitcoin": "^0.1.2",
-    "unchained-wallets": "^0.1.14"
+    "unchained-wallets": "^0.1.15"
   }
 }

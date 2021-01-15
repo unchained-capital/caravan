@@ -36,7 +36,7 @@ const scopes = [
   "testrunner",
   "wallet",
   "xpubimporter",
-  "dependencies",
+  "deps",
   "other",
 ];
 
