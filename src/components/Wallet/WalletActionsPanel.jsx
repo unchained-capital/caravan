@@ -24,6 +24,7 @@ import { CARAVAN_CONFIG } from "./constants";
 
 import ImportAddressesButton from "../ImportAddressesButton";
 import { CoboVaultDisplayer } from "../CoboVault";
+import SyncWalletDescription from "../CoboVault/components/SyncWalletDescription";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -133,13 +134,14 @@ const WalletActionsPanel = ({
                     withIcon: true,
                   }}
                   startText="Show Wallet for Cobo Vault"
-                  title="Scan the QR Code with Cobo Vault"
-                  description={
-                    `Wallet Verification Code: ${CoboVaultWalletVerifyCode}.` +
-                    `When importing, please check whether the verification code is consistent,
-                                import after ensuring consistency.
-                              `
-                  }
+                  title="Scan the QR Code using Cobo Vault"
+                  renderDescription={() => {
+                    return (
+                      <SyncWalletDescription
+                        verifyCode={CoboVaultWalletVerifyCode}
+                      />
+                    );
+                  }}
                   data={Buffer.from(walletDetailsText, "utf-8").toString("hex")}
                 />
               </ButtonGroup>

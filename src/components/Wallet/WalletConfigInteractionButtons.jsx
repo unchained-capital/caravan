@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Button, Grid } from "@material-ui/core";
 import { CARAVAN_CONFIG } from "./constants";
 import { CoboVaultDisplayer } from "../CoboVault";
+import SyncWalletDescription from "../CoboVault/components/SyncWalletDescription";
 
 const WalletConfigInteractionButtons = ({
   onClearFn,
@@ -28,12 +29,12 @@ const WalletConfigInteractionButtons = ({
         <Grid item>
           <CoboVaultDisplayer
             data={Buffer.from(walletDetailsText, "utf-8").toString("hex")}
-            title="Scan the QR Code with Cobo Vault"
-            description={
-              `Wallet Verification Code: ${CoboVaultWalletVerifyCode}.` +
-              `When importing, please check whether the verification code is consistent,
-                                import after ensuring consistency.`
-            }
+            title="Scan the QR Code using Cobo Vault"
+            renderDescription={() => {
+              return (
+                <SyncWalletDescription verifyCode={CoboVaultWalletVerifyCode} />
+              );
+            }}
             startText="Show Wallet For Cobo Vault"
           />
         </Grid>

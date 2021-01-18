@@ -10,7 +10,7 @@ const MIN_WIDTH = 240;
 const MAX_WIDTH = 360;
 
 const QRPlayer = (props) => {
-  const { data, title, description, close } = props;
+  const { data, title, description, close, renderDescription } = props;
   const qrs = useMemo(() => {
     const interaction = new CoboVaultDisplayerInteraction();
     return interaction.encodeUR(data);
@@ -50,12 +50,12 @@ const QRPlayer = (props) => {
       clear();
     };
   }, [qrs.length]);
-
   return qrs.length > 0 ? (
     <Modal open onClose={close}>
       <div className={styles.qrPlayerContainer}>
         {title && <p className={styles.qrPlayerTitle}>{title.toUpperCase()}</p>}
         {description && <p>{description}</p>}
+        {renderDescription && renderDescription()}
         <div className={styles.qrPlayerCodeContainer}>
           <QRCode size={width} value={qrs[currentQR]} level="L" />
         </div>
@@ -100,6 +100,7 @@ QRPlayer.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   close: PropTypes.func.isRequired,
+  renderDescription: PropTypes.func.isRequired,
 };
 
 export default QRPlayer;

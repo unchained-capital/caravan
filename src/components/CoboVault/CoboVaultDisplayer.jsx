@@ -33,6 +33,7 @@ CoboVaultDisplayer.propTypes = {
   }),
   title: PropTypes.string,
   description: PropTypes.string,
+  renderDescription: PropTypes.func,
 };
 
 CoboVaultDisplayer.defaultProps = {
@@ -43,6 +44,7 @@ CoboVaultDisplayer.defaultProps = {
   },
   title: "",
   description: "",
+  renderDescription: () => null,
 };
 
 export default CoboVaultDisplayer;
