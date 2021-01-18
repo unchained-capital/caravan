@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
   PENDING,
@@ -16,18 +16,19 @@ import InteractionMessages from "../InteractionMessages";
 import { CoboVaultDisplayer, CoboVaultReader } from "./index";
 import { downloadFile } from "../../utils";
 
-class CoboVaultSignatureImporter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      bip32PathError: "",
-      signatureError: "",
-      status: this.interaction(true).isSupported() ? PENDING : UNSUPPORTED,
-    };
-  }
-
-  interaction = () => {
-    const { signatureImporter, network, inputs, outputs } = this.props;
+const CoboVaultSignatureImporter = (props) => {
+  const {
+    signatureImporter,
+    network,
+    inputs,
+    outputs,
+    walletName,
+    validateAndSetSignature,
+    resetBIP32Path,
+    enableChangeMethod,
+    disableChangeMethod,
+  } = props;
+  const makeInteraction = () => {
     const bip32Paths = inputs.map((input) => {
       if (typeof input.bip32Path === "undefined")
         return signatureImporter.bip32Path; // pubkey path
@@ -42,108 +43,83 @@ class CoboVaultSignatureImporter extends React.Component {
       bip32Paths,
     });
   };
+  const [signatureError, setSignatureError] = useState("");
+  const [status] = useState(
+    makeInteraction(true).isSupported ? PENDING : UNSUPPORTED
+  );
 
-  handleDownloadPSBT = () => {
-    const { walletName } = this.props;
-    const body = Buffer.from(this.interaction().request(), "hex");
+  const handleDownloadPSBT = () => {
+    const body = Buffer.from(makeInteraction().request(), "hex");
     const timestamp = moment().format("HHmm");
     const filename = `${timestamp}-${walletName}.psbt`;
     downloadFile(body, filename);
   };
 
-  render = () => {
-    const { disableChangeMethod } = this.props;
-    const { signatureError, status } = this.state;
-    const interaction = this.interaction();
-    if (status === UNSUPPORTED) {
-      return (
+  const importSignature = (signature) => {
+    const signatures = Object.values(signature).reduce((acc, cur) => {
+      return acc.concat(cur);
+    }, []);
+    setSignatureError("");
+    enableChangeMethod();
+    validateAndSetSignature(signatures, (error) => {
+      setSignatureError(error);
+    });
+  };
+
+  const clear = () => {
+    resetBIP32Path();
+    setSignatureError("");
+    enableChangeMethod();
+  };
+
+  const interaction = makeInteraction();
+  if (status === UNSUPPORTED) {
+    return (
+      <InteractionMessages
+        messages={interaction.messagesFor({ state: status })}
+        excludeCodes={["cobovault.signature_request"]}
+      />
+    );
+  }
+  return (
+    <Box mt={2}>
+      <Box mt={2}>
+        <Grid container spacing={2}>
+          <Grid item>
+            <CoboVaultDisplayer
+              data={interaction.request()}
+              startText="Show Transaction QRCode"
+            />
+          </Grid>
+          <Grid item>
+            <Button onClick={handleDownloadPSBT} variant="outlined">
+              Export Transaction
+            </Button>
+          </Grid>
+        </Grid>
+
+        <CoboVaultReader
+          qrStartText="Scan Signature QR Code"
+          fileStartText="Upload Signed PSBT"
+          interaction={interaction}
+          onStart={disableChangeMethod}
+          onSuccess={importSignature}
+          onClear={clear}
+          showFileReader={false}
+          shouldShowFileReader
+          fileType="psbt"
+        />
+
         <InteractionMessages
           messages={interaction.messagesFor({ state: status })}
           excludeCodes={["cobovault.signature_request"]}
         />
-      );
-    }
-    return (
-      <Box mt={2}>
-        <Box mt={2}>
-          <Grid container spacing={2}>
-            <Grid item>
-              <CoboVaultDisplayer
-                data={interaction.request()}
-                startText="Show Transaction QRCode"
-              />
-            </Grid>
-            <Grid item>
-              <Button onClick={this.handleDownloadPSBT} variant="outlined">
-                Export Transaction
-              </Button>
-            </Grid>
-          </Grid>
 
-          <CoboVaultReader
-            qrStartText="Scan Signature QR Code"
-            fileStartText="Upload Signed PSBT"
-            interaction={interaction}
-            onStart={disableChangeMethod}
-            onSuccess={this.import}
-            onClear={this.clear}
-            showFileReader={false}
-            shouldShowFileReader
-            fileType="psbt"
-          />
-
-          <InteractionMessages
-            messages={interaction.messagesFor({ state: status })}
-            excludeCodes={["cobovault.signature_request"]}
-          />
-
-          <FormHelperText error>{signatureError}</FormHelperText>
-        </Box>
+        <FormHelperText error>{signatureError}</FormHelperText>
       </Box>
-    );
-  };
-
-  import = (signature) => {
-    const { validateAndSetSignature, enableChangeMethod } = this.props;
-    const signatures = Object.values(signature).reduce((acc, cur) => {
-      return acc.concat(cur);
-    }, []);
-    this.setState({ signatureError: "" });
-    enableChangeMethod();
-    validateAndSetSignature(signatures, (signatureError) => {
-      this.setState({ signatureError });
-    });
-  };
-
-  clear = () => {
-    const { resetBIP32Path, enableChangeMethod } = this.props;
-    resetBIP32Path();
-    this.setState({ signatureError: "" });
-    enableChangeMethod();
-  };
-
-  hasBIP32PathError = () => {
-    const { bip32PathError } = this.state;
-    return bip32PathError !== "";
-  };
-
-  handleBIP32PathChange = (event) => {
-    const { validateAndSetBIP32Path } = this.props;
-    const bip32Path = event.target.value;
-    validateAndSetBIP32Path(
-      bip32Path,
-      () => {},
-      (bip32PathError) => {
-        this.setState({ bip32PathError });
-      }
-    );
-  };
-
-  bip32PathIsDefault = () => {
-    const { signatureImporter, defaultBIP32Path } = this.props;
-    return signatureImporter.bip32Path === defaultBIP32Path;
-  };
-}
+    </Box>
+  );
+};
 
 CoboVaultSignatureImporter.propTypes = {
   walletName: PropTypes.string.isRequired,
@@ -154,8 +130,6 @@ CoboVaultSignatureImporter.propTypes = {
     bip32Path: PropTypes.string,
   }).isRequired,
   resetBIP32Path: PropTypes.func.isRequired,
-  defaultBIP32Path: PropTypes.string.isRequired,
-  validateAndSetBIP32Path: PropTypes.func.isRequired,
   validateAndSetSignature: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,

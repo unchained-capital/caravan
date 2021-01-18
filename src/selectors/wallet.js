@@ -281,14 +281,10 @@ export const getWalletDetailsText = createSelector(
  * @description Returns verify code for Cobo Vault needs
  */
 export const getCoboVaultWalletVerifyCode = createSelector(
-  [
-    getExtendedPublicKeys,
-    getDefaultBip32Path,
-    getRequiredSigners,
-    getTotalSigners,
-  ],
-  (extendedPublicKeys, defaultBip32Path, requiredSigners, totalSigners) => {
+  [getExtendedPublicKeys, getDefaultBip32Path, getRequiredSigners],
+  (extendedPublicKeys, defaultBip32Path, requiredSigners) => {
     try {
+      const totalSigners = extendedPublicKeys.length;
       const info = `${
         extendedPublicKeys
           .map((cur) => {
