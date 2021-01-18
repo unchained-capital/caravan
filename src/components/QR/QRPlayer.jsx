@@ -4,7 +4,7 @@ import QRCode from "qrcode.react";
 import PropTypes from "prop-types";
 import { CoboVaultDisplayer as CoboVaultDisplayerInteraction } from "unchained-wallets";
 import URProgress from "../CoboVault/URProgress";
-import "./QR.module.scss";
+import styles from "./QR.module.scss";
 
 const MIN_WIDTH = 240;
 const MAX_WIDTH = 360;
@@ -21,11 +21,11 @@ const QRPlayer = (props) => {
 
   const [intervalId, setIntervalId] = useState(null);
 
-  const clear = useCallback(() => {
+  const clear = () => {
     if (intervalId) {
       clearInterval(intervalId);
     }
-  }, [intervalId]);
+  };
 
   const nextQR = useCallback(() => {
     setCurrentQR((current) => {
@@ -33,11 +33,11 @@ const QRPlayer = (props) => {
     });
   }, [qrs.length]);
 
-  const run = useCallback(() => {
+  const run = () => {
     clear();
     const i = setInterval(nextQR, refreshSpeed);
     setIntervalId(i);
-  }, [clear, nextQR]);
+  };
 
   const pause = () => {
     clear();
@@ -49,14 +49,14 @@ const QRPlayer = (props) => {
     return () => {
       clear();
     };
-  }, [qrs.length, clear, run]);
+  }, [qrs.length]);
 
   return qrs.length > 0 ? (
     <Modal open onClose={close}>
-      <div className="qr-player__container">
-        {title && <p className="qr-player__title">{title.toUpperCase()}</p>}
+      <div className={styles.qrPlayerContainer}>
+        {title && <p className={styles.qrPlayerTitle}>{title.toUpperCase()}</p>}
         {description && <p>{description}</p>}
-        <div className="qr-player__qr-container">
+        <div className={styles.qrPlayerCodeContainer}>
           <QRCode size={width} value={qrs[currentQR]} level="L" />
         </div>
         <URProgress current={currentQR + 1} total={qrs.length} />

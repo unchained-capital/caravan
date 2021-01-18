@@ -3,7 +3,7 @@ import { Button, Grid, Modal } from "@material-ui/core";
 import QrReader from "react-qr-reader";
 import PropTypes from "prop-types";
 import URProgress from "../CoboVault/URProgress";
-import "./QR.module.scss"
+import styles from "./QR.module.scss";
 
 const QR_CODE_READER_DELAY = 300; // ms
 
@@ -44,7 +44,7 @@ const QRScanner = (props) => {
 
   return (
     <Modal open>
-      <div className="qr-scanner__container">
+      <div className={styles.qrScannerContainer}>
         <Grid container direction="column" alignItems="center" justify="center">
           <Grid item>
             <QrReader
