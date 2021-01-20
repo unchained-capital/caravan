@@ -292,7 +292,7 @@ export const getCoboVaultWalletVerifyCode = createSelector(
           })
           .sort()
           .reduce((acc, cur) => `${acc} ${cur}`, "") + requiredSigners
-      }of${totalSigners}${defaultBip32Path}`;
+      }of${totalSigners}${defaultBip32Path}`.slice(1); // ignore first whitespace
       return crypto
         .sha256(Buffer.from(info, "utf-8"))
         .toString("hex")
