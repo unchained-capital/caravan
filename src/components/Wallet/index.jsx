@@ -199,20 +199,24 @@ class CreateWallet extends React.Component {
   }
 
   setConfigJson(configJson) {
+    const enhancedConfigJson = this.handleConfigJsonAddressType(configJson);
     let configError;
     try {
-      const config = JSON.parse(configJson);
+      const config = JSON.parse(enhancedConfigJson);
+      if (config.addressType === "P2WSH-P2SH") {
+        config.addressType = "P2SH-P2WSH";
+      }
       configError = CreateWallet.validateConfig(config);
     } catch (parseError) {
       configError = "Invalid JSON";
     }
 
     if (sessionStorage && configError === "") {
-      sessionStorage.setItem(CARAVAN_CONFIG, configJson);
+      sessionStorage.setItem(CARAVAN_CONFIG, enhancedConfigJson);
     }
 
     // async since importDetails needs the updated state for it to work
-    this.setState({ configJson, configError }, () => {
+    this.setState({ configJson: enhancedConfigJson, configError }, () => {
       if (configError === "") this.importDetails();
     });
   }
@@ -514,6 +518,14 @@ class CreateWallet extends React.Component {
     resetWallet();
     setExtendedPublicKeyImporterVisible(true);
     this.setState({ generating: false });
+  };
+
+  handleConfigJsonAddressType = (configJson) => {
+    const config = JSON.parse(configJson);
+    if (config.addressType === "P2WSH-P2SH") {
+      config.addressType = "P2SH-P2WSH";
+    }
+    return JSON.stringify(config);
   };
 
   render = () => {
