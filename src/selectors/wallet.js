@@ -281,8 +281,17 @@ export const getWalletDetailsText = createSelector(
  * @description Returns verify code for Cobo Vault needs
  */
 export const getCoboVaultWalletVerifyCode = createSelector(
-  [getExtendedPublicKeys, getDefaultBip32Path, getRequiredSigners],
-  (extendedPublicKeys, defaultBip32Path, requiredSigners) => {
+  [
+    getExtendedPublicKeys,
+    getDefaultBip32Path,
+    getRequiredSigners,
+    getAddressType,
+  ],
+  (extendedPublicKeys, defaultBip32Path, requiredSigners, addressType) => {
+    let path = defaultBip32Path;
+    if (addressType === "P2SH") {
+      path = "m/45'";
+    }
     try {
       const totalSigners = extendedPublicKeys.length;
       const info = `${
@@ -292,7 +301,7 @@ export const getCoboVaultWalletVerifyCode = createSelector(
           })
           .sort()
           .reduce((acc, cur) => `${acc} ${cur}`, "") + requiredSigners
-      }of${totalSigners}${defaultBip32Path}`.slice(1); // ignore first whitespace
+      }of${totalSigners}${path}`.slice(1); // ignore first whitespace
       return crypto
         .sha256(Buffer.from(info, "utf-8"))
         .toString("hex")
