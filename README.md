@@ -48,7 +48,7 @@ saying "Your site is published at ...".
 You can always clone the source code of Caravan to your local machine
 and run it from there.  You will require a recent `npm` installation.
 
-```
+```bash
 $ git clone https://github.com/unchained-capital/caravan
 ...
 $ cd caravan
@@ -68,7 +68,7 @@ dependences (see section above), you can pre-build the React
 application for a production deployment and then host the contents of
 the resulting `build` directory via a webserver such as `nginx`.
 
-```
+```bash
 $ npm run build
 ...
 ```
@@ -124,39 +124,74 @@ a proxy tool such as [mitmproxy](https://mitmproxy.org), or even just
 a script.
 
 A particularly simple way to proxy requests to a private bitcoind node
-is to make use of the [`corsproxy`](https://www.npmjs.com/package/corsproxy)
-npm module. Instructions to install and run the module are on its
-[home page](https://www.npmjs.com/package/corsproxy).
+is to make use of [`nginx`](https://nginx.org/). Instructions to install
+and run the program are on its [download page](https://nginx.org/en/download.html).
 
-Explicitly, install `corsproxy` with
+Explicitly, install `nginx` with
 
-```
-$ npm install -g corsproxy
+```bash
+# MacOS
+brew install nginx
+
+# Debian Linux
+sudo apt install nginx
 ```
 
-and then launch corsproxy
+copy the server conifiguration file to the appropriate location
 
-```
-$ corsproxy
-```
-You should see:
+```bash
+# MacOS
+mkdir -p /usr/local/etc/nginx/sites-available
+cp bitcoind.proxy /usr/local/etc/nginx/sites-available/
+ln -s /usr/local/etc/nginx/sites-available/bitcoind.proxy /usr/local/etc/nginx/servers/bitcoind
 
+# Debain Linux
+sudo mkdir -p /etc/nginx/sites-available
+sudo cp bitcoin.proxy /etc/nginx/sites-available/
+sudo ln -s /etc/nginx/sites-available/bitcoin.proxy /etc/nginx/sites-enabled/bitcoind
 ```
-$ [log,info], data: CORS Proxy running at: http://localhost:1337
-...
+
+check that the file is copied correctly
+
+```bash
+$ nginx -t
+nginx: the configuration file /usr/local/etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /usr/local/etc/nginx/nginx.conf test is successful
 ```
+
+Start `nginx`
+
+```bash
+# MacOS
+brew services start nginx
+# or if nginx is already running
+brew services reload nginx
+
+# Debain Linux
+sudo systemctl start nginx
+# or if nginx is already running
+sudo systemctl restart nginx
+```
+
+Test the different ports
+
+```bash
+# Test that bitcoin rpc is functioning correctly
+curl --user my_uname --data-binary \
+'{"jsonrpc": "1.0", "id":"curltest", "method": "getblockcount", "params": [] }' \
+-H 'content-type: text/plain;' http://127.0.0.1:8332
+# Test the nginx reverse proxy
+curl --user crabel --data-binary \
+'{"jsonrpc": "1.0", "id":"curltest", "method": "getblockcount", "params": [] }' \
+-H 'content-type: text/plain;' --resolve bitcoind.localhost:8080:127.0.0.1 http://bitcoind.localhost:8080
+```
+
 If you are running a bitcoind node on the same machine as Caravan,
-on port 8332, and you run `corsproxy` with the default settings,
-you should be able to point Caravan at 'http://localhost:1337/localhost:8332'
-to communicate with your node. A testnet node would be running on a
-different port, for example: `http://localhost:1337/localhost:18332`, and you
-would need to point Caravan to that URL instead.
-
-Finally, a testnet/regtest node running on a different machine but still on the same
-network might be accessible to you via `http://localhost:1337/192.168.0.22:18332`, but
-you need to make sure the ports are open and accessible. It should be clear at this
-point that if corsproxy is running, paste your node's IP:port on the end of the
-`corsproxy` URL: `http://localhost:1337/`
+on port 8332, and you run `nginx` with the default settings,
+you should be able to point Caravan at 'http://bitcoind.localhost:8080'
+to communicate with your node. A testnet node would be running on a different location,
+for example: `http://testnet.localhost:8080`, and you would need to point
+Caravan to that URL instead.
 
 ## Contributing
 
