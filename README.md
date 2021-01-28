@@ -112,6 +112,10 @@ node](https://bitcoin.org/en/full-node).
 
 When asking Caravan to use a private bitcoind node you may run into
 [CORS issues](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+This is because [bitcoin-core](https://github.com/bitcoin/bitcoin/pull/12040)
+does not natively support CORS headers. Because of how `caravan` is designed,
+CORS headers are essential to protecting the security of your coins and you will
+need to add the appropriate headers.
 
 To correct this problem, you must add appropriate access control
 headers to your node's HTTP responses.  When running Caravan on your
@@ -137,7 +141,10 @@ brew install nginx
 sudo apt install nginx
 ```
 
-copy the server conifiguration file to the appropriate location
+Copy the server conifiguration file, `bitcoind.proxy`, to the appropriate location with the following
+commands. Note, these commands assume that you are in the base `caravan` directory. An example configuration
+file is included with the `caravan` source code called `bitcoind.proxy` which will, by defualt, enable a mainnet
+proxy. The testnet proxy is included, but is commented out.
 
 ```bash
 # MacOS
@@ -173,7 +180,10 @@ sudo systemctl start nginx
 sudo systemctl restart nginx
 ```
 
-Test the different ports
+On MacOS, starting the `nginx` daemon will prompt a popup window asking if you want `ngingx`
+to allow incoming network connections, which you will want to allow.
+
+Test the different ports:
 
 ```bash
 # Test that bitcoin rpc is functioning correctly
@@ -189,9 +199,90 @@ curl --user my_uname --data-binary \
 If you are running a bitcoind node on the same machine as Caravan,
 on port 8332, and you run `nginx` with the default settings,
 you should be able to point Caravan at 'http://bitcoind.localhost:8080'
-to communicate with your node. A testnet node would be running on a different location,
-for example: `http://testnet.localhost:8080`, and you would need to point
-Caravan to that URL instead.
+to communicate with your node. If you have bitcoind running on a different machine,
+you will need to adjust the `upstream` block in `bitcoind.proxy` for the correct
+network address:port. Don't forget to add the the correct `rpcallowip=LOCAL_MACHINE_IP`
+to the remote machine's `bitcoin.conf`.
+
+Because the `nginx` configuration depends entirely on what is specified in
+the `upstream` block it is STRONGLY reccommended to keep `bitcoind` reserved
+for the mainnet and `testnet` for the testnet. In this way, `nginx` could be
+configured to simultaneously provide a reverse proxy to the mainnet via
+'http://bitcoind.localhost:8080' and to the testnet via 'http://testnet.localhost:8080'.
+
+##### mainnet `nginx` template
+
+```nginx
+upstream bitcoind {
+  server 127.0.0.1:8332;
+}
+
+server {
+  listen 8080;
+  server_name bitcoind.localhost;
+
+  location / {
+    ...
+    proxy_pass http://bitcoind;
+    ...
+  }
+}
+```
+
+##### testnet `nginx` template
+
+```nginx
+upstream testnet {
+  server 127.0.0.1:18332;
+}
+
+server {
+  listen 8080;
+  server_name testnet.localhost;
+
+  location / {
+    ...
+    proxy_pass http://testnet;
+    ...
+  }
+}
+```
+
+#### Adding CORS Headers (Deprecated)
+
+A particularly simple way to proxy requests to a private bitcoind node
+is to make use of the [`corsproxy`](https://www.npmjs.com/package/corsproxy)
+npm module. Instructions to install and run the module are on its
+[home page](https://www.npmjs.com/package/corsproxy). `corsproxy` has not
+been updated in a number of years and will require an earlier version of `node`
+to function properly.
+
+Explicitly, install `corsproxy` with
+
+```bash
+npm install -g corsproxy
+```
+
+and then launch corsproxy
+
+```bash
+$ corsproxy
+[log,info], data: CORS Proxy running at: http://localhost:1337
+...
+```
+
+If you are running a bitcoind node on the same machine as Caravan,
+on port 8332, and you run `corsproxy` with the default settings,
+you should be able to point Caravan at 'http://localhost:1337/localhost:8332'
+to communicate with your node. A testnet node would be running on a
+different port, for example: `http://localhost:1337/localhost:18332`, and you
+would need to point Caravan to that URL instead.
+
+Finally, a testnet/regtest node running on a different machine but still on the same
+network might be accessible to you via `http://localhost:1337/192.168.0.22:18332`, but
+you need to make sure the ports are open and accessible. It should be clear at this
+point that if corsproxy is running, paste your node's IP:port on the end of the
+`corsproxy` URL: `http://localhost:1337/`
 
 ## Contributing
 

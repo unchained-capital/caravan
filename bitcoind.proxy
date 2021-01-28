@@ -2,7 +2,7 @@ upstream bitcoind {
   # local server
   server 127.0.0.1:8332;
   # remote server
-  #server 192.168.0.22:18332
+  #server 192.168.0.22:8332
 }
 
 ## mainnet configuration
@@ -10,13 +10,12 @@ server {
   listen 8080;
   server_name bitcoind.localhost;
 
-  add_header 'Access-Control-Allow-Origin' '*' always;
-  add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS';
-  # Custom headers and headers various browsers *should* be OK with but aren't
-  add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
-
   location / {
     if ($request_method = 'OPTIONS') {
+      add_header 'Access-Control-Allow-Origin' '*' always;
+      add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS';
+      # Custom headers and headers various browsers *should* be OK with but aren't
+      add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
       # Tell client that this pre-flight info is valid for 20 days
       add_header 'Access-Control-Max-Age' 1728000;
       add_header 'Content-Type' 'text/plain; charset=utf-8';
@@ -25,6 +24,10 @@ server {
     }
 
     if ($request_method = 'POST') {
+      add_header 'Access-Control-Allow-Origin' '*' always;
+      add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS';
+      # Custom headers and headers various browsers *should* be OK with but aren't
+      add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
       add_header 'Access-Control-Allow-Credentials' 'true';
       add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
     }
@@ -50,13 +53,12 @@ server {
 #  listen 8080;
 #  server_name testnet.localhost;
 
-#  add_header 'Access-Control-Allow-Origin' '*' always;
-#  add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS';
-#  # Custom headers and headers various browsers *should* be OK with but aren't
-#  add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
-
 #  location / {
 #    if ($request_method = 'OPTIONS') {
+#      add_header 'Access-Control-Allow-Origin' '*' always;
+#      add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS';
+#      # Custom headers and headers various browsers *should* be OK with but aren't
+#      add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
 #      # Tell client that this pre-flight info is valid for 20 days
 #      add_header 'Access-Control-Max-Age' 1728000;
 #      add_header 'Content-Type' 'text/plain; charset=utf-8';
@@ -65,6 +67,10 @@ server {
 #    }
 
 #    if ($request_method = 'POST') {
+#      add_header 'Access-Control-Allow-Origin' '*' always;
+#      add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS';
+#      # Custom headers and headers various browsers *should* be OK with but aren't
+#      add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
 #      add_header 'Access-Control-Allow-Credentials' 'true';
 #      add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
 #    }
