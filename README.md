@@ -210,8 +210,8 @@ sudo systemctl restart nginx
 On MacOS, starting the `nginx` daemon will prompt a popup window asking if you want `ngingx`
 to allow incoming network connections, which you will want to allow.
 
-Test the different ports where `my_name` is the user specified in the `bitcoin.conf` line
-`rpcauth=my_name:` (Don't use this username!):
+Test the different ports where `my_uname` is the user specified in the `bitcoin.conf` line
+`rpcauth=my_uname:` (Don't use this username!):
 
 ```bash
 # Test that bitcoin rpc is functioning correctly
