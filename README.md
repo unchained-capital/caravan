@@ -150,15 +150,42 @@ proxy. The testnet proxy is included, but is commented out.
 # MacOS
 mkdir -p /usr/local/etc/nginx/sites-available
 cp bitcoind.proxy /usr/local/etc/nginx/sites-available/
-ln -s /usr/local/etc/nginx/sites-available/bitcoind.proxy /usr/local/etc/nginx/servers/bitcoind
+ln -s /usr/local/etc/nginx/sites-available/bitcoind.proxy /usr/local/etc/nginx/servers/bitcoind.proxy
 
 # Debain Linux
 sudo mkdir -p /etc/nginx/sites-available
-sudo cp bitcoin.proxy /etc/nginx/sites-available/
-sudo ln -s /etc/nginx/sites-available/bitcoin.proxy /etc/nginx/sites-enabled/bitcoind
+sudo cp bitcoind.proxy /etc/nginx/sites-available/
+sudo ln -s /etc/nginx/sites-available/bitcoind.proxy /etc/nginx/sites-enabled/bitcoind.proxy
 ```
 
-check that the file is copied correctly
+Different linux distributions follow different conventions for the `/etc/nginx/` directory structure.
+As an example, MacOS uses `etc/nginx/servers` and Debian distributions use `/etc/nginx/sites-enabled/`
+for the website configuration files. You will need to check the `/etc/nginx/nginx.conf` file to see what
+the convention is. This snipet is from a machine using Ubuntu 18.04 LTS. Note the two directories
+that are included. Whereas on MacOS there is only one `include` directory, `include servers/*;`.
+
+```nginx
+http {
+  ...
+  ##
+  # Virtual Host Configs
+  ##
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}
+```
+
+[Arch Linux](https://wiki.archlinux.org/index.php/nginx#Configuration) provides more details on how to configure
+`nginx` for that distribution. It may be as simple as adding `include /etc/nginx/sites-enabled/*;` in the `http` block
+of `/etc/nginx/nginx.conf` and then:
+
+```bash
+sudo mkdir -p /etc/nginx/sites-enabled
+sudo ln -s /etc/nginx/sites-available/bitcoind.proxy /etc/nginx/sites-enabled/bitcoind.proxy
+```
+
+Check that everything is copied correctly, properly configured, and that there are no errors in the syntax:
 
 ```bash
 $ nginx -t
@@ -183,7 +210,8 @@ sudo systemctl restart nginx
 On MacOS, starting the `nginx` daemon will prompt a popup window asking if you want `ngingx`
 to allow incoming network connections, which you will want to allow.
 
-Test the different ports:
+Test the different ports where `my_name` is the user specified in the `bitcoin.conf` line
+`rpcauth=my_name:` (Don't use this username!):
 
 ```bash
 # Test that bitcoin rpc is functioning correctly
@@ -194,6 +222,12 @@ curl --user my_uname --data-binary \
 curl --user my_uname --data-binary \
 '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockcount", "params": [] }' \
 -H 'content-type: text/plain;' --resolve bitcoind.localhost:8080:127.0.0.1 http://bitcoind.localhost:8080
+```
+
+Both tests should result in the same output with the current block height, e.g.
+
+```json
+{"result":668255,"error":null,"id":"curltest"}
 ```
 
 If you are running a bitcoind node on the same machine as Caravan,
