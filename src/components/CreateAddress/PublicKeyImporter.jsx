@@ -53,14 +53,11 @@ class PublicKeyImporter extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { number, setFinalized, addressType, publicKeyImporter } = this.props;
-    if (prevProps.addressType !== addressType) {
-      const publicKeyError = validatePublicKey(
-        publicKeyImporter.publicKey,
-        addressType
-      );
-      if (publicKeyError) {
-        setFinalized(number, false);
-      }
+    if (
+      prevProps.addressType !== addressType &&
+      validatePublicKey(publicKeyImporter.publicKey, addressType)
+    ) {
+      setFinalized(number, false);
     }
   }
 
@@ -337,6 +334,10 @@ class PublicKeyImporter extends React.Component {
 
   render() {
     const { publicKeyImporter, addressType } = this.props;
+    const publicKeyError = validatePublicKey(
+      publicKeyImporter.publicKey,
+      addressType
+    );
     return (
       <Card>
         <CardHeader title={this.title()} />
@@ -346,16 +347,9 @@ class PublicKeyImporter extends React.Component {
             publicKeyImporter.conflict && (
               <Conflict message="Warning, BIP32 path is in conflict with the network and address type settings.  Do not proceed unless you are absolutely sure you know what you are doing!" />
             )}
-          {validatePublicKey(publicKeyImporter.publicKey, addressType).includes(
+          {publicKeyError.includes(
             "does not support uncompressed public keys"
-          ) && (
-            <Conflict
-              message={validatePublicKey(
-                publicKeyImporter.publicKey,
-                addressType
-              )}
-            />
-          )}
+          ) && <Conflict message={publicKeyError} />}
           {publicKeyImporter.finalized
             ? this.renderPublicKey()
             : this.renderImport()}

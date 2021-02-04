@@ -39,13 +39,11 @@ class AddressGenerator extends React.Component {
 
   publicKeyCount = () => {
     const { publicKeyImporters, addressType } = this.props;
-    return Object.values(publicKeyImporters).filter((publicKeyImporter) => {
-      const publicKeyError = validatePublicKey(
-        publicKeyImporter.publicKey,
-        addressType
-      );
-      return publicKeyImporter.finalized && !publicKeyError;
-    }).length;
+    return Object.values(publicKeyImporters).filter(
+      ({ publicKey, finalized }) => {
+        return finalized && !validatePublicKey(publicKey, addressType);
+      }
+    ).length;
   };
 
   publicKeysAreCanonicallySorted = () => {
