@@ -230,7 +230,7 @@ describe("utils", () => {
           .minus(fee)
           .minus(output.amountSats)
           .isGreaterThan(DUST_IN_SATOSHIS),
-        `Test slices balance amount minus fee and output 
+        `Test slices balance amount minus fee and output
  should be greater than dust so that change is required`
       );
 
