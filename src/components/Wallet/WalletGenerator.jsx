@@ -472,8 +472,8 @@ class WalletGenerator extends React.Component {
       <p>
         {`Once you have imported all ${totalSigners} extended public keys, `}
         {"your wallet will be generated here."}
-        {hasConflict && ` You will not be able to continue until you address `}
-        {`the conflict.`}
+        {hasConflict &&
+          ` You will not be able to continue until you address the conflict.`}
       </p>
     );
   }
