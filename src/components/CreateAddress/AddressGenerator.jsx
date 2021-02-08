@@ -6,6 +6,7 @@ import {
   scriptToHex,
   multisigRedeemScript,
   multisigWitnessScript,
+  validatePublicKey,
 } from "unchained-bitcoin";
 import {
   Box,
@@ -37,9 +38,11 @@ class AddressGenerator extends React.Component {
   };
 
   publicKeyCount = () => {
-    const { publicKeyImporters } = this.props;
+    const { publicKeyImporters, addressType } = this.props;
     return Object.values(publicKeyImporters).filter(
-      (publicKeyImporter) => publicKeyImporter.finalized
+      ({ publicKey, finalized }) => {
+        return finalized && !validatePublicKey(publicKey, addressType);
+      }
     ).length;
   };
 
