@@ -1,0 +1,27 @@
+{
+  "name": "P2SH-P2WSH-M",
+  "addressType": "P2SH-P2WSH",
+  "network": "mainnet",
+  "client":  {
+    "type": "public"
+  },
+  "quorum": {
+    "requiredSigners": 2,
+    "totalSigners": 2
+  },
+  "extendedPublicKeys": [
+    {
+        "name": "five",
+        "bip32Path": "m/48'/0'/100'/1'",
+        "xpub": "xpub6EwJjKaiocGvo9f7XSGXGwzo1GLB1URxSZ5Ccp1wqdxNkhrSoqNQkC2CeMsU675urdmFJLHSX62xz56HGcnn6u21wRy6uipovmzaE65PfBp",
+        "xfp" : "00000005"
+      },
+    {
+        "name": "osw",
+        "bip32Path": "m/48'/0'/100'/1'",
+        "xpub": "xpub6DcqYQxnbefzEBJF6osEuT5yXoHVZu1YCCsS5YkATvqD2h7tdMBgdBrUXk26FrJwawDGX6fHKPvhhZxKc5b8dPAPb8uANDhsjAPMJqTFDjH",
+        "xfp" : "f57ec65d"
+      }
+  ],
+  "startingAddressIndex": 0
+}
