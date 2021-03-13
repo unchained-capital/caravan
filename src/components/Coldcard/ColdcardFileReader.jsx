@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { CloudUpload as UploadIcon } from "@material-ui/icons";
+import { PSBT_MAGIC_HEX } from "unchained-bitcoin";
 import styles from "./ColdcardFileReader.module.scss";
 
 class ColdcardFileReaderBase extends Component {
@@ -90,20 +91,31 @@ class ColdcardFileReaderBase extends Component {
     return rejectedFiles.length === 0 && acceptedFiles.length === 1;
   };
 
-  onDrop = (acceptedFiles, rejectedFiles) => {
+  onDrop = async (acceptedFiles, rejectedFiles) => {
     const { onReceive, onReceivePSBT, setError, hasError } = this.props;
     const { fileType } = this.state;
     if (hasError) return; // do not continue if the bip32path is invalid
     if (this.singleAcceptedFile(acceptedFiles, rejectedFiles)) {
       const file = acceptedFiles[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        // eslint-disable-next-line no-unused-expressions
-        fileType === "JSON"
-          ? onReceive(reader.result)
-          : onReceivePSBT(reader.result);
-      };
-      reader.readAsText(file);
+      if (fileType === "JSON") {
+        onReceive(await file.text());
+      } else {
+        // With PSBT files, the actual spec says it should be stored in binary.
+        // But it's not really required, and some vendors output the PSBT as
+        // base64 text in a .psbt file. We need to be able to support both cases
+        // when a signed PSBT is uploaded. Assume it is in the proper format,
+        // e.g. binary.
+        const psbtData = await file.arrayBuffer();
+        const psbtHex = Buffer.from(psbtData).toString("hex");
+        // If the binary -> hex conversion starts with this magic number, we're
+        // good to go. Otherwise - it was likely not a binary file, meaning
+        // it was is probably base64 or hex, so we should try using text instead.
+        if (psbtHex.startsWith(PSBT_MAGIC_HEX)) {
+          onReceivePSBT(psbtHex);
+        } else {
+          onReceivePSBT(await file.text());
+        }
+      }
     } else if (rejectedFiles.length === 1) {
       setError(
         `The file you attempted to upload was unacceptable. File type must be .${fileType.toLowerCase()}.`
