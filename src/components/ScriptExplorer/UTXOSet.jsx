@@ -13,20 +13,81 @@ import {
   TableRow,
   TableCell,
   Typography,
+  Checkbox,
 } from "@material-ui/core";
 import { OpenInNew } from "@material-ui/icons";
+import BigNumber from "bignumber.js";
 import { externalLink } from "../../utils";
 import Copyable from "../Copyable";
 
-// Components
+// Actions
+import { setInputs as setInputsAction } from "../../actions/transactionActions";
 
 // Assets
 import "react-table/react-table.css";
 import styles from "./styles.module.scss";
 
 class UTXOSet extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      inputsSatsSelected: props.inputsTotalSats,
+      inputs: props.inputs.map((input) => {
+        return {
+          ...input,
+          checked: true,
+        };
+      }),
+      toggleAll: true,
+    };
+  }
+
+  toggleInput = (inputIndex) => {
+    const { inputs } = this.state;
+    this.setState({ toggleAll: false });
+
+    inputs[inputIndex].checked = !inputs[inputIndex].checked;
+
+    this.setInputsAndUpdateDisplay(inputs);
+  };
+
+  toggleAll = () => {
+    const { inputs, toggleAll } = this.state;
+    const toggled = !toggleAll;
+
+    inputs.forEach((input) => {
+      const i = input;
+      i.checked = toggled;
+      return i;
+    });
+
+    this.setInputsAndUpdateDisplay(inputs);
+    this.setState({ toggleAll: toggled });
+  };
+
+  setInputsAndUpdateDisplay = (inputs) => {
+    const { setInputs, multisig, bip32Path } = this.props;
+    let inputsToSpend = inputs.filter((input) => input.checked);
+    if (multisig) {
+      inputsToSpend = inputsToSpend.map((utxo) => {
+        return { ...utxo, multisig, bip32Path };
+      });
+    }
+    const satsSelected = inputsToSpend.reduce(
+      (accumulator, input) => accumulator.plus(input.amountSats),
+      new BigNumber(0)
+    );
+    this.setState({
+      inputsSatsSelected: satsSelected,
+    });
+    if (inputsToSpend.length > 0) {
+      setInputs(inputsToSpend);
+    }
+  };
+
   renderInputs = () => {
-    const { inputs, network } = this.props;
+    const { network, showSelection } = this.props;
+    const { inputs } = this.state;
     return inputs.map((input, inputIndex) => {
       const confirmedStyle = `${styles.utxoTxid}${
         input.confirmed ? "" : ` ${styles.unconfirmed}`
@@ -34,6 +95,16 @@ class UTXOSet extends React.Component {
       const confirmedTitle = input.confirmed ? "confirmed" : "unconfirmed";
       return (
         <TableRow hover key={input.txid}>
+          {showSelection && (
+            <TableCell>
+              <Checkbox
+                data-testid={`utxo-checkbox-${inputIndex}`}
+                checked={input.checked}
+                onClick={() => this.toggleInput(inputIndex)}
+                color="primary"
+              />
+            </TableCell>
+          )}
           <TableCell>{inputIndex + 1}</TableCell>
           <TableCell className={confirmedStyle}>
             <Copyable text={input.txid} showIcon showText={false}>
@@ -58,7 +129,8 @@ class UTXOSet extends React.Component {
   };
 
   render() {
-    const { inputs, inputsTotalSats } = this.props;
+    const { inputs, inputsTotalSats, showSelection = true } = this.props;
+    const { inputsSatsSelected, toggleAll } = this.state;
     return (
       <>
         <Typography variant="h5">
@@ -68,6 +140,16 @@ class UTXOSet extends React.Component {
         <Table>
           <TableHead>
             <TableRow hover>
+              {showSelection && (
+                <TableCell>
+                  <Checkbox
+                    data-testid="utxo-check-all"
+                    checked={toggleAll}
+                    onClick={() => this.toggleAll()}
+                    color="primary"
+                  />
+                </TableCell>
+              )}
               <TableCell>Number</TableCell>
               <TableCell>TXID</TableCell>
               <TableCell>Index</TableCell>
@@ -80,7 +162,9 @@ class UTXOSet extends React.Component {
             <TableRow hover>
               <TableCell colSpan={3}>TOTAL:</TableCell>
               <TableCell colSpan={2}>
-                {satoshisToBitcoins(inputsTotalSats).toString()}
+                {inputsSatsSelected
+                  ? satoshisToBitcoins(inputsSatsSelected).toString()
+                  : satoshisToBitcoins(inputsTotalSats).toString()}
               </TableCell>
             </TableRow>
           </TableFooter>
@@ -94,6 +178,16 @@ UTXOSet.propTypes = {
   network: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
+  setInputs: PropTypes.func.isRequired,
+  multisig: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.bool]),
+  bip32Path: PropTypes.string,
+  showSelection: PropTypes.bool,
+};
+
+UTXOSet.defaultProps = {
+  multisig: false,
+  bip32Path: "",
+  showSelection: true,
 };
 
 function mapStateToProps(state) {
@@ -102,4 +196,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(UTXOSet);
+const mapDispatchToProps = {
+  setInputs: setInputsAction,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UTXOSet);
