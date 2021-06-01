@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.7](https://github.com/unchained-capital/caravan/compare/v0.3.6...v0.3.7) (2021-06-01)
+
+
+### Bug Fixes
+
+* **wallet:** basic coin selection on spend ([#221](https://github.com/unchained-capital/caravan/issues/221)) ([3917999](https://github.com/unchained-capital/caravan/commit/391799940d292a4dfccd1ef711cd83ace984c285))
+* **wallet:** handle binary psbt properly ([#217](https://github.com/unchained-capital/caravan/issues/217)) ([959f111](https://github.com/unchained-capital/caravan/commit/959f111db0bf5f9e41e3e4c085d0a8bb92695be7))
+
 ### [0.3.6](https://github.com/unchained-capital/caravan/compare/v0.3.5...v0.3.6) (2021-05-01)
 
 

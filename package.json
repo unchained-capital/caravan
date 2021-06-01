@@ -1,6 +1,6 @@
 {
   "name": "caravan",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Unchained Capital's Bitcoin Multisig Application",
   "main": "index.jsx",
   "publicPrivate": true,
