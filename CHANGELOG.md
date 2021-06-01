@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.6](https://github.com/unchained-capital/caravan/compare/v0.3.5...v0.3.6) (2021-05-01)
+
+
+### Bug Fixes
+
+* **deps:** update unchained libs to latest version ([#215](https://github.com/unchained-capital/caravan/issues/215)) ([1f447ed](https://github.com/unchained-capital/caravan/commit/1f447ed2d9c054a4bba1fd21ee7b0ddebf858585))
+* **deps:** update unchained libs to latest version ([#220](https://github.com/unchained-capital/caravan/issues/220)) ([052269a](https://github.com/unchained-capital/caravan/commit/052269acd4d16b3eccf6135bfde10cbc8654ade7))
+* **other:** replace corsproxy with nginx reverse proxy ([#210](https://github.com/unchained-capital/caravan/issues/210)) ([87017e8](https://github.com/unchained-capital/caravan/commit/87017e8b911884d714ce3feba96331479e8e99ca))
+* **pubkeyimporter:** jS error when using Enter as text with incorrect access type ([#205](https://github.com/unchained-capital/caravan/issues/205)) ([3201aa5](https://github.com/unchained-capital/caravan/commit/3201aa5993c27fdb24ebe112c56273fe9584b1f2))
+* **wallet:** fix typo on wallet import page ([#211](https://github.com/unchained-capital/caravan/issues/211)) ([8aea08d](https://github.com/unchained-capital/caravan/commit/8aea08dfac897cef668a583a2b649ad416bb36ef))
+
 ### [0.3.5](https://github.com/unchained-capital/caravan/compare/v0.3.4...v0.3.5) (2021-01-12)
 
 
