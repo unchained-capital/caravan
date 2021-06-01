@@ -64,10 +64,6 @@ class OutputsForm extends React.Component {
     this.scrollToTitle();
   };
 
-  componentDidUpdate = () => {
-    this.scrollToTitle();
-  };
-
   scrollToTitle = () => {
     const { signatureImporters, isWallet } = this.props;
     const finalizedCount = Object.keys(signatureImporters).reduce(
