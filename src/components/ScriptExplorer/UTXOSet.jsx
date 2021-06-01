@@ -86,7 +86,7 @@ class UTXOSet extends React.Component {
   };
 
   renderInputs = () => {
-    const { network, showSelection } = this.props;
+    const { network, showSelection, finalizedOutputs } = this.props;
     const { inputs } = this.state;
     return inputs.map((input, inputIndex) => {
       const confirmedStyle = `${styles.utxoTxid}${
@@ -102,6 +102,7 @@ class UTXOSet extends React.Component {
                 checked={input.checked}
                 onClick={() => this.toggleInput(inputIndex)}
                 color="primary"
+                disabled={finalizedOutputs}
               />
             </TableCell>
           )}
@@ -129,7 +130,12 @@ class UTXOSet extends React.Component {
   };
 
   render() {
-    const { inputs, inputsTotalSats, showSelection = true } = this.props;
+    const {
+      inputs,
+      inputsTotalSats,
+      showSelection = true,
+      finalizedOutputs,
+    } = this.props;
     const { inputsSatsSelected, toggleAll } = this.state;
     return (
       <>
@@ -147,6 +153,7 @@ class UTXOSet extends React.Component {
                     checked={toggleAll}
                     onClick={() => this.toggleAll()}
                     color="primary"
+                    disabled={finalizedOutputs}
                   />
                 </TableCell>
               )}
@@ -182,6 +189,7 @@ UTXOSet.propTypes = {
   multisig: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.bool]),
   bip32Path: PropTypes.string,
   showSelection: PropTypes.bool,
+  finalizedOutputs: PropTypes.bool.isRequired,
 };
 
 UTXOSet.defaultProps = {
@@ -193,6 +201,7 @@ UTXOSet.defaultProps = {
 function mapStateToProps(state) {
   return {
     ...state.settings,
+    finalizedOutputs: state.spend.transaction.finalizedOutputs,
   };
 }
 
