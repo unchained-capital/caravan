@@ -235,6 +235,7 @@ class AddressExpander extends React.Component {
               inputsTotalSats={balanceSats}
               multisig={multisig}
               bip32Path={bip32Path}
+              showSelection={false} // need a little more polish before we enable this
             />
           </Grid>
         );
