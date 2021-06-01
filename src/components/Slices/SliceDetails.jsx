@@ -105,7 +105,11 @@ const SliceDetails = ({ slice, client, network }) => {
         disabled: !slice.balanceSats.isGreaterThan(0),
       },
       panel: (
-        <UTXOSet inputs={slice.utxos} inputsTotalSats={slice.balanceSats} />
+        <UTXOSet
+          inputs={slice.utxos}
+          inputsTotalSats={slice.balanceSats}
+          showSelection={false}
+        />
       ),
     },
     {
