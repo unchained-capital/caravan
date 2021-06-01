@@ -1,0 +1,9 @@
+# Coldcard Multisig setup file for test suite
+
+Name: p2sh-p2wsh-t
+Policy: 2 of 2
+Format: P2WSH-P2SH
+Derivation: m/48'/1'/100'/1'
+
+f57ec65d: tpubDFc9Mm4tw6EkdXuk24MnQYRrDsdKEFh498vFffqa2KJmxytpcHbWrcFYwTKAdLxkSWpadzb5M5VVZ7PDAUjDjymvUmQ7pBbRecz2FM952Am
+00000002: tpubDErWN5qfdLwY9ZJo9HWpxjcuEFuEBVHSbQbPqF35LQr3etWNGirKcgAa93DZ4DmtHm36p2gTf4aj6KybLqHaS3UePM5LtPqtb3d3dYVDs2F
