@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.8](https://github.com/unchained-capital/caravan/compare/v0.3.7...v0.3.8) (2021-06-03)
+
+
+### Bug Fixes
+
+* **deps:** upgrade unchained-libs to latest version ([#222](https://github.com/unchained-capital/caravan/issues/222)) ([a002348](https://github.com/unchained-capital/caravan/commit/a002348759f06d8a64a4c137d242171e9cb6dbb5))
+
 ### [0.3.7](https://github.com/unchained-capital/caravan/compare/v0.3.6...v0.3.7) (2021-06-01)
 
 
