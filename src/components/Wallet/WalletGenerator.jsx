@@ -361,6 +361,7 @@ class WalletGenerator extends React.Component {
     const hasConflict = Object.values(extendedPublicKeyImporters).some(
       (xpub) => xpub.conflict
     );
+
     if (this.extendedPublicKeyCount() === totalSigners) {
       if (generating && !configuring) {
         return (
@@ -372,9 +373,9 @@ class WalletGenerator extends React.Component {
           <Card>
             <CardHeader title={this.title()} />
             <CardContent>
-              <Button href="#" onClick={(e) => this.toggleImporters(e, false)}>
+              {/* <Button href="#" onClick={(e) => this.toggleImporters(e, false)}>
                 {configuring ? "Hide Key Selection" : "Edit Details"}
-              </Button>
+              </Button> */}
               <ConfirmWallet />
               <p>
                 You have imported all&nbsp;

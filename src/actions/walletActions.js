@@ -27,6 +27,7 @@ export const RESET_WALLET = "RESET_WALLET";
 export const SPEND_SLICES = "SPEND_SLICES";
 export const INITIAL_LOAD_COMPLETE = "INITIAL_LOAD_COMPLETE";
 export const RESET_NODES_FETCH_ERRORS = "RESET_NODES_FETCH_ERRORS";
+export const UPDATE_WIZARD_STEP = "UPDATE_WIZARD_STEP";
 
 export const WALLET_MODES = {
   VIEW: 0,
@@ -326,5 +327,12 @@ export function initialLoadComplete() {
 export function resetNodesFetchErrors() {
   return {
     type: RESET_NODES_FETCH_ERRORS,
+  };
+}
+
+export function updateWizardCurrentStep(value) {
+  return {
+    type: UPDATE_WIZARD_STEP,
+    value,
   };
 }

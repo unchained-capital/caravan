@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
+  Box,
   Grid,
   Card,
   CardHeader,
@@ -113,13 +114,19 @@ class ClientPicker extends React.Component {
       usernameError,
       passwordError,
       privateNotes,
+      nextBtn,
+      prevBtn,
+      wizardCurrentStep,
     } = this.props;
     const { connectSuccess, connectError } = this.state;
+
+    if (wizardCurrentStep !== 3) {
+      return null;
+    }
+
     return (
-      <Card>
-        <Grid container justify="space-between">
-          <CardHeader title="Bitcoin Client" />
-        </Grid>
+      <Card className="wizard-card-wrapper">
+        <CardHeader title="Bitcoin Client" />
         <CardContent>
           <Grid item>
             <FormControl component="fieldset">
@@ -173,6 +180,10 @@ class ClientPicker extends React.Component {
               )}
             </FormControl>
           </Grid>
+          <Box mt={3} id="wallet-wizard-nav-btn-wrapper">
+            {prevBtn}
+            {nextBtn}
+          </Box>
         </CardContent>
       </Card>
     );
@@ -196,6 +207,9 @@ ClientPicker.propTypes = {
   usernameError: PropTypes.string,
   setUsername: PropTypes.func.isRequired,
   setUsernameError: PropTypes.func.isRequired,
+  nextBtn: PropTypes.shape({ $$typeof: PropTypes.symbol }),
+  prevBtn: PropTypes.shape({ $$typeof: PropTypes.symbol }),
+  wizardCurrentStep: PropTypes.number.isRequired,
 };
 
 ClientPicker.defaultProps = {
@@ -204,6 +218,8 @@ ClientPicker.defaultProps = {
   onSuccess: null,
   passwordError: "",
   privateNotes: React.createElement("span"),
+  nextBtn: null,
+  prevBtn: null,
 };
 
 function mapStateToProps(state) {
@@ -212,6 +228,9 @@ function mapStateToProps(state) {
     client: state.client,
     urlError: state.client.urlError,
     url: state.client.url,
+    ...{
+      wizardCurrentStep: state.wallet.common.wizardCurrentStep,
+    },
   };
 }
 

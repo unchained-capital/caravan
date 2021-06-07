@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { validateBIP32Index } from "unchained-bitcoin";
 import {
+  Box,
   Grid,
   Card,
   CardHeader,
@@ -56,11 +57,15 @@ class StartingAddressIndexPicker extends React.Component {
       startingAddressIndexField,
       startingAddressIndexError,
     } = this.state;
+
+    const { nextBtn, prevBtn, wizardCurrentStep } = this.props;
+
+    if (wizardCurrentStep !== 5) {
+      return null;
+    }
     return (
-      <Card>
-        <Grid container justify="space-between">
-          <CardHeader title="Starting Address Index" />
-        </Grid>
+      <Card className="wizard-card-wrapper">
+        <CardHeader title="Starting Address Index" />
         <CardContent>
           <Grid item>
             <FormControl component="fieldset">
@@ -107,6 +112,10 @@ class StartingAddressIndexPicker extends React.Component {
               )}
             </FormControl>
           </Grid>
+          <Box mt={3} id="wallet-wizard-nav-btn-wrapper">
+            {prevBtn}
+            {nextBtn}
+          </Box>
         </CardContent>
       </Card>
     );
@@ -116,11 +125,22 @@ class StartingAddressIndexPicker extends React.Component {
 StartingAddressIndexPicker.propTypes = {
   startingAddressIndex: PropTypes.number.isRequired,
   setStartingAddressIndex: PropTypes.func.isRequired,
+  nextBtn: PropTypes.shape({ $$typeof: PropTypes.symbol }),
+  prevBtn: PropTypes.shape({ $$typeof: PropTypes.symbol }),
+  wizardCurrentStep: PropTypes.number.isRequired,
+};
+
+StartingAddressIndexPicker.defaultProps = {
+  nextBtn: null,
+  prevBtn: null,
 };
 
 function mapStateToProps(state) {
   return {
     startingAddressIndex: state.settings.startingAddressIndex,
+    ...{
+      wizardCurrentStep: state.wallet.common.wizardCurrentStep,
+    },
   };
 }
 
