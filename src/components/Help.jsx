@@ -236,6 +236,12 @@ const Help = () => (
                     "Coldcard Mk2 & Mk3"
                   )}
                 </li>
+                <li>
+                  {externalLink(
+                    "https://cobo.com/hardware-wallet/cobo-vault",
+                    "Cobo Vault"
+                  )}
+                </li>
               </ul>
               And web browsers:
               <ul>

@@ -23,6 +23,8 @@ import { clientPropTypes } from "../../proptypes";
 import { CARAVAN_CONFIG } from "./constants";
 
 import ImportAddressesButton from "../ImportAddressesButton";
+import { CoboVaultDisplayer } from "../CoboVault";
+import SyncWalletDescription from "../CoboVault/components/SyncWalletDescription";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -31,7 +33,6 @@ const useStyles = makeStyles(() => ({
     display: "flex",
   },
   cardContent: {
-    textAlign: "center",
     paddingTop: "0px",
     display: "flex",
     flex: 1,
@@ -74,6 +75,9 @@ const WalletActionsPanel = ({
   onImportAddresses,
   refreshing,
   walletActivated,
+  walletDetailsText,
+  CoboVaultWalletVerifyCode,
+  shouldShowWalletDetailURs,
 }) => {
   const classes = useStyles();
   const handleClearClick = (e) => {
@@ -120,6 +124,29 @@ const WalletActionsPanel = ({
               </ButtonWithTooltip>
             </ButtonGroup>
           </Grid>
+          {shouldShowWalletDetailURs && (
+            <Grid item xs={12}>
+              <ButtonGroup variant="outlined">
+                <CoboVaultDisplayer
+                  buttonStyle={{
+                    variant: "outlined",
+                    color: "default",
+                    withIcon: true,
+                  }}
+                  startText="Show Wallet for Cobo Vault"
+                  title="Scan the QR Code using Cobo Vault"
+                  renderDescription={() => {
+                    return (
+                      <SyncWalletDescription
+                        verifyCode={CoboVaultWalletVerifyCode}
+                      />
+                    );
+                  }}
+                  data={Buffer.from(walletDetailsText, "utf-8").toString("hex")}
+                />
+              </ButtonGroup>
+            </Grid>
+          )}
           {client.type === "private" && walletActivated && (
             <Grid item>
               <ImportAddressesButton
@@ -144,6 +171,9 @@ WalletActionsPanel.propTypes = {
   onDownloadConfig: PropTypes.func.isRequired,
   refreshing: PropTypes.bool,
   client: PropTypes.shape(clientPropTypes).isRequired,
+  walletDetailsText: PropTypes.string.isRequired,
+  CoboVaultWalletVerifyCode: PropTypes.string.isRequired,
+  shouldShowWalletDetailURs: PropTypes.bool.isRequired,
 };
 
 WalletActionsPanel.defaultProps = {
