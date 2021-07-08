@@ -42,8 +42,7 @@ class UTXOSet extends React.Component {
     };
   }
 
-  // eslint-disable-next-line no-unused-vars
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     // This function exists because we need to respond to the parent node having
     // its select/spend checkbox clicked (toggling select-all or select-none).
     // None of this needs to happen on the redeem script interface.
@@ -157,10 +156,7 @@ class UTXOSet extends React.Component {
       const numLocalInputsToSpend = inputsToSpend.length;
       if (numLocalInputsToSpend === 0) {
         setSpendCheckbox(false);
-      } else if (
-        numLocalInputsToSpend >= 1 &&
-        numLocalInputsToSpend < localInputs.length
-      ) {
+      } else if (numLocalInputsToSpend < localInputs.length) {
         setSpendCheckbox("indeterminate");
       } else {
         setSpendCheckbox(true);
