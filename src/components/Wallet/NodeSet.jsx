@@ -27,7 +27,7 @@ class NodeSet extends React.Component {
     this.state = {
       page: 0,
       nodesPerPage: 10,
-      spend: false,
+      select: false,
       filterIncludeSpent: false,
       filterIncludeZeroBalance: false,
       orderBy: "bip32Path",
@@ -156,7 +156,7 @@ class NodeSet extends React.Component {
   };
 
   renderNodes = () => {
-    const { page, nodesPerPage, spend } = this.state;
+    const { page, nodesPerPage, select } = this.state;
     const { addNode, updateNode } = this.props;
     const startingIndex = page * nodesPerPage;
     const nodesRows = [];
@@ -173,7 +173,7 @@ class NodeSet extends React.Component {
           addNode={addNode}
           updateNode={updateNode}
           change={change}
-          spend={spend}
+          select={select}
         />
       );
       nodesRows.push(nodeRow);
@@ -209,7 +209,7 @@ class NodeSet extends React.Component {
         <Table style={{ tableLayout: "fixed" }}>
           <TableHead>
             <TableRow>
-              {spending && <TableCell width={62}>Spend?</TableCell>}
+              {spending && <TableCell width={62}>Select</TableCell>}
               <TableCell width={106}>
                 <TableSortLabel
                   active={orderBy === "bip32Path"}
