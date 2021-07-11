@@ -5,6 +5,7 @@ import {
   validateExtendedPublicKey,
   validateExtendedPublicKeyForNetwork,
   deriveChildPublicKey,
+  validateBIP32Path,
 } from "unchained-bitcoin";
 
 // Components
@@ -23,6 +24,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
     super(props);
 
     this.state = {
+      bip32Path: DEFAULT_BIP32_PATH,
       extendedPublicKey: "",
       extendedPublicKeyError: "",
       bip32PathError: "",
@@ -30,13 +32,9 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
     };
   }
 
-  componentDidMount = () => {
-    this.setBIP32PathToDefault();
-  };
-
   render = () => {
-    const { publicKeyImporter } = this.props;
     const {
+      bip32Path,
       extendedPublicKey,
       extendedPublicKeyError,
       bip32PathError,
@@ -72,7 +70,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
                 name="bip32Path"
                 label="BIP32 Path (relative to xpub)"
                 type="text"
-                value={publicKeyImporter.bip32Path}
+                value={bip32Path}
                 onChange={this.handleBIP32PathChange}
                 error={this.hasBIP32PathError()}
                 helperText={bip32PathError}
@@ -112,25 +110,22 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
   };
 
   import = () => {
-    const { network, publicKeyImporter, validateAndSetPublicKey } = this.props;
-    const { extendedPublicKey } = this.state;
+    const { network, validatePublicKey, onImport } = this.props;
+    const { extendedPublicKey, bip32Path } = this.state;
     const publicKey = deriveChildPublicKey(
       extendedPublicKey,
-      publicKeyImporter.bip32Path,
+      bip32Path,
       network
     );
-    validateAndSetPublicKey(publicKey, (bip32PathError) =>
-      this.setState({ bip32PathError })
-    );
-  };
 
-  setBIP32PathToDefault = () => {
-    const { validateAndSetBIP32Path } = this.props;
-    validateAndSetBIP32Path(
-      DEFAULT_BIP32_PATH,
-      () => {},
-      () => {}
-    );
+    const error = validatePublicKey(publicKey);
+    if (error) {
+      this.setState({
+        bip32PathError: error,
+      });
+    } else {
+      onImport({ publicKey, bip32Path });
+    }
   };
 
   hasBIP32PathError = () => {
@@ -145,26 +140,29 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
 
   hasError = () => this.hasBIP32PathError() || this.hasExtendedPublicKeyError();
 
-  setBIP32PathError = (value) => {
-    this.setState({ bip32PathError: value });
-  };
-
   handleBIP32PathChange = (event) => {
-    const { validateAndSetBIP32Path } = this.props;
-    const bip32Path = event.target.value;
-    validateAndSetBIP32Path(bip32Path, () => {}, this.setBIP32PathError, {
+    const nextBIP32Path = event.target.value;
+
+    const error = validateBIP32Path(nextBIP32Path, {
       mode: "unhardened",
+    });
+
+    this.setState({
+      bip32Path: nextBIP32Path,
+      bip32PathError: error ?? "",
     });
   };
 
   bip32PathIsDefault = () => {
-    const { publicKeyImporter } = this.props;
-    return publicKeyImporter.bip32Path === DEFAULT_BIP32_PATH;
+    const { bip32Path } = this.state;
+    return bip32Path === DEFAULT_BIP32_PATH;
   };
 
   resetBIP32Path = () => {
-    this.setBIP32PathToDefault();
-    this.setBIP32PathError("");
+    this.setState({
+      bip32Path: DEFAULT_BIP32_PATH,
+      bip32PathError: "",
+    });
   };
 
   handleExtendedPublicKeyChange = (event) => {
@@ -223,11 +221,8 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
 
 ExtendedPublicKeyPublicKeyImporter.propTypes = {
   network: PropTypes.string.isRequired,
-  publicKeyImporter: PropTypes.shape({
-    bip32Path: PropTypes.string,
-  }).isRequired,
-  validateAndSetPublicKey: PropTypes.func.isRequired,
-  validateAndSetBIP32Path: PropTypes.func.isRequired,
+  validatePublicKey: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired,
 };
 
 export default ExtendedPublicKeyPublicKeyImporter;
