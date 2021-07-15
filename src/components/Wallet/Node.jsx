@@ -53,7 +53,6 @@ class Node extends React.Component {
   render = () => {
     const {
       bip32Path,
-      spend,
       fetchedUTXOs,
       balanceSats,
       multisig,
@@ -71,7 +70,7 @@ class Node extends React.Component {
               id={bip32Path}
               name="spend"
               onChange={this.handleSpend}
-              checked={checked || spend}
+              checked={checked}
               disabled={!fetchedUTXOs || balanceSats.isEqualTo(0)}
               indeterminate={indeterminate}
             />

@@ -102,7 +102,6 @@ class WalletSpend extends React.Component {
       finalizeOutputs,
       setSpendStep,
       resetNodesSpend,
-      autoSpend,
       deleteChangeOutput,
     } = this.props;
     setSpendStep(SPEND_STEP_CREATE);
@@ -112,10 +111,12 @@ class WalletSpend extends React.Component {
     // input nodes and change. So when going back to edit a transaction
     // we want to clear these from the state, since these are added automatically
     // when going from output form to transaction preview
-    if (autoSpend) {
-      resetNodesSpend();
-      deleteChangeOutput();
-    }
+
+    // for manual spend view, we don't store which utxo is selected right now
+    // So when going back to edit a transaction we want to clear everything
+    // from the state so that there are no surprises
+    resetNodesSpend();
+    deleteChangeOutput();
   };
 
   handleSpendMode = (event) => {
