@@ -69,7 +69,7 @@ const WalletInfoCard = ({
                     variant="subtitle1"
                     className={classes.balance}
                   >
-                    {balance} BTC
+                    BTC {balance}
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -82,8 +82,8 @@ const WalletInfoCard = ({
                             fontWeight: "bold",
                           }}
                         >
-                          {pendingBalance > 0 ? "+" : ""}
-                          {pendingBalance} BTC
+                          BTC{" "}{pendingBalance > 0 ? "+" : ""}
+                          {pendingBalance}
                         </span>{" "}
                         (unconfirmed)
                       </>

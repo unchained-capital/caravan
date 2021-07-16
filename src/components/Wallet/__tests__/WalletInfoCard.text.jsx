@@ -42,7 +42,7 @@ describe("WalletInfoCard", () => {
 
       expect(walletInfoCard).toBeVisible();
       expect(balance).toBeVisible();
-      expect(balance).toHaveTextContent("0 BTC");
+      expect(balance).toHaveTextContent("BTC 0");
       expect(bitcoinIcon).toHaveAttribute("color", "grey");
       expect(getByText(walletName)).toBeVisible();
       expect(pendingBalance).toBeEmpty();
@@ -53,7 +53,7 @@ describe("WalletInfoCard", () => {
       const { getByDataCy } = renderWalletInfoCard(props);
 
       const balance = getByDataCy("balance");
-      expect(balance).toHaveTextContent("10 BTC");
+      expect(balance).toHaveTextContent("BTC 10");
     });
 
     test("shows a pending balance", () => {
@@ -62,7 +62,7 @@ describe("WalletInfoCard", () => {
 
       const pendingBalance = getByDataCy("pending-balance");
       expect(pendingBalance).toHaveTextContent(
-        `+${props.pendingBalance} BTC (unconfirmed)`
+        `BTC +${props.pendingBalance} (unconfirmed)`
       );
     });
   });

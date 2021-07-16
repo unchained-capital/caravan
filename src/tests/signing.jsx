@@ -51,7 +51,7 @@ class SignMultisigTransactionTest extends Test {
             <TableRow>
               <TableCell>Output Amount:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.outputAmountSats()).toString()} BTC
+                BTC {satoshisToBitcoins(this.outputAmountSats()).toString()}
               </TableCell>
             </TableRow>
 
@@ -65,15 +65,15 @@ class SignMultisigTransactionTest extends Test {
             <TableRow>
               <TableCell>Change Output Amount:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.changeOutputAmountSats()).toString()}{" "}
-                BTC
+                BTC{" "}
+                {satoshisToBitcoins(this.changeOutputAmountSats()).toString()}
               </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell>Fees:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.feeSats()).toString()} BTC
+                BTC {satoshisToBitcoins(this.feeSats()).toString()}
               </TableCell>
             </TableRow>
           </TableBody>

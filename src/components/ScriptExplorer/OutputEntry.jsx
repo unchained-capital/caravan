@@ -248,6 +248,11 @@ class OutputEntry extends React.Component {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
+                  <FormHelperText>BTC</FormHelperText>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
                   {isWallet &&
                     autoSpend &&
                     number === outputs.length &&
@@ -260,11 +265,6 @@ class OutputEntry extends React.Component {
                         MAX
                       </Typography>
                     )}
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <FormHelperText>BTC</FormHelperText>
                 </InputAdornment>
               ),
             }}

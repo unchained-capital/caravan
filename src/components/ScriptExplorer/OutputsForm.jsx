@@ -34,7 +34,7 @@ class OutputsForm extends React.Component {
   static unitLabel(label, options) {
     let inputProps = {
       endAdornment: (
-        <InputAdornment position="end">
+        <InputAdornment position="start">
           <FormHelperText>{label}</FormHelperText>
         </InputAdornment>
       ),
