@@ -40,8 +40,10 @@ class Node extends React.Component {
       this.markSpending(value);
     } else {
       // handles the case of de-selecting one-by-one until there's nothing left selected
+      // or there's only one utxo and we're selecting to spend it or not instead of at
+      // the top level select-all or deselect-all
       this.setState({ indeterminate: false, checked: value });
-      this.markSpending(false);
+      this.markSpending(value);
     }
   };
 
