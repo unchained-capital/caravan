@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { validatePublicKey } from "unchained-bitcoin";
 
 // Components
 import { Button, TextField, Box } from "@material-ui/core";
@@ -45,9 +44,15 @@ class TextPublicKeyImporter extends React.Component {
   };
 
   import = () => {
-    const { validateAndSetPublicKey } = this.props;
+    const { validatePublicKey, onImport } = this.props;
     const { publicKey } = this.state;
-    validateAndSetPublicKey(publicKey, this.setError);
+    const error = validatePublicKey(publicKey);
+
+    if (error) {
+      this.setError(error);
+    } else {
+      onImport({ publicKey });
+    }
   };
 
   hasError = () => {
@@ -61,16 +66,15 @@ class TextPublicKeyImporter extends React.Component {
 
   handleChange = (event) => {
     const publicKey = event.target.value;
-    const { addressType } = this.props;
-    const error = validatePublicKey(publicKey, addressType);
+    const { validatePublicKey } = this.props;
+    const error = validatePublicKey(publicKey);
     this.setState({ publicKey, error });
   };
 }
 
 TextPublicKeyImporter.propTypes = {
-  publicKeyImporter: PropTypes.shape({}).isRequired,
-  validateAndSetPublicKey: PropTypes.func.isRequired,
-  addressType: PropTypes.string.isRequired,
+  validatePublicKey: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired,
 };
 
 export default TextPublicKeyImporter;
