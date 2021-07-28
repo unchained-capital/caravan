@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.9](https://github.com/unchained-capital/caravan/compare/v0.3.8...v0.3.9) (2021-07-28)
+
+
+### Bug Fixes
+
+* **address:** improve bip32 path editability ([#226](https://github.com/unchained-capital/caravan/issues/226)) ([77ae07f](https://github.com/unchained-capital/caravan/commit/77ae07f50876a3e395d126b21d366cd2e95d4f7a))
+* **wallet:** adds utxo selection to manual spend on wallet interface ([#223](https://github.com/unchained-capital/caravan/issues/223)) ([ef4ab05](https://github.com/unchained-capital/caravan/commit/ef4ab05e7a20818422ed278085fb9e6400b35de9))
+
 ### [0.3.8](https://github.com/unchained-capital/caravan/compare/v0.3.7...v0.3.8) (2021-06-03)
 
 
