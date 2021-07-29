@@ -16,14 +16,45 @@ import {
 import { WALLET_MODES } from "../../actions/walletActions";
 
 class Node extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      indeterminate: false,
+      checked: false,
+    };
+  }
+
   componentDidMount = () => {
     this.generate();
+  };
+
+  // Passing this fn down to the UTXOSet so we can get updates here, from there.
+  setSpendCheckbox = (value) => {
+    const { spend } = this.props;
+    if (value === "indeterminate") {
+      this.setState({ indeterminate: true, checked: false });
+      this.markSpending(true);
+    } else if (value === spend) {
+      // handles select/de-select all as well as have selected some and click select all
+      this.setState({ indeterminate: false, checked: value });
+      this.markSpending(value);
+    } else {
+      // handles the case of de-selecting one-by-one until there's nothing left selected
+      // or there's only one utxo and we're selecting to spend it or not instead of at
+      // the top level select-all or deselect-all
+      this.setState({ indeterminate: false, checked: value });
+      this.markSpending(value);
+    }
+  };
+
+  markSpending = (value) => {
+    const { change, bip32Path, updateNode } = this.props;
+    updateNode(change, { spend: value, bip32Path });
   };
 
   render = () => {
     const {
       bip32Path,
-      spend,
       fetchedUTXOs,
       balanceSats,
       multisig,
@@ -31,6 +62,7 @@ class Node extends React.Component {
       walletMode,
       addressKnown,
     } = this.props;
+    const { indeterminate, checked } = this.state;
     const spending = walletMode === WALLET_MODES.SPEND;
     return (
       <TableRow key={bip32Path}>
@@ -40,8 +72,9 @@ class Node extends React.Component {
               id={bip32Path}
               name="spend"
               onChange={this.handleSpend}
-              checked={spend}
+              checked={checked}
               disabled={!fetchedUTXOs || balanceSats.isEqualTo(0)}
+              indeterminate={indeterminate}
             />
           </TableCell>
         )}
@@ -71,7 +104,12 @@ class Node extends React.Component {
 
   renderAddress = () => {
     const { braidNode } = this.props;
-    return <AddressExpander node={braidNode} />;
+    return (
+      <AddressExpander
+        node={braidNode}
+        setSpendCheckbox={this.setSpendCheckbox}
+      />
+    );
   };
 
   generate = () => {
@@ -95,7 +133,21 @@ class Node extends React.Component {
       feeRate,
     } = this.props;
     let newInputs;
-    if (e.target.checked) {
+
+    if (e.target.getAttribute("data-indeterminate")) {
+      // remove any inputs that are ours
+      newInputs = inputs.filter((input) => {
+        const newUtxos = utxos.filter((utxo) => {
+          return utxo.txid === input.txid && utxo.index === input.index;
+        });
+        return newUtxos.length === 0;
+      });
+      // then add all ours back
+      newInputs = newInputs.concat(
+        utxos.map((utxo) => ({ ...utxo, multisig, bip32Path }))
+      );
+      this.setState({ indeterminate: false, checked: true });
+    } else if (e.target.checked) {
       newInputs = inputs.concat(
         utxos.map((utxo) => ({ ...utxo, multisig, bip32Path }))
       );

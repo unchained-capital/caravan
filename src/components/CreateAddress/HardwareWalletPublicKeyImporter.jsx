@@ -6,7 +6,10 @@ import {
   ACTIVE,
   ERROR,
   ExportPublicKey,
+  TREZOR,
+  LEDGER,
 } from "unchained-wallets";
+import { validateBIP32Path } from "unchained-bitcoin";
 
 // Components
 import {
@@ -23,28 +26,24 @@ class HardwareWalletPublicKeyImporter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      bip32Path: props.defaultBIP32Path,
       publicKeyError: "",
       bip32PathError: "",
       status: this.interaction().isSupported() ? PENDING : UNSUPPORTED,
     };
   }
 
-  componentDidMount = () => {
-    this.resetBIP32Path();
-  };
-
   interaction = () => {
-    const { network, publicKeyImporter } = this.props;
+    const { network, method, defaultBIP32Path } = this.props;
     return ExportPublicKey({
       network,
-      keystore: publicKeyImporter.method,
-      bip32Path: publicKeyImporter.bip32Path,
+      keystore: method,
+      bip32Path: this.state?.bip32Path ?? defaultBIP32Path,
     });
   };
 
   render = () => {
-    const { publicKeyImporter } = this.props;
-    const { status, publicKeyError } = this.state;
+    const { status, bip32Path, publicKeyError } = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
       return (
@@ -60,7 +59,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
             <TextField
               fullWidth
               label="BIP32 Path"
-              value={publicKeyImporter.bip32Path}
+              value={bip32Path}
               onChange={this.handleBIP32PathChange}
               disabled={status !== PENDING}
               error={this.hasBIP32PathError()}
@@ -107,17 +106,26 @@ class HardwareWalletPublicKeyImporter extends React.Component {
 
   import = async () => {
     const {
-      validateAndSetPublicKey,
       enableChangeMethod,
       disableChangeMethod,
+      validatePublicKey,
+      onImport,
     } = this.props;
+    const { bip32Path } = this.state;
     disableChangeMethod();
     this.setState({ publicKeyError: "", status: ACTIVE });
     try {
       const publicKey = await this.interaction().run();
-      validateAndSetPublicKey(publicKey, (error) => {
-        this.setState({ publicKeyError: error, status: PENDING });
-      });
+      const error = validatePublicKey(publicKey);
+
+      if (error) {
+        this.setState({
+          publicKeyError: error,
+          status: PENDING,
+        });
+      } else {
+        onImport({ publicKey, bip32Path });
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
@@ -151,40 +159,39 @@ class HardwareWalletPublicKeyImporter extends React.Component {
     });
   };
 
-  setBIP32PathError = (value) => {
-    this.setState({ bip32PathError: value });
-  };
-
   handleBIP32PathChange = (event) => {
-    const { validateAndSetBIP32Path } = this.props;
-    const bip32Path = event.target.value;
-    validateAndSetBIP32Path(bip32Path, () => {}, this.setBIP32PathError);
+    const nextBIP32Path = event.target.value;
+    const error = validateBIP32Path(nextBIP32Path);
+
+    this.setState({
+      bip32Path: nextBIP32Path,
+      bip32PathError: error ?? "",
+    });
   };
 
   bip32PathIsDefault = () => {
-    const { publicKeyImporter, defaultBIP32Path } = this.props;
-    return publicKeyImporter.bip32Path === defaultBIP32Path;
+    const { bip32Path } = this.state;
+    const { defaultBIP32Path } = this.props;
+    return bip32Path === defaultBIP32Path;
   };
 
   resetBIP32Path = () => {
-    const { resetBIP32Path } = this.props;
-    this.setBIP32PathError("");
-    resetBIP32Path();
+    const { defaultBIP32Path } = this.props;
+    this.setState({
+      bip32Path: defaultBIP32Path,
+      bip32PathError: "",
+    });
   };
 }
 
 HardwareWalletPublicKeyImporter.propTypes = {
   network: PropTypes.string.isRequired,
-  publicKeyImporter: PropTypes.shape({
-    bip32Path: PropTypes.string,
-    method: PropTypes.string,
-  }).isRequired,
-  validateAndSetPublicKey: PropTypes.func.isRequired,
-  validateAndSetBIP32Path: PropTypes.func.isRequired,
-  resetBIP32Path: PropTypes.func.isRequired,
+  method: PropTypes.oneOf([LEDGER, TREZOR]).isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
+  validatePublicKey: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired,
 };
 
 export default HardwareWalletPublicKeyImporter;

@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { HERMIT, ExportPublicKey } from "unchained-wallets";
+import { validateBIP32Path } from "unchained-bitcoin";
 
 // Components
 import { FormGroup, FormHelperText } from "@material-ui/core";
@@ -15,31 +16,25 @@ class HermitPublicKeyImporter extends React.Component {
     };
   }
 
-  componentDidMount = () => {
-    const { resetBIP32Path } = this.props;
-    resetBIP32Path();
-  };
-
   interaction = () => {
-    const { network, publicKeyImporter } = this.props;
+    const { network, defaultBIP32Path } = this.props;
     return ExportPublicKey({
       keystore: HERMIT,
       network,
-      bip32Path: publicKeyImporter.bip32Path,
+      bip32Path: defaultBIP32Path,
     });
   };
 
   render = () => {
-    const { disableChangeMethod } = this.props;
     const { publicKeyError } = this.state;
     return (
       <FormGroup>
         <HermitReader
           startText="Import Public Key"
           interaction={this.interaction()}
-          onStart={disableChangeMethod}
-          onSuccess={this.import}
-          onClear={this.onClear}
+          onStart={this.handleReaderStart}
+          onSuccess={this.handleReaderSuccess}
+          onClear={this.handleReaderClear}
         />
         <FormHelperText error>{publicKeyError}</FormHelperText>
       </FormGroup>
@@ -50,26 +45,34 @@ class HermitPublicKeyImporter extends React.Component {
     this.setState({ publicKeyError: value });
   };
 
-  import = (data) => {
-    const {
-      validateAndSetBIP32Path,
-      validateAndSetPublicKey,
-      enableChangeMethod,
-    } = this.props;
-    enableChangeMethod();
-    const { pubkey, bip32Path } = data;
-    validateAndSetBIP32Path(
-      bip32Path,
-      () => {
-        validateAndSetPublicKey(pubkey, this.setError);
-      },
-      this.setError
-    );
+  handleReaderStart = () => {
+    const { disableChangeMethod } = this.props;
+    disableChangeMethod();
   };
 
-  onClear = () => {
-    const { reset, enableChangeMethod } = this.props;
-    reset(true); // clear BIP32 path
+  handleReaderSuccess = (data) => {
+    const { validatePublicKey, onImport, enableChangeMethod } = this.props;
+    const { pubkey: nextPublicKey, bip32Path: nextBIP32Path } = data;
+
+    enableChangeMethod();
+
+    const bip32PathError = validateBIP32Path(nextBIP32Path);
+    if (bip32PathError) {
+      this.setError(bip32PathError);
+      return;
+    }
+
+    const publicKeyError = validatePublicKey(nextPublicKey);
+    if (publicKeyError) {
+      this.setError(publicKeyError);
+      return;
+    }
+
+    onImport({ publicKey: nextPublicKey, bip32Path: nextBIP32Path });
+  };
+
+  handleReaderClear = () => {
+    const { enableChangeMethod } = this.props;
     this.setError("");
     enableChangeMethod();
   };
@@ -77,15 +80,11 @@ class HermitPublicKeyImporter extends React.Component {
 
 HermitPublicKeyImporter.propTypes = {
   network: PropTypes.string.isRequired,
-  publicKeyImporter: PropTypes.shape({
-    bip32Path: PropTypes.string,
-  }).isRequired,
-  validateAndSetPublicKey: PropTypes.func.isRequired,
-  validateAndSetBIP32Path: PropTypes.func.isRequired,
-  reset: PropTypes.func.isRequired,
-  resetBIP32Path: PropTypes.func.isRequired,
+  defaultBIP32Path: PropTypes.string.isRequired,
+  validatePublicKey: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired,
 };
 
 export default HermitPublicKeyImporter;

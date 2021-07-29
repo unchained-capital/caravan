@@ -13,6 +13,7 @@ jobs:
 
       - name: Install and Build
         run: |
+          sudo apt-get update
           sudo apt-get install libudev-dev libusb-1.0-0-dev
           npm install
           npm run build

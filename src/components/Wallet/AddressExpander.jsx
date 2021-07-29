@@ -217,8 +217,8 @@ class AddressExpander extends React.Component {
   };
 
   expandContent = () => {
-    const { client, node } = this.props;
-    const { utxos, balanceSats, multisig, bip32Path } = node;
+    const { client, node, setSpendCheckbox } = this.props;
+    const { utxos, balanceSats, multisig, bip32Path, spend } = node;
     const { expandMode } = this.state;
 
     if (client.type === "public" && expandMode === MODE_WATCH)
@@ -235,7 +235,10 @@ class AddressExpander extends React.Component {
               inputsTotalSats={balanceSats}
               multisig={multisig}
               bip32Path={bip32Path}
-              showSelection={false} // need a little more polish before we enable this
+              hideSelectAllInHeader
+              selectAll={spend}
+              node={node}
+              setSpendCheckbox={setSpendCheckbox}
             />
           </Grid>
         );
@@ -418,15 +421,18 @@ AddressExpander.propTypes = {
     multisig: PropTypes.shape({
       address: PropTypes.string,
     }),
+    spend: PropTypes.bool,
     utxos: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired,
   network: PropTypes.string,
   requiredSigners: PropTypes.number.isRequired,
   totalSigners: PropTypes.number.isRequired,
+  setSpendCheckbox: PropTypes.func,
 };
 
 AddressExpander.defaultProps = {
   network: NETWORKS.TESTNET,
+  setSpendCheckbox: () => {},
 };
 
 function mapStateToProps(state) {
@@ -436,6 +442,7 @@ function mapStateToProps(state) {
     totalSigners: state.settings.totalSigners,
     client: state.client,
     extendedPublicKeyImporters: state.quorum.extendedPublicKeyImporters,
+    transaction: state.spend.transaction,
   };
 }
 

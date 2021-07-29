@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { validateBIP32Path, validatePublicKey } from "unchained-bitcoin";
+import { validatePublicKey as baseValidatePublicKey } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
 
 // Components
@@ -53,9 +53,10 @@ class PublicKeyImporter extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { number, setFinalized, addressType, publicKeyImporter } = this.props;
+
     if (
       prevProps.addressType !== addressType &&
-      validatePublicKey(publicKeyImporter.publicKey, addressType)
+      this.validatePublicKey(publicKeyImporter.publicKey)
     ) {
       setFinalized(number, false);
     }
@@ -128,40 +129,33 @@ class PublicKeyImporter extends React.Component {
   };
 
   renderImportByMethod = () => {
-    const {
-      publicKeyImporter,
-      network,
-      addressType,
-      defaultBIP32Path,
-    } = this.props;
+    const { publicKeyImporter, network, defaultBIP32Path } = this.props;
+
     if (
       publicKeyImporter.method === TREZOR ||
       publicKeyImporter.method === LEDGER
     ) {
       return (
         <HardwareWalletPublicKeyImporter
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
-          resetBIP32Path={this.resetBIP32Path}
+          method={publicKeyImporter.method}
+          validatePublicKey={this.validatePublicKey}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
-          addressType={addressType}
           defaultBIP32Path={defaultBIP32Path}
           network={network}
+          onImport={this.handleImport}
         />
       );
     }
     if (publicKeyImporter.method === HERMIT) {
       return (
         <HermitPublicKeyImporter
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
-          resetBIP32Path={this.resetBIP32Path}
+          network={network}
+          defaultBIP32Path={defaultBIP32Path}
+          validatePublicKey={this.validatePublicKey}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
-          reset={this.reset}
+          onImport={this.handleImport}
         />
       );
     }
@@ -169,18 +163,16 @@ class PublicKeyImporter extends React.Component {
       return (
         <ExtendedPublicKeyPublicKeyImporter
           network={network}
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          validatePublicKey={this.validatePublicKey}
+          onImport={this.handleImport}
         />
       );
     }
     if (publicKeyImporter.method === TEXT) {
       return (
         <TextPublicKeyImporter
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          addressType={addressType}
+          validatePublicKey={this.validatePublicKey}
+          onImport={this.handleImport}
         />
       );
     }
@@ -214,12 +206,12 @@ class PublicKeyImporter extends React.Component {
     setFinalized(number, true);
   };
 
-  reset = (resetBIP32Path) => {
-    const { number, setPublicKey, setFinalized } = this.props;
+  reset = (shouldResetBIP32Path) => {
+    const { number, setPublicKey, resetBIP32Path, setFinalized } = this.props;
     setPublicKey(number, "");
     setFinalized(number, false);
-    if (resetBIP32Path) {
-      this.resetBIP32Path();
+    if (shouldResetBIP32Path) {
+      resetBIP32Path(number);
     }
   };
 
@@ -264,23 +256,6 @@ class PublicKeyImporter extends React.Component {
     return null;
   };
 
-  validateAndSetBIP32Path = (bip32Path, callback, errback, options) => {
-    const { number, setBIP32Path } = this.props;
-    const error = validateBIP32Path(bip32Path, options);
-    setBIP32Path(number, bip32Path);
-    if (error) {
-      errback(error);
-    } else {
-      errback("");
-      callback();
-    }
-  };
-
-  resetBIP32Path = () => {
-    const { number, resetBIP32Path } = this.props;
-    resetBIP32Path(number);
-  };
-
   //
   // Public Key
   //
@@ -310,34 +285,43 @@ class PublicKeyImporter extends React.Component {
     );
   };
 
-  validateAndSetPublicKey = (publicKey, errback, callback) => {
-    const { number, publicKeyImporters, setPublicKey } = this.props;
-    const error = validatePublicKey(publicKey);
+  handleImport = ({ bip32Path, publicKey }) => {
+    const { number, setBIP32Path, setPublicKey } = this.props;
+
+    // bip32Path is not present in the TEXT input method.
+    if (bip32Path) {
+      setBIP32Path(number, bip32Path);
+    }
     setPublicKey(number, publicKey);
-    if (error) {
-      if (errback) errback(error);
-    } else if (
+    this.finalize();
+  };
+
+  validatePublicKey = (publicKey) => {
+    const { number, addressType, publicKeyImporters } = this.props;
+    const publicKeyError = baseValidatePublicKey(publicKey, addressType);
+    if (publicKeyError) {
+      return publicKeyError;
+    }
+
+    const duplicateError =
       publicKey &&
       Object.values(publicKeyImporters).find(
         (publicKeyImporter, publicKeyImporterIndex) =>
           publicKeyImporterIndex !== number - 1 &&
           publicKeyImporter.publicKey === publicKey
       )
-    ) {
-      if (errback) errback("This public key has already been imported.");
-    } else {
-      if (errback) errback("");
-      this.finalize();
-      if (callback) callback();
+        ? "This public key has already been imported."
+        : null;
+    if (duplicateError) {
+      return duplicateError;
     }
+
+    return "";
   };
 
   render() {
-    const { publicKeyImporter, addressType } = this.props;
-    const publicKeyError = validatePublicKey(
-      publicKeyImporter.publicKey,
-      addressType
-    );
+    const { publicKeyImporter } = this.props;
+    const publicKeyError = this.validatePublicKey(publicKeyImporter.publicKey);
     return (
       <Card>
         <CardHeader title={this.title()} />
