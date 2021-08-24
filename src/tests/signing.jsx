@@ -7,7 +7,7 @@ import {
   unsignedTransactionObjectFromPSBT,
   TEST_FIXTURES,
 } from "unchained-bitcoin";
-import { HERMIT, SignMultisigTransaction } from "unchained-wallets";
+import { COLDCARD, HERMIT, SignMultisigTransaction } from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
 import { externalLink } from "../utils";
 import Test from "./Test";
@@ -143,6 +143,9 @@ class SignMultisigTransactionTest extends Test {
   }
 
   expected() {
+    if (this.params.keystore === COLDCARD) {
+      return this.params.byteCeilingSignature;
+    }
     return this.params.signature;
   }
 }
