@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.11](https://github.com/unchained-capital/caravan/compare/v0.3.10...v0.3.11) (2021-09-02)
+
+
+### Bug Fixes
+
+* **testrunner:** handle coldcard now emitting low-s signatures ([#234](https://github.com/unchained-capital/caravan/issues/234)) ([f865280](https://github.com/unchained-capital/caravan/commit/f865280130c2f8f9d6ace32ae6ef59464466f47e))
+
 ### [0.3.10](https://github.com/unchained-capital/caravan/compare/v0.3.9...v0.3.10) (2021-07-29)
 
 ### [0.3.9](https://github.com/unchained-capital/caravan/compare/v0.3.8...v0.3.9) (2021-07-28)
