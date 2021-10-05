@@ -8,7 +8,7 @@ import {
   multisigBIP32Root,
   validateBIP32Path,
 } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
+import { TREZOR, LEDGER, HERMIT, COLDCARD, KEYSTONE } from "unchained-wallets";
 import {
   Card,
   CardHeader,
@@ -37,6 +37,7 @@ import {
 } from "../../actions/signatureImporterActions";
 import "react-table/react-table.css";
 import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
+import KeystoneSignatureImporter from "../Keystone/KeystoneSignatureImporter";
 
 const TEXT = "text";
 const UNKNOWN = "unknown";
@@ -114,6 +115,7 @@ class SignatureImporter extends React.Component {
           >
             <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
+            <MenuItem value={KEYSTONE}>Keystone</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
             <MenuItem value={COLDCARD} disabled={!isWallet}>
               Coldcard
@@ -154,6 +156,22 @@ class SignatureImporter extends React.Component {
           fee={fee}
           isWallet={isWallet}
           extendedPublicKeyImporter={extendedPublicKeyImporter}
+          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          resetBIP32Path={this.resetBIP32Path}
+          defaultBIP32Path={this.defaultBIP32Path()}
+          validateAndSetSignature={this.validateAndSetSignature}
+          enableChangeMethod={this.enableChangeMethod}
+          disableChangeMethod={this.disableChangeMethod}
+        />
+      );
+    }
+    if (method === KEYSTONE) {
+      return (
+        <KeystoneSignatureImporter
+          network={network}
+          signatureImporter={signatureImporter}
+          inputs={inputs}
+          outputs={outputs}
           validateAndSetBIP32Path={this.validateAndSetBIP32Path}
           resetBIP32Path={this.resetBIP32Path}
           defaultBIP32Path={this.defaultBIP32Path()}

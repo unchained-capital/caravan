@@ -47,8 +47,6 @@ import {
 } from "../../actions/clientActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
 
-// const bitcoin = require('bitcoinjs-lib');
-
 class WalletGenerator extends React.Component {
   constructor(props) {
     super(props);
@@ -202,7 +200,6 @@ class WalletGenerator extends React.Component {
       addressType,
       requiredSigners,
     } = this.props;
-
     const extendedPublicKeys = this.generateRichExtendedPublicKeys(
       extendedPublicKeyImporters
     );
@@ -355,6 +352,9 @@ class WalletGenerator extends React.Component {
       downloadWalletDetails,
       client,
       generating,
+      walletDetailsText,
+      KeystoneWalletVerifyCode,
+      shouldShowWalletDetailURs,
       extendedPublicKeyImporters,
     } = this.props;
     const { connectSuccess, unknownClient } = this.state;
@@ -384,6 +384,9 @@ class WalletGenerator extends React.Component {
               <WalletConfigInteractionButtons
                 onClearFn={(e) => this.toggleImporters(e, true)}
                 onDownloadFn={downloadWalletDetails}
+                KeystoneWalletVerifyCode={KeystoneWalletVerifyCode}
+                walletDetailsText={walletDetailsText}
+                shouldRenderURButton={shouldShowWalletDetailURs}
               />
               {unknownClient && (
                 <Box my={5}>
@@ -495,6 +498,9 @@ WalletGenerator.propTypes = {
     type: PropTypes.string,
     username: PropTypes.string,
   }).isRequired,
+  walletDetailsText: PropTypes.string.isRequired,
+  KeystoneWalletVerifyCode: PropTypes.string.isRequired,
+  shouldShowWalletDetailURs: PropTypes.bool.isRequired,
   common: PropTypes.shape({
     nodesLoaded: PropTypes.bool,
   }).isRequired,

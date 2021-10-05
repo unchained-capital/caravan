@@ -2,12 +2,13 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
-  satoshisToBitcoins,
   validateBIP32Index,
   validateBIP32Path,
   validateExtendedPublicKey,
+  satoshisToBitcoins,
 } from "unchained-bitcoin";
 import { Box, Button, FormHelperText, Grid } from "@material-ui/core";
+import { KeystoneWalletReader } from "unchained-wallets";
 import { downloadFile } from "../../utils";
 import {
   resetWallet as resetWalletAction,
@@ -28,6 +29,8 @@ import WalletGenerator from "./WalletGenerator";
 import ExtendedPublicKeyImporter from "./ExtendedPublicKeyImporter";
 import WalletActionsPanel from "./WalletActionsPanel";
 import {
+  getKeystoneExistence,
+  getKeystoneWalletVerifyCode,
   getUnknownAddresses,
   getUnknownAddressSlices,
   getWalletDetailsText,
@@ -56,6 +59,7 @@ import {
   SET_CLIENT_USERNAME,
 } from "../../actions/clientActions";
 import { clientPropTypes, slicePropTypes } from "../../proptypes";
+import KeystoneRawReader from "../Keystone/KeystoneRawReader";
 
 class CreateWallet extends React.Component {
   static validateProperties(config, properties, key) {
@@ -144,6 +148,7 @@ class CreateWallet extends React.Component {
         if (
           [
             "trezor",
+            "keystone",
             "coldcard",
             "ledger",
             "hermit",
@@ -194,20 +199,24 @@ class CreateWallet extends React.Component {
   }
 
   setConfigJson(configJson) {
+    const enhancedConfigJson = this.handleConfigJsonAddressType(configJson);
     let configError;
     try {
-      const config = JSON.parse(configJson);
+      const config = JSON.parse(enhancedConfigJson);
+      if (config.addressType === "P2WSH-P2SH") {
+        config.addressType = "P2SH-P2WSH";
+      }
       configError = CreateWallet.validateConfig(config);
     } catch (parseError) {
       configError = "Invalid JSON";
     }
 
     if (sessionStorage && configError === "") {
-      sessionStorage.setItem(CARAVAN_CONFIG, configJson);
+      sessionStorage.setItem(CARAVAN_CONFIG, enhancedConfigJson);
     }
 
     // async since importDetails needs the updated state for it to work
-    this.setState({ configJson, configError }, () => {
+    this.setState({ configJson: enhancedConfigJson, configError }, () => {
       if (configError === "") this.importDetails();
     });
   }
@@ -230,6 +239,10 @@ class CreateWallet extends React.Component {
     } else {
       this.setState({ configError: "Problem uploading file." });
     }
+  };
+
+  handleImportFromKeystone = (configJson) => {
+    this.setConfigJson(configJson);
   };
 
   refresh = async () => {
@@ -297,7 +310,6 @@ class CreateWallet extends React.Component {
         } else {
           setExtendedPublicKeyImporterMethod(number, "unknown");
         }
-
         setExtendedPublicKeyImporterBIP32Path(
           number,
           extendedPublicKey.bip32Path
@@ -331,26 +343,31 @@ class CreateWallet extends React.Component {
     if (configuring)
       return (
         <>
-          <label htmlFor="upload-config">
-            <input
-              style={{ display: "none" }}
-              id="upload-config"
-              name="upload-config"
-              accept="application/json"
-              onChange={this.handleImport}
-              onClick={this.resetErrorAndClearTargetValue}
-              type="file"
-            />
+          <Grid container spacing={2} style={{ marginTop: "20px" }}>
+            <Grid item>
+              <label htmlFor="upload-config">
+                <input
+                  style={{ display: "none" }}
+                  id="upload-config"
+                  name="upload-config"
+                  accept="application/json"
+                  onChange={this.handleImport}
+                  onClick={this.resetErrorAndClearTargetValue}
+                  type="file"
+                />
 
-            <Button
-              color="primary"
-              variant="contained"
-              component="span"
-              style={{ marginTop: "20px" }}
-            >
-              Import Wallet Configuration
-            </Button>
-          </label>
+                <Button color="primary" variant="contained" component="span">
+                  Import Wallet Configuration
+                </Button>
+              </label>
+            </Grid>
+            <KeystoneRawReader
+              interaction={new KeystoneWalletReader()}
+              shouldShowFileReader={false}
+              qrStartText="SCAN KEYSTONE"
+              handleSuccess={this.handleImportFromKeystone}
+            />
+          </Grid>
           <FormHelperText error>{configError}</FormHelperText>
         </>
       );
@@ -415,6 +432,67 @@ class CreateWallet extends React.Component {
     downloadFile(walletDetailsText, filename);
   };
 
+  clientDetails = () => {
+    const { client } = this.props;
+
+    if (client.type === "private") {
+      return `{
+    "type": "private",
+    "url": "${client.url}",
+    "username": "${client.username}"
+  }`;
+    }
+    return `{
+    "type": "public"
+  }`;
+  };
+
+  extendedPublicKeyImporterBIP32Paths = () => {
+    const { totalSigners } = this.props;
+    const extendedPublicKeyImporterBIP32Paths = [];
+    for (
+      let extendedPublicKeyImporterNum = 1;
+      extendedPublicKeyImporterNum <= totalSigners;
+      extendedPublicKeyImporterNum += 1
+    ) {
+      extendedPublicKeyImporterBIP32Paths.push(
+        `${this.extendedPublicKeyImporterBIP32Path(
+          extendedPublicKeyImporterNum
+        )}${extendedPublicKeyImporterNum < totalSigners ? "," : ""}`
+      );
+    }
+    return extendedPublicKeyImporterBIP32Paths.join("\n");
+  };
+
+  extendedPublicKeyImporterBIP32Path = (number) => {
+    const { extendedPublicKeyImporters } = this.props;
+    const extendedPublicKeyImporter = extendedPublicKeyImporters[number];
+    const bip32Path =
+      extendedPublicKeyImporter.method === "text"
+        ? "Unknown (make sure you have written this down previously!)"
+        : extendedPublicKeyImporter.bip32Path;
+    const hasFingerprint = !!extendedPublicKeyImporter.fingerprint;
+    const importer =
+      extendedPublicKeyImporter.method === "unknown"
+        ? `    {
+        "name": "${extendedPublicKeyImporter.name}",
+        "bip32Path": "${bip32Path}",
+        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}"
+        }`
+        : `    {
+        "name": "${extendedPublicKeyImporter.name}",
+        "bip32Path": "${bip32Path}",
+        "xpub": "${extendedPublicKeyImporter.extendedPublicKey}",
+        "method": "${extendedPublicKeyImporter.method}"${
+            hasFingerprint
+              ? `,
+        "fingerprint": "${extendedPublicKeyImporter.fingerprint}"`
+              : ""
+          }
+      }`;
+    return importer;
+  };
+
   walletDetailsFilename = () => {
     const {
       totalSigners,
@@ -441,27 +519,13 @@ class CreateWallet extends React.Component {
     this.setState({ generating: false });
   };
 
-  /**
-   * Callback function to pass to the address importer
-   * after addresses have been imported we want
-   * @param {Array<string>} importedAddresses
-   * @param {boolean} rescan - whether or not a rescan is being performed
-   */
-  async afterImportAddresses(importedAddresses, rescan) {
-    // if rescan is true then there's no point in fetching
-    // the slice data yet since we likely won't get anything
-    // until the rescan is complete
-    if (rescan) return;
-
-    const { unknownSlices, fetchSliceData } = this.props;
-    const importedSlices = unknownSlices.reduce((slices, slice) => {
-      if (importedAddresses.indexOf(slice.multisig.address) > -1)
-        slices.push(slice);
-      return slice;
-    }, []);
-
-    await fetchSliceData(importedSlices);
-  }
+  handleConfigJsonAddressType = (configJson) => {
+    const config = JSON.parse(configJson);
+    if (config.addressType === "P2WSH-P2SH") {
+      config.addressType = "P2SH-P2WSH";
+    }
+    return JSON.stringify(config);
+  };
 
   render = () => {
     const {
@@ -477,6 +541,9 @@ class CreateWallet extends React.Component {
       nodesLoaded,
       frozen,
       unknownAddresses,
+      walletDetailsText,
+      KeystoneWalletVerifyCode,
+      shouldShowWalletDetailURs,
     } = this.props;
     const { refreshing, generating } = this.state;
     const walletLoadError =
@@ -512,6 +579,9 @@ class CreateWallet extends React.Component {
                     this.clearConfig(e);
                   }}
                   onDownloadConfig={(e) => this.downloadWalletDetails(e)}
+                  walletDetailsText={walletDetailsText}
+                  KeystoneWalletVerifyCode={KeystoneWalletVerifyCode}
+                  shouldShowWalletDetailURs={shouldShowWalletDetailURs}
                   client={client}
                   onImportAddresses={(addresses, rescan) =>
                     this.afterImportAddresses(rescan)
@@ -543,6 +613,9 @@ class CreateWallet extends React.Component {
                   generating={generating}
                   setGenerating={(value) => this.setGenerating(value)}
                   downloadWalletDetails={this.downloadWalletDetails}
+                  walletDetailsText={walletDetailsText}
+                  KeystoneWalletVerifyCode={KeystoneWalletVerifyCode}
+                  shouldShowWalletDetailURs={shouldShowWalletDetailURs}
                   // eslint-disable-next-line no-return-assign
                   refreshNodes={(click) => (this.generatorRefresh = click)} // FIXME TIGHT COUPLING ALERT, this calls function downstream
                 />
@@ -576,6 +649,7 @@ CreateWallet.propTypes = {
     .isRequired,
   extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
   frozen: PropTypes.bool.isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
   fetchSliceData: PropTypes.func.isRequired,
   network: PropTypes.string.isRequired,
   nodesLoaded: PropTypes.bool.isRequired,
@@ -602,9 +676,12 @@ CreateWallet.propTypes = {
   totalSigners: PropTypes.number.isRequired,
   updateWalletNameAction: PropTypes.func.isRequired,
   unknownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
   unknownSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   walletName: PropTypes.string.isRequired,
   walletDetailsText: PropTypes.string.isRequired,
+  KeystoneWalletVerifyCode: PropTypes.string.isRequired,
+  shouldShowWalletDetailURs: PropTypes.bool.isRequired,
 };
 
 CreateWallet.defaultProps = {
@@ -625,6 +702,8 @@ function mapStateToProps(state) {
     walletDetailsText: getWalletDetailsText(state),
     unknownAddresses: getUnknownAddresses(state),
     unknownSlices: getUnknownAddressSlices(state),
+    KeystoneWalletVerifyCode: getKeystoneWalletVerifyCode(state),
+    shouldShowWalletDetailURs: getKeystoneExistence(state),
     ...state.wallet,
     client: state.client,
   };

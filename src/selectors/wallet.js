@@ -1,4 +1,6 @@
 import { createSelector } from "reselect";
+import { convertExtendedPublicKey } from "unchained-bitcoin";
+import { crypto } from "bitcoinjs-lib";
 
 // convert slice objects to array of slice values
 // only care about inbound to deposit account, not change
@@ -65,6 +67,25 @@ const getExtendedPublicKeysBIP32Paths = (state) => {
     );
   }
   return extendedPublicKeyImporterBIP32Paths.join("\n");
+};
+
+const getExtendedPublicKeys = (state) => {
+  const { extendedPublicKeyImporters } = state.quorum;
+  return Object.values(extendedPublicKeyImporters).map((i) => {
+    return i.extendedPublicKey;
+  });
+};
+
+const getMethods = (state) => {
+  const { extendedPublicKeyImporters } = state.quorum;
+  return Object.values(extendedPublicKeyImporters).map((i) => {
+    return i.method;
+  });
+};
+
+const getDefaultBip32Path = (state) => {
+  const { defaultBIP32Path } = state.quorum;
+  return defaultBIP32Path;
 };
 
 /**
@@ -255,3 +276,48 @@ export const getWalletDetailsText = createSelector(
 }`;
   }
 );
+
+/**
+ * @description Returns verify code for Keystone needs
+ */
+export const getKeystoneWalletVerifyCode = createSelector(
+  [
+    getExtendedPublicKeys,
+    getDefaultBip32Path,
+    getRequiredSigners,
+    getAddressType,
+  ],
+  (extendedPublicKeys, defaultBip32Path, requiredSigners, addressType) => {
+    let path = defaultBip32Path;
+    if (addressType === "P2SH") {
+      path = "m/45'";
+    }
+    try {
+      const totalSigners = extendedPublicKeys.length;
+      const info = `${
+        extendedPublicKeys
+          .map((cur) => {
+            return convertExtendedPublicKey(cur, "xpub");
+          })
+          .sort()
+          .reduce((acc, cur) => `${acc} ${cur}`, "") + requiredSigners
+      }of${totalSigners}${path}`.slice(1); // ignore first whitespace
+      return crypto
+        .sha256(Buffer.from(info, "utf-8"))
+        .toString("hex")
+        .toUpperCase()
+        .substring(0, 8);
+    } catch (e) {
+      return "";
+    }
+  }
+);
+
+/**
+ * @description Returns existence of Keystone
+ */
+export const getKeystoneExistence = createSelector([getMethods], (methods) => {
+  return methods.reduce((acc, cur) => {
+    return acc || cur === "keystone" || cur === "text";
+  }, false);
+});

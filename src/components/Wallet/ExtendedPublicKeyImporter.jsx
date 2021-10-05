@@ -8,7 +8,7 @@ import {
   validateExtendedPublicKey,
   NETWORKS,
 } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
+import { TREZOR, LEDGER, HERMIT, COLDCARD, KEYSTONE } from "unchained-wallets";
 import {
   Card,
   CardHeader,
@@ -38,6 +38,7 @@ import {
 } from "../../actions/extendedPublicKeyImporterActions";
 import ColdcardExtendedPublicKeyImporter from "../Coldcard/ColdcardExtendedPublicKeyImporter";
 import HermitExtendedPublicKeyImporter from "../Hermit/HermitExtendedPublicKeyImporter";
+import KeystoneExtendedPublicKeyImporter from "../Keystone/KeystoneExtendedPublicKeyImporter";
 
 const TEXT = "text";
 const UNKNOWN = "unknown";
@@ -86,6 +87,7 @@ class ExtendedPublicKeyImporter extends React.Component {
             onChange={this.handleMethodChange}
           >
             <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
+            <MenuItem value={KEYSTONE}>Keystone</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
             <MenuItem value={COLDCARD}>Coldcard</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
@@ -138,6 +140,23 @@ class ExtendedPublicKeyImporter extends React.Component {
           network={network}
           resetBIP32Path={this.resetBIP32Path}
           reset={this.reset}
+        />
+      );
+    }
+    if (method === KEYSTONE) {
+      return (
+        <KeystoneExtendedPublicKeyImporter
+          extendedPublicKeyImporter={extendedPublicKeyImporter}
+          validateAndSetExtendedPublicKey={this.validateAndSetExtendedPublicKey}
+          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
+          enableChangeMethod={this.enableChangeMethod}
+          disableChangeMethod={this.disableChangeMethod}
+          addressType={addressType}
+          defaultBIP32Path={defaultBIP32Path}
+          resetBIP32Path={this.resetBIP32Path}
+          validateAndSetRootFingerprint={this.validateAndSetRootFingerprint}
+          reset={this.reset}
+          network={network}
         />
       );
     }

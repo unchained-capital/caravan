@@ -236,6 +236,7 @@ const Help = () => (
                     "Coldcard Mk2 & Mk3"
                   )}
                 </li>
+                <li>{externalLink("https://keyst.one", "Keystone")}</li>
               </ul>
               And web browsers:
               <ul>
