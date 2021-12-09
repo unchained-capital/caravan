@@ -9,19 +9,19 @@ notifications:
 jobs:
   include:
     - stage: "Tests"
-      node_js: 8
-      name: "Node JS 8"
-      script: npm run test
-    - node_js: 10
+      node_js: 10
       name: "Node JS 10"
       script: npm run test
     - node_js: 12
       name: "Node JS 12"
+      script: npm run test
+    - node_js: 14
+      name: "Node JS 14"
       script: npm run ci
     - stage: build
-      node_js: 10
-      script: npm run build:ci
       node_js: 12
+      script: npm run build:ci
+      node_js: 14
       script: npm run build:ci
       before_deploy:
         - git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
