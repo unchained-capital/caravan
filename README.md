@@ -47,6 +47,10 @@ saying "Your site is published at ...".
 
 You can always clone the source code of Caravan to your local machine
 and run it from there.  You will require a recent `npm` installation.
+You can find installation instructions for the latest version of 
+node and npm bsed on your platform [here](https://nodejs.org/en/download/) or
+you can use a node version manager such as [nvm](https://github.com/nvm-sh/nvm) or
+[n](https://www.npmjs.com/package/n).
 
 ```bash
 $ git clone https://github.com/unchained-capital/caravan
