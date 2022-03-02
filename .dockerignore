@@ -1,0 +1,40 @@
+*~
+*.pyc
+*.idea
+.DS_STORE
+.virtualenv/*
+node_modules/*
+TAGS
+.nfs*
+.coverage
+npm-debug.log
+*.swp
+.vscode
+junit.xml
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+coverage
+/coverage
+
+# production
+build
+/build
+
+# misc
+.DS_Store
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+code.html
+imports.html
+
+.git
+.github
+.gitignore
+.travis.yml
