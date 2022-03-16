@@ -320,4 +320,4 @@ point that if corsproxy is running, paste your node's IP:port on the end of the
 
 ## Contributing
 
-Please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) and the open [GitHub Issues](https://github.com/caravan/issues)
+Please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) and the open [GitHub Issues](https://github.com/unchained-capital/caravan/issues)
