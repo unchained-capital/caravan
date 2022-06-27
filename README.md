@@ -73,6 +73,22 @@ $ npm run build
 ...
 ```
 
+### Docker
+
+A basic dockerfile which builds the app and serves it via nginx is included in the repository
+
+To build the docker image:
+```bash
+docker build . -t caravan:latest
+```
+
+To run the built docker image:
+```bash
+docker run -p 80:8000 caravan:latest
+```
+
+Caravan should then be accessible at http://localhost:8000/caravan
+
 ## Usage
 
 If you can access the [Caravan web
