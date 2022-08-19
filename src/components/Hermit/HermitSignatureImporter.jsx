@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { unsignedMultisigPSBT } from "unchained-bitcoin";
 import {
   HERMIT,
   PENDING,
@@ -29,18 +30,27 @@ class HermitSignatureImporter extends React.Component {
 
   interaction = () => {
     const { signatureImporter, network, inputs, outputs } = this.props;
-    const bip32Paths = inputs.map((input) => {
-      if (typeof input.bip32Path === "undefined")
-        return signatureImporter.bip32Path; // pubkey path
-      return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`; // xpub/pubkey slice away the m, keep /
-    });
+    // const bip32Paths = inputs.map((input) => {
+    //   if (typeof input.bip32Path === "undefined")
+    //     return signatureImporter.bip32Path; // pubkey path
+    //   return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`; // xpub/pubkey slice away the m, keep /
+    // });
+
+    const psbtBase64 = unsignedMultisigPSBT(
+      network,
+      inputs,
+      outputs,
+      true
+    ).toBase64();
 
     return SignMultisigTransaction({
       keystore: HERMIT,
       network,
-      inputs,
-      outputs,
-      bip32Paths,
+      psbt: psbtBase64,
+      keyDetails: {
+        path: signatureImporter.bip32Path,
+        xfp: "", // FIXME
+      },
     });
   };
 
@@ -96,7 +106,7 @@ class HermitSignatureImporter extends React.Component {
         <Box mt={2}>
           <Grid container justify="center">
             <Grid item>
-              <HermitDisplayer width={400} string={interaction.request()} />
+              <HermitDisplayer width={400} parts={interaction.request()} />
             </Grid>
           </Grid>
 
@@ -123,9 +133,12 @@ class HermitSignatureImporter extends React.Component {
     const { validateAndSetSignature, enableChangeMethod } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
-    validateAndSetSignature(signature, (signatureError) => {
-      this.setState({ signatureError });
-    });
+    validateAndSetSignature(
+      this.interaction().parse(signature),
+      (signatureError) => {
+        this.setState({ signatureError });
+      }
+    );
   };
 
   clear = () => {

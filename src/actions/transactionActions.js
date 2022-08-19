@@ -1,7 +1,10 @@
 import BigNumber from "bignumber.js";
+import { reverseBuffer } from "bitcoinjs-lib/src/bufferutils";
 import {
   estimateMultisigTransactionFee,
   satoshisToBitcoins,
+  networkData,
+  autoLoadPSBT,
 } from "unchained-bitcoin";
 import { getSpendableSlices, getConfirmedBalance } from "../selectors/wallet";
 import { DUST_IN_BTC } from "../utils/constants";
@@ -275,5 +278,89 @@ export function setMaxSpendOnOutput(outputIndex) {
         )
       );
     return dispatch(setOutputAmount(outputIndex, spendAllAmount.toFixed()));
+  };
+}
+
+export function importPSBT(psbtText) {
+  return (dispatch, getState) => {
+    let state = getState();
+    const { network } = state.settings;
+    const psbt = autoLoadPSBT(psbtText, { network: networkData(network) });
+    if (!psbt) {
+      throw new Error("Could not parse PSBT.");
+    }
+
+    if (psbt.txInputs.length === 0) {
+      throw new Error("PSBT does not contain any inputs.");
+    }
+    if (psbt.txOutputs.length === 0) {
+      throw new Error("PSBT does not contain any outputs.");
+    }
+
+    dispatch(resetOutputs());
+
+    const createInputIdentifier = (txid, index) => `${txid}:${index}`;
+
+    const inputIdentifiers = new Set(
+      psbt.txInputs.map((input) => {
+        const txid = reverseBuffer(input.hash).toString("hex");
+        return createInputIdentifier(txid, input.index);
+      })
+    );
+
+    const inputs = [];
+    getSpendableSlices(state).forEach((slice) => {
+      Object.entries(slice.utxos).forEach((utxoIndex, utxo) => {
+        const inputIdentifier = createInputIdentifier(utxo.txid, utxo.index);
+        if (inputIdentifiers.has(inputIdentifier)) {
+          const input = {
+            ...utxo,
+            multisig: slice.multisig,
+            bip32Path: slice.bip32Path,
+            change: slice.change,
+          };
+          inputs.push(input);
+        }
+      });
+    });
+
+    if (inputs.length === 0) {
+      throw new Error("PSBT does not contain any UTXOs from this wallet.");
+    }
+    if (inputs.length !== psbt.txInputs.length) {
+      throw new Error(
+        `Only ${inputs.length} of ${psbt.txInputs.length} PSBT inputs are UTXOs in this wallet.`
+      );
+    }
+
+    dispatch(setInputs(inputs));
+
+    let outputsTotalSats = new BigNumber(0);
+    psbt.txOutputs.forEach((output, outputIndex) => {
+      const number = outputIndex + 1;
+      outputsTotalSats = outputsTotalSats.plus(BigNumber(output.value));
+      if (number > 1) {
+        dispatch(addOutput());
+      }
+
+      if (output.script) {
+        dispatch(setChangeOutputIndex(number));
+        dispatch(setChangeAddressAction(output.address));
+      }
+      dispatch(setOutputAddress(number, output.address));
+      dispatch(
+        setOutputAmount(number, satoshisToBitcoins(output.value).toFixed(8))
+      );
+    });
+
+    state = getState();
+    const inputsTotalSats = BigNumber(state.spend.transaction.inputsTotalSats);
+    const feeSats = inputsTotalSats - outputsTotalSats;
+    const fee = satoshisToBitcoins(feeSats).toFixed(8);
+    dispatch(setFee(fee));
+
+    dispatch(finalizeOutputs(true));
+
+    // now do sigs
   };
 }

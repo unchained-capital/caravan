@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import BigNumber from "bignumber.js";
-import { satoshisToBitcoins } from "unchained-bitcoin";
+import { unsignedMultisigPSBT, satoshisToBitcoins } from "unchained-bitcoin";
 import {
   Button,
   Box,
@@ -14,6 +14,7 @@ import {
   TableCell,
   Grid,
 } from "@material-ui/core";
+import { downloadFile } from "../../utils";
 import UnsignedTransaction from "../UnsignedTransaction";
 import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../actions/transactionActions";
 
@@ -152,6 +153,13 @@ class TransactionPreview extends React.Component {
     ).toString();
   };
 
+  handleDownloadPSBT = () => {
+    const { network, inputs, outputs } = this.props;
+    const psbt = unsignedMultisigPSBT(network, inputs, outputs, true); // includeGlobalXpubs
+    const psbtBase64 = psbt.toBase64();
+    downloadFile(psbtBase64, "transaction.psbt");
+  };
+
   render = () => {
     const {
       feeRate,
@@ -208,6 +216,15 @@ class TransactionPreview extends React.Component {
                 Sign Transaction
               </Button>
             </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={this.handleDownloadPSBT}
+              >
+                Download Unsigned PSBT
+              </Button>
+            </Grid>
           </Grid>
         </Box>
       </Box>
@@ -223,6 +240,7 @@ TransactionPreview.propTypes = {
   changeOutputIndex: PropTypes.number.isRequired,
   editTransaction: PropTypes.func.isRequired,
   fee: PropTypes.string.isRequired,
+  network: PropTypes.string.isRequired,
   feeRate: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
@@ -234,6 +252,9 @@ TransactionPreview.propTypes = {
 function mapStateToProps(state) {
   return {
     changeOutputIndex: state.spend.transaction.changeOutputIndex,
+    network: state.settings.network,
+    inputs: state.spend.transaction.inputs,
+    outputs: state.spend.transaction.outputs,
   };
 }
 
