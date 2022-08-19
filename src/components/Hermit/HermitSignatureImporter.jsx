@@ -51,6 +51,7 @@ class HermitSignatureImporter extends React.Component {
         path: signatureImporter.bip32Path,
         xfp: "", // FIXME
       },
+      returnSignatureArray: true,
     });
   };
 
