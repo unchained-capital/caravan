@@ -151,6 +151,7 @@ class SignMultisigTransactionTest extends Test {
           path: this.params.bip32Paths[0], // FIXME
           xfp: "", // FIXME
         },
+        returnSignatureArray: true,
       });
     }
     return SignMultisigTransaction({
@@ -171,7 +172,6 @@ class SignMultisigTransactionTest extends Test {
 }
 
 export function signingTests(keystore) {
-  const transactions = [];
   return TEST_FIXTURES.transactions.map((fixture) => {
     return new SignMultisigTransactionTest({
       ...fixture,
