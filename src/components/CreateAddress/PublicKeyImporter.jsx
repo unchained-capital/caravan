@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { validatePublicKey as baseValidatePublicKey } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
+import { TREZOR, LEDGER } from "unchained-wallets";
 
 // Components
 import {
@@ -22,7 +22,6 @@ import { ArrowUpward, ArrowDownward } from "@material-ui/icons";
 import Copyable from "../Copyable";
 import TextPublicKeyImporter from "./TextPublicKeyImporter";
 import ExtendedPublicKeyPublicKeyImporter from "./ExtendedPublicKeyPublicKeyImporter";
-import HermitPublicKeyImporter from "./HermitPublicKeyImporter";
 import HardwareWalletPublicKeyImporter from "./HardwareWalletPublicKeyImporter";
 import EditableName from "../EditableName";
 import Conflict from "./Conflict";
@@ -117,7 +116,6 @@ class PublicKeyImporter extends React.Component {
             <MenuItem value="">{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
-            <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
           </Select>
@@ -143,18 +141,6 @@ class PublicKeyImporter extends React.Component {
           disableChangeMethod={this.disableChangeMethod}
           defaultBIP32Path={defaultBIP32Path}
           network={network}
-          onImport={this.handleImport}
-        />
-      );
-    }
-    if (publicKeyImporter.method === HERMIT) {
-      return (
-        <HermitPublicKeyImporter
-          network={network}
-          defaultBIP32Path={defaultBIP32Path}
-          validatePublicKey={this.validatePublicKey}
-          enableChangeMethod={this.enableChangeMethod}
-          disableChangeMethod={this.disableChangeMethod}
           onImport={this.handleImport}
         />
       );
@@ -206,13 +192,10 @@ class PublicKeyImporter extends React.Component {
     setFinalized(number, true);
   };
 
-  reset = (shouldResetBIP32Path) => {
-    const { number, setPublicKey, resetBIP32Path, setFinalized } = this.props;
+  reset = () => {
+    const { number, setPublicKey, setFinalized } = this.props;
     setPublicKey(number, "");
     setFinalized(number, false);
-    if (shouldResetBIP32Path) {
-      resetBIP32Path(number);
-    }
   };
 
   //
@@ -275,7 +258,7 @@ class PublicKeyImporter extends React.Component {
             color="secondary"
             size="small"
             onClick={() => {
-              this.reset(publicKeyImporter.method === HERMIT);
+              this.reset();
             }}
           >
             Remove Public Key
@@ -357,7 +340,6 @@ PublicKeyImporter.propTypes = {
   }).isRequired,
   publicKeyImporters: PropTypes.shape({}).isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
-  resetBIP32Path: PropTypes.func.isRequired,
   addressType: PropTypes.string.isRequired,
   setName: PropTypes.func.isRequired,
   setBIP32Path: PropTypes.func.isRequired,

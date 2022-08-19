@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { PENDING, ACTIVE } from "unchained-wallets";
+import { PENDING, ACTIVE, BCURDecoder } from "unchained-wallets";
 import QrReader from "react-qr-reader";
-import { Grid, Button, Box, FormHelperText } from "@material-ui/core";
+import {
+  Grid,
+  Button,
+  Box,
+  FormHelperText,
+  LinearProgress,
+} from "@material-ui/core";
 import Copyable from "../Copyable";
 
 const QR_CODE_READER_DELAY = 300; // ms?
@@ -10,14 +16,24 @@ const QR_CODE_READER_DELAY = 300; // ms?
 class HermitReader extends Component {
   constructor(props) {
     super(props);
+    this.decoder = new BCURDecoder(); // FIXME do we need useMemo ?
     this.state = {
       status: PENDING,
       error: "",
+      totalParts: 0,
+      partsReceived: 0,
+      percentageReceived: 0,
     };
   }
 
   render = () => {
-    const { status, error } = this.state;
+    const {
+      status,
+      error,
+      percentageReceived,
+      partsReceived,
+      totalParts,
+    } = this.state;
     const { interaction, width, startText } = this.props;
 
     if (status === PENDING) {
@@ -36,7 +52,7 @@ class HermitReader extends Component {
               </code>
             </Copyable>
           </Grid>
-          <p>When you are ready, scan the QR code produced by Hermit:</p>
+          <p>When you are ready, scan the QR codes produced by Hermit.</p>
           <Box mt={2}>
             <Button
               variant="contained"
@@ -64,6 +80,23 @@ class HermitReader extends Component {
               facingMode="user"
             />
           </Grid>
+          {percentageReceived === 0 ? (
+            <Grid>
+              <LinearProgress />
+              <p>Waiting for first QR code...</p>
+            </Grid>
+          ) : (
+            <Grid>
+              <LinearProgress
+                variant="determinate"
+                value={percentageReceived}
+              />
+              <p>
+                Scanned {partsReceived} of {totalParts} QR codes...
+              </p>
+            </Grid>
+          )}
+
           <Grid item>
             <Button
               variant="contained"
@@ -113,16 +146,38 @@ class HermitReader extends Component {
     }
   };
 
-  handleScan = (data) => {
-    const { onSuccess, interaction } = this.props;
-    if (data) {
-      try {
-        const result = interaction.parse(data);
-        onSuccess(result);
-        this.setState({ status: "success" });
-      } catch (e) {
-        this.handleError(e);
+  handleScan = (qrCodeString) => {
+    const { onSuccess } = this.props;
+    if (qrCodeString) {
+      this.decoder.receivePart(qrCodeString);
+      const progress = this.decoder.progress();
+      const newPercentageReceived =
+        progress.totalParts > 0
+          ? (progress.partsReceived / progress.totalParts) * 100
+          : 0;
+      this.setState({
+        partsReceived: progress.partsReceived,
+        totalParts: progress.totalParts,
+        percentageReceived: newPercentageReceived,
+      });
+
+      if (this.decoder.isComplete()) {
+        if (this.decoder.isSuccess()) {
+          const data = this.decoder.data();
+          onSuccess(data);
+        } else {
+          const errorMessage = this.decoder.errorMessage();
+          this.setState({ status: "error", error: errorMessage });
+        }
       }
+
+      // try {
+      //   const result = interaction.parse(data);
+      //   onSuccess(result);
+      //   this.setState({ status: "success" });
+      // } catch (e) {
+      //   this.handleError(e);
+      // }
     }
   };
 
@@ -131,8 +186,12 @@ class HermitReader extends Component {
     this.setState({
       status: PENDING,
       error: "",
+      totalParts: 0,
+      partsReceived: 0,
+      percentageReceived: 0,
     });
     if (onClear) {
+      this.decoder.reset();
       onClear();
     }
   };

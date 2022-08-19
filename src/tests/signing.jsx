@@ -15,6 +15,9 @@ import Test from "./Test";
 class SignMultisigTransactionTest extends Test {
   // eslint-disable-next-line class-methods-use-this
   postprocess(result) {
+    if (this.params.keystore === HERMIT) {
+      result = this.interaction().parse(result);
+    }
     return result.signatures ? result.signatures : result;
   }
 
@@ -133,6 +136,23 @@ class SignMultisigTransactionTest extends Test {
   }
 
   interaction() {
+    if (this.params.keystore === HERMIT) {
+      const psbtBase64 = unsignedMultisigPSBT(
+        this.params.network,
+        this.params.inputs,
+        this.params.outputs,
+        true
+      ).toBase64();
+      return SignMultisigTransaction({
+        keystore: this.params.keystore,
+        network: this.params.network,
+        psbt: psbtBase64,
+        keyDetails: {
+          path: this.params.bip32Paths[0], // FIXME
+          xfp: "", // FIXME
+        },
+      });
+    }
     return SignMultisigTransaction({
       keystore: this.params.keystore,
       network: this.params.network,
@@ -152,28 +172,12 @@ class SignMultisigTransactionTest extends Test {
 
 export function signingTests(keystore) {
   const transactions = [];
-
-  switch (keystore) {
-    case HERMIT:
-      TEST_FIXTURES.transactions.forEach((fixture) => {
-        if (!fixture.segwit) {
-          transactions.push(
-            new SignMultisigTransactionTest({
-              ...fixture,
-              ...{ keystore },
-            })
-          );
-        }
-      });
-      return transactions;
-    default:
-      return TEST_FIXTURES.transactions.map((fixture) => {
-        return new SignMultisigTransactionTest({
-          ...fixture,
-          ...{ keystore },
-        });
-      });
-  }
+  return TEST_FIXTURES.transactions.map((fixture) => {
+    return new SignMultisigTransactionTest({
+      ...fixture,
+      ...{ keystore },
+    });
+  });
 }
 
 export default signingTests;

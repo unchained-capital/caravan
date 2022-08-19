@@ -59,7 +59,7 @@ class HermitExtendedPublicKeyImporter extends React.Component {
       enableChangeMethod,
     } = this.props;
     enableChangeMethod();
-    const { xpub, bip32Path } = data;
+    const { xpub, bip32Path } = this.interaction().parse(data);
     validateAndSetBIP32Path(
       bip32Path,
       () => {
