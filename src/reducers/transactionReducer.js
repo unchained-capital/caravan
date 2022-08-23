@@ -33,6 +33,8 @@ import {
   SET_IS_WALLET,
   SET_CHANGE_OUTPUT_INDEX,
   SET_CHANGE_OUTPUT_MULTISIG,
+  SET_UNSIGNED_PSBT,
+  RESET_PSBT,
   UPDATE_AUTO_SPEND,
   SET_SIGNING_KEY,
   SET_CHANGE_ADDRESS,
@@ -94,6 +96,7 @@ export const initialState = () => ({
   updatesComplete: true,
   signingKeys: [0, 0], // default 2 required signers
   spendingStep: SPEND_STEP_CREATE,
+  unsignedPSBT: "",
 });
 
 function updateInputs(state, action) {
@@ -325,7 +328,7 @@ function resetTransactionState(state) {
 
 function validateTransaction(state) {
   let newState = { ...state };
-  // TODO: need less hacky way to supress error
+  // TODO: need less hacky way to suppress error
   if (
     newState.outputs.find(
       (output) => output.addressError !== "" || output.amountError !== ""
@@ -399,6 +402,8 @@ export default (state = initialState(), action) => {
       return validateTransaction(updateOutputAddress(state, action));
     case SET_OUTPUT_AMOUNT:
       return validateTransaction(updateOutputAmount(state, action));
+    case SET_UNSIGNED_PSBT:
+      return updateState(state, { unsignedPSBT: action.value });
     case DELETE_OUTPUT:
       return validateTransaction(deleteOutput(state, action));
     case SET_FEE_RATE:
@@ -409,6 +414,8 @@ export default (state = initialState(), action) => {
       return finalizeOutputs(state, action);
     case RESET_OUTPUTS:
       return outputInitialStateForMode(state);
+    case RESET_PSBT:
+      return updateState(state);
     case SET_TXID:
       return updateState(state, { txid: action.value });
     case SET_IS_WALLET:

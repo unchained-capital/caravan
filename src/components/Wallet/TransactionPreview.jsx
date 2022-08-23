@@ -16,22 +16,32 @@ import {
 } from "@material-ui/core";
 import { downloadFile } from "../../utils";
 import UnsignedTransaction from "../UnsignedTransaction";
-import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../actions/transactionActions";
+import {
+  setChangeOutputMultisig as setChangeOutputMultisigAction,
+  setUnsignedPSBT as setUnsignedPSBTAction,
+} from "../../actions/transactionActions";
 
 class TransactionPreview extends React.Component {
   componentDidMount() {
     const {
+      network,
+      inputs,
       outputs,
       changeAddress,
       changeOutputIndex,
       changeNode,
       setChangeOutputMultisig,
+      setUnsignedPSBT,
     } = this.props;
     outputs.forEach((output) => {
       if (output.address === changeAddress) {
         setChangeOutputMultisig(changeOutputIndex, changeNode.multisig);
       }
     });
+
+    const psbt = unsignedMultisigPSBT(network, inputs, outputs, true); // includeGlobalXpubs
+    const psbtBase64 = psbt.toBase64();
+    setUnsignedPSBT(psbtBase64);
   }
 
   renderAddresses = () => {
@@ -153,10 +163,7 @@ class TransactionPreview extends React.Component {
     ).toString();
   };
 
-  handleDownloadPSBT = () => {
-    const { network, inputs, outputs } = this.props;
-    const psbt = unsignedMultisigPSBT(network, inputs, outputs, true); // includeGlobalXpubs
-    const psbtBase64 = psbt.toBase64();
+  handleDownloadPSBT = (psbtBase64) => {
     downloadFile(psbtBase64, "transaction.psbt");
   };
 
@@ -167,6 +174,7 @@ class TransactionPreview extends React.Component {
       inputsTotalSats,
       editTransaction,
       handleSignTransaction,
+      unsignedPSBT,
     } = this.props;
 
     return (
@@ -220,7 +228,7 @@ class TransactionPreview extends React.Component {
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={this.handleDownloadPSBT}
+                onClick={() => this.handleDownloadPSBT(unsignedPSBT)}
               >
                 Download Unsigned PSBT
               </Button>
@@ -247,6 +255,8 @@ TransactionPreview.propTypes = {
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSignTransaction: PropTypes.func.isRequired,
   setChangeOutputMultisig: PropTypes.func.isRequired,
+  setUnsignedPSBT: PropTypes.func.isRequired,
+  unsignedPSBT: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -255,11 +265,13 @@ function mapStateToProps(state) {
     network: state.settings.network,
     inputs: state.spend.transaction.inputs,
     outputs: state.spend.transaction.outputs,
+    unsignedPSBT: state.spend.transaction.unsignedPSBT,
   };
 }
 
 const mapDispatchToProps = {
   setChangeOutputMultisig: setChangeOutputMultisigAction,
+  setUnsignedPSBT: setUnsignedPSBTAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TransactionPreview);
