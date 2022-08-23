@@ -32,6 +32,8 @@ export const RESET_TRANSACTION = "RESET_TRANSACTION";
 export const SET_IS_WALLET = "SET_IS_WALLET";
 export const SET_CHANGE_OUTPUT_INDEX = "SET_CHANGE_OUTPUT_INDEX";
 export const SET_CHANGE_OUTPUT_MULTISIG = "SET_CHANGE_OUTPUT_MULTISIG";
+export const SET_UNSIGNED_PSBT = "SET_UNSIGNED_PSBT";
+export const RESET_PSBT = "RESET_PSBT";
 export const UPDATE_AUTO_SPEND = "UPDATE_AUTO_SPEND";
 export const SET_CHANGE_ADDRESS = "SET_CHANGE_ADDRESS";
 export const SET_SIGNING_KEY = "SET_SIGNING_KEY";
@@ -180,6 +182,19 @@ export function setBalanceError(message) {
   return {
     type: SET_BALANCE_ERROR,
     value: message,
+  };
+}
+
+export function setUnsignedPSBT(value) {
+  return {
+    type: SET_UNSIGNED_PSBT,
+    value,
+  };
+}
+
+export function resetPSBT() {
+  return {
+    type: RESET_PSBT,
   };
 }
 

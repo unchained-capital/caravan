@@ -15,7 +15,7 @@ class UnsignedTransaction extends React.Component {
 
   render = () => {
     const { showUnsignedTransaction } = this.state;
-    const { unsignedTransaction } = this.props;
+    const { unsignedTransaction, unsignedPSBT } = this.props;
     if (showUnsignedTransaction) {
       const hex = unsignedTransaction.toHex();
       return (
@@ -28,6 +28,11 @@ class UnsignedTransaction extends React.Component {
           <p>
             <Copyable text={hex} showIcon />
           </p>
+          {unsignedPSBT && (
+            <p>
+              <Copyable text={unsignedPSBT} showIcon />
+            </p>
+          )}
         </div>
       );
     }
@@ -53,11 +58,13 @@ UnsignedTransaction.propTypes = {
   unsignedTransaction: PropTypes.shape({
     toHex: PropTypes.func,
   }).isRequired,
+  unsignedPSBT: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     unsignedTransaction: state.spend.transaction.unsignedTransaction,
+    unsignedPSBT: state.spend.transaction.unsignedPSBT,
   };
 }
 

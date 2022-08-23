@@ -39,7 +39,7 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
   const classes = useStyles();
   // when addresses prop has changed, we want to check its status
   // Address management currently isn't optimized and so they are added to the store
-  // one at at time. This effect is run each time that updates. Eventually,
+  // one at time. This effect is run each time that updates. Eventually,
   // this should be optimized to happen all at once. For now though, once we find
   // a single address that can be imported then enable the import button and
   // we won't run this anymore. This is mostly for wallet view, not script entry
