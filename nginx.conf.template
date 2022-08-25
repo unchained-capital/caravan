@@ -17,7 +17,7 @@ server {
 
 # change this to an accessible reference for your node
 upstream bitcoind {
-  server bitcoind:18443;
+  server $BITCOIN_HOST:$BITCOIN_PORT;
 }
 
 server {
