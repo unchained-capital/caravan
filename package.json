@@ -118,7 +118,7 @@
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "unchained-bitcoin": "file:../unchained-bitcoin",
+    "unchained-bitcoin": "git@github.com:unchained-capital/unchained-bitcoin.git#support_new_hermit_update",
     "unchained-wallets": "0.1.25"
   }
 }
