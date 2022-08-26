@@ -1,6 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { unsignedMultisigPSBT } from "unchained-bitcoin";
+import {
+  unsignedMultisigPSBT,
+  parseSignaturesFromPSBT,
+} from "unchained-bitcoin";
 import {
   HERMIT,
   PENDING,
@@ -29,13 +32,7 @@ class HermitSignatureImporter extends React.Component {
   }
 
   interaction = () => {
-    const { signatureImporter, network, inputs, outputs } = this.props;
-    // const bip32Paths = inputs.map((input) => {
-    //   if (typeof input.bip32Path === "undefined")
-    //     return signatureImporter.bip32Path; // pubkey path
-    //   return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`; // xpub/pubkey slice away the m, keep /
-    // });
-
+    const { network, inputs, outputs } = this.props;
     const psbtBase64 = unsignedMultisigPSBT(
       network,
       inputs,
@@ -45,13 +42,8 @@ class HermitSignatureImporter extends React.Component {
 
     return SignMultisigTransaction({
       keystore: HERMIT,
-      network,
       psbt: psbtBase64,
-      keyDetails: {
-        path: signatureImporter.bip32Path,
-        xfp: "", // FIXME
-      },
-      returnSignatureArray: true,
+      // returnSignatureArray: true,
     });
   };
 
@@ -110,7 +102,6 @@ class HermitSignatureImporter extends React.Component {
               <HermitDisplayer width={400} parts={interaction.request()} />
             </Grid>
           </Grid>
-
           <HermitReader
             startText="Scan Signature QR Code"
             interaction={interaction}
@@ -118,12 +109,10 @@ class HermitSignatureImporter extends React.Component {
             onSuccess={this.import}
             onClear={this.clear}
           />
-
           <InteractionMessages
             messages={interaction.messagesFor({ state: status })}
             excludeCodes={["hermit.signature_request", "hermit.command"]}
           />
-
           <FormHelperText error>{signatureError}</FormHelperText>
         </Box>
       </Box>
@@ -134,11 +123,23 @@ class HermitSignatureImporter extends React.Component {
     const { validateAndSetSignature, enableChangeMethod } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
+    // This is a crazy little dance here to keep caravan's internals happy
+    // at the moment. Caravan wants an array of signatures, but we'd like
+    // to just be PSBT-native and not care about that.
+    const signedPsbt = this.interaction().parse(signature);
+    const signatureSets = parseSignaturesFromPSBT(
+      Buffer.from(signedPsbt, "base64").toString("hex")
+    );
+    const signatureArray = [];
+    Object.values(signatureSets).map((signatureSet) =>
+      signatureSet.map((sig) => signatureArray.push(sig))
+    );
     validateAndSetSignature(
-      this.interaction().parse(signature),
+      signatureArray,
       (signatureError) => {
         this.setState({ signatureError });
-      }
+      },
+      signedPsbt
     );
   };
 
