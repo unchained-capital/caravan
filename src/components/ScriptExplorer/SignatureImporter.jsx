@@ -19,6 +19,7 @@ import {
   Button,
   Box,
   FormControl,
+  Grid,
 } from "@material-ui/core";
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
@@ -37,6 +38,7 @@ import {
 } from "../../actions/signatureImporterActions";
 import "react-table/react-table.css";
 import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
+import { downloadFile } from "../../utils";
 
 const TEXT = "text";
 const UNKNOWN = "unknown";
@@ -48,6 +50,7 @@ class SignatureImporter extends React.Component {
     super(props);
     this.state = {
       disableChangeMethod: false,
+      signedPsbt: "",
     };
   }
 
@@ -278,6 +281,7 @@ class SignatureImporter extends React.Component {
 
   renderSignature = () => {
     const { signatureImporter, txid } = this.props;
+    const { signedPsbt } = this.state;
     const signatureJSON = JSON.stringify(signatureImporter.signature);
     return (
       <div>
@@ -285,6 +289,17 @@ class SignatureImporter extends React.Component {
         <Box>
           <Copyable text={signatureJSON} showIcon code />
         </Box>
+        {signedPsbt && (
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => this.handleDownloadPSBT(signedPsbt)}
+            >
+              Download Signed PSBT
+            </Button>
+          </Grid>
+        )}
         <Box mt={2}>
           <Button
             variant="contained"
@@ -300,7 +315,11 @@ class SignatureImporter extends React.Component {
     );
   };
 
-  validateAndSetSignature = (inputsSignatures, errback) => {
+  handleDownloadPSBT = (psbtBase64) => {
+    downloadFile(psbtBase64, "signed.psbt");
+  };
+
+  validateAndSetSignature = (inputsSignatures, errback, signedPsbt) => {
     const {
       number,
       inputs,
@@ -310,6 +329,7 @@ class SignatureImporter extends React.Component {
       outputs,
       setSigningKey,
     } = this.props;
+    this.setState({ signedPsbt });
     if (!Array.isArray(inputsSignatures)) {
       errback("Signature is not an array of strings.");
       return;
