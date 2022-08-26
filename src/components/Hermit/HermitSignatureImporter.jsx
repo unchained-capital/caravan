@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {
   unsignedMultisigPSBT,
-  parseSignaturesFromPSBT,
+  parseSignatureArrayFromPSBT,
 } from "unchained-bitcoin";
 import {
   HERMIT,
@@ -123,17 +123,8 @@ class HermitSignatureImporter extends React.Component {
     const { validateAndSetSignature, enableChangeMethod } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
-    // This is a crazy little dance here to keep caravan's internals happy
-    // at the moment. Caravan wants an array of signatures, but we'd like
-    // to just be PSBT-native and not care about that.
     const signedPsbt = this.interaction().parse(signature);
-    const signatureSets = parseSignaturesFromPSBT(
-      Buffer.from(signedPsbt, "base64").toString("hex")
-    );
-    const signatureArray = [];
-    Object.values(signatureSets).map((signatureSet) =>
-      signatureSet.map((sig) => signatureArray.push(sig))
-    );
+    const signatureArray = parseSignatureArrayFromPSBT(signedPsbt);
     validateAndSetSignature(
       signatureArray,
       (signatureError) => {
