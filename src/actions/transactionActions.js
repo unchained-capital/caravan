@@ -325,7 +325,7 @@ export function importPSBT(psbtText) {
 
     const inputs = [];
     getSpendableSlices(state).forEach((slice) => {
-      Object.entries(slice.utxos).forEach((utxoIndex, utxo) => {
+      Object.entries(slice.utxos).forEach(([, utxo]) => {
         const inputIdentifier = createInputIdentifier(utxo.txid, utxo.index);
         if (inputIdentifiers.has(inputIdentifier)) {
           const input = {
