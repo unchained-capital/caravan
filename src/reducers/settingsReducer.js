@@ -8,6 +8,7 @@ import {
   SET_STARTING_ADDRESS_INDEX,
   SET_ADDRESS_TYPE,
   SET_FROZEN,
+  SET_UNCHAINED_PRODUCT,
 } from "../actions/settingsActions";
 
 const initialState = {
@@ -17,6 +18,7 @@ const initialState = {
   addressType: P2SH,
   startingAddressIndex: 0,
   frozen: false,
+  ucProduct: false,
 };
 
 export default (state = initialState, action) => {
@@ -27,6 +29,8 @@ export default (state = initialState, action) => {
       return updateState(state, { totalSigners: action.value });
     case SET_REQUIRED_SIGNERS:
       return updateState(state, { requiredSigners: action.value });
+    case SET_UNCHAINED_PRODUCT:
+      return updateState(state, { ucProduct: action.value });
     case SET_STARTING_ADDRESS_INDEX:
       return updateState(state, { startingAddressIndex: action.value });
     case SET_ADDRESS_TYPE:

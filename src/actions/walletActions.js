@@ -69,13 +69,18 @@ export function resetNodesSpend() {
  * 4. Determine and set fee
  * 5. Mark all slices being spent so the store is aware that they've been selected
  */
-export function autoSelectCoins() {
+export function autoSelectCoins(ucProduct = false) {
   // eslint-disable-next-line consistent-return
   return (dispatch, getState) => {
     const {
       settings,
       spend: { transaction },
       wallet: {
+        deposits: {
+          nextNode: {
+            multisig: { address: ucChangeAddress },
+          },
+        },
         change: {
           nextNode: {
             multisig: { address: changeAddress },
@@ -138,7 +143,7 @@ export function autoSelectCoins() {
 
       dispatch(
         setChangeOutput({
-          address: changeAddress,
+          address: ucProduct ? ucChangeAddress : changeAddress,
           value: satoshisToBitcoins(changeAmount).toFixed(),
         })
       );

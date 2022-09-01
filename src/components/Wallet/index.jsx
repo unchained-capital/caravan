@@ -38,6 +38,7 @@ import {
   setRequiredSigners as setRequiredSignersAction,
   setStartingAddressIndex as setStartingAddressIndexAction,
   setTotalSigners as setTotalSignersAction,
+  setUnchainedProduct as setUnchainedProductAction,
 } from "../../actions/settingsActions";
 import {
   setExtendedPublicKeyImporterBIP32Path as setExtendedPublicKeyImporterBIP32PathAction,
@@ -249,6 +250,7 @@ class CreateWallet extends React.Component {
     const {
       setTotalSigners,
       setRequiredSigners,
+      setUnchainedProduct,
       setAddressType,
       setNetwork,
       setStartingAddressIndex,
@@ -265,6 +267,10 @@ class CreateWallet extends React.Component {
     } = this.props;
 
     const walletConfiguration = JSON.parse(configJson);
+
+    walletConfiguration.extendedPublicKeys.forEach((xpub) => {
+      if (xpub.name.toLowerCase() === "unchained") setUnchainedProduct(true);
+    });
     setTotalSigners(walletConfiguration.quorum.totalSigners);
     setRequiredSigners(walletConfiguration.quorum.requiredSigners);
     setAddressType(walletConfiguration.addressType);
@@ -583,6 +589,7 @@ CreateWallet.propTypes = {
   requiredSigners: PropTypes.number.isRequired,
   resetWallet: PropTypes.func.isRequired,
   setTotalSigners: PropTypes.func.isRequired,
+  setUnchainedProduct: PropTypes.func.isRequired,
   setRequiredSigners: PropTypes.func.isRequired,
   setAddressType: PropTypes.func.isRequired,
   setName: PropTypes.func.isRequired,
@@ -636,6 +643,7 @@ const mapDispatchToProps = {
   setName: updateWalletNameActionImport,
   setTotalSigners: setTotalSignersAction,
   setRequiredSigners: setRequiredSignersAction,
+  setUnchainedProduct: setUnchainedProductAction,
   setAddressType: setAddressTypeAction,
   setNetwork: setNetworkAction,
   setStartingAddressIndex: setStartingAddressIndexAction,

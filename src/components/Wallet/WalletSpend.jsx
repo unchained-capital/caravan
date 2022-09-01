@@ -87,8 +87,13 @@ class WalletSpend extends React.Component {
   };
 
   handleShowPreview = () => {
-    const { autoSelectCoins, autoSpend, finalizeOutputs } = this.props;
-    if (autoSpend) autoSelectCoins();
+    const {
+      autoSelectCoins,
+      autoSpend,
+      finalizeOutputs,
+      ucProduct,
+    } = this.props;
+    if (autoSpend) autoSelectCoins({ ucProduct });
     else finalizeOutputs(true);
   };
 
@@ -244,6 +249,7 @@ WalletSpend.propTypes = {
   spendingStep: PropTypes.number,
   updateAutoSpend: PropTypes.func.isRequired,
   updateNode: PropTypes.func.isRequired,
+  ucProduct: PropTypes.bool,
 };
 
 WalletSpend.defaultProps = {
@@ -255,6 +261,7 @@ WalletSpend.defaultProps = {
   feeError: null,
   feeRateError: null,
   spendingStep: 0,
+  ucProduct: false,
 };
 
 function mapStateToProps(state) {
@@ -264,6 +271,7 @@ function mapStateToProps(state) {
     changeNode: state.wallet.change.nextNode,
     depositNodes: state.wallet.deposits.nodes,
     autoSpend: state.spend.transaction.autoSpend,
+    ucProduct: state.settings.ucProduct,
   };
 }
 

@@ -1,6 +1,7 @@
 export const SET_NETWORK = "SET_NETWORK";
 export const SET_TOTAL_SIGNERS = "SET_TOTAL_SIGNERS";
 export const SET_REQUIRED_SIGNERS = "SET_REQUIRED_SIGNERS";
+export const SET_UNCHAINED_PRODUCT = "SET_UNCHAINED_PRODUCT";
 export const SET_STARTING_ADDRESS_INDEX = "SET_STARTING_ADDRESS_INDEX";
 export const SET_ADDRESS_TYPE = "SET_ADDRESS_TYPE";
 export const SET_FROZEN = "SET_FROZEN";
@@ -36,6 +37,13 @@ export function setStartingAddressIndex(number) {
 export function setAddressType(value) {
   return {
     type: SET_ADDRESS_TYPE,
+    value,
+  };
+}
+
+export function setUnchainedProduct(value) {
+  return {
+    type: SET_UNCHAINED_PRODUCT,
     value,
   };
 }
