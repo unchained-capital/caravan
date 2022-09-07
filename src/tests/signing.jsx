@@ -15,10 +15,11 @@ import Test from "./Test";
 class SignMultisigTransactionTest extends Test {
   // eslint-disable-next-line class-methods-use-this
   postprocess(result) {
+    let tempResult = result;
     if (this.params.keystore === HERMIT) {
-      result = this.interaction().parse(result);
+      tempResult = this.interaction().parse(result);
     }
-    return result.signatures ? result.signatures : result;
+    return tempResult.signatures ? tempResult.signatures : tempResult;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -145,12 +146,7 @@ class SignMultisigTransactionTest extends Test {
       ).toBase64();
       return SignMultisigTransaction({
         keystore: this.params.keystore,
-        network: this.params.network,
         psbt: psbtBase64,
-        keyDetails: {
-          path: this.params.bip32Paths[0], // FIXME
-          xfp: "", // FIXME
-        },
         returnSignatureArray: true,
       });
     }

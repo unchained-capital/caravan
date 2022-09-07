@@ -284,6 +284,7 @@ UTXOSet.propTypes = {
   }),
   existingTransactionInputs: PropTypes.arrayOf(PropTypes.shape({})),
   setSpendCheckbox: PropTypes.func,
+  autoSpend: PropTypes.bool.isRequired,
 };
 
 UTXOSet.defaultProps = {

@@ -445,7 +445,7 @@ class CreateWallet extends React.Component {
    * Callback function to pass to the address importer
    * after addresses have been imported we want
    * @param {Array<string>} importedAddresses
-   * @param {boolean} rescan - whether or not a rescan is being performed
+   * @param {boolean} rescan - whether a rescan is being performed
    */
   async afterImportAddresses(importedAddresses, rescan) {
     // if rescan is true then there's no point in fetching

@@ -31,7 +31,7 @@ import {
   SPEND_STEP_SIGN,
   setSpendStep as setSpendStepAction,
   deleteChangeOutput as deleteChangeOutputAction,
-  importPSBT,
+  importPSBT as importPSBTAction,
 } from "../../actions/transactionActions";
 import { naiveCoinSelection } from "../../utils";
 import NodeSet from "./NodeSet";
@@ -41,6 +41,12 @@ import TransactionPreview from "./TransactionPreview";
 import { bigNumberPropTypes } from "../../proptypes/utils";
 
 class WalletSpend extends React.Component {
+  outputsAmount = new BigNumber(0);
+
+  coinSelection = naiveCoinSelection;
+
+  feeAmount = new BigNumber(0);
+
   constructor(props) {
     super(props);
     this.state = {
@@ -48,12 +54,6 @@ class WalletSpend extends React.Component {
       importPSBTError: "",
     };
   }
-
-  outputsAmount = new BigNumber(0);
-
-  coinSelection = naiveCoinSelection;
-
-  feeAmount = new BigNumber(0);
 
   componentDidUpdate = (prevProps) => {
     const { finalizedOutputs } = this.props;
@@ -136,17 +136,26 @@ class WalletSpend extends React.Component {
     deleteChangeOutput();
   };
 
+  setPSBTToggleAndError = (importPSBTDisabled, errorMessage) => {
+    this.setState({
+      importPSBTDisabled,
+      importPSBTError: errorMessage,
+    });
+  };
+
   handleImportPSBT = ({ target }) => {
     const { importPSBT } = this.props;
 
-    this.setState({ importPSBTDisabled: true, importPSBTError: "" });
+    this.setPSBTToggleAndError(true, "");
 
     try {
       if (target.files.length === 0) {
-        throw new Error("No PSBT provided.");
+        this.setPSBTToggleAndError(false, "No PSBT provided.");
+        return;
       }
       if (target.files.length > 1) {
-        throw new Error("Multiple PSBTs provided.");
+        this.setPSBTToggleAndError(false, "Multiple PSBTs provided.");
+        return;
       }
 
       const fileReader = new FileReader();
@@ -154,19 +163,14 @@ class WalletSpend extends React.Component {
         try {
           const psbtText = event.target.result;
           importPSBT(psbtText);
-          this.setState({ importPSBTDisabled: false, importPSBTError: "" });
+          this.setPSBTToggleAndError(false, "");
         } catch (e) {
-          console.error(e);
-          this.setState({
-            importPSBTDisabled: false,
-            importPSBTError: e.message,
-          });
+          this.setPSBTToggleAndError(false, e.message);
         }
       };
       fileReader.readAsText(target.files[0]);
     } catch (e) {
-      console.error(e);
-      this.setState({ importPSBTDisabled: false, importPSBTError: e.message });
+      this.setPSBTToggleAndError(false, e.message);
     }
   };
 
@@ -312,6 +316,7 @@ WalletSpend.propTypes = {
   spendingStep: PropTypes.number,
   updateAutoSpend: PropTypes.func.isRequired,
   updateNode: PropTypes.func.isRequired,
+  importPSBT: PropTypes.func.isRequired,
 };
 
 WalletSpend.defaultProps = {
@@ -349,7 +354,7 @@ const mapDispatchToProps = {
   finalizeOutputs: finalizeOutputsAction,
   setChangeAddress: setChangeAddressAction,
   setSpendStep: setSpendStepAction,
-  importPSBT,
+  importPSBT: importPSBTAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);
