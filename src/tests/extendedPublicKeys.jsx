@@ -12,10 +12,11 @@ import Test from "./Test";
 class ExportExtendedPublicKeyTest extends Test {
   // eslint-disable-next-line class-methods-use-this
   postprocess(result) {
+    let tempResult = result;
     if (this.params.keystore === HERMIT) {
-      result = this.interaction().parse(result);
+      tempResult = this.interaction().parse(result);
     }
-    return result.pubkey ? result.pubkey : result;
+    return tempResult.pubkey ? tempResult.pubkey : tempResult;
   }
 
   name() {

@@ -9,8 +9,6 @@ export const HermitQRCode = ({
   index,
   parts,
   onCancel,
-  onNext,
-  nextText = "Scan",
 }) => {
   return (
     <div style={{ padding: "3rem" }}>
@@ -25,12 +23,6 @@ export const HermitQRCode = ({
       </div>
 
       <p>Scan the QR codes above into Hermit.</p>
-      {onNext && (
-        <p>
-          When you are done, hit the &ldquot;{nextText}&rdquot; button to
-          continue.
-        </p>
-      )}
       <Grid container spacing={2}>
         <Grid item xs>
           <Button
@@ -43,19 +35,6 @@ export const HermitQRCode = ({
             Cancel
           </Button>
         </Grid>
-        {onNext && (
-          <Grid item xs>
-            <Button
-              variant="contained"
-              color="primary"
-              className="mt-2"
-              size="large"
-              onClick={onNext}
-            >
-              {nextText}
-            </Button>
-          </Grid>
-        )}
       </Grid>
     </div>
   );
@@ -63,7 +42,6 @@ export const HermitQRCode = ({
 
 HermitQRCode.defaultProps = {
   width: 640,
-  onNext: null,
 };
 
 HermitQRCode.propTypes = {
@@ -71,8 +49,6 @@ HermitQRCode.propTypes = {
   index: PropTypes.number.isRequired,
   parts: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   onCancel: PropTypes.func.isRequired,
-  onNext: PropTypes.func,
-  nextText: PropTypes.string,
 };
 
 class HermitDisplayer extends Component {
@@ -112,7 +88,7 @@ class HermitDisplayer extends Component {
   };
 
   render() {
-    const { width, parts, onCancel, onNext, nextText } = this.props;
+    const { width, parts, onCancel } = this.props;
     const { currentIndex } = this.state;
     return (
       <HermitQRCode
@@ -120,15 +96,12 @@ class HermitDisplayer extends Component {
         index={currentIndex}
         parts={parts}
         onCancel={onCancel}
-        onNext={onNext}
-        nextText={nextText}
       />
     );
   }
 }
 
 HermitDisplayer.defaultProps = {
-  nextText: "Scan",
   width: 120, // in pixels
   rate: 200, // ms per QR code displayed
 };
@@ -137,8 +110,6 @@ HermitDisplayer.propTypes = {
   rate: PropTypes.number,
   parts: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   onCancel: PropTypes.func.isRequired,
-  onNext: PropTypes.func,
-  nextText: PropTypes.string.isRequired,
   width: PropTypes.number,
 };
 
