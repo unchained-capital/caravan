@@ -70,44 +70,46 @@ class HermitReader extends Component {
 
     if (status === ACTIVE) {
       return (
-        <Grid container direction="column">
-          <Grid item>
-            <QrReader
-              delay={QR_CODE_READER_DELAY}
-              onError={this.handleError}
-              onScan={this.handleScan}
-              style={{ width }}
-              facingMode="user"
-            />
-          </Grid>
-          {percentageReceived === 0 ? (
-            <Grid>
-              <LinearProgress />
-              <p>Waiting for first QR code...</p>
-            </Grid>
-          ) : (
-            <Grid>
-              <LinearProgress
-                variant="determinate"
-                value={percentageReceived}
+        <div style={{ padding: "3rem" }}>
+          <Grid container direction="column">
+            <Grid item>
+              <QrReader
+                delay={QR_CODE_READER_DELAY}
+                onError={this.handleError}
+                onScan={this.handleScan}
+                style={{ width }}
+                facingMode="user"
               />
-              <p>
-                Scanned {partsReceived} of {totalParts} QR codes...
-              </p>
             </Grid>
-          )}
+            {percentageReceived === 0 ? (
+              <Grid item style={{ width }}>
+                <LinearProgress />
+                <p>Waiting for first QR code...</p>
+              </Grid>
+            ) : (
+              <Grid item style={{ width }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={percentageReceived}
+                />
+                <p>
+                  Scanned {partsReceived} of {totalParts} QR codes...
+                </p>
+              </Grid>
+            )}
 
-          <Grid item>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              onClick={this.handleStop}
-            >
-              Cancel
-            </Button>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                onClick={this.handleStop}
+              >
+                Cancel
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
       );
     }
 
@@ -170,14 +172,6 @@ class HermitReader extends Component {
           this.setState({ status: "error", error: errorMessage });
         }
       }
-
-      // try {
-      //   const result = interaction.parse(data);
-      //   onSuccess(result);
-      //   this.setState({ status: "success" });
-      // } catch (e) {
-      //   this.handleError(e);
-      // }
     }
   };
 

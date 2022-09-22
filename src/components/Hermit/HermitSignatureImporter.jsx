@@ -28,6 +28,7 @@ class HermitSignatureImporter extends React.Component {
       bip32PathError: "",
       signatureError: "",
       status: this.interaction(true).isSupported() ? PENDING : UNSUPPORTED,
+      displaySignatureRequest: false,
     };
   }
 
@@ -43,8 +44,15 @@ class HermitSignatureImporter extends React.Component {
     return SignMultisigTransaction({
       keystore: HERMIT,
       psbt: psbtBase64,
-      // returnSignatureArray: true,
     });
+  };
+
+  handleShowSignatureRequest = () => {
+    this.setState({ displaySignatureRequest: true });
+  };
+
+  handleHideSignatureRequest = () => {
+    this.setState({ displaySignatureRequest: false });
   };
 
   render = () => {
@@ -53,7 +61,12 @@ class HermitSignatureImporter extends React.Component {
       disableChangeMethod,
       resetBIP32Path,
     } = this.props;
-    const { bip32PathError, signatureError, status } = this.state;
+    const {
+      bip32PathError,
+      signatureError,
+      status,
+      displaySignatureRequest,
+    } = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
       return (
@@ -97,17 +110,35 @@ class HermitSignatureImporter extends React.Component {
         </FormHelperText>
 
         <Box mt={2}>
-          <Grid container justify="center">
-            <Grid item>
-              <HermitDisplayer width={400} parts={interaction.request()} />
+          {displaySignatureRequest ? (
+            <Grid container justify="center">
+              <Grid item>
+                <HermitDisplayer
+                  width={400}
+                  parts={interaction.request()}
+                  onCancel={this.handleHideSignatureRequest}
+                />
+              </Grid>
             </Grid>
-          </Grid>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              className="m-2"
+              size="large"
+              onClick={this.handleShowSignatureRequest}
+            >
+              Show Signature Request
+            </Button>
+          )}
+
           <HermitReader
             startText="Scan Signature QR Code"
             interaction={interaction}
             onStart={disableChangeMethod}
             onSuccess={this.import}
             onClear={this.clear}
+            width="640px"
           />
           <InteractionMessages
             messages={interaction.messagesFor({ state: status })}
