@@ -30,7 +30,9 @@ class UnsignedTransaction extends React.Component {
           </p>
           {unsignedPSBT && (
             <p>
-              <Copyable text={unsignedPSBT} showIcon />
+              <Copyable text={unsignedPSBT} showText={false} showIcon>
+                Unsigned PSBT
+              </Copyable>
             </p>
           )}
         </div>
