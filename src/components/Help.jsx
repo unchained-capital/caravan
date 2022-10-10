@@ -233,7 +233,7 @@ const Help = () => (
                 <li>
                   {externalLink(
                     "https://coldcardwallet.com",
-                    "Coldcard Mk2 & Mk3"
+                    "Coldcard Mk2, Mk3, & Mk4"
                   )}
                 </li>
               </ul>
