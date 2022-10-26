@@ -35,13 +35,24 @@ import SignatureImporter from "./SignatureImporter";
 
 // eslint-disable-next-line react/prefer-stateless-function
 class PsbtSpend extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      pathToSign: "",
+    };
+  }
+
+  setPathToSign = (pathToSign) => {
+    this.setState({ pathToSign });
+  };
+
   render = () => {
     return (
       <Box mt={2}>
         <Grid container spacing={3}>
           <Grid item md={8}>
             <Box>
-              <ScriptEntry />
+              <ScriptEntry setPathToSign={this.setPathToSign} />
             </Box>
             {this.renderBody()}
           </Grid>
@@ -109,30 +120,29 @@ class PsbtSpend extends React.Component {
 
   renderSignatureImporters = () => {
     const { transaction } = this.props;
+    const { pathToSign } = this.state;
     const signatureImporters = [];
+
+    signatureImporters.push(
+      <Box key={1} mt={2}>
+        <SignatureImporter
+          number={1}
+          selected="hermit"
+          unsignedPsbt={transaction.unsignedPSBT}
+          bip32Path={pathToSign}
+        />
+      </Box>
+    );
     for (
-      let signatureImporterNum = 1;
+      let signatureImporterNum = 2;
       signatureImporterNum <= transaction.requiredSigners;
       signatureImporterNum += 1
     ) {
-      if (signatureImporterNum === 1) {
-        signatureImporters.push(
-          <Box key={signatureImporterNum} mt={2}>
-            <SignatureImporter
-              number={signatureImporterNum}
-              selected="hermit"
-              unsignedPsbt="cHNidP8BAFMBAAAAAQt7WFA3DsW55JqydOdqLh3km1xSNrGtdKr6fymPb9Q7AQAAAAD/////AYGSmAAAAAAAF6kUZxmZd+uSwP7KUXb2vfb55nB8rByHAAAAAE8BBDWHzwO82dPNgAAAAI8WyfxWyqXs45tIXJkOD5NBRvSp+nuwpsL63mbM2OMwA4mYw2VbFuHXT2yrIWUesb5nOUsnJjVqMN9MkhILKHGYEPV+xl0tAACAAQAAgAAAAIBPAQQ1h88D5spSFoAAAAsJm54QQ85zZFWplgjZr0Lttwh4IWPL2W9gSadnAGk60gKiS4xQFbT+BmY+Rmw51JIm7nGUwg9quXUpRP/P2Ey4pxDYTLinAAAAAAAAAAAAAAAATwEENYfPA+bKUhaAAAAMjUSS1GhzE7o98II+nE8d5ArLBL3/zSYBAB6g2Pb6gIsCoU2QRluAZNDZP9YxZ48SIQx6AjpXyIsVc/ry827HHvIQbsce8gAAAAAAAAAAAAAAAAABAPcCAAAAAAEBIgiEcRHvkQeW6lO1HjhsO8z02EJOmyz5RMBi4cXDZgQAAAAAFxYAFOOtZckfCeRZAUhAIDmlYFaCO+uv/v///wLaWm0pAQAAABepFPziXS2G2hM/fSbcziang6mAMdP0h4CWmAAAAAAAF6kUiIk4XtEPw9oQfcSZ7EBsT9ClrWeHAkcwRAIgKD0UuxHvD+PvyrcJmTd6uSuKmAOW/PPc/uGT4WaBQVsCIEp++og4FHTPvp/io99hZod0MNfCB8FMQor+KxMAvRKiASECHIZIZEEWGWkkv3LaGINKAj8ztEBhGxStsj0d1qCpBwSMAAAAAQRpUiEDSBm+qY1wHFrQgu6e6uDCbA4WXcX4eQ5G9Waq6qnKhy4hAkquOPgmEwgjmzv73mWPFS7T+5rzNSdfqpgOWZ9C/kO8IQMNeCfDwt9Q6qCHFNll1VSMOr2E7pBOI/+EUkRZuURXuFOuIgYCSq44+CYTCCObO/veZY8VLtP7mvM1J1+qmA5Zn0L+Q7wYbsce8gAAAAAAAAAAAAAAAAoAAAABAAAAIgYDDXgnw8LfUOqghxTZZdVUjDq9hO6QTiP/hFJEWblEV7gY9X7GXS0AAIABAACAAAAAgAoAAAABAAAAIgYDSBm+qY1wHFrQgu6e6uDCbA4WXcX4eQ5G9Waq6qnKhy4Y2Ey4pwAAAAAAAAAAAAAAAAoAAAABAAAAAAA="
-              bip32Path="m/45'/1'/0'/10/1"
-            />
-          </Box>
-        );
-      } else {
-        signatureImporters.push(
-          <Box key={signatureImporterNum} mt={2}>
-            <SignatureImporter number={signatureImporterNum} />
-          </Box>
-        );
-      }
+      signatureImporters.push(
+        <Box key={signatureImporterNum} mt={2}>
+          <SignatureImporter number={signatureImporterNum} />
+        </Box>
+      );
     }
     return signatureImporters;
   };
@@ -159,6 +169,7 @@ PsbtSpend.propTypes = {
     inputs: PropTypes.arrayOf(PropTypes.shape({})),
     inputsTotalSats: PropTypes.shape({}),
     requiredSigners: PropTypes.number,
+    unsignedPSBT: PropTypes.string,
   }).isRequired,
   ownership: PropTypes.shape({
     chosen: PropTypes.bool,

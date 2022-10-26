@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { reverseBuffer } from "bitcoinjs-lib/src/bufferutils";
 import {
   P2SH,
   P2SH_P2WSH,
@@ -47,6 +46,7 @@ import {
   setOutputAmount as setOutputAmountAction,
   setFee as setFeeAction,
   finalizeOutputs as finalizeOutputsAction,
+  setUnsignedPSBT as setUnsignedPSBTAction,
 } from "../../actions/transactionActions";
 import {
   chooseConfirmOwnership as chooseConfirmOwnershipAction,
@@ -277,8 +277,9 @@ class ScriptEntry extends React.Component {
       setAddress,
       setAmount,
       setFee,
-      setInputs,
       finalizeOutputs,
+      setUnsignedPSBT,
+      setPathToSign,
     } = this.props;
 
     this.setPSBTToggleAndError(true, "");
@@ -298,6 +299,14 @@ class ScriptEntry extends React.Component {
         try {
           const psbtText = event.target.result;
           const psbt = importLegacyPSBT(psbtText);
+
+          setUnsignedPSBT(psbt.toBase64());
+          const { bip32Derivation } = psbt.data.inputs[0];
+          const hermitBip32Path = bip32Derivation.find(
+            (el) => !el.path.includes("0/0/0")
+          ).path;
+          setPathToSign(hermitBip32Path);
+
           const redeemScriptHex = psbt.data.inputs[0].redeemScript.toString(
             "hex"
           );
@@ -418,8 +427,11 @@ ScriptEntry.propTypes = {
   setTotalSigners: PropTypes.func.isRequired,
   setAddress: PropTypes.func.isRequired,
   setAmount: PropTypes.func.isRequired,
+  setFee: PropTypes.func.isRequired,
   finalizeOutputs: PropTypes.func.isRequired,
   importLegacyPSBT: PropTypes.func.isRequired,
+  setUnsignedPSBT: PropTypes.func.isRequired,
+  setPathToSign: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -446,6 +458,7 @@ const mapDispatchToProps = {
   setAddress: setOutputAddressAction,
   setAmount: setOutputAmountAction,
   setFee: setFeeAction,
+  setUnsignedPSBT: setUnsignedPSBTAction,
   finalizeOutputs: finalizeOutputsAction,
 };
 
