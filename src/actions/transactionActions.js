@@ -379,3 +379,27 @@ export function importPSBT(psbtText) {
     // now do sigs
   };
 }
+
+export function importLegacyPSBT(psbtText) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { network } = state.settings;
+    const psbt = autoLoadPSBT(psbtText, { network: networkData(network) });
+    if (!psbt) {
+      throw new Error("Could not parse PSBT.");
+    }
+
+    if (psbt.txInputs.length === 0) {
+      throw new Error("PSBT does not contain any inputs.");
+    }
+    if (psbt.txOutputs.length === 0) {
+      throw new Error("PSBT does not contain any outputs.");
+    }
+
+    // FIXME make sure all redeem scripts are the same -- can only support this kind of spend
+
+    // FIXME fail if len(psbt.txOutputs) > 1
+
+    return psbt;
+  };
+}

@@ -68,6 +68,8 @@ const Navbar = () => {
 
   const menuItems = [
     { href: "#/wallet", title: "Wallet" },
+    { href: "#/script", title: "Script Explorer" },
+    { href: "#/psbt", title: "PSBT Signer" },
     { href: "#/test", title: "Test Suite" },
     { href: "#/help", title: "Help" },
   ];

@@ -1,0 +1,36 @@
+
+.feeMagicBtn {
+  margin-top: 32px;
+}
+
+.utxoTxid {
+  word-wrap: anywhere;
+  word-break: break-word;
+}
+
+.outputsFormInput {
+  font-size: 12px;
+  line-height: 24px;
+  min-height: 38px;
+}
+
+.unconfirmed {
+  font-style: italic;
+}
+
+.spent {
+  text-decoration: line-through;
+}
+
+.outputsFormLabel {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.maxSpend {
+  color: grey;
+  text-decoration: underline;
+  &:hover {
+    cursor: pointer;
+    text-decoration: none;
+  }
+}

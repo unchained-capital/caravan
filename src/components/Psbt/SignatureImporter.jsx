@@ -55,8 +55,13 @@ class SignatureImporter extends React.Component {
   }
 
   componentDidMount = () => {
+    const { selected, number, setMethod, bip32Path, setBIP32Path } = this.props;
     this.resetBIP32Path();
     this.scrollToTitle();
+    if (selected) {
+      setMethod(number, selected);
+      setBIP32Path(number, bip32Path);
+    }
   };
 
   componentDidUpdate = () => {
@@ -89,7 +94,7 @@ class SignatureImporter extends React.Component {
   };
 
   renderImport = () => {
-    const { signatureImporter, number, isWallet } = this.props;
+    const { signatureImporter, number } = this.props;
     const currentNumber = this.getCurrent();
     const notMyTurn = number > currentNumber;
     const { disableChangeMethod } = this.state;
@@ -118,6 +123,7 @@ class SignatureImporter extends React.Component {
             <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
+            <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
           </Select>
         </FormControl>
@@ -138,6 +144,7 @@ class SignatureImporter extends React.Component {
       fee,
       isWallet,
       extendedPublicKeyImporter,
+      unsignedPsbt,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -171,6 +178,8 @@ class SignatureImporter extends React.Component {
           outputs={outputs}
           inputsTotalSats={inputsTotalSats}
           fee={fee}
+          braidRequired={isWallet}
+          unsignedPsbt={unsignedPsbt}
           extendedPublicKeyImporter={extendedPublicKeyImporter}
           validateAndSetBIP32Path={this.validateAndSetBIP32Path}
           resetBIP32Path={this.resetBIP32Path}
@@ -240,22 +249,12 @@ class SignatureImporter extends React.Component {
   //
 
   defaultBIP32Path = () => {
-    const { addressType, network, isWallet } = this.props;
-    return isWallet
-      ? multisigBIP32Root(addressType, network)
-      : multisigBIP32Path(addressType, network);
+    const { addressType, network } = this.props;
+    return multisigBIP32Path(addressType, network);
   };
 
   resetBIP32Path = () => {
-    const { number, setBIP32Path, isWallet } = this.props;
-    if (isWallet) {
-      const { extendedPublicKeyImporter } = this.props;
-      if (
-        extendedPublicKeyImporter &&
-        extendedPublicKeyImporter.method !== "text"
-      )
-        return;
-    }
+    const { number, setBIP32Path } = this.props;
     setBIP32Path(number, this.defaultBIP32Path());
   };
 
@@ -579,10 +578,16 @@ SignatureImporter.propTypes = {
   txid: PropTypes.string.isRequired,
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
+  selected: PropTypes.string,
+  unsignedPsbt: PropTypes.string,
+  bip32Path: PropTypes.string,
 };
 
 SignatureImporter.defaultProps = {
   extendedPublicKeyImporter: {},
+  selected: "",
+  unsignedPsbt: "",
+  bip32Path: "",
 };
 
 function mapStateToProps(state, ownProps) {

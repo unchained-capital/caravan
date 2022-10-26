@@ -15,6 +15,7 @@ import Wallet from "./Wallet";
 import CreateAddress from "./CreateAddress";
 import TestSuiteRun from "./TestSuiteRun";
 import ScriptExplorer from "./ScriptExplorer";
+import PsbtSpend from "./Psbt";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/address" component={CreateAddress} />
               <Redirect from="/spend" to="/script" />
               <Route path="/script" component={ScriptExplorer} />
+              <Route path="/psbt" component={PsbtSpend} />
               <Route path="/wallet" component={Wallet} />
               <Route path="/help" component={Help} />
               <Route path="/" component={Help} />

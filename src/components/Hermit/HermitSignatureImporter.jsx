@@ -33,13 +33,11 @@ class HermitSignatureImporter extends React.Component {
   }
 
   interaction = () => {
-    const { network, inputs, outputs } = this.props;
-    const psbtBase64 = unsignedMultisigPSBT(
-      network,
-      inputs,
-      outputs,
-      true
-    ).toBase64();
+    const { network, inputs, outputs, unsignedPsbt } = this.props;
+
+    const psbtBase64 =
+      unsignedPsbt ||
+      unsignedMultisigPSBT(network, inputs, outputs, true).toBase64();
 
     return SignMultisigTransaction({
       keystore: HERMIT,
@@ -208,6 +206,7 @@ HermitSignatureImporter.propTypes = {
   validateAndSetSignature: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
+  unsignedPsbt: PropTypes.string.isRequired,
 };
 
 export default HermitSignatureImporter;
