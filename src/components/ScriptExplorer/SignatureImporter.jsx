@@ -118,6 +118,10 @@ class SignatureImporter extends React.Component {
             <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
+            <MenuItem value={COLDCARD} disabled={!isWallet}>
+              Coldcard
+            </MenuItem>
+            <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
           </Select>
         </FormControl>
