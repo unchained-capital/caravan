@@ -142,6 +142,7 @@ class SignatureImporter extends React.Component {
       fee,
       isWallet,
       extendedPublicKeyImporter,
+      unsignedPsbt,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -175,6 +176,7 @@ class SignatureImporter extends React.Component {
           outputs={outputs}
           inputsTotalSats={inputsTotalSats}
           fee={fee}
+          unsignedPsbt={unsignedPsbt}
           extendedPublicKeyImporter={extendedPublicKeyImporter}
           validateAndSetBIP32Path={this.validateAndSetBIP32Path}
           resetBIP32Path={this.resetBIP32Path}
@@ -583,10 +585,12 @@ SignatureImporter.propTypes = {
   txid: PropTypes.string.isRequired,
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
+  unsignedPsbt: PropTypes.string,
 };
 
 SignatureImporter.defaultProps = {
   extendedPublicKeyImporter: {},
+  unsignedPsbt: "",
 };
 
 function mapStateToProps(state, ownProps) {

@@ -16,10 +16,7 @@ import {
 } from "@material-ui/core";
 import { downloadFile } from "../../utils";
 import UnsignedTransaction from "../UnsignedTransaction";
-import {
-  setChangeOutputMultisig as setChangeOutputMultisigAction,
-  setUnsignedPSBT as setUnsignedPSBTAction,
-} from "../../actions/transactionActions";
+import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../actions/transactionActions";
 
 class TransactionPreview extends React.Component {
   componentDidMount() {
@@ -31,7 +28,6 @@ class TransactionPreview extends React.Component {
       changeOutputIndex,
       changeNode,
       setChangeOutputMultisig,
-      setUnsignedPSBT,
     } = this.props;
     outputs.forEach((output) => {
       if (output.address === changeAddress) {
@@ -40,8 +36,6 @@ class TransactionPreview extends React.Component {
     });
 
     const psbt = unsignedMultisigPSBT(network, inputs, outputs, true); // includeGlobalXpubs
-    const psbtBase64 = psbt.toBase64();
-    setUnsignedPSBT(psbtBase64);
   }
 
   renderAddresses = () => {
@@ -271,7 +265,6 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setChangeOutputMultisig: setChangeOutputMultisigAction,
-  setUnsignedPSBT: setUnsignedPSBTAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TransactionPreview);
