@@ -241,7 +241,6 @@ OutputEntry.propTypes = {
       amountError: PropTypes.string.isRequired,
     })
   ).isRequired,
-  remove: PropTypes.func.isRequired,
   setAddress: PropTypes.func.isRequired,
   setAmount: PropTypes.func.isRequired,
 };

@@ -313,6 +313,7 @@ export function importPSBT(psbtText) {
     }
 
     dispatch(resetOutputs());
+    dispatch(setUnsignedPSBT(psbt.toBase64()));
 
     const createInputIdentifier = (txid, index) => `${txid}:${index}`;
 

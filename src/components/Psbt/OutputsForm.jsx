@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { map } from "lodash";
 import BigNumber from "bignumber.js";
-import { bitcoinsToSatoshis, satoshisToBitcoins } from "unchained-bitcoin";
+import { satoshisToBitcoins } from "unchained-bitcoin";
 import {
   Grid,
   Button,
@@ -362,7 +362,6 @@ class OutputsForm extends React.Component {
 }
 
 OutputsForm.propTypes = {
-  addOutput: PropTypes.func.isRequired,
   autoSpend: PropTypes.bool.isRequired,
   balanceError: PropTypes.string.isRequired,
   change: PropTypes.shape({
@@ -392,10 +391,7 @@ OutputsForm.propTypes = {
       amountError: PropTypes.string,
     })
   ).isRequired,
-  resetOutputs: PropTypes.func.isRequired,
   setFeeRate: PropTypes.func.isRequired,
-  setFee: PropTypes.func.isRequired,
-  setOutputAmount: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
   updatesComplete: PropTypes.bool,
 };

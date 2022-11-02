@@ -5,7 +5,6 @@ import {
   validateHex,
   validateMultisigSignature,
   multisigBIP32Path,
-  multisigBIP32Root,
   validateBIP32Path,
 } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
