@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import BigNumber from "bignumber.js";
-import { unsignedMultisigPSBT, satoshisToBitcoins } from "unchained-bitcoin";
+import { satoshisToBitcoins } from "unchained-bitcoin";
 import {
   Button,
   Box,
@@ -21,8 +21,6 @@ import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../
 class TransactionPreview extends React.Component {
   componentDidMount() {
     const {
-      network,
-      inputs,
       outputs,
       changeAddress,
       changeOutputIndex,
@@ -34,8 +32,6 @@ class TransactionPreview extends React.Component {
         setChangeOutputMultisig(changeOutputIndex, changeNode.multisig);
       }
     });
-
-    const psbt = unsignedMultisigPSBT(network, inputs, outputs, true); // includeGlobalXpubs
   }
 
   renderAddresses = () => {
@@ -242,14 +238,12 @@ TransactionPreview.propTypes = {
   changeOutputIndex: PropTypes.number.isRequired,
   editTransaction: PropTypes.func.isRequired,
   fee: PropTypes.string.isRequired,
-  network: PropTypes.string.isRequired,
   feeRate: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSignTransaction: PropTypes.func.isRequired,
   setChangeOutputMultisig: PropTypes.func.isRequired,
-  setUnsignedPSBT: PropTypes.func.isRequired,
   unsignedPSBT: PropTypes.string.isRequired,
 };
 

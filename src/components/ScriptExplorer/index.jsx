@@ -106,7 +106,10 @@ class Spend extends React.Component {
     ) {
       signatureImporters.push(
         <Box key={signatureImporterNum} mt={2}>
-          <SignatureImporter number={signatureImporterNum} />
+          <SignatureImporter
+            number={signatureImporterNum}
+            unsignedPsbt={transaction.unsignedPSBT}
+          />
         </Box>
       );
     }
@@ -141,6 +144,7 @@ Spend.propTypes = {
     inputs: PropTypes.arrayOf(PropTypes.shape({})),
     inputsTotalSats: PropTypes.shape({}),
     requiredSigners: PropTypes.number,
+    unsignedPSBT: PropTypes.string,
   }).isRequired,
   ownership: PropTypes.shape({
     chosen: PropTypes.bool,
@@ -149,7 +153,9 @@ Spend.propTypes = {
 };
 
 function mapStateToProps(state) {
-  return state.spend;
+  return {
+    ...state.spend,
+  };
 }
 
 export default connect(mapStateToProps)(Spend);

@@ -7,22 +7,15 @@ import {
   UNSUPPORTED,
   SignMultisigTransaction,
 } from "unchained-wallets";
-import {
-  Grid,
-  Box,
-  TextField,
-  Button,
-  FormHelperText,
-} from "@material-ui/core";
+import { Grid, Box, Button, FormHelperText } from "@material-ui/core";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
 
-class HermitSignatureImporter extends React.Component {
+class HermitSignatureImporterPsbt extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      bip32PathError: "",
       signatureError: "",
       status: this.interaction(true).isSupported() ? PENDING : UNSUPPORTED,
       displaySignatureRequest: false,
@@ -47,17 +40,8 @@ class HermitSignatureImporter extends React.Component {
   };
 
   render = () => {
-    const {
-      signatureImporter,
-      disableChangeMethod,
-      resetBIP32Path,
-    } = this.props;
-    const {
-      bip32PathError,
-      signatureError,
-      status,
-      displaySignatureRequest,
-    } = this.state;
+    const { disableChangeMethod } = this.props;
+    const { signatureError, status, displaySignatureRequest } = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
       return (
@@ -69,37 +53,6 @@ class HermitSignatureImporter extends React.Component {
     }
     return (
       <Box mt={2}>
-        <Grid container>
-          <Grid item md={10}>
-            <TextField
-              name="bip32Path"
-              value={signatureImporter.bip32Path}
-              onChange={this.handleBIP32PathChange}
-              disabled={status !== PENDING}
-              error={this.hasBIP32PathError()}
-              helperText={bip32PathError}
-            />
-          </Grid>
-
-          <Grid item md={2}>
-            {!this.bip32PathIsDefault() && (
-              <Button
-                type="button"
-                variant="contained"
-                size="small"
-                onClick={resetBIP32Path}
-                disabled={status !== PENDING}
-              >
-                Default
-              </Button>
-            )}
-          </Grid>
-        </Grid>
-
-        <FormHelperText>
-          Use the default value if you don&rsquo;t understand BIP32 paths.
-        </FormHelperText>
-
         <Box mt={2}>
           {displaySignatureRequest ? (
             <Grid container justify="center">
@@ -142,9 +95,8 @@ class HermitSignatureImporter extends React.Component {
   };
 
   import = (signature) => {
-    const { validateAndSetSignature, enableChangeMethod } = this.props;
+    const { validateAndSetSignature } = this.props;
     this.setState({ signatureError: "" });
-    enableChangeMethod();
     const signedPsbt = this.interaction().parse(signature);
     const signatureArray = parseSignatureArrayFromPSBT(signedPsbt);
     validateAndSetSignature(
@@ -157,46 +109,17 @@ class HermitSignatureImporter extends React.Component {
   };
 
   clear = () => {
-    const { resetBIP32Path, enableChangeMethod } = this.props;
-    resetBIP32Path();
     this.setState({ signatureError: "" });
-    enableChangeMethod();
-  };
-
-  hasBIP32PathError = () => {
-    const { bip32PathError } = this.state;
-    return bip32PathError !== "";
-  };
-
-  handleBIP32PathChange = (event) => {
-    const { validateAndSetBIP32Path } = this.props;
-    const bip32Path = event.target.value;
-    validateAndSetBIP32Path(
-      bip32Path,
-      () => {},
-      (bip32PathError) => {
-        this.setState({ bip32PathError });
-      }
-    );
-  };
-
-  bip32PathIsDefault = () => {
-    const { signatureImporter, defaultBIP32Path } = this.props;
-    return signatureImporter.bip32Path === defaultBIP32Path;
   };
 }
 
-HermitSignatureImporter.propTypes = {
+HermitSignatureImporterPsbt.propTypes = {
   signatureImporter: PropTypes.shape({
     bip32Path: PropTypes.string,
   }).isRequired,
-  resetBIP32Path: PropTypes.func.isRequired,
-  defaultBIP32Path: PropTypes.string.isRequired,
-  validateAndSetBIP32Path: PropTypes.func.isRequired,
   validateAndSetSignature: PropTypes.func.isRequired,
-  enableChangeMethod: PropTypes.func.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
   unsignedPsbt: PropTypes.string.isRequired,
 };
 
-export default HermitSignatureImporter;
+export default HermitSignatureImporterPsbt;
