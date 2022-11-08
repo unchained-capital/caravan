@@ -17,3 +17,4 @@ EXPOSE 80
 EXPOSE 3034
 
 CMD ["nginx", "-g", "daemon off;"]
+
