@@ -73,29 +73,31 @@ class HermitPsbtInterface extends React.Component {
     const { importPSBTDisabled, importPSBTError } = this.state;
     return (
       <Box>
-        <Box mt={2}>
-          <label htmlFor="import-psbt">
-            <input
-              style={{ display: "none" }}
-              id="import-psbt"
-              name="import-psbt"
-              accept="application/base64"
-              onChange={this.handleImportPSBT}
-              type="file"
-            />
+        {!unsignedPSBT && (
+          <Box mt={2}>
+            <label htmlFor="import-psbt">
+              <input
+                style={{ display: "none" }}
+                id="import-psbt"
+                name="import-psbt"
+                accept="application/base64"
+                onChange={this.handleImportPSBT}
+                type="file"
+              />
 
-            <Button
-              color="primary"
-              variant="contained"
-              component="span"
-              disabled={importPSBTDisabled}
-              style={{ marginTop: "2em" }}
-            >
-              Import PSBT
-            </Button>
-            <FormHelperText error>{importPSBTError}</FormHelperText>
-          </label>
-        </Box>
+              <Button
+                color="primary"
+                variant="contained"
+                component="span"
+                disabled={importPSBTDisabled}
+                style={{ marginTop: "2em" }}
+              >
+                Import PSBT
+              </Button>
+              <FormHelperText error>{importPSBTError}</FormHelperText>
+            </label>
+          </Box>
+        )}
 
         {unsignedPSBT && (
           <Box mt={2}>
