@@ -13,6 +13,7 @@ import {
   MAINNET,
   TESTNET,
   satoshisToBitcoins,
+  toHexString,
 } from "unchained-bitcoin";
 import {
   Box,
@@ -25,6 +26,7 @@ import {
   FormHelperText,
 } from "@material-ui/core";
 import BigNumber from "bignumber.js";
+
 import { fetchAddressUTXOs } from "../../blockchain";
 
 // Components
@@ -103,8 +105,8 @@ class ScriptEntry extends React.Component {
     return scriptName.charAt(0).toUpperCase() + scriptName.substring(1);
   };
 
-  handleScriptChange = (redeemScriptHex) => {
-    const scriptHex = redeemScriptHex;
+  handleScriptChange = (event) => {
+    const scriptHex = event.target.value;
     let scriptError = "";
 
     if (scriptHex === "") {
@@ -301,36 +303,46 @@ class ScriptEntry extends React.Component {
           const psbt = importLegacyPSBT(psbtText);
 
           setUnsignedPSBT(psbt.toBase64());
-          const { bip32Derivation } = psbt.data.inputs[0];
-          const hermitBip32Path = bip32Derivation.find(
-            (el) => !el.path.includes("0/0/0")
-          ).path;
-          setPathToSign(hermitBip32Path);
+          if (psbt?.data?.inputs.length > 0) {
+            const { bip32Derivation } = psbt.data.inputs[0];
+            const hermitBip32Path = bip32Derivation.find(
+              (el) => !el.path.includes("0/0/0")
+            ).path;
+            setPathToSign(hermitBip32Path);
+            const redeemScriptHex = psbt.data.inputs[0].redeemScript.toString(
+              "hex"
+            );
+            this.setPSBTToggleAndError(false, "");
 
-          const redeemScriptHex = psbt.data.inputs[0].redeemScript.toString(
-            "hex"
-          );
-          this.setPSBTToggleAndError(false, "");
+            this.handleScriptChange(redeemScriptHex);
+          } else {
+            const redeemScriptHex = toHexString(
+              psbt.data.globalMap.unknownKeyVals[0].value
+            );
+            this.handleScriptChange(redeemScriptHex);
+            // future nice to have on the path, but ultimately only need to get the redeem script
+            // setPathToSign("asdf");
+          }
 
-          this.handleScriptChange(redeemScriptHex);
           // set network type
           setNetwork(TESTNET);
           // set inputs (?)
           // set outputs
           this.renderDetails();
-          this.performSpend().then(() => {
-            const output = psbt.txOutputs[0];
-            const outputsTotalSats = new BigNumber(output.value);
-            // setNetwork(psbt.opts.network); -- BUGFIX needed on buidl psbt builder
-            // setAddress(1, output.address);
-            setAmount(1, satoshisToBitcoins(output.value).toFixed(8));
-            setAddress(1, "2N2eNFj4PR9as3VH68VtVxJSS1QPT2xQMrr");
-            const inputsTotalSats = new BigNumber(10000000);
-            const feeSats = inputsTotalSats - outputsTotalSats;
-            const fee = satoshisToBitcoins(feeSats).toFixed(8).toString();
-            setFee(fee);
-            finalizeOutputs(true);
-          });
+          this.performSpend();
+          //   .then(() => {
+          //   const output = psbt.txOutputs[0];
+          //   const outputsTotalSats = new BigNumber(output.value);
+          //   // setNetwork(psbt.opts.network); -- BUGFIX needed on buidl psbt builder
+          //   // setAddress(1, output.address);
+          //   setAmount(1, satoshisToBitcoins(output.value).toFixed(8));
+          //   setAddress(1, "2N2eNFj4PR9as3VH68VtVxJSS1QPT2xQMrr");
+          //   const inputsTotalSats = new BigNumber(10000000);
+          //   const feeSats = inputsTotalSats - outputsTotalSats;
+          //   const fee = satoshisToBitcoins(feeSats).toFixed(8).toString();
+          //   setFee(fee);
+          //   finalizeOutputs(true);
+          // });
         } catch (e) {
           this.setPSBTToggleAndError(false, e.message);
         }

@@ -9,6 +9,11 @@ import {
   validateHex,
   multisigRequiredSigners,
   multisigTotalSigners,
+  // eslint-disable-next-line no-unused-vars
+  MAINNET,
+  TESTNET,
+  satoshisToBitcoins,
+  toHexString,
 } from "unchained-bitcoin";
 import {
   Box,
@@ -27,12 +32,21 @@ import MultisigDetails from "../MultisigDetails";
 import ImportAddressesButton from "../ImportAddressesButton";
 
 // Actions
-import { setFrozen as setFrozenAction } from "../../actions/settingsActions";
+import {
+  setFrozen as setFrozenAction,
+  setNetwork as setNetworkAction,
+} from "../../actions/settingsActions";
 import {
   choosePerformSpend as chosePerformSpendAction,
   setRequiredSigners as setRequiredSignersAction,
   setTotalSigners as setTotalSignersAction,
   setInputs as setInputsAction,
+  importLegacyPSBT as importPSBTAction,
+  setOutputAddress as setOutputAddressAction,
+  setOutputAmount as setOutputAmountAction,
+  setFee as setFeeAction,
+  finalizeOutputs as finalizeOutputsAction,
+  setUnsignedPSBT as setUnsignedPSBTAction,
 } from "../../actions/transactionActions";
 import {
   chooseConfirmOwnership as chooseConfirmOwnershipAction,
@@ -47,6 +61,8 @@ class ScriptEntry extends React.Component {
       scriptError: "",
       fetchUTXOsError: "",
       fetchedUTXOs: false,
+      importPSBTDisabled: false,
+      importPSBTError: "",
     };
   }
 
@@ -88,20 +104,23 @@ class ScriptEntry extends React.Component {
   };
 
   handleScriptChange = (event) => {
-    const scriptHex = event.target.value;
+    let scriptHex = event;
     let scriptError = "";
+    if (event.target) {
+      scriptHex = event.target.value;
 
-    if (scriptHex === "") {
-      scriptError = `${this.scriptTitle()} script cannot be blank.`;
-    }
+      if (scriptHex === "") {
+        scriptError = `${this.scriptTitle()} script cannot be blank.`;
+      }
 
-    if (
-      scriptError === "" &&
-      (scriptHex.includes("\n") ||
-        scriptHex.includes("\t") ||
-        scriptHex.includes(" "))
-    ) {
-      scriptError = `${this.scriptTitle()} script should not contain spaces, tabs, or newlines.`;
+      if (
+        scriptError === "" &&
+        (scriptHex.includes("\n") ||
+          scriptHex.includes("\t") ||
+          scriptHex.includes(" "))
+      ) {
+        scriptError = `${this.scriptTitle()} script should not contain spaces, tabs, or newlines.`;
+      }
     }
 
     if (scriptError === "") {
@@ -262,11 +281,105 @@ class ScriptEntry extends React.Component {
     setFrozen(true);
   };
 
+  setPSBTToggleAndError = (importPSBTDisabled, errorMessage) => {
+    this.setState({
+      importPSBTDisabled,
+      importPSBTError: errorMessage,
+    });
+  };
+
+  handleImportPSBT = ({ target }) => {
+    const {
+      importLegacyPSBT,
+      setNetwork,
+      setAddress,
+      setAmount,
+      setFee,
+      finalizeOutputs,
+      setUnsignedPSBT,
+      setPathToSign,
+    } = this.props;
+
+    this.setPSBTToggleAndError(true, "");
+
+    try {
+      if (target.files.length === 0) {
+        this.setPSBTToggleAndError(false, "No PSBT provided.");
+        return;
+      }
+      if (target.files.length > 1) {
+        this.setPSBTToggleAndError(false, "Multiple PSBTs provided.");
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.onload = (event) => {
+        try {
+          const psbtText = event.target.result;
+          const psbt = importLegacyPSBT(psbtText);
+
+          setUnsignedPSBT(psbt.toBase64());
+          if (psbt?.data?.inputs.length > 0) {
+            const { bip32Derivation } = psbt.data.inputs[0];
+            const hermitBip32Path = bip32Derivation.find(
+              (el) => !el.path.includes("0/0/0")
+            ).path;
+            setPathToSign(hermitBip32Path);
+            const redeemScriptHex = psbt.data.inputs[0].redeemScript.toString(
+              "hex"
+            );
+            this.setPSBTToggleAndError(false, "");
+
+            this.handleScriptChange(redeemScriptHex);
+          } else {
+            const redeemScriptHex = toHexString(
+              psbt.data.globalMap.unknownKeyVals[0].value
+            );
+            this.handleScriptChange(redeemScriptHex);
+            // future nice to have on the path, but ultimately only need to get the redeem script
+            // setPathToSign("asdf");
+          }
+
+          // set network type
+          setNetwork(TESTNET);
+          // set inputs (?)
+          // set outputs
+          this.renderDetails();
+          this.performSpend();
+          //   .then(() => {
+          //   const output = psbt.txOutputs[0];
+          //   const outputsTotalSats = new BigNumber(output.value);
+          //   // setNetwork(psbt.opts.network); -- BUGFIX needed on buidl psbt builder
+          //   // setAddress(1, output.address);
+          //   setAmount(1, satoshisToBitcoins(output.value).toFixed(8));
+          //   setAddress(1, "2N2eNFj4PR9as3VH68VtVxJSS1QPT2xQMrr");
+          //   const inputsTotalSats = new BigNumber(10000000);
+          //   const feeSats = inputsTotalSats - outputsTotalSats;
+          //   const fee = satoshisToBitcoins(feeSats).toFixed(8).toString();
+          //   setFee(fee);
+          //   finalizeOutputs(true);
+          // });
+        } catch (e) {
+          this.setPSBTToggleAndError(false, e.message);
+        }
+      };
+      fileReader.readAsText(target.files[0]);
+    } catch (e) {
+      this.setPSBTToggleAndError(false, e.message);
+    }
+  };
+
   //
   // Render
   //
   render() {
-    const { scriptHex, scriptError, fetchedUTXOs } = this.state;
+    const {
+      scriptHex,
+      scriptError,
+      fetchedUTXOs,
+      importPSBTDisabled,
+      importPSBTError,
+    } = this.state;
 
     return (
       <Card>
@@ -287,6 +400,30 @@ class ScriptEntry extends React.Component {
               error={scriptError !== ""}
             />
           </form>
+
+          <Box mt={2}>
+            <label htmlFor="import-psbt">
+              <input
+                style={{ display: "none" }}
+                id="import-psbt"
+                name="import-psbt"
+                accept="application/base64"
+                onChange={this.handleImportPSBT}
+                type="file"
+              />
+
+              <Button
+                color="primary"
+                variant="contained"
+                component="span"
+                disabled={importPSBTDisabled}
+                style={{ marginTop: "2em" }}
+              >
+                Import PSBT
+              </Button>
+              <FormHelperText error>{importPSBTError}</FormHelperText>
+            </label>
+          </Box>
 
           {scriptHex !== "" && !this.hasScriptError() ? (
             this.renderDetails()
@@ -313,10 +450,18 @@ ScriptEntry.propTypes = {
   }).isRequired,
   network: PropTypes.string.isRequired,
   setFrozen: PropTypes.func.isRequired,
+  setNetwork: PropTypes.func.isRequired,
   setInputs: PropTypes.func.isRequired,
   setOwnershipMultisig: PropTypes.func.isRequired,
   setRequiredSigners: PropTypes.func.isRequired,
   setTotalSigners: PropTypes.func.isRequired,
+  setAddress: PropTypes.func.isRequired,
+  setAmount: PropTypes.func.isRequired,
+  setFee: PropTypes.func.isRequired,
+  finalizeOutputs: PropTypes.func.isRequired,
+  importLegacyPSBT: PropTypes.func.isRequired,
+  setUnsignedPSBT: PropTypes.func.isRequired,
+  setPathToSign: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -338,6 +483,13 @@ const mapDispatchToProps = {
   chooseConfirmOwnership: chooseConfirmOwnershipAction,
   setOwnershipMultisig: setOwnershipMultisigAction,
   setFrozen: setFrozenAction,
+  importLegacyPSBT: importPSBTAction,
+  setNetwork: setNetworkAction,
+  setAddress: setOutputAddressAction,
+  setAmount: setOutputAmountAction,
+  setFee: setFeeAction,
+  setUnsignedPSBT: setUnsignedPSBTAction,
+  finalizeOutputs: finalizeOutputsAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEntry);
