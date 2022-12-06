@@ -412,13 +412,6 @@ export function importLegacyPSBT(psbtText) {
       throw new Error("Could not parse PSBT.");
     }
 
-    if (psbt.txInputs.length === 0) {
-      throw new Error("PSBT does not contain any inputs.");
-    }
-    if (psbt.txOutputs.length === 0) {
-      throw new Error("PSBT does not contain any outputs.");
-    }
-
     // FIXME make sure all redeem scripts are the same -- can only support this kind of spend
 
     // FIXME fail if len(psbt.txOutputs) > 1

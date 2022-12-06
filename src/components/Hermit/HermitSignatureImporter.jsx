@@ -16,7 +16,7 @@ import {
   Button,
   FormHelperText,
 } from "@material-ui/core";
-import { Psbt, networks, reverseBuffer } from "bitcoinjs-lib";
+import { Psbt, networks } from "bitcoinjs-lib";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
@@ -31,6 +31,8 @@ class HermitSignatureImporter extends React.Component {
       displaySignatureRequest: false,
     };
   }
+
+  // from gh buidl-bitcoin/buidl-python/blob/d79e9808e8ca60975d315be41293cb40d968626d/buidl/helper.py#L350-L379
 
   childToPath = (child) => {
     let toReturn = `/${child}`;
@@ -53,10 +55,13 @@ class HermitSignatureImporter extends React.Component {
   };
 
   interaction = () => {
-    const { unsignedPsbt, inputs, outputs, fee } = this.props;
+    const { unsignedPsbt, inputs, outputs } = this.props;
     const psbt = Psbt.fromBase64(unsignedPsbt, { network: networks.testnet });
+    psbt.setVersion(1);
+
     const b32d = psbt.data.globalMap.unknownKeyVals[1];
-    const asdf = b32d.value
+
+    const derivation = b32d.value
       .slice(1)
       .toString("hex")
       .split("de")
@@ -64,21 +69,17 @@ class HermitSignatureImporter extends React.Component {
         Buffer.from(p.slice(0, 8), "hex"),
         this.parseBinaryPath(Buffer.from(p.slice(8), "hex")),
       ]);
-    console.log("after..");
-    console.log(asdf);
-    // i.multisig.redeem.pubkeys
 
     psbt.addInputs(
       Object.values(inputs).map((i) => ({
         hash: i.txid,
         index: i.index,
         nonWitnessUtxo: Buffer.from(i.transactionHex, "hex"),
-        sighashType: 1,
         redeemScript: i.multisig.redeem.output,
         bip32Derivation: i.multisig.redeem.pubkeys.map((pk, idx) => {
           return {
-            masterFingerprint: asdf[idx][0],
-            path: asdf[idx][1],
+            masterFingerprint: derivation[idx][0],
+            path: derivation[idx][1],
             pubkey: pk,
           };
         }),
@@ -91,12 +92,9 @@ class HermitSignatureImporter extends React.Component {
       }))
     );
 
-    const psbtToSign = psbt.toBase64();
-    console.log("post adding inputs/outputs");
-    console.log(psbtToSign);
-
     // if the unsignedPsbt doesn't have any inputs/outputs, that means we're in the ppk recovery case
     // we need to add in the inputs and outputs from the redux store and then use *that* as the unsigned psbt
+    const psbtToSign = psbt.toBase64();
 
     return SignMultisigTransaction({
       keystore: HERMIT,
@@ -269,7 +267,6 @@ function mapStateToProps(state) {
   return {
     inputs: { ...state.spend.transaction.inputs },
     outputs: { ...state.spend.transaction.outputs },
-    fee: state.spend.transaction.fee,
   };
 }
 
