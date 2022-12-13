@@ -16,7 +16,7 @@
   "homepage": "https://unchained-capital.github.io/caravan",
   "engineStrict": true,
   "engines": {
-    "node": "<15"
+    "node": ">=16"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
@@ -95,7 +95,6 @@
     "lodash": "^4.17.19",
     "material-table": "^1.57.2",
     "moment": "^2.24.0",
-    "node-sass": "^4.14.1",
     "notistack": "^0.9.11",
     "pako": "^1.0.10",
     "path": "^0.12.7",
@@ -118,6 +117,7 @@
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "sass": "^1.56.2",
     "unchained-bitcoin": "0.1.9",
     "unchained-wallets": "0.1.26"
   }
