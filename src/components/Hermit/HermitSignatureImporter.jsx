@@ -20,6 +20,9 @@ import { Psbt, networks } from "bitcoinjs-lib";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
+import {
+  setUnsignedPSBT as setUnsignedPSBTAction,
+} from "../../actions/transactionActions";
 
 class HermitSignatureImporter extends React.Component {
   constructor(props) {
@@ -55,46 +58,53 @@ class HermitSignatureImporter extends React.Component {
   };
 
   interaction = () => {
-    const { unsignedPsbt, inputs, outputs } = this.props;
+    const { unsignedPsbt, inputs, outputs, setUnsignedPSBT } = this.props;
+    let psbtToSign;
     const psbt = Psbt.fromBase64(unsignedPsbt, { network: networks.testnet });
-    psbt.setVersion(1);
 
-    const b32d = psbt.data.globalMap.unknownKeyVals[1];
+    if (psbt.data.inputs.length === 0) {
+      psbt.setVersion(1);
 
-    const derivation = b32d.value
-      .slice(1)
-      .toString("hex")
-      .split("de")
-      .map((p) => [
-        Buffer.from(p.slice(0, 8), "hex"),
-        this.parseBinaryPath(Buffer.from(p.slice(8), "hex")),
-      ]);
+      const b32d = psbt.data.globalMap.unknownKeyVals[1];
 
-    psbt.addInputs(
-      Object.values(inputs).map((i) => ({
-        hash: i.txid,
-        index: i.index,
-        nonWitnessUtxo: Buffer.from(i.transactionHex, "hex"),
-        redeemScript: i.multisig.redeem.output,
-        bip32Derivation: i.multisig.redeem.pubkeys.map((pk, idx) => {
-          return {
-            masterFingerprint: derivation[idx][0],
-            path: derivation[idx][1],
-            pubkey: pk,
-          };
-        }),
-      }))
-    );
-    psbt.addOutputs(
-      Object.values(outputs).map((o) => ({
-        address: o.address,
-        value: o.amountSats.toNumber(),
-      }))
-    );
+      const derivation = b32d.value
+        .slice(1)
+        .toString("hex")
+        .split("de")
+        .map((p) => [
+          Buffer.from(p.slice(0, 8), "hex"),
+          this.parseBinaryPath(Buffer.from(p.slice(8), "hex")),
+        ]);
 
-    // if the unsignedPsbt doesn't have any inputs/outputs, that means we're in the ppk recovery case
-    // we need to add in the inputs and outputs from the redux store and then use *that* as the unsigned psbt
-    const psbtToSign = psbt.toBase64();
+      psbt.addInputs(
+        Object.values(inputs).map((i) => ({
+          hash: i.txid,
+          index: i.index,
+          nonWitnessUtxo: Buffer.from(i.transactionHex, "hex"),
+          redeemScript: i.multisig.redeem.output,
+          bip32Derivation: i.multisig.redeem.pubkeys.map((pk, idx) => {
+            return {
+              masterFingerprint: derivation[idx][0],
+              path: derivation[idx][1],
+              pubkey: pk,
+            };
+          }),
+        }))
+      );
+      psbt.addOutputs(
+        Object.values(outputs).map((o) => ({
+          address: o.address,
+          value: o.amountSats.toNumber(),
+        }))
+      );
+
+      // if the unsignedPsbt doesn't have any inputs/outputs, that means we're in the ppk recovery case
+      // we need to add in the inputs and outputs from the redux store and then use *that* as the unsigned psbt
+      psbtToSign = psbt.toBase64();
+      setUnsignedPSBT(psbtToSign);
+    } else {
+      psbtToSign = unsignedPsbt;
+    }
 
     return SignMultisigTransaction({
       keystore: HERMIT,
@@ -206,17 +216,31 @@ class HermitSignatureImporter extends React.Component {
   };
 
   import = (signature) => {
-    const { validateAndSetSignature, enableChangeMethod } = this.props;
+    const {
+      validateAndSetSignature,
+      enableChangeMethod,
+      unsignedPsbtFromState,
+    } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
     const signedPsbt = this.interaction().parse(signature);
-    const signatureArray = parseSignatureArrayFromPSBT(signedPsbt);
+    // Signed PSBT from Hermit may be an extremely stripped down version
+    const unsignedPsbtStateObject = Psbt.fromBase64(unsignedPsbtFromState, {
+      network: networks.testnet,
+    });
+    const reconstitutedPsbt = unsignedPsbtStateObject.combine(
+      Psbt.fromBase64(signedPsbt, { network: networks.testnet })
+    );
+
+    const signatureArray = parseSignatureArrayFromPSBT(
+      reconstitutedPsbt.toBase64()
+    );
     validateAndSetSignature(
       signatureArray,
       (signatureError) => {
         this.setState({ signatureError });
       },
-      signedPsbt
+      reconstitutedPsbt
     );
   };
 
@@ -267,7 +291,15 @@ function mapStateToProps(state) {
   return {
     inputs: { ...state.spend.transaction.inputs },
     outputs: { ...state.spend.transaction.outputs },
+    unsignedPsbtFromState: state.spend.transaction.unsignedPSBT,
   };
 }
 
-export default connect(mapStateToProps)(HermitSignatureImporter);
+const mapDispatchToProps = {
+  setUnsignedPSBT: setUnsignedPSBTAction,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HermitSignatureImporter);

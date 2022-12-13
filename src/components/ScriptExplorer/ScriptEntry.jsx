@@ -352,7 +352,7 @@ class ScriptEntry extends React.Component {
           //   // setNetwork(psbt.opts.network); -- BUGFIX needed on buidl psbt builder
           //   // setAddress(1, output.address);
           //   setAmount(1, satoshisToBitcoins(output.value).toFixed(8));
-          //   setAddress(1, "2N2eNFj4PR9as3VH68VtVxJSS1QPT2xQMrr");
+          setAddress(1, "2MuAeixpNw4xWMKqvhz8YEVEodWXRxCYsXG");
           //   const inputsTotalSats = new BigNumber(10000000);
           //   const feeSats = inputsTotalSats - outputsTotalSats;
           //   const fee = satoshisToBitcoins(feeSats).toFixed(8).toString();
