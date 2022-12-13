@@ -92,7 +92,7 @@
     "fs-extra": "^9.0.0",
     "hi-base32": "^0.5.0",
     "history": "^5.0.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "material-table": "^1.57.2",
     "moment": "^2.24.0",
     "notistack": "^0.9.11",
