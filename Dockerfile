@@ -1,4 +1,4 @@
-FROM node:14-buster-slim AS builder
+FROM node:16-buster-slim AS builder
 
 # Install all OS dependencies
 ENV DEBIAN_FRONTEND noninteractive
