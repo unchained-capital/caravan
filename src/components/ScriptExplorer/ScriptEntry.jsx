@@ -12,7 +12,6 @@ import {
   // eslint-disable-next-line no-unused-vars
   MAINNET,
   TESTNET,
-  satoshisToBitcoins,
   toHexString,
 } from "unchained-bitcoin";
 import {
@@ -289,16 +288,7 @@ class ScriptEntry extends React.Component {
   };
 
   handleImportPSBT = ({ target }) => {
-    const {
-      importLegacyPSBT,
-      setNetwork,
-      setAddress,
-      setAmount,
-      setFee,
-      finalizeOutputs,
-      setUnsignedPSBT,
-      setPathToSign,
-    } = this.props;
+    const { importLegacyPSBT, setNetwork, setUnsignedPSBT } = this.props;
 
     this.setPSBTToggleAndError(true, "");
 
@@ -320,11 +310,6 @@ class ScriptEntry extends React.Component {
 
           setUnsignedPSBT(psbt.toBase64());
           if (psbt?.data?.inputs.length > 0) {
-            const { bip32Derivation } = psbt.data.inputs[0];
-            const hermitBip32Path = bip32Derivation.find(
-              (el) => !el.path.includes("0/0/0")
-            ).path;
-            setPathToSign(hermitBip32Path);
             const redeemScriptHex = psbt.data.inputs[0].redeemScript.toString(
               "hex"
             );
@@ -352,7 +337,7 @@ class ScriptEntry extends React.Component {
           //   // setNetwork(psbt.opts.network); -- BUGFIX needed on buidl psbt builder
           //   // setAddress(1, output.address);
           //   setAmount(1, satoshisToBitcoins(output.value).toFixed(8));
-          setAddress(1, "2MuAeixpNw4xWMKqvhz8YEVEodWXRxCYsXG");
+          // setAddress(1, "2MuAeixpNw4xWMKqvhz8YEVEodWXRxCYsXG");
           //   const inputsTotalSats = new BigNumber(10000000);
           //   const feeSats = inputsTotalSats - outputsTotalSats;
           //   const fee = satoshisToBitcoins(feeSats).toFixed(8).toString();
@@ -455,13 +440,8 @@ ScriptEntry.propTypes = {
   setOwnershipMultisig: PropTypes.func.isRequired,
   setRequiredSigners: PropTypes.func.isRequired,
   setTotalSigners: PropTypes.func.isRequired,
-  setAddress: PropTypes.func.isRequired,
-  setAmount: PropTypes.func.isRequired,
-  setFee: PropTypes.func.isRequired,
-  finalizeOutputs: PropTypes.func.isRequired,
   importLegacyPSBT: PropTypes.func.isRequired,
   setUnsignedPSBT: PropTypes.func.isRequired,
-  setPathToSign: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {

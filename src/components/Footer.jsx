@@ -28,7 +28,7 @@ const Footer = () => (
         <p>
           Copyright&nbsp;
           {new Date(Date.now()).getFullYear()} by Unchained Capital and released
-          under an MIT license.
+          under an MIT license. 🛖
         </p>
       </Grid>
 

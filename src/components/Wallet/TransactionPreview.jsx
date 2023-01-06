@@ -214,15 +214,17 @@ class TransactionPreview extends React.Component {
                 Sign Transaction
               </Button>
             </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => this.handleDownloadPSBT(unsignedPSBT)}
-              >
-                Download Unsigned PSBT
-              </Button>
-            </Grid>
+            {unsignedPSBT && (
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => this.handleDownloadPSBT(unsignedPSBT)}
+                >
+                  Download Unsigned PSBT
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Box>
       </Box>

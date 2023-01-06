@@ -2,7 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
-import { parseSignatureArrayFromPSBT } from "unchained-bitcoin";
+import {
+  networkData,
+  parseSignatureArrayFromPSBT,
+  unsignedMultisigPSBT,
+} from "unchained-bitcoin";
 import {
   HERMIT,
   PENDING,
@@ -20,9 +24,7 @@ import { Psbt, networks } from "bitcoinjs-lib";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
-import {
-  setUnsignedPSBT as setUnsignedPSBTAction,
-} from "../../actions/transactionActions";
+import { setUnsignedPSBT as setUnsignedPSBTAction } from "../../actions/transactionActions";
 
 class HermitSignatureImporter extends React.Component {
   constructor(props) {
@@ -30,7 +32,7 @@ class HermitSignatureImporter extends React.Component {
     this.state = {
       bip32PathError: "",
       signatureError: "",
-      status: this.interaction(true).isSupported() ? PENDING : UNSUPPORTED,
+      status: this.interaction().isSupported() ? PENDING : UNSUPPORTED,
       displaySignatureRequest: false,
     };
   }
@@ -38,10 +40,11 @@ class HermitSignatureImporter extends React.Component {
   // from gh buidl-bitcoin/buidl-python/blob/d79e9808e8ca60975d315be41293cb40d968626d/buidl/helper.py#L350-L379
 
   childToPath = (child) => {
+    let hardenedPath = child;
     let toReturn = `/${child}`;
-    if (child >= 0x80000000) {
-      child -= 0x80000000;
-      toReturn = `/${child}'`;
+    if (hardenedPath >= 0x80000000) {
+      hardenedPath -= 0x80000000;
+      toReturn = `/${hardenedPath}'`;
     }
     return toReturn;
   };
@@ -50,18 +53,80 @@ class HermitSignatureImporter extends React.Component {
     let path = "m";
     let pathData = Buffer.from(binPath);
     while (pathData.length > 0) {
-      const child_num = Buffer.from(pathData.slice(0, 4)).readUIntLE(0, 4);
-      path += this.childToPath(child_num);
+      const childNum = Buffer.from(pathData.slice(0, 4)).readUIntLE(0, 4);
+      path += this.childToPath(childNum);
       pathData = pathData.subarray(4);
     }
     return path;
   };
 
   interaction = () => {
-    const { unsignedPsbt, inputs, outputs, setUnsignedPSBT } = this.props;
+    const {
+      // signatureImporter,
+      unsignedPsbt,
+      network,
+      inputs,
+      outputs,
+      setUnsignedPSBT,
+      unsignedPsbtFromState,
+      // extendedPublicKeys,
+    } = this.props;
     let psbtToSign;
-    const psbt = Psbt.fromBase64(unsignedPsbt, { network: networks.testnet });
+    // We need to be flexible here because this signature importer is used in multiple places
+    // And the user *could* have uploaded their own PSBT, and that uploaded PSBT *could* also
+    // be a scaffolded PSBT without any inputs.
+    //
+    if (unsignedPsbtFromState === "" && inputs.length > 0) {
+      // const bip32Paths = inputs.map(
+      //   (input) => `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`
+      // );
+      // const temporaryInteraction = SignMultisigTransaction({
+      //   keystore: COLDCARD,
+      //   network,
+      //   inputs,
+      //   outputs,
+      //   bip32Paths,
+      // });
 
+      psbtToSign = unsignedMultisigPSBT(
+        network,
+        inputs,
+        outputs,
+        true
+      ).toBase64();
+      // psbtToSign = temporaryInteraction.request().toBase64();
+      // console.log(Object.values(extendedPublicKeys));
+      // const globalXpubs = Object.values(extendedPublicKeys).map((epk) => {
+      //   return {
+      //     masterFingerprint: Buffer.from(epk.rootXfp, "hex"),
+      //     extendedPubKey: Buffer.from(
+      //       base58check.decode(epk.extendedPublicKey)
+      //     ),
+      //     path: epk.bip32Path,
+      //   };
+      // });
+      // console.log(globalXpubs);
+      //
+      // // psbtToSign.updateGlobal({globalXpub: [{masterFingerprint, extendedPubkey, path]});
+      // psbtToSign.updateGlobal({ globalXpub: globalXpubs });
+
+      setUnsignedPSBT(psbtToSign);
+
+      return SignMultisigTransaction({
+        keystore: HERMIT,
+        psbt: psbtToSign,
+      });
+    }
+
+    const psbt = Psbt.fromBase64(
+      unsignedPsbt === "" ? unsignedPsbtFromState : unsignedPsbt,
+      {
+        network: networkData(network),
+      }
+    );
+
+    // if the unsignedPsbt doesn't have any inputs/outputs, that means we're in the ppk recovery case
+    // so we need to add in the inputs and outputs from the redux store and then use *that* as the unsigned psbt
     if (psbt.data.inputs.length === 0) {
       psbt.setVersion(1);
 
@@ -98,12 +163,10 @@ class HermitSignatureImporter extends React.Component {
         }))
       );
 
-      // if the unsignedPsbt doesn't have any inputs/outputs, that means we're in the ppk recovery case
-      // we need to add in the inputs and outputs from the redux store and then use *that* as the unsigned psbt
       psbtToSign = psbt.toBase64();
       setUnsignedPSBT(psbtToSign);
     } else {
-      psbtToSign = unsignedPsbt;
+      psbtToSign = unsignedPsbt === "" ? unsignedPsbtFromState : unsignedPsbt;
     }
 
     return SignMultisigTransaction({
@@ -125,6 +188,7 @@ class HermitSignatureImporter extends React.Component {
       signatureImporter,
       disableChangeMethod,
       resetBIP32Path,
+      // isWallet,
     } = this.props;
     const {
       bip32PathError,
@@ -173,7 +237,6 @@ class HermitSignatureImporter extends React.Component {
         <FormHelperText>
           Use the default value if you don&rsquo;t understand BIP32 paths.
         </FormHelperText>
-
         <Box mt={2}>
           {displaySignatureRequest ? (
             <Grid container justify="center">
@@ -240,13 +303,12 @@ class HermitSignatureImporter extends React.Component {
       (signatureError) => {
         this.setState({ signatureError });
       },
-      reconstitutedPsbt
+      reconstitutedPsbt.toBase64()
     );
   };
 
   clear = () => {
-    const { resetBIP32Path, enableChangeMethod } = this.props;
-    resetBIP32Path();
+    const { enableChangeMethod } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
   };
@@ -279,18 +341,29 @@ HermitSignatureImporter.propTypes = {
     bip32Path: PropTypes.string,
   }).isRequired,
   resetBIP32Path: PropTypes.func.isRequired,
+  setUnsignedPSBT: PropTypes.func.isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
   validateAndSetBIP32Path: PropTypes.func.isRequired,
   validateAndSetSignature: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
-  unsignedPsbt: PropTypes.string.isRequired,
+  unsignedPsbt: PropTypes.string,
+  unsignedPsbtFromState: PropTypes.string.isRequired,
+  network: PropTypes.string,
+  inputs: PropTypes.arrayOf(PropTypes.shape({})),
+  outputs: PropTypes.arrayOf(PropTypes.shape({})),
+};
+
+HermitSignatureImporter.defaultProps = {
+  unsignedPsbt: "",
+  network: "",
+  inputs: [],
+  outputs: [],
 };
 
 function mapStateToProps(state) {
   return {
-    inputs: { ...state.spend.transaction.inputs },
-    outputs: { ...state.spend.transaction.outputs },
+    ...state.spend.transaction,
     unsignedPsbtFromState: state.spend.transaction.unsignedPSBT,
   };
 }
