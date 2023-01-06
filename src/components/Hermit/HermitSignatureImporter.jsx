@@ -62,14 +62,12 @@ class HermitSignatureImporter extends React.Component {
 
   interaction = () => {
     const {
-      // signatureImporter,
       unsignedPsbt,
       network,
       inputs,
       outputs,
       setUnsignedPSBT,
       unsignedPsbtFromState,
-      // extendedPublicKeys,
     } = this.props;
     let psbtToSign;
     // We need to be flexible here because this signature importer is used in multiple places
@@ -77,38 +75,12 @@ class HermitSignatureImporter extends React.Component {
     // be a scaffolded PSBT without any inputs.
     //
     if (unsignedPsbtFromState === "" && inputs.length > 0) {
-      // const bip32Paths = inputs.map(
-      //   (input) => `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`
-      // );
-      // const temporaryInteraction = SignMultisigTransaction({
-      //   keystore: COLDCARD,
-      //   network,
-      //   inputs,
-      //   outputs,
-      //   bip32Paths,
-      // });
-
       psbtToSign = unsignedMultisigPSBT(
         network,
         inputs,
         outputs,
         true
       ).toBase64();
-      // psbtToSign = temporaryInteraction.request().toBase64();
-      // console.log(Object.values(extendedPublicKeys));
-      // const globalXpubs = Object.values(extendedPublicKeys).map((epk) => {
-      //   return {
-      //     masterFingerprint: Buffer.from(epk.rootXfp, "hex"),
-      //     extendedPubKey: Buffer.from(
-      //       base58check.decode(epk.extendedPublicKey)
-      //     ),
-      //     path: epk.bip32Path,
-      //   };
-      // });
-      // console.log(globalXpubs);
-      //
-      // // psbtToSign.updateGlobal({globalXpub: [{masterFingerprint, extendedPubkey, path]});
-      // psbtToSign.updateGlobal({ globalXpub: globalXpubs });
 
       setUnsignedPSBT(psbtToSign);
 
@@ -188,7 +160,6 @@ class HermitSignatureImporter extends React.Component {
       signatureImporter,
       disableChangeMethod,
       resetBIP32Path,
-      // isWallet,
     } = this.props;
     const {
       bip32PathError,
