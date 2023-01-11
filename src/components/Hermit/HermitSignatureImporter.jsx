@@ -20,7 +20,7 @@ import {
   Button,
   FormHelperText,
 } from "@material-ui/core";
-import { Psbt, networks } from "bitcoinjs-lib";
+import { Psbt } from "bitcoinjs-lib";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
@@ -254,16 +254,17 @@ class HermitSignatureImporter extends React.Component {
       validateAndSetSignature,
       enableChangeMethod,
       unsignedPsbtFromState,
+      network,
     } = this.props;
     this.setState({ signatureError: "" });
     enableChangeMethod();
     const signedPsbt = this.interaction().parse(signature);
     // Signed PSBT from Hermit may be an extremely stripped down version
     const unsignedPsbtStateObject = Psbt.fromBase64(unsignedPsbtFromState, {
-      network: networks.testnet,
+      network: networkData(network),
     });
     const reconstitutedPsbt = unsignedPsbtStateObject.combine(
-      Psbt.fromBase64(signedPsbt, { network: networks.testnet })
+      Psbt.fromBase64(signedPsbt, { network: networkData(network) })
     );
 
     const signatureArray = parseSignatureArrayFromPSBT(
