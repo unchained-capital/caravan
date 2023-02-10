@@ -50,7 +50,7 @@ class ExportExtendedPublicKeyTest extends Test {
     if (this.params.network === MAINNET || this.params.keystore === TREZOR)
       return { xpub, rootFingerprint };
     if (this.params.keystore === LEDGER || this.params.keystore === COLDCARD)
-      return { xpub: tpub, rootFingerprint };
+      return { xpub: tpub || xpub, rootFingerprint };
     return { tpub, rootFingerprint };
   }
 }
@@ -75,22 +75,22 @@ const extendedPublicKeyTests = (keystore) => {
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'",
+          bip32Path: "m/45'/1'/0'",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'/0",
+          bip32Path: "m/45'/1/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'/0/0",
+          bip32Path: "m/45'/1'/0'/0/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/4'/99'/2147483647/3/1",
+          bip32Path: "m/48'/1'/0'/2'/0/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
@@ -118,22 +118,22 @@ const extendedPublicKeyTests = (keystore) => {
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'",
+          bip32Path: "m/45'/1'/0'",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'/0",
+          bip32Path: "m/45'/1'/0'/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'/0/0",
+          bip32Path: "m/45'/1'/0'/0/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/4'/99'/2147483647/3/1",
+          bip32Path: "m/45'/1'/4'/99'/2147483647/3/1",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
@@ -161,22 +161,22 @@ const extendedPublicKeyTests = (keystore) => {
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'",
+          bip32Path: "m/45'/1'/0'",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'/0",
+          bip32Path: "m/45'/1'/0'/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/0'/0/0",
+          bip32Path: "m/45'/1'/0'/0/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
           network: TESTNET,
-          bip32Path: "m/45'/0'/4'/99'/2147483647/3/1",
+          bip32Path: "m/45'/1'/4'/99'/2147483647/3/1",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
