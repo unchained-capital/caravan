@@ -83,7 +83,7 @@ class RegisterWalletPolicyTest extends Test {
       keystore: this.params.keystore,
       braid: Braid.fromData(this.params.braid),
       // probably shouldn't be necessary but it's here for wallet registration
-      name: this.params.description,
+      name: this.params.walletName,
       // only used with ledgers, version 2.1 and above
       policyHmac: this.params.policyHmac,
       verify: true,
