@@ -50,8 +50,8 @@
     "standard-version": "^9.0.0"
   },
   "scripts": {
-    "build": "npm run check && react-app-rewired build",
-    "build:ci": "npm run ci && react-app-rewired build",
+    "build": "npm run check && REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired build",
+    "build:ci": "npm run ci && REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired build",
     "check": "npm run lint && npm run test:ci",
     "ci": "npm run lint && npm run commitlint-travis && npm run test:ci",
     "commit": "./node_modules/cz-customizable/standalone.js",
@@ -62,8 +62,8 @@
     "commitlint-travis": "commitlint-travis",
     "predeploy": "npm run build",
     "release": "standard-version",
-    "start": "HTTPS=true react-app-rewired start",
-    "test": "react-app-rewired test",
+    "start": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` HTTPS=true react-app-rewired start",
+    "test": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired test",
     "test:ci": "CI=true react-app-rewired test --coverage"
   },
   "husky": {
