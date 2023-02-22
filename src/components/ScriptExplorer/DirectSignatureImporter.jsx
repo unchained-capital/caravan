@@ -37,7 +37,7 @@ class DirectSignatureImporter extends React.Component {
   };
 
   interaction = () => {
-    const { signatureImporter, network, inputs, outputs } = this.props;
+    const { signatureImporter, network, inputs, outputs, braid } = this.props;
     const keystore = signatureImporter.method;
     const bip32Paths = inputs.map((input) => {
       if (typeof input.bip32Path === "undefined")
@@ -50,6 +50,8 @@ class DirectSignatureImporter extends React.Component {
       inputs,
       outputs,
       bip32Paths,
+      braid,
+      name: "caravan signer"
     });
   };
 
@@ -262,6 +264,7 @@ class DirectSignatureImporter extends React.Component {
 }
 
 DirectSignatureImporter.propTypes = {
+  braid: PropTypes.object.isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
   disableChangeMethod: PropTypes.func.isRequired,
   enableChangeMethod: PropTypes.func.isRequired,

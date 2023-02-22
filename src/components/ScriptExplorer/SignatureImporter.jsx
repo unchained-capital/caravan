@@ -7,6 +7,7 @@ import {
   multisigBIP32Path,
   multisigBIP32Root,
   validateBIP32Path,
+  Braid,
 } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
@@ -139,6 +140,9 @@ class SignatureImporter extends React.Component {
       fee,
       isWallet,
       extendedPublicKeyImporter,
+      extendedPublicKeys,
+      requiredSigners,
+      addressType,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -160,6 +164,15 @@ class SignatureImporter extends React.Component {
           validateAndSetSignature={this.validateAndSetSignature}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
+          braid={Braid.fromData({
+            addressType,
+            network,
+            requiredSigners,
+            extendedPublicKeys,
+            // this is really just for a wallet
+            // so this isn't really relevant
+            index: "0",
+          })}
         />
       );
     }
@@ -536,6 +549,13 @@ SignatureImporter.propTypes = {
   extendedPublicKeyImporter: PropTypes.shape({
     method: PropTypes.string,
   }),
+  extendedPublicKeys: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.string,
+      rootFingerprint: PropTypes.string,
+      base58String: PropTypes.string,
+    })
+  ).isRequired,
   fee: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
@@ -543,6 +563,7 @@ SignatureImporter.propTypes = {
   network: PropTypes.string.isRequired,
   number: PropTypes.number.isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  requiredSigners: PropTypes.number.isRequired,
   setName: PropTypes.func.isRequired,
   setMethod: PropTypes.func.isRequired,
   setBIP32Path: PropTypes.func.isRequired,
@@ -578,6 +599,14 @@ function mapStateToProps(state, ownProps) {
       txid: state.spend.transaction.txid,
     },
     ...state.spend.transaction,
+    requiredSigners: state.settings.requiredSigners,
+    extendedPublicKeys: Object.values(
+      state.quorum.extendedPublicKeyImporters
+    ).map((key) => ({
+      path: key.bip32Path === "Unknown" ? "m/45'/0/0/0" : key.bip32Path,
+      rootFingerprint: key.rootXfp,
+      base58String: key.extendedPublicKey,
+    })),
   };
 }
 
