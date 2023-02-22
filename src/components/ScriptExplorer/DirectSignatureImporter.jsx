@@ -54,11 +54,8 @@ class DirectSignatureImporter extends React.Component {
   };
 
   render = () => {
-    const {
-      signatureImporter,
-      extendedPublicKeyImporter,
-      isWallet,
-    } = this.props;
+    const { signatureImporter, extendedPublicKeyImporter, isWallet } =
+      this.props;
     const { status } = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
@@ -243,11 +240,8 @@ class DirectSignatureImporter extends React.Component {
   //
 
   sign = async () => {
-    const {
-      disableChangeMethod,
-      validateAndSetSignature,
-      enableChangeMethod,
-    } = this.props;
+    const { disableChangeMethod, validateAndSetSignature, enableChangeMethod } =
+      this.props;
     disableChangeMethod();
     this.setState({ signatureError: "", status: ACTIVE });
 

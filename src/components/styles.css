@@ -1,9 +1,9 @@
 .no-events {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .copyable code {
-    overflow-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .MuiMenu-list a {

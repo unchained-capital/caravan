@@ -56,7 +56,8 @@ class ExtendedPublicKeySelector extends React.Component {
 
   renderSignatureImporter = () => {
     const { number } = this.props;
-    const extendedPublicKeyImporter = this.getAssociatedExtendedPublicKeyImporter();
+    const extendedPublicKeyImporter =
+      this.getAssociatedExtendedPublicKeyImporter();
     return (
       <Box mt={2}>
         <SignatureImporter
@@ -85,7 +86,8 @@ class ExtendedPublicKeySelector extends React.Component {
     const { selection } = this.state;
     const labelId = `keySelector${number}`;
 
-    const extendedPublicKeyImporter = this.getAssociatedExtendedPublicKeyImporter();
+    const extendedPublicKeyImporter =
+      this.getAssociatedExtendedPublicKeyImporter();
     if (extendedPublicKeyImporter !== null && number > 0) {
       const signatureImporter = signatureImporters[number];
       if (signatureImporter.signature.length > 0) return "";
@@ -189,12 +191,8 @@ class ExtendedPublicKeySelector extends React.Component {
     this.setState({ selection: value });
     if (value === "") return;
 
-    const {
-      extendedPublicKeyImporters,
-      setMethod,
-      number,
-      setSigningKey,
-    } = this.props;
+    const { extendedPublicKeyImporters, setMethod, number, setSigningKey } =
+      this.props;
     const extendedPublicKeyImporter = extendedPublicKeyImporters[value];
     const importMethod = extendedPublicKeyImporter.method;
     if (importMethod === "text") {

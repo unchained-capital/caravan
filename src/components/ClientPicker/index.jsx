@@ -107,13 +107,8 @@ class ClientPicker extends React.Component {
   };
 
   render() {
-    const {
-      client,
-      urlError,
-      usernameError,
-      passwordError,
-      privateNotes,
-    } = this.props;
+    const { client, urlError, usernameError, passwordError, privateNotes } =
+      this.props;
     const { connectSuccess, connectError } = this.state;
     return (
       <Card>

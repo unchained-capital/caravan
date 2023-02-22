@@ -252,11 +252,8 @@ class ScriptEntry extends React.Component {
   //
 
   confirmOwnership = () => {
-    const {
-      chooseConfirmOwnership,
-      setOwnershipMultisig,
-      setFrozen,
-    } = this.props;
+    const { chooseConfirmOwnership, setOwnershipMultisig, setFrozen } =
+      this.props;
     setOwnershipMultisig(this.generateMultisig());
     chooseConfirmOwnership();
     setFrozen(true);
