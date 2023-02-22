@@ -81,12 +81,8 @@ class NodeSet extends React.Component {
 
   getNodeSet = () => {
     const { changeNodes, depositNodes } = this.props;
-    const {
-      filterIncludeSpent,
-      filterIncludeZeroBalance,
-      orderBy,
-      orderDir,
-    } = this.state;
+    const { filterIncludeSpent, filterIncludeZeroBalance, orderBy, orderDir } =
+      this.state;
     const nodes = Object.values(depositNodes)
       .concat(Object.values(changeNodes))
       .reduce((result, node) => {

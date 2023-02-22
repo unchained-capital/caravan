@@ -33,12 +33,8 @@ class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
 
   render = () => {
     const { extendedPublicKeyImporter } = this.props;
-    const {
-      error,
-      extendedPublicKey,
-      extendedPublicKeyError,
-      bip32PathError,
-    } = this.state;
+    const { error, extendedPublicKey, extendedPublicKeyError, bip32PathError } =
+      this.state;
     return (
       <div>
         <Box mt={2}>

@@ -119,14 +119,8 @@ class OutputEntry extends React.Component {
   //
 
   isNotBalanceable = () => {
-    const {
-      number,
-      outputs,
-      feeError,
-      amountError,
-      amount,
-      inputsTotalSats,
-    } = this.props;
+    const { number, outputs, feeError, amountError, amount, inputsTotalSats } =
+      this.props;
     if (feeError !== "") {
       return true;
     }

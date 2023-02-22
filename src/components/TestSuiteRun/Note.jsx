@@ -62,8 +62,8 @@ const mapStateToTestRunNoteProps = (state) => {
   return {
     mode: TEST_RUN_MODE,
     testRunIndex: state.testSuiteRun.currentTestRunIndex,
-    note:
-      state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex].note,
+    note: state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex]
+      .note,
   };
 };
 
