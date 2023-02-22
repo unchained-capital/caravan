@@ -6,13 +6,23 @@ import {
   unsignedMultisigPSBT,
   unsignedTransactionObjectFromPSBT,
   TEST_FIXTURES,
+  Braid,
 } from "unchained-bitcoin";
-import { COLDCARD, HERMIT, SignMultisigTransaction } from "unchained-wallets";
+import {
+  COLDCARD,
+  HERMIT,
+  LEDGER,
+  SignMultisigTransaction,
+} from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
 import { externalLink } from "../utils";
 import Test from "./Test";
 
 class SignMultisigTransactionTest extends Test {
+  name() {
+    return `Sign ${this.params.network} transaction w/ ${this.params.outputs.length} outputs and ${this.params.inputs.length} inputs`;
+  }
+
   // eslint-disable-next-line class-methods-use-this
   postprocess(result) {
     return result.signatures ? result.signatures : result;
@@ -139,6 +149,10 @@ class SignMultisigTransactionTest extends Test {
       inputs: this.params.inputs,
       outputs: this.params.outputs,
       bip32Paths: this.params.bip32Paths,
+      braid: Braid.fromData(this.params.braidDetails),
+      policyHmac: this.params.policyHmac,
+      name: this.params.walletName,
+      psbt: this.params.psbt,
     });
   }
 
@@ -152,7 +166,6 @@ class SignMultisigTransactionTest extends Test {
 
 export function signingTests(keystore) {
   const transactions = [];
-
   switch (keystore) {
     case HERMIT:
       TEST_FIXTURES.transactions.forEach((fixture) => {
@@ -166,13 +179,24 @@ export function signingTests(keystore) {
         }
       });
       return transactions;
+    case LEDGER:
+      return TEST_FIXTURES.transactions
+        .filter((fixture) => fixture.policyHmac && fixture.braidDetails)
+        .map(
+          (fixture) =>
+            new SignMultisigTransactionTest({
+              ...fixture,
+              ...{ keystore },
+            })
+        );
     default:
-      return TEST_FIXTURES.transactions.map((fixture) => {
-        return new SignMultisigTransactionTest({
-          ...fixture,
-          ...{ keystore },
-        });
-      });
+      return TEST_FIXTURES.transactions.map(
+        (fixture) =>
+          new SignMultisigTransactionTest({
+            ...fixture,
+            ...{ keystore },
+          })
+      );
   }
 }
 
