@@ -1,7 +1,10 @@
 import React from "react";
 
-import { TEST_FIXTURES, Braid } from "unchained-bitcoin";
-import { RegisterWalletPolicy } from "unchained-wallets";
+import { TEST_FIXTURES } from "unchained-bitcoin";
+import {
+  RegisterWalletPolicy,
+  braidDetailsToWalletConfig,
+} from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
 
 import Test from "./Test";
@@ -16,6 +19,10 @@ class RegisterWalletPolicyTest extends Test {
     return result;
   }
 
+  expected() {
+    return this.params.policyHmac;
+  }
+
   description() {
     return (
       <Box>
@@ -28,7 +35,7 @@ class RegisterWalletPolicyTest extends Test {
           <TableBody>
             <TableRow>
               <TableCell>Name:</TableCell>
-              <TableCell colSpan={5}>{this.params.description}</TableCell>
+              <TableCell colSpan={5}>{this.params.walletConfig.name}</TableCell>
             </TableRow>
 
             <TableRow>
@@ -45,7 +52,7 @@ class RegisterWalletPolicyTest extends Test {
                 Registering Quorum
               </TableCell>
             </TableRow>
-            {this.params.braid.extendedPublicKeys.map((key, index) => (
+            {this.params.braidDetails.extendedPublicKeys.map((key, index) => (
               <React.Fragment key={key.rootFingerprint}>
                 <TableRow>
                   <TableCell colSpan={6} style={{ textAlign: "center" }}>
@@ -81,12 +88,10 @@ class RegisterWalletPolicyTest extends Test {
   interaction() {
     return RegisterWalletPolicy({
       keystore: this.params.keystore,
-      braid: Braid.fromData(this.params.braid),
-      // probably shouldn't be necessary but it's here for wallet registration
-      name: this.params.walletName,
       // only used with ledgers, version 2.1 and above
       policyHmac: this.params.policyHmac,
       verify: true,
+      ...this.params.walletConfig,
     });
   }
 }
@@ -99,9 +104,7 @@ const registrationTests = (keystore) =>
         new RegisterWalletPolicyTest({
           ...fixture,
           ...{ keystore },
-          braid: fixture.braidDetails,
-          verify: true,
-          expected: fixture.policyHmac,
+          walletConfig: braidDetailsToWalletConfig(fixture.braidDetails)
         })
     );
 
