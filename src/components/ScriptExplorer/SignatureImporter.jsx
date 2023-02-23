@@ -7,7 +7,6 @@ import {
   multisigBIP32Path,
   multisigBIP32Root,
   validateBIP32Path,
-  Braid,
 } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
@@ -143,6 +142,7 @@ class SignatureImporter extends React.Component {
       extendedPublicKeys,
       requiredSigners,
       addressType,
+      walletName
     } = this.props;
     const { method } = signatureImporter;
 
@@ -164,15 +164,13 @@ class SignatureImporter extends React.Component {
           validateAndSetSignature={this.validateAndSetSignature}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
-          braid={Braid.fromData({
+          walletConfig={{
             addressType,
             network,
             requiredSigners,
             extendedPublicKeys,
-            // this is really just for a wallet
-            // so this isn't really relevant
-            index: "0",
-          })}
+            name: walletName,
+          }}
         />
       );
     }
@@ -584,6 +582,7 @@ SignatureImporter.propTypes = {
   txid: PropTypes.string.isRequired,
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
+  walletName: PropTypes.string.isRequired,
 };
 
 SignatureImporter.defaultProps = {
@@ -597,15 +596,16 @@ function mapStateToProps(state, ownProps) {
       signatureImporter: state.spend.signatureImporters[ownProps.number],
       fee: state.spend.transaction.fee,
       txid: state.spend.transaction.txid,
+      walletName: state.wallet.common.walletName,
     },
     ...state.spend.transaction,
     requiredSigners: state.settings.requiredSigners,
     extendedPublicKeys: Object.values(
       state.quorum.extendedPublicKeyImporters
     ).map((key) => ({
-      path: key.bip32Path === "Unknown" ? "m/45'/0/0/0" : key.bip32Path,
-      rootFingerprint: key.rootXfp,
-      base58String: key.extendedPublicKey,
+      bip32Path: key.bip32Path === "Unknown" ? "m/45'/0/0/0" : key.bip32Path,
+      xfp: key.rootXfp,
+      xpub: key.extendedPublicKey,
     })),
   };
 }
