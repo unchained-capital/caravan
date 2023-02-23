@@ -142,7 +142,7 @@ class SignatureImporter extends React.Component {
       extendedPublicKeys,
       requiredSigners,
       addressType,
-      walletName
+      walletName,
     } = this.props;
     const { method } = signatureImporter;
 

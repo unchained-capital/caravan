@@ -104,7 +104,7 @@ const registrationTests = (keystore) =>
         new RegisterWalletPolicyTest({
           ...fixture,
           ...{ keystore },
-          walletConfig: braidDetailsToWalletConfig(fixture.braidDetails)
+          walletConfig: braidDetailsToWalletConfig(fixture.braidDetails),
         })
     );
 

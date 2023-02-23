@@ -37,7 +37,8 @@ class DirectSignatureImporter extends React.Component {
   };
 
   interaction = () => {
-    const { signatureImporter, network, inputs, outputs, walletConfig } = this.props;
+    const { signatureImporter, network, inputs, outputs, walletConfig } =
+      this.props;
     const keystore = signatureImporter.method;
     const bip32Paths = inputs.map((input) => {
       if (typeof input.bip32Path === "undefined")
