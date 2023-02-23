@@ -24,7 +24,7 @@ const Footer = () => (
         )}
       </Grid>
 
-      <Grid item sm={6}>
+      <Grid item sm={5}>
         <p>
           Copyright&nbsp;
           {new Date(Date.now()).getFullYear()} by Unchained Capital and released
@@ -32,8 +32,8 @@ const Footer = () => (
         </p>
       </Grid>
 
-      <Grid item sm={1} align="right">
-        <p> v{version} </p>
+      <Grid item sm={2} align="right">
+        <p>{`v${version} commit: ${process.env.REACT_APP_GIT_SHA}`}</p>
       </Grid>
     </Grid>
   </Box>

@@ -139,6 +139,10 @@ class SignatureImporter extends React.Component {
       fee,
       isWallet,
       extendedPublicKeyImporter,
+      extendedPublicKeys,
+      requiredSigners,
+      addressType,
+      walletName,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -160,6 +164,13 @@ class SignatureImporter extends React.Component {
           validateAndSetSignature={this.validateAndSetSignature}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
+          walletConfig={{
+            addressType,
+            network,
+            requiredSigners,
+            extendedPublicKeys,
+            name: walletName,
+          }}
         />
       );
     }
@@ -536,6 +547,13 @@ SignatureImporter.propTypes = {
   extendedPublicKeyImporter: PropTypes.shape({
     method: PropTypes.string,
   }),
+  extendedPublicKeys: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.string,
+      rootFingerprint: PropTypes.string,
+      base58String: PropTypes.string,
+    })
+  ).isRequired,
   fee: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
@@ -543,6 +561,7 @@ SignatureImporter.propTypes = {
   network: PropTypes.string.isRequired,
   number: PropTypes.number.isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  requiredSigners: PropTypes.number.isRequired,
   setName: PropTypes.func.isRequired,
   setMethod: PropTypes.func.isRequired,
   setBIP32Path: PropTypes.func.isRequired,
@@ -563,6 +582,7 @@ SignatureImporter.propTypes = {
   txid: PropTypes.string.isRequired,
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
+  walletName: PropTypes.string.isRequired,
 };
 
 SignatureImporter.defaultProps = {
@@ -576,8 +596,17 @@ function mapStateToProps(state, ownProps) {
       signatureImporter: state.spend.signatureImporters[ownProps.number],
       fee: state.spend.transaction.fee,
       txid: state.spend.transaction.txid,
+      walletName: state.wallet.common.walletName,
     },
     ...state.spend.transaction,
+    requiredSigners: state.settings.requiredSigners,
+    extendedPublicKeys: Object.values(
+      state.quorum.extendedPublicKeyImporters
+    ).map((key) => ({
+      bip32Path: key.bip32Path === "Unknown" ? "m/45'/0/0/0" : key.bip32Path,
+      xfp: key.rootXfp,
+      xpub: key.extendedPublicKey,
+    })),
   };
 }
 

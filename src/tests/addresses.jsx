@@ -1,7 +1,11 @@
 import React from "react";
 
 import { blockExplorerAddressURL, TEST_FIXTURES } from "unchained-bitcoin";
-import { ConfirmMultisigAddress } from "unchained-wallets";
+import {
+  ConfirmMultisigAddress,
+  LEDGER,
+  braidDetailsToWalletConfig,
+} from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
 import { externalLink } from "../utils";
 
@@ -55,24 +59,28 @@ class ConfirmMultisigAddressTest extends Test {
       bip32Path: this.params.bip32Path,
       multisig: this.params.multisig,
       addressIndex: this.params.addressIndex,
-      // probably shouldn't be necessary but it's here for wallet registration
-      name: this.params.walletName,
       // only used with ledgers, version 2.1 and above
       policyHmac: this.params.policyHmac,
+      ...braidDetailsToWalletConfig(
+        JSON.parse(this.params.multisig.braidDetails)
+      ),
     });
   }
 }
 
 const addressTests = (keystore) =>
-  TEST_FIXTURES.multisigs.map((fixture) => {
-    // todo, this should be explicit, coming from the fixture
-    const addressIndex = fixture?.bip32Path.split("/").slice(-1)[0];
-    return new ConfirmMultisigAddressTest({
-      ...fixture,
-      ...{ keystore },
-      addressIndex,
-      expected: fixture.address,
+  TEST_FIXTURES.multisigs
+    // if ledger only return if policyHmac exists
+    .filter((fixture) => (keystore === LEDGER ? fixture.policyHmac : true))
+    .map((fixture) => {
+      // todo, this should be explicit, coming from the fixture
+      const addressIndex = fixture?.bip32Path.split("/").slice(-1)[0];
+      return new ConfirmMultisigAddressTest({
+        ...fixture,
+        ...{ keystore },
+        addressIndex,
+        expected: fixture.address,
+      });
     });
-  });
 
 export default addressTests;

@@ -37,7 +37,8 @@ class DirectSignatureImporter extends React.Component {
   };
 
   interaction = () => {
-    const { signatureImporter, network, inputs, outputs } = this.props;
+    const { signatureImporter, network, inputs, outputs, walletConfig } =
+      this.props;
     const keystore = signatureImporter.method;
     const bip32Paths = inputs.map((input) => {
       if (typeof input.bip32Path === "undefined")
@@ -50,6 +51,7 @@ class DirectSignatureImporter extends React.Component {
       inputs,
       outputs,
       bip32Paths,
+      walletConfig,
     });
   };
 
@@ -280,6 +282,8 @@ DirectSignatureImporter.propTypes = {
     method: PropTypes.string,
   }).isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  walletConfig: PropTypes.object.isRequired,
   validateAndSetBIP32Path: PropTypes.func.isRequired,
   validateAndSetSignature: PropTypes.func.isRequired,
 };

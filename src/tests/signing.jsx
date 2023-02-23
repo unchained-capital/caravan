@@ -6,13 +6,13 @@ import {
   unsignedMultisigPSBT,
   unsignedTransactionObjectFromPSBT,
   TEST_FIXTURES,
-  Braid,
 } from "unchained-bitcoin";
 import {
   COLDCARD,
   HERMIT,
   LEDGER,
   SignMultisigTransaction,
+  braidDetailsToWalletConfig,
 } from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
 import { externalLink } from "../utils";
@@ -149,9 +149,8 @@ class SignMultisigTransactionTest extends Test {
       inputs: this.params.inputs,
       outputs: this.params.outputs,
       bip32Paths: this.params.bip32Paths,
-      braid: Braid.fromData(this.params.braidDetails),
+      walletConfig: braidDetailsToWalletConfig(this.params.braidDetails),
       policyHmac: this.params.policyHmac,
-      name: this.params.walletName,
       psbt: this.params.psbt,
     });
   }
