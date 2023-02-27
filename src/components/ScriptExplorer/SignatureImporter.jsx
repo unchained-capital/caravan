@@ -7,6 +7,7 @@ import {
   multisigBIP32Path,
   multisigBIP32Root,
   validateBIP32Path,
+  getMaskedDerivation,
 } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
@@ -603,10 +604,10 @@ function mapStateToProps(state, ownProps) {
     extendedPublicKeys: Object.values(
       state.quorum.extendedPublicKeyImporters
     ).map((key) => ({
-      bip32Path:
-        key.bip32Path.toLowerCase() === "unknown"
-          ? "m/45'/0/0/0"
-          : key.bip32Path,
+      bip32Path: getMaskedDerivation({
+        xpub: key.extendedPublicKey,
+        bip32Path: key.bip32Path,
+      }),
       xfp: key.rootXfp,
       xpub: key.extendedPublicKey,
     })),

@@ -52,6 +52,7 @@ class DirectSignatureImporter extends React.Component {
       outputs,
       bip32Paths,
       walletConfig,
+      returnSignatureArray: true,
     });
   };
 
