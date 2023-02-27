@@ -167,7 +167,7 @@ class SignatureImporter extends React.Component {
           walletConfig={{
             addressType,
             network,
-            requiredSigners,
+            quorum: { requiredSigners },
             extendedPublicKeys,
             name: walletName,
           }}
