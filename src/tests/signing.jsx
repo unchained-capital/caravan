@@ -152,6 +152,7 @@ class SignMultisigTransactionTest extends Test {
       walletConfig: braidDetailsToWalletConfig(this.params.braidDetails),
       policyHmac: this.params.policyHmac,
       psbt: this.params.psbt,
+      returnSignatureArray: this.params.returnSignatureArray,
     });
   }
 
@@ -186,6 +187,7 @@ export function signingTests(keystore) {
             new SignMultisigTransactionTest({
               ...fixture,
               ...{ keystore },
+              returnSignatureArray: true,
             })
         );
     default:
