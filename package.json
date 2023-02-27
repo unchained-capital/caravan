@@ -120,7 +120,7 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
-    "unchained-bitcoin": "^0.2.0",
-    "unchained-wallets": "^0.2.0"
+    "unchained-bitcoin": "^0.2.1",
+    "unchained-wallets": "^0.2.2 "
   }
 }
