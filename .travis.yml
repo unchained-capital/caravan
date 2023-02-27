@@ -9,14 +9,14 @@ notifications:
 jobs:
   include:
     - stage: "Tests"
-      node_js: 8
-      name: "Node JS 8"
-      script: npm run test
-    - node_js: 10
-      name: "Node JS 10"
-      script: npm run test
-    - node_js: 12
+      node_js: 12
       name: "Node JS 12"
+      script: npm run test
+    - node_js: 16
+      name: "Node JS 16"
+      script: npm run test
+    - node_js: 16
+      name: "Node JS 16"
       script: npm run ci
     - stage: build
       node_js: 16
