@@ -16,6 +16,11 @@ class ConfirmMultisigAddressTest extends Test {
     return `Confirm ${this.params.network} ${this.params.type} multisig address`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  postprocess(result) {
+    return result.address ? result.address : result;
+  }
+
   description() {
     return (
       <Box>

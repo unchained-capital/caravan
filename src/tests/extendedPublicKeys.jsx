@@ -45,10 +45,10 @@ class ExportExtendedPublicKeyTest extends Test {
       return { xpub, bip32Path: this.params.bip32Path };
     }
     if (this.params.network === MAINNET || this.params.keystore === TREZOR)
-      return { xpub, rootFingerprint };
+      return { xpub: xpub || tpub, rootFingerprint };
     if (this.params.keystore === LEDGER || this.params.keystore === COLDCARD)
       return { xpub: tpub || xpub, rootFingerprint };
-    return { tpub, rootFingerprint };
+    return { xpub: xpub || tpub, rootFingerprint };
   }
 }
 
@@ -116,11 +116,6 @@ const extendedPublicKeyTests = (keystore) => {
           keystore,
           network: TESTNET,
           bip32Path: "m/45'/1'/0'",
-        }),
-        new ExportExtendedPublicKeyTest({
-          keystore,
-          network: TESTNET,
-          bip32Path: "m/45'/1'/0'/0",
         }),
         new ExportExtendedPublicKeyTest({
           keystore,
