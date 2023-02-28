@@ -33,9 +33,8 @@ class ExportPublicKeyTest extends Test {
   }
 
   expected() {
-    const { pub, rootFingerprint } = TEST_FIXTURES.keys.open_source.nodes[
-      this.params.bip32Path
-    ];
+    const { pub, rootFingerprint } =
+      TEST_FIXTURES.keys.open_source.nodes[this.params.bip32Path];
     if (this.params.keystore === HERMIT) {
       return pub;
     }

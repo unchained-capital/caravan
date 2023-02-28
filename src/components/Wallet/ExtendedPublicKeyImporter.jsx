@@ -434,7 +434,8 @@ const mapDispatchToProps = {
   setBIP32Path: setExtendedPublicKeyImporterBIP32Path,
   setMethod: setExtendedPublicKeyImporterMethod,
   setExtendedPublicKey: setExtendedPublicKeyImporterExtendedPublicKey,
-  setExtendedPublicKeyRootXfp: setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint,
+  setExtendedPublicKeyRootXfp:
+    setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint,
   setFinalized: setExtendedPublicKeyImporterFinalized,
 };
 

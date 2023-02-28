@@ -163,12 +163,8 @@ class WalletGenerator extends React.Component {
   };
 
   generate = () => {
-    const {
-      setImportersVisible,
-      freeze,
-      setGenerating,
-      startingAddressIndex,
-    } = this.props;
+    const { setImportersVisible, freeze, setGenerating, startingAddressIndex } =
+      this.props;
     const startingDepositBIP32Suffix = `m/0/${startingAddressIndex}`;
     const startingChangeBIP32Suffix = `m/1/${startingAddressIndex}`;
     freeze(true);

@@ -119,25 +119,26 @@ function resetSpend(state) {
   return updatedState;
 }
 
-export default (actionType) => (state = initialState, action) => {
-  switch (action.type) {
-    case RESET_NODES_SPEND:
-      return resetSpend(state);
-    case RESET_NODES_FETCH_ERRORS:
-      return updateState(state, {
-        fetchUTXOsErrors: 0,
-        nodes: Object.values(state.nodes).reduce((allNodes, thisNode) => {
-          const updatedNodes = allNodes;
-          updatedNodes[thisNode.bip32Path] = {
-            ...thisNode,
-            fetchUTXOsError: "",
-          };
-          return updatedNodes;
-        }, {}),
-      });
-    case actionType:
-      return updateSlice(state, action);
-    default:
-      return state;
-  }
-};
+export default (actionType) =>
+  (state = initialState, action) => {
+    switch (action.type) {
+      case RESET_NODES_SPEND:
+        return resetSpend(state);
+      case RESET_NODES_FETCH_ERRORS:
+        return updateState(state, {
+          fetchUTXOsErrors: 0,
+          nodes: Object.values(state.nodes).reduce((allNodes, thisNode) => {
+            const updatedNodes = allNodes;
+            updatedNodes[thisNode.bip32Path] = {
+              ...thisNode,
+              fetchUTXOsError: "",
+            };
+            return updatedNodes;
+          }, {}),
+        });
+      case actionType:
+        return updateSlice(state, action);
+      default:
+        return state;
+    }
+  };

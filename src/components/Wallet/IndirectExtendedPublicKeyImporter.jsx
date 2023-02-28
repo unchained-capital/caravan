@@ -124,9 +124,8 @@ class IndirectExtendedPublicKeyImporter extends React.Component {
       enableChangeMethod();
     }
     try {
-      const { xpub, bip32Path, rootFingerprint } = this.interaction().parse(
-        data
-      );
+      const { xpub, bip32Path, rootFingerprint } =
+        this.interaction().parse(data);
       validateAndSetRootFingerprint(rootFingerprint, this.setError);
       validateAndSetBIP32Path(
         bip32Path,

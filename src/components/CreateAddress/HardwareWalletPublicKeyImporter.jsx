@@ -35,10 +35,11 @@ class HardwareWalletPublicKeyImporter extends React.Component {
 
   interaction = () => {
     const { network, method, defaultBIP32Path } = this.props;
+    const { bip32Path } = this.state;
     return ExportPublicKey({
       network,
       keystore: method,
-      bip32Path: this.state?.bip32Path ?? defaultBIP32Path,
+      bip32Path: bip32Path ?? defaultBIP32Path,
     });
   };
 

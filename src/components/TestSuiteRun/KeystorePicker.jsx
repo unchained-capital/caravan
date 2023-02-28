@@ -33,12 +33,8 @@ const NO_VERSION_DETECTION = ["", ...Object.values(INDIRECT_KEYSTORES)];
 
 class KeystorePickerBase extends React.Component {
   detectVersion = async () => {
-    const {
-      type,
-      setKeystore,
-      setKeystoreStatus,
-      setErrorNotification,
-    } = this.props;
+    const { type, setKeystore, setKeystoreStatus, setErrorNotification } =
+      this.props;
     setKeystoreStatus(ACTIVE);
     try {
       const result = await this.interaction().run();

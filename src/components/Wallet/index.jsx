@@ -416,12 +416,8 @@ class CreateWallet extends React.Component {
   };
 
   walletDetailsFilename = () => {
-    const {
-      totalSigners,
-      requiredSigners,
-      addressType,
-      walletName,
-    } = this.props;
+    const { totalSigners, requiredSigners, addressType, walletName } =
+      this.props;
     return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${walletName}.json`;
   };
 
@@ -640,12 +636,17 @@ const mapDispatchToProps = {
   setNetwork: setNetworkAction,
   setStartingAddressIndex: setStartingAddressIndexAction,
   setExtendedPublicKeyImporterMethod: setExtendedPublicKeyImporterMethodAction,
-  setExtendedPublicKeyImporterExtendedPublicKey: setExtendedPublicKeyImporterExtendedPublicKeyAction,
-  setExtendedPublicKeyImporterBIP32Path: setExtendedPublicKeyImporterBIP32PathAction,
-  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint: setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprintAction,
+  setExtendedPublicKeyImporterExtendedPublicKey:
+    setExtendedPublicKeyImporterExtendedPublicKeyAction,
+  setExtendedPublicKeyImporterBIP32Path:
+    setExtendedPublicKeyImporterBIP32PathAction,
+  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint:
+    setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprintAction,
   setExtendedPublicKeyImporterName: setExtendedPublicKeyImporterNameAction,
-  setExtendedPublicKeyImporterFinalized: setExtendedPublicKeyImporterFinalizedAction,
-  setExtendedPublicKeyImporterVisible: setExtendedPublicKeyImporterVisibleAction,
+  setExtendedPublicKeyImporterFinalized:
+    setExtendedPublicKeyImporterFinalizedAction,
+  setExtendedPublicKeyImporterVisible:
+    setExtendedPublicKeyImporterVisibleAction,
   updateWalletNameAction: updateWalletNameActionImport,
   ...wrappedActions({
     setClientType: SET_CLIENT_TYPE,
