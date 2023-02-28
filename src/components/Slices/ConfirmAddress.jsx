@@ -187,7 +187,12 @@ const ConfirmAddress = ({ slice, network }) => {
 
   return (
     <Grid item md={12}>
-      <ExtendedPublicKeySelector number={0} onChange={handleKeySelected} />
+      <ExtendedPublicKeySelector
+        number={0}
+        onChange={(event, extendedPublicKeyImporter) =>
+          handleKeySelected(event, extendedPublicKeyImporter)
+        }
+      />
       {state.keySelected && (
         <form>
           <FormControl fullWidth>
@@ -196,7 +201,7 @@ const ConfirmAddress = ({ slice, network }) => {
             <Select
               id="confirm-importer-select"
               value=""
-              onChange={handleMethodChange}
+              onChange={(e) => handleMethodChange(e)}
             >
               <MenuItem value="">{"< Select method >"}</MenuItem>
               <MenuItem value={TREZOR}>Trezor</MenuItem>
@@ -271,7 +276,7 @@ const ConfirmAddress = ({ slice, network }) => {
           <Button
             variant="contained"
             size="large"
-            onClick={confirmOnDevice}
+            onClick={() => confirmOnDevice()}
             disabled={state.interactionState === ACTIVE || !state.bip32Path}
           >
             Confirm

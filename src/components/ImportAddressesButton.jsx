@@ -135,7 +135,7 @@ however to know if an address has been used prior to import, a rescan needs to t
         <Button
           variant="contained"
           disabled={(!enableImport && !rescan) || !addresses.length}
-          onClick={importAddresses}
+          onClick={() => importAddresses()}
         >
           Import {pluralOrSingularAddress(true)}
         </Button>

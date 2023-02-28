@@ -409,7 +409,8 @@ TestRunBase.propTypes = {
     params: PropTypes.shape({
       format: PropTypes.string,
       derivation: PropTypes.string,
-      extendedPublicKeys: PropTypes.array,
+      // eslint-disable-next-line
+      extendedPublicKeys: PropTypes.arrayOf(PropTypes.object),
     }),
     run: PropTypes.func.isRequired,
     runParse: PropTypes.func.isRequired,
