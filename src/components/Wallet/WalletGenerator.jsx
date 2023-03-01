@@ -20,6 +20,7 @@ import {
   Box,
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import { RegisterWalletPolicy, LEDGER_V2 } from "unchained-wallets";
 import {
   fetchAddressUTXOs,
   getAddressStatus,
@@ -36,6 +37,7 @@ import {
   resetNodesFetchErrors as resetNodesFetchErrorsAction,
   resetWallet as resetWalletAction,
   initialLoadComplete as initialLoadCompleteAction,
+  updateWalletPolicyRegistrationsAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import { setExtendedPublicKeyImporterVisible } from "../../actions/extendedPublicKeyImporterActions";
@@ -46,6 +48,7 @@ import {
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
+import { getWalletDetailsText } from "../../selectors/wallet";
 
 // const bitcoin = require('bitcoinjs-lib');
 
@@ -344,6 +347,19 @@ class WalletGenerator extends React.Component {
     });
   }
 
+  async registerWallet() {
+    const { walletConfig, updateWalletPolicyRegistrations } = this.props;
+
+    const interaction = new RegisterWalletPolicy({
+      keystore: LEDGER_V2,
+      returnXfp: true,
+      ...JSON.parse(walletConfig),
+    });
+
+    const { xfp, policyHmac } = await interaction.run();
+    updateWalletPolicyRegistrations({ xfp, policyHmac });
+  }
+
   body() {
     const {
       totalSigners,
@@ -381,6 +397,13 @@ class WalletGenerator extends React.Component {
                 onClearFn={(e) => this.toggleImporters(e, true)}
                 onDownloadFn={downloadWalletDetails}
               />
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => this.registerWallet()}
+              >
+                Register Wallet (Ledger only)
+              </Button>
               {unknownClient && (
                 <Box my={5}>
                   <Typography variant="subtitle1">
@@ -518,6 +541,8 @@ WalletGenerator.propTypes = {
   totalSigners: PropTypes.number.isRequired,
   updateChangeSlice: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
+  walletConfig: PropTypes.string.isRequired,
+  updateWalletPolicyRegistrations: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -527,6 +552,7 @@ function mapStateToProps(state) {
     ...state.quorum,
     ...state.wallet,
     ...state.wallet.common,
+    walletConfig: getWalletDetailsText(state),
   };
 }
 
@@ -544,6 +570,7 @@ const mapDispatchToProps = {
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
   }),
   initialLoadComplete: initialLoadCompleteAction,
+  updateWalletPolicyRegistrations: updateWalletPolicyRegistrationsAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);

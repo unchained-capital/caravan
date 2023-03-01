@@ -27,6 +27,7 @@ export const RESET_WALLET = "RESET_WALLET";
 export const SPEND_SLICES = "SPEND_SLICES";
 export const INITIAL_LOAD_COMPLETE = "INITIAL_LOAD_COMPLETE";
 export const RESET_NODES_FETCH_ERRORS = "RESET_NODES_FETCH_ERRORS";
+export const UPDATE_POLICY_REGISTRATIONS = "UPDATE_POLICY_REGISTRATION";
 
 export const WALLET_MODES = {
   VIEW: 0,
@@ -302,6 +303,16 @@ export function updateWalletNameAction(number, value) {
   return {
     type: UPDATE_WALLET_NAME,
     value,
+  };
+}
+
+export function updateWalletPolicyRegistrationsAction({ xfp, policyHmac }) {
+  return {
+    type: UPDATE_POLICY_REGISTRATIONS,
+    value: {
+      xfp,
+      policyHmac,
+    },
   };
 }
 

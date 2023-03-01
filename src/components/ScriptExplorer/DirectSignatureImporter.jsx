@@ -37,14 +37,26 @@ class DirectSignatureImporter extends React.Component {
   };
 
   interaction = () => {
-    const { signatureImporter, network, inputs, outputs, walletConfig } =
-      this.props;
+    const {
+      signatureImporter,
+      network,
+      inputs,
+      outputs,
+      walletConfig,
+      extendedPublicKeyImporter,
+    } = this.props;
     const keystore = signatureImporter.method;
     const bip32Paths = inputs.map((input) => {
       if (typeof input.bip32Path === "undefined")
         return signatureImporter.bip32Path; // pubkey path
       return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`; // xpub/pubkey slice away the m, keep /
     });
+    const policyHmac =
+      // eslint-disable-next-line react/prop-types
+      walletConfig.ledgerPolicyHmacs.find(
+        (hmac) => hmac.xfp === extendedPublicKeyImporter.rootXfp
+      )?.policyHmac;
+
     return SignMultisigTransaction({
       network,
       keystore,
@@ -52,6 +64,7 @@ class DirectSignatureImporter extends React.Component {
       outputs,
       bip32Paths,
       walletConfig,
+      policyHmac,
       returnSignatureArray: true,
     });
   };
@@ -270,6 +283,7 @@ DirectSignatureImporter.propTypes = {
   enableChangeMethod: PropTypes.func.isRequired,
   extendedPublicKeyImporter: PropTypes.shape({
     method: PropTypes.string,
+    rootXfp: PropTypes.string,
   }).isRequired,
   fee: PropTypes.string.isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,

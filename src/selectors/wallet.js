@@ -14,6 +14,8 @@ const getTotalSigners = (state) => state.settings.totalSigners;
 const getRequiredSigners = (state) => state.settings.requiredSigners;
 const getStartingAddressIndex = (state) => state.settings.startingAddressIndex;
 const getWalletName = (state) => state.wallet.common.walletName;
+const getWalletLedgerPolicyHmacs = (state) =>
+  state.wallet.common.ledgerPolicyHmacs;
 const getClientDetails = (state) => {
   if (state.client.type === "private") {
     return `{
@@ -228,6 +230,7 @@ export const getWalletDetailsText = createSelector(
     getTotalSigners,
     getExtendedPublicKeysBIP32Paths,
     getStartingAddressIndex,
+    getWalletLedgerPolicyHmacs,
   ],
   (
     walletName,
@@ -237,7 +240,8 @@ export const getWalletDetailsText = createSelector(
     requiredSigners,
     totalSigners,
     extendedPublicKeys,
-    startingAddressIndex
+    startingAddressIndex,
+    ledgerPolicyHmacs = []
   ) => {
     return `{
   "name": "${walletName}",
@@ -251,7 +255,8 @@ export const getWalletDetailsText = createSelector(
   "extendedPublicKeys": [
     ${extendedPublicKeys}
   ],
-  "startingAddressIndex": ${startingAddressIndex}
+  "startingAddressIndex": ${startingAddressIndex},
+  "ledgerPolicyHmacs": [${ledgerPolicyHmacs}]
 }`;
   }
 );
