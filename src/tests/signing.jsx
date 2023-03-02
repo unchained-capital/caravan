@@ -6,6 +6,7 @@ import {
   unsignedMultisigPSBT,
   unsignedTransactionObjectFromPSBT,
   TEST_FIXTURES,
+  PsbtV2,
 } from "unchained-bitcoin";
 import {
   COLDCARD,
@@ -143,6 +144,17 @@ class SignMultisigTransactionTest extends Test {
   }
 
   interaction() {
+    const psbt = unsignedMultisigPSBT(
+      this.params.network,
+      this.params.inputs,
+      this.params.outputs
+    );
+    console.log("custom:", psbt.toBase64());
+    console.log("fixture:", this.params.psbt);
+    console.log(
+      "v2:",
+      PsbtV2.FromV0(psbt.toBase64(), true).serialize("base64")
+    );
     return SignMultisigTransaction({
       keystore: this.params.keystore,
       network: this.params.network,
@@ -151,7 +163,8 @@ class SignMultisigTransactionTest extends Test {
       bip32Paths: this.params.bip32Paths,
       walletConfig: braidDetailsToWalletConfig(this.params.braidDetails),
       policyHmac: this.params.policyHmac,
-      psbt: this.params.psbt,
+      // psbt: this.params.psbt,
+      psbt: psbt.toBase64(),
       returnSignatureArray: this.params.returnSignatureArray,
     });
   }
