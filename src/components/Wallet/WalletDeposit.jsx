@@ -12,8 +12,8 @@ import {
   InputAdornment,
   Typography,
   TextField,
-} from "@material-ui/core";
-import { withSnackbar } from "notistack";
+} from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 
 import { fetchAddressUTXOs } from "../../blockchain";
 import {
@@ -58,13 +58,8 @@ class WalletDeposit extends React.Component {
   };
 
   getDepositAddress = () => {
-    const {
-      network,
-      client,
-      updateDepositSlice,
-      depositableSlices,
-      enqueueSnackbar,
-    } = this.props;
+    const { network, client, updateDepositSlice, depositableSlices } =
+      this.props;
     const { depositIndex } = this.state;
 
     if (depositIndex < depositableSlices.length)
@@ -202,7 +197,6 @@ WalletDeposit.propTypes = {
   client: PropTypes.shape({}).isRequired,
   depositableSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes))
     .isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
   network: PropTypes.string.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
 };
@@ -220,7 +214,4 @@ const mapDispatchToProps = {
   resetWalletView: resetWalletViewAction,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withSnackbar(WalletDeposit));
+export default connect(mapStateToProps, mapDispatchToProps)(WalletDeposit);

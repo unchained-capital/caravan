@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { COLDCARD } from "unchained-wallets";
-import { FormGroup, FormHelperText } from "@material-ui/core";
+import { FormGroup, FormHelperText } from "@mui/material";
 import { MAINNET, P2SH } from "unchained-bitcoin";
 import { ColdcardJSONReader } from ".";
 import IndirectExtendedPublicKeyImporter from "../Wallet/IndirectExtendedPublicKeyImporter";

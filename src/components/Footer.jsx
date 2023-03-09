@@ -1,12 +1,12 @@
 import React from "react";
-import { Grid, Box } from "@material-ui/core";
+import { Grid, Box } from "@mui/material";
 import { externalLink } from "../utils";
 import { version } from "../../package.json";
 
 // Components
 
 // Assets
-const logo = require("../images/logo.png");
+import logo from "../images/logo.png";
 
 const Footer = () => (
   <Box mt={2}>
@@ -33,7 +33,8 @@ const Footer = () => (
       </Grid>
 
       <Grid item sm={2} align="right">
-        <p>{`v${version} commit: ${process.env.REACT_APP_GIT_SHA}`}</p>
+        {/** FIXME: Get env sha from import.meta... */}
+        {/* <p>{`v${version} commit: ${}`}</p> */}
       </Grid>
     </Grid>
   </Box>

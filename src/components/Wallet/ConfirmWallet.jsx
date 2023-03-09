@@ -8,8 +8,8 @@ import {
   TableRow,
   TableCell,
   Box,
-} from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+} from "@mui/material";
+import { Alert } from "@mui/lab";
 
 class WalletConfirmation extends React.Component {
   render = () => {

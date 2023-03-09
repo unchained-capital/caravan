@@ -13,7 +13,7 @@ import {
   FormControlLabel,
   Radio,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 // Actions
 import { setAddressType } from "../actions/settingsActions";
 

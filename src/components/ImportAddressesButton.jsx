@@ -9,10 +9,10 @@ import {
   Switch,
   FormControlLabel,
   Tooltip,
-  makeStyles,
   Grid,
-} from "@material-ui/core";
-import InfoIcon from "@material-ui/icons/Info";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import InfoIcon from "@mui/icons-material/Info";
 import {
   bitcoindImportMulti,
   bitcoindGetAddressStatus,

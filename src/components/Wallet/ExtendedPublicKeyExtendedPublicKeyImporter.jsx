@@ -6,13 +6,7 @@ import {
 } from "unchained-bitcoin";
 
 // Components
-import {
-  Button,
-  TextField,
-  FormHelperText,
-  Box,
-  Grid,
-} from "@material-ui/core";
+import { Button, TextField, FormHelperText, Box, Grid } from "@mui/material";
 
 const DEFAULT_BIP32_PATH = "m/0";
 

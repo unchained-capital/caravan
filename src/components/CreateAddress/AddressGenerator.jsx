@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardContent,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { externalLink, downloadFile } from "../../utils";
 
 // Actions

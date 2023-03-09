@@ -14,7 +14,7 @@ import {
   SignMultisigTransaction,
   braidDetailsToWalletConfig,
 } from "unchained-wallets";
-import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { Box, Table, TableBody, TableRow, TableCell } from "@mui/material";
 import { externalLink } from "../utils";
 import Test from "./Test";
 

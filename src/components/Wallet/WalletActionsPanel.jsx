@@ -6,18 +6,18 @@ import {
   CardContent,
   ButtonGroup,
   Grid,
-  makeStyles,
   Tooltip,
-  withStyles,
-} from "@material-ui/core";
-import MuiButton from "@material-ui/core/Button";
+} from "@mui/material";
+import { withStyles } from "@mui/styles";
+import { makeStyles } from "@mui/styles";
+import MuiButton from "@mui/material/Button";
 
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   RefreshOutlined,
   ExitToAppOutlined,
   GetAppOutlined,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 
 import { clientPropTypes } from "../../proptypes";
 import { CARAVAN_CONFIG } from "./constants";

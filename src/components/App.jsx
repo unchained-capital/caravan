@@ -7,7 +7,8 @@ import {
 } from "react-router-dom";
 
 // Components
-import { CssBaseline, Container } from "@material-ui/core";
+import { Button, Container, createTheme, CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/styles";
 import { SnackbarProvider } from "notistack";
 
 import Help from "./Help";
@@ -20,30 +21,41 @@ import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
 import ErrorNotification from "./ErrorNotification";
 
+// FIXME: Currently there seems to be a bug in MUI v5 not allowing theme overriedes
+const theme = createTheme({
+  palette: {
+    secondary: {
+      main: "#e0e0e0",
+    },
+  },
+});
+
 const App = () => (
-  <div className="App">
+  <ThemeProvider theme={theme}>
     <CssBaseline />
-    <SnackbarProvider maxSnack={3}>
-      <Container maxWidth="lg">
-        <Navbar />
-        <ErrorBoundary>
-          <Router>
-            <Switch>
-              <Route path="/test" component={TestSuiteRun} />
-              <Route path="/address" component={CreateAddress} />
-              <Redirect from="/spend" to="/script" />
-              <Route path="/script" component={ScriptExplorer} />
-              <Route path="/wallet" component={Wallet} />
-              <Route path="/help" component={Help} />
-              <Route path="/" component={Help} />
-            </Switch>
-          </Router>
-          <ErrorNotification />
-        </ErrorBoundary>
-        <Footer />
-      </Container>
-    </SnackbarProvider>
-  </div>
+    <div className="App">
+      <SnackbarProvider maxSnack={3}>
+        <Container maxWidth="lg">
+          <Navbar />
+          <ErrorBoundary>
+            <Router>
+              <Switch>
+                <Route path="/test" component={TestSuiteRun} />
+                <Route path="/address" component={CreateAddress} />
+                <Redirect from="/spend" to="/script" />
+                <Route path="/script" component={ScriptExplorer} />
+                <Route path="/wallet" component={Wallet} />
+                <Route path="/help" component={Help} />
+                <Route path="/" component={Help} />
+              </Switch>
+            </Router>
+            <ErrorNotification />
+          </ErrorBoundary>
+          <Footer />
+        </Container>
+      </SnackbarProvider>
+    </div>
+  </ThemeProvider>
 );
 
 export default App;

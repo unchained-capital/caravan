@@ -17,12 +17,12 @@ import {
   CardActions,
   Button,
   CircularProgress,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   ThumbUp as SuccessIcon,
   ThumbDown as FailureIcon,
   Error as ErrorIcon,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import moment from "moment";
 import Test from "../../tests/Test";
 import * as testRunActions from "../../actions/testRunActions";

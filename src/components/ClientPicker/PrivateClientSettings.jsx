@@ -2,13 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // Components
-import {
-  Grid,
-  TextField,
-  Button,
-  FormHelperText,
-  Box,
-} from "@material-ui/core";
+import { Grid, TextField, Button, FormHelperText, Box } from "@mui/material";
 
 import { externalLink } from "../../utils";
 

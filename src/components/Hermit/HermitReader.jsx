@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { PENDING, ACTIVE } from "unchained-wallets";
-import QrReader from "react-qr-reader";
-import { Grid, Button, Box, FormHelperText } from "@material-ui/core";
+import { QrReader } from "react-qr-reader";
+import { Grid, Button, Box, FormHelperText } from "@mui/material";
 import Copyable from "../Copyable";
 
 const QR_CODE_READER_DELAY = 300; // ms?

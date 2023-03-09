@@ -20,8 +20,8 @@ import {
   Button,
   FormHelperText,
   Box,
-  withStyles,
-} from "@material-ui/core";
+} from "@mui/material";
+import { withStyles } from "@mui/styles";
 import Copyable from "../Copyable";
 import DirectExtendedPublicKeyImporter from "./DirectExtendedPublicKeyImporter";
 import TextExtendedPublicKeyImporter from "./TextExtendedPublicKeyImporter";

@@ -19,7 +19,7 @@ import {
   Button,
   TextField,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { fetchAddressUTXOs } from "../../blockchain";
 
 // Components

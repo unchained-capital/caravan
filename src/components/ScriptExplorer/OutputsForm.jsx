@@ -14,9 +14,9 @@ import {
   InputAdornment,
   Typography,
   FormHelperText,
-} from "@material-ui/core";
-import { Speed } from "@material-ui/icons";
-import AddIcon from "@material-ui/icons/Add";
+} from "@mui/material";
+import { Speed } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
 import {
   addOutput as addOutputAction,
   setOutputAmount as setOutputAmountAction,

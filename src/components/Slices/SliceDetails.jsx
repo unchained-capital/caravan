@@ -9,8 +9,8 @@ import {
   Box,
   Tooltip,
   AppBar,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 import UTXOSet from "../ScriptExplorer/UTXOSet";
 import MultisigDetails from "../MultisigDetails";

@@ -7,13 +7,7 @@ import {
   ERROR,
   ExportExtendedPublicKey,
 } from "unchained-wallets";
-import {
-  Button,
-  TextField,
-  FormHelperText,
-  Box,
-  Grid,
-} from "@material-ui/core";
+import { Button, TextField, FormHelperText, Box, Grid } from "@mui/material";
 import InteractionMessages from "../InteractionMessages";
 
 class DirectExtendedPublicKeyImporter extends React.Component {

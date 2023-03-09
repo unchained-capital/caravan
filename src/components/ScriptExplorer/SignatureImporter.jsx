@@ -20,7 +20,7 @@ import {
   Button,
   Box,
   FormControl,
-} from "@material-ui/core";
+} from "@mui/material";
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
 import DirectSignatureImporter from "./DirectSignatureImporter";
@@ -36,7 +36,7 @@ import {
   setSignatureImporterFinalized,
   setSignatureImporterComplete,
 } from "../../actions/signatureImporterActions";
-import "react-table/react-table.css";
+// import "react-table-6/react-table.css";
 import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
 
 const TEXT = "text";

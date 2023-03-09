@@ -15,9 +15,9 @@ import {
   InputAdornment,
   FormHelperText,
   Typography,
-} from "@material-ui/core";
-import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWallet";
-import { Delete, AddCircle, RemoveCircle } from "@material-ui/icons";
+} from "@mui/material";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWallet";
+import { Delete, AddCircle, RemoveCircle } from "@mui/icons-material";
 import {
   setOutputAddress,
   setOutputAmount,

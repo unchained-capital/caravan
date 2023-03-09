@@ -13,8 +13,8 @@ import {
   CardHeader,
   CardContent,
   Box,
-} from "@material-ui/core";
-import { AddCircle, RemoveCircle } from "@material-ui/icons";
+} from "@mui/material";
+import { AddCircle, RemoveCircle } from "@mui/icons-material";
 import {
   setTotalSigners as setTotalSignersAction,
   setRequiredSigners as setRequiredSignersAction,

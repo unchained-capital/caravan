@@ -8,8 +8,8 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-} from "@material-ui/core";
-import { Warning } from "@material-ui/icons";
+} from "@mui/material";
+import { Warning } from "@mui/icons-material";
 
 const Conflict = (props) => {
   const { message } = props;

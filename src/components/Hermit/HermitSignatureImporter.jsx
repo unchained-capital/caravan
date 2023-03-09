@@ -6,13 +6,7 @@ import {
   UNSUPPORTED,
   SignMultisigTransaction,
 } from "unchained-wallets";
-import {
-  Grid,
-  Box,
-  TextField,
-  Button,
-  FormHelperText,
-} from "@material-ui/core";
+import { Grid, Box, TextField, Button, FormHelperText } from "@mui/material";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";

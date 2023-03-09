@@ -14,7 +14,7 @@ import {
   RadioGroup,
   TextField,
   Tooltip,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import { wrappedActions } from "../actions/utils";
 import { SET_STARTING_ADDRESS_INDEX } from "../actions/settingsActions";

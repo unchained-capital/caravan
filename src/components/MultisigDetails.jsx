@@ -12,8 +12,8 @@ import {
   multisigTotalSigners,
   blockExplorerAddressURL,
 } from "unchained-bitcoin";
-import { Typography, Grid, Box, Chip } from "@material-ui/core";
-import { OpenInNew } from "@material-ui/icons";
+import { Typography, Grid, Box, Chip } from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
 import { externalLink } from "../utils";
 
 // Components

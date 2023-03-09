@@ -12,8 +12,8 @@ import {
   CardContent,
   Button,
   LinearProgress,
-} from "@material-ui/core";
-import { ArrowBack, ArrowForward } from "@material-ui/icons";
+} from "@mui/material";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import * as testSuiteRunActions from "../../actions/testSuiteRunActions";
 import KeystorePicker from "./KeystorePicker";
 import TestSuiteRunSummary from "./TestSuiteRunSummary";

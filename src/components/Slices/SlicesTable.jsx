@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import MaterialTable from "material-table";
-import { Typography, Box, makeStyles } from "@material-ui/core";
+// import MaterialTable from "material-table";
+import { Typography, Box } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
 import {
@@ -102,23 +103,24 @@ const SlicesTable = ({
 
   // filter out any columns that should be disabled
   columns = columns.filter((column) => !disabled.includes(column.field));
-  return (
-    <MaterialTable
-      options={options}
-      columns={columns}
-      data={slices}
-      detailPanel={[
-        {
-          tooltip: "Address Details",
-          render: (rowData) => (
-            <Box p={1} className={classes.panel}>
-              <SliceDetails client={client} slice={rowData} network={network} />
-            </Box>
-          ),
-        },
-      ]}
-    />
-  );
+  return null;
+  // return (
+  // <MaterialTable
+  //   options={options}
+  //   columns={columns}
+  //   data={slices}
+  //   detailPanel={[
+  //     {
+  //       tooltip: "Address Details",
+  //       render: (rowData) => (
+  //         <Box p={1} className={classes.panel}>
+  //           <SliceDetails client={client} slice={rowData} network={network} />
+  //         </Box>
+  //       ),
+  //     },
+  //   ]}
+  // />
+  // );
 };
 
 SlicesTable.propTypes = {

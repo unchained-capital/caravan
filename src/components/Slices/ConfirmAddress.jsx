@@ -13,8 +13,11 @@ import {
   TableCell,
   MenuItem,
   InputLabel,
-} from "@material-ui/core";
-import { ThumbUp as SuccessIcon, Error as ErrorIcon } from "@material-ui/icons";
+} from "@mui/material";
+import {
+  ThumbUp as SuccessIcon,
+  Error as ErrorIcon,
+} from "@mui/icons-material";
 import {
   multisigAddressType,
   multisigRequiredSigners,

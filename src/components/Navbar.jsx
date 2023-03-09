@@ -4,13 +4,13 @@ import {
   AppBar,
   Toolbar,
   Button,
-  makeStyles,
   Typography,
   Menu,
   MenuItem,
   Box,
-} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const useStyles = makeStyles((theme) => ({
   root: {

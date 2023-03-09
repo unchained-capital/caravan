@@ -5,7 +5,7 @@ import {
   RegisterWalletPolicy,
   braidDetailsToWalletConfig,
 } from "unchained-wallets";
-import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { Box, Table, TableBody, TableRow, TableCell } from "@mui/material";
 
 import Test from "./Test";
 

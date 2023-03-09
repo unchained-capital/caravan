@@ -11,7 +11,7 @@ import {
   Radio,
   RadioGroup,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { fetchFeeEstimate } from "../../blockchain";
 
 // Components

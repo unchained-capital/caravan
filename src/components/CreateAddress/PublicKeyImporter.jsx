@@ -16,8 +16,8 @@ import {
   Button,
   Grid,
   Box,
-} from "@material-ui/core";
-import { ArrowUpward, ArrowDownward } from "@material-ui/icons";
+} from "@mui/material";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 import Copyable from "../Copyable";
 import TextPublicKeyImporter from "./TextPublicKeyImporter";

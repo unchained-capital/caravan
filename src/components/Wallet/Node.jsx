@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
 // Components
-import { TableRow, TableCell, Checkbox } from "@material-ui/core";
+import { TableRow, TableCell, Checkbox } from "@mui/material";
 import AddressExpander from "./AddressExpander";
 
 // Actions

@@ -22,7 +22,7 @@ import {
   MenuItem,
   TextField,
   Button,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as keystoreActions from "../../actions/keystoreActions";
 import { setErrorNotification as setErrorNotificationAction } from "../../actions/errorNotificationActions";
 

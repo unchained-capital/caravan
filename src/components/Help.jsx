@@ -14,7 +14,7 @@ import {
   ListItemText,
   ListItemIcon,
   CardActions,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   Description,
   GitHub,
@@ -23,7 +23,7 @@ import {
   Speed,
   AccountBalanceWallet,
   SportsVolleyball,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import { externalLink } from "../utils";
 import Disclaimer from "./Disclaimer";
 
@@ -63,7 +63,7 @@ const Help = () => (
                     variant="contained"
                     data-cy="setup-address-button"
                     size="large"
-                    color="default"
+                    color="secondary"
                     href="#/address"
                     startIcon={<SportsVolleyball />}
                   >

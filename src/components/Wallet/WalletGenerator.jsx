@@ -18,8 +18,8 @@ import {
   FormHelperText,
   Typography,
   Box,
-} from "@material-ui/core";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
   fetchAddressUTXOs,
   getAddressStatus,

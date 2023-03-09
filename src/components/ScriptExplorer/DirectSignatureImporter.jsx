@@ -19,7 +19,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
-} from "@material-ui/core";
+} from "@mui/material";
 import InteractionMessages from "../InteractionMessages";
 
 class DirectSignatureImporter extends React.Component {

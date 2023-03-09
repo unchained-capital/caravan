@@ -12,13 +12,7 @@ import {
 import { validateBIP32Path } from "unchained-bitcoin";
 
 // Components
-import {
-  Button,
-  TextField,
-  FormHelperText,
-  Box,
-  Grid,
-} from "@material-ui/core";
+import { Button, TextField, FormHelperText, Box, Grid } from "@mui/material";
 
 import InteractionMessages from "../InteractionMessages";
 

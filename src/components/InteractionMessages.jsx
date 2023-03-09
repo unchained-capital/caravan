@@ -14,8 +14,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from "@material-ui/core";
-import { Info, Warning, Error } from "@material-ui/icons";
+} from "@mui/material";
+import { Info, Warning, Error } from "@mui/icons-material";
 
 import "./InteractionMessages.css";
 

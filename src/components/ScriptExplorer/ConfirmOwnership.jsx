@@ -5,9 +5,9 @@ import { validatePublicKey, validateBIP32Path } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
 
 // Components
-import CheckIcon from "@material-ui/icons/Check";
-import ClearIcon from "@material-ui/icons/Clear";
-import { styled } from "@material-ui/core/styles";
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
+import { styled } from "@mui/material/styles";
 import {
   Card,
   CardHeader,
@@ -22,7 +22,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from "@material-ui/core";
+} from "@mui/material";
 import HardwareWalletPublicKeyImporter from "../CreateAddress/HardwareWalletPublicKeyImporter";
 import HermitPublicKeyImporter from "../CreateAddress/HermitPublicKeyImporter";
 
@@ -35,7 +35,7 @@ import {
   setPublicKeyImporterPublicKey,
 } from "../../actions/ownershipActions";
 
-import "react-table/react-table.css";
+// import "react-table-6/react-table.css";
 
 class ConfirmOwnership extends React.Component {
   titleRef = React.createRef();

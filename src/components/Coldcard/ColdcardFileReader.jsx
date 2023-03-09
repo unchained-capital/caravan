@@ -2,14 +2,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
-import {
-  Box,
-  Button,
-  FormHelperText,
-  Grid,
-  TextField,
-} from "@material-ui/core";
-import { CloudUpload as UploadIcon } from "@material-ui/icons";
+import { Buffer } from "buffer/";
+import { Box, Button, FormHelperText, Grid, TextField } from "@mui/material";
+import { CloudUpload as UploadIcon } from "@mui/icons-material";
 import { PSBT_MAGIC_HEX } from "unchained-bitcoin";
 import styles from "./ColdcardFileReader.module.scss";
 

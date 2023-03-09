@@ -4,13 +4,7 @@ import { connect } from "react-redux";
 
 // Actions
 import { deriveChildPublicKey } from "unchained-bitcoin";
-import {
-  Box,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
-} from "@material-ui/core";
+import { Box, FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import {
   setSignatureImporterBIP32Path,
   setSignatureImporterMethod,
