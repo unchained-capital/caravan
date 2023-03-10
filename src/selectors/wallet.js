@@ -256,7 +256,12 @@ export const getWalletDetailsText = createSelector(
     ${extendedPublicKeys}
   ],
   "startingAddressIndex": ${startingAddressIndex},
-  "ledgerPolicyHmacs": [${ledgerPolicyHmacs}]
+  "ledgerPolicyHmacs": [${ledgerPolicyHmacs.map(JSON.stringify).join(", ")}]
 }`;
   }
+);
+
+export const getWalletConfig = createSelector(
+  [getWalletDetailsText],
+  JSON.parse
 );

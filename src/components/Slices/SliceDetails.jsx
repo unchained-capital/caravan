@@ -11,6 +11,7 @@ import {
   AppBar,
   makeStyles,
 } from "@material-ui/core";
+import { useSelector } from "react-redux";
 
 import UTXOSet from "../ScriptExplorer/UTXOSet";
 import MultisigDetails from "../MultisigDetails";
@@ -18,6 +19,7 @@ import ImportAddressesButton from "../ImportAddressesButton";
 import ConfirmAddress from "./ConfirmAddress";
 
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
+import { getWalletConfig } from "../../selectors/wallet";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,6 +75,7 @@ TabPanel.defaultProps = {
 
 const SliceDetails = ({ slice, client, network }) => {
   const [tabIndex, setTabIndex] = React.useState("0");
+  const walletConfig = useSelector(getWalletConfig);
   const classes = useStyles();
 
   const handleChange = (_e, newIndex) => setTabIndex(newIndex);
@@ -95,7 +98,11 @@ const SliceDetails = ({ slice, client, network }) => {
           <Typography variant="caption">
             (not all device variants supported)
           </Typography>
-          <ConfirmAddress slice={slice} network={network} />
+          <ConfirmAddress
+            slice={slice}
+            network={network}
+            walletConfig={walletConfig}
+          />
         </div>
       ),
     },

@@ -40,7 +40,9 @@ const TEXT = "text";
 const initialInteractionState = {
   keySelected: false,
   deviceType: "unknown",
+  xfp: "",
   bip32Path: "",
+  ledgerPolicyHmac: "",
   hasInteraction: false,
   interactionState: PENDING,
   interactionError: "",
@@ -57,7 +59,7 @@ const interactionReducer = (state, action) => {
         interactionState: PENDING,
       };
     case "SET_KEY_SELECTED":
-      return { ...state, keySelected: true };
+      return { ...state, keySelected: true, ...action.value };
     case "SET_KEY_UNSELECTED":
       return { ...state, keySelected: false };
     case "SET_DEVICE_TYPE":
@@ -85,7 +87,7 @@ const interactionReducer = (state, action) => {
   }
 };
 
-const ConfirmAddress = ({ slice, network }) => {
+const ConfirmAddress = ({ slice, network, walletConfig }) => {
   const [state, dispatch] = useReducer(
     interactionReducer,
     initialInteractionState
@@ -100,7 +102,17 @@ const ConfirmAddress = ({ slice, network }) => {
   function handleKeySelected(_event, extendedPublicKeyImporter) {
     const { multisig, bip32Path } = slice;
     if (extendedPublicKeyImporter) {
-      dispatch({ type: "SET_KEY_SELECTED" });
+      const ledgerPolicyHmac =
+        walletConfig.ledgerPolicyHmacs.find(
+          (policy) => policy.xfp === extendedPublicKeyImporter.rootXfp
+        )?.policyHmac || "";
+      dispatch({
+        type: "SET_KEY_SELECTED",
+        value: {
+          xfp: extendedPublicKeyImporter.rootXfp,
+          ledgerPolicyHmac,
+        },
+      });
       dispatch({
         type: "SET_DEVICE_TYPE",
         value: extendedPublicKeyImporter.method,
@@ -120,13 +132,18 @@ const ConfirmAddress = ({ slice, network }) => {
         });
       }
       // FIXME - hardcoded to just show up for trezor
-      if (extendedPublicKeyImporter.method === "trezor") {
+      if (
+        extendedPublicKeyImporter.method === TREZOR ||
+        extendedPublicKeyImporter.method === LEDGER
+      ) {
         setInteraction(
           ConfirmMultisigAddress({
             keystore: extendedPublicKeyImporter.method,
             network,
             bip32Path: fullBip32Path,
             multisig,
+            walletConfig,
+            policyHmac: state.ledgerPolicyHmac,
           })
         );
         dispatch({ type: "HAS_INTERACTION", value: true });
@@ -158,6 +175,8 @@ const ConfirmAddress = ({ slice, network }) => {
           network,
           bip32Path: state.bip32Path,
           multisig,
+          walletConfig,
+          policyHmac: state.ledgerPolicyHmac,
         })
       );
       dispatch({ type: "HAS_INTERACTION", value: true });
@@ -171,7 +190,13 @@ const ConfirmAddress = ({ slice, network }) => {
     const { multisig } = slice;
 
     try {
-      const confirmed = await interaction.run();
+      let confirmed = await interaction.run();
+      if (typeof confirmed === "string" && state.deviceType === LEDGER) {
+        confirmed = {
+          address: confirmed,
+          serializedPath: interaction.bip32Path,
+        };
+      }
       if (
         confirmed.address === multisig.address &&
         confirmed.serializedPath === interaction.bip32Path
@@ -195,16 +220,14 @@ const ConfirmAddress = ({ slice, network }) => {
 
             <Select
               id="confirm-importer-select"
-              value=""
+              value={state.deviceType === "unknown" ? "" : state.deviceType}
               onChange={handleMethodChange}
             >
               <MenuItem value="">{"< Select method >"}</MenuItem>
               <MenuItem value={TREZOR}>Trezor</MenuItem>
+              <MenuItem value={LEDGER}>Ledger</MenuItem>
               <MenuItem value={COLDCARD} disabled>
                 Coldcard
-              </MenuItem>
-              <MenuItem value={LEDGER} disabled>
-                Ledger
               </MenuItem>
               <MenuItem value={HERMIT} disabled>
                 Hermit
@@ -291,6 +314,8 @@ const ConfirmAddress = ({ slice, network }) => {
 ConfirmAddress.propTypes = {
   slice: PropTypes.shape(slicePropTypes).isRequired,
   network: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  walletConfig: PropTypes.object.isRequired,
 };
 
 ConfirmAddress.defaultProps = {
