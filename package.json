@@ -62,7 +62,7 @@
     "start": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` HTTPS=true react-app-rewired start",
     "test": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired test",
     "test:ci": "CI=true react-app-rewired test --coverage",
-    "dev": "vite",
+    "dev": "VITE_GIT_SHA=`git rev-parse --short HEAD` vite",
     "build:vite": "vite build",
     "preview": "vite preview"
   },

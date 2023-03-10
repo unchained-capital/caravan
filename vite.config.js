@@ -6,13 +6,12 @@ import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfil
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: {
+    VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
+    VITE_GIT_SHA: JSON.stringify(process.env.VITE_GIT_SHA),
+  },
   optimizeDeps: {
     esbuildOptions: {
-      // Node.js global to browser globalThis
-      define: {
-        global: "globalThis",
-      },
-      // Enable esbuild polyfill plugins
       plugins: [
         NodeGlobalsPolyfillPlugin({
           buffer: true,

@@ -33,8 +33,7 @@ const Footer = () => (
       </Grid>
 
       <Grid item sm={2} align="right">
-        {/** FIXME: Get env sha from import.meta... */}
-        {/* <p>{`v${version} commit: ${}`}</p> */}
+        <p>{`v${VITE_APP_VERSION} commit: ${VITE_GIT_SHA}`}</p>
       </Grid>
     </Grid>
   </Box>
