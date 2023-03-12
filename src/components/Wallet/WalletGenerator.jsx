@@ -20,7 +20,6 @@ import {
   Box,
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import { RegisterWalletPolicy, LEDGER_V2 } from "unchained-wallets";
 import {
   fetchAddressUTXOs,
   getAddressStatus,
@@ -28,6 +27,7 @@ import {
 } from "../../blockchain";
 import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
+import RegisterWallet from "./RegisterWallet";
 import WalletControl from "./WalletControl";
 import WalletConfigInteractionButtons from "./WalletConfigInteractionButtons";
 import { setFrozen } from "../../actions/settingsActions";
@@ -48,9 +48,6 @@ import {
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
-import { getWalletDetailsText } from "../../selectors/wallet";
-
-// const bitcoin = require('bitcoinjs-lib');
 
 class WalletGenerator extends React.Component {
   constructor(props) {
@@ -347,19 +344,6 @@ class WalletGenerator extends React.Component {
     });
   }
 
-  async registerWallet() {
-    const { walletConfig, updateWalletPolicyRegistrations } = this.props;
-
-    const interaction = new RegisterWalletPolicy({
-      keystore: LEDGER_V2,
-      returnXfp: true,
-      ...JSON.parse(walletConfig),
-    });
-
-    const { xfp, policyHmac } = await interaction.run();
-    updateWalletPolicyRegistrations({ xfp, policyHmac });
-  }
-
   body() {
     const {
       totalSigners,
@@ -397,13 +381,11 @@ class WalletGenerator extends React.Component {
                 onClearFn={(e) => this.toggleImporters(e, true)}
                 onDownloadFn={downloadWalletDetails}
               />
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => this.registerWallet()}
-              >
-                Register Wallet (Ledger only)
-              </Button>
+              <Grid container>
+                <Grid item>
+                  <RegisterWallet />
+                </Grid>
+              </Grid>
               {unknownClient && (
                 <Box my={5}>
                   <Typography variant="subtitle1">
@@ -541,8 +523,6 @@ WalletGenerator.propTypes = {
   totalSigners: PropTypes.number.isRequired,
   updateChangeSlice: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
-  walletConfig: PropTypes.string.isRequired,
-  updateWalletPolicyRegistrations: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -552,7 +532,6 @@ function mapStateToProps(state) {
     ...state.quorum,
     ...state.wallet,
     ...state.wallet.common,
-    walletConfig: getWalletDetailsText(state),
   };
 }
 

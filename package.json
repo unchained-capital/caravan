@@ -79,7 +79,7 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@material-ui/core": "^4.9.11",
+    "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "axios": "^0.21.2",
@@ -121,6 +121,6 @@
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
     "unchained-bitcoin": "^0.3.0",
-    "unchained-wallets": "^0.2.3"
+    "unchained-wallets": "bucko13/unchained-wallets#ledger-address-verification"
   }
 }
