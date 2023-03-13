@@ -21,14 +21,7 @@ import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
 import ErrorNotification from "./ErrorNotification";
 
-// FIXME: Currently there seems to be a bug in MUI v5 not allowing theme overriedes
-const theme = createTheme({
-  palette: {
-    secondary: {
-      main: "#e0e0e0",
-    },
-  },
-});
+const theme = createTheme();
 
 const App = () => (
   <ThemeProvider theme={theme}>

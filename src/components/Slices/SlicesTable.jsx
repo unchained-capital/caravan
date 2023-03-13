@@ -1,7 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import MaterialTable from "material-table";
 import { Typography, Box } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import { makeStyles } from "@mui/styles";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
@@ -103,7 +109,37 @@ const SlicesTable = ({
 
   // filter out any columns that should be disabled
   columns = columns.filter((column) => !disabled.includes(column.field));
-  return null;
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            {columns.length &&
+              columns.map((column) => <TableCell>{column.title}</TableCell>)}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {slices.length &&
+            slices.map((slice) => (
+              <TableRow
+                key={slice.lastUsedTime}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="td" scope="row" colSpan={columns.length}>
+                  <Box p={1} className={classes.panel}>
+                    <SliceDetails
+                      client={client}
+                      slice={slice}
+                      network={network}
+                    />
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
   // return (
   // <MaterialTable
   //   options={options}
