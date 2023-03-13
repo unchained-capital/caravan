@@ -9,7 +9,7 @@ import {
   TableCell,
   Box,
 } from "@material-ui/core";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import { Alert } from "@material-ui/lab";
 import { MultisigWalletPolicy } from "unchained-wallets";
 import { getWalletConfig } from "../../selectors/wallet";
 
@@ -96,12 +96,6 @@ const WalletConfirmation = () => {
             <PolicyInfo keys={policy.keys} />
           </TableBody>
         </Table>
-        <Box my={3}>
-          <Alert severity="info">
-            <AlertTitle>Wallet Policy Details</AlertTitle>
-            Policy template: <code>{policy.template}</code>
-          </Alert>
-        </Box>
       </Box>
     );
   return (

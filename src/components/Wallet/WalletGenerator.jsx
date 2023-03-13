@@ -372,6 +372,11 @@ class WalletGenerator extends React.Component {
                 {configuring ? "Hide Key Selection" : "Edit Details"}
               </Button>
               <ConfirmWallet />
+              <Grid container>
+                <Grid item>
+                  <RegisterWallet />
+                </Grid>
+              </Grid>
               <p>
                 You have imported all&nbsp;
                 {totalSigners} extended public keys. You will need to save this
@@ -381,11 +386,6 @@ class WalletGenerator extends React.Component {
                 onClearFn={(e) => this.toggleImporters(e, true)}
                 onDownloadFn={downloadWalletDetails}
               />
-              <Grid container>
-                <Grid item>
-                  <RegisterWallet />
-                </Grid>
-              </Grid>
               {unknownClient && (
                 <Box my={5}>
                   <Typography variant="subtitle1">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Grid,
@@ -11,6 +11,8 @@ import {
 import { useSelector } from "react-redux";
 
 import { ExpandMoreOutlined } from "@material-ui/icons";
+import { MultisigWalletPolicy } from "unchained-wallets/lib/policy";
+import { Alert, AlertTitle } from "@material-ui/lab";
 import { getWalletConfig } from "../../selectors/wallet";
 import PolicyRegistrationTable from "../RegisterWallet/PolicyRegistrationsTable";
 import {
@@ -22,8 +24,19 @@ const useStyles = makeStyles({ expanded: { margin: "0 0!important" } });
 const WalletRegistrations = () => {
   const walletConfig = useSelector(getWalletConfig);
   const classes = useStyles();
+  const policy = useMemo(() => {
+    // there could be edge cases where not all
+    // info from config matches what we need for a policy
+    try {
+      return MultisigWalletPolicy.FromWalletConfig(walletConfig);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return null;
+    }
+  }, [walletConfig]);
   return (
-    <Box mt={3}>
+    <Box my={2}>
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreOutlined />}
@@ -33,9 +46,15 @@ const WalletRegistrations = () => {
         >
           <Box>
             <Typography variant="h5">Wallet Registration</Typography>
+            <Box my={1}>
+              <Alert severity="info">
+                <AlertTitle>Wallet Policy Details</AlertTitle>
+                Policy template: <code>{policy.template}</code>
+              </Alert>
+            </Box>
             <Typography variant="caption">
-              Some devices allow a multisig wallet to be pre-registered in order
-              to verify addresses and transactions
+              Some devices allow a multisig wallet to be registered in order to
+              verify addresses and transactions
             </Typography>
           </Box>
         </AccordionSummary>
