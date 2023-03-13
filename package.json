@@ -120,7 +120,7 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
-    "unchained-bitcoin": "^0.3.0",
-    "unchained-wallets": "bucko13/unchained-wallets#ledger-address-verification"
+    "unchained-bitcoin": "^0.3.1",
+    "unchained-wallets": "^0.4.0"
   }
 }
