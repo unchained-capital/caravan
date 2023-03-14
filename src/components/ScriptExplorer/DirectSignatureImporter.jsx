@@ -21,6 +21,7 @@ import {
   TableCell,
 } from "@material-ui/core";
 import InteractionMessages from "../InteractionMessages";
+import { walletConfigPropType } from "../../proptypes/wallet";
 
 class DirectSignatureImporter extends React.Component {
   constructor(props) {
@@ -51,11 +52,9 @@ class DirectSignatureImporter extends React.Component {
         return signatureImporter.bip32Path; // pubkey path
       return `${signatureImporter.bip32Path}${input.bip32Path.slice(1)}`; // xpub/pubkey slice away the m, keep /
     });
-    const policyHmac =
-      // eslint-disable-next-line react/prop-types
-      walletConfig.ledgerPolicyHmacs.find(
-        (hmac) => hmac.xfp === extendedPublicKeyImporter.rootXfp
-      )?.policyHmac;
+    const policyHmac = walletConfig.ledgerPolicyHmacs.find(
+      (hmac) => hmac.xfp === extendedPublicKeyImporter.rootXfp
+    )?.policyHmac;
 
     return SignMultisigTransaction({
       network,
@@ -297,8 +296,7 @@ DirectSignatureImporter.propTypes = {
     method: PropTypes.string,
   }).isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  walletConfig: PropTypes.object.isRequired,
+  walletConfig: PropTypes.shape(walletConfigPropType).isRequired,
   validateAndSetBIP32Path: PropTypes.func.isRequired,
   validateAndSetSignature: PropTypes.func.isRequired,
 };

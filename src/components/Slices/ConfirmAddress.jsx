@@ -34,6 +34,7 @@ import ExtendedPublicKeySelector from "../Wallet/ExtendedPublicKeySelector";
 import InteractionMessages from "../InteractionMessages";
 
 import { slicePropTypes } from "../../proptypes";
+import { walletConfigPropType } from "../../proptypes/wallet";
 
 const TEXT = "text";
 
@@ -314,8 +315,7 @@ const ConfirmAddress = ({ slice, network, walletConfig }) => {
 ConfirmAddress.propTypes = {
   slice: PropTypes.shape(slicePropTypes).isRequired,
   network: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
-  walletConfig: PropTypes.object.isRequired,
+  walletConfig: PropTypes.shape(walletConfigPropType).isRequired,
 };
 
 ConfirmAddress.defaultProps = {
