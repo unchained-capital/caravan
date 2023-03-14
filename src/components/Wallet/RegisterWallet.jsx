@@ -68,7 +68,15 @@ const WalletRegistrations = () => {
                 <DownloadColdardConfigButton />
               </Grid>
             </Grid>
-            <PolicyRegistrationTable hmacs={walletConfig.ledgerPolicyHmacs} />
+            {walletConfig.ledgerPolicyHmacs.length ? (
+              <PolicyRegistrationTable hmacs={walletConfig.ledgerPolicyHmacs} />
+            ) : (
+              <Box my={1}>
+                <Typography variant="body2">
+                  (No known registrations available.)
+                </Typography>
+              </Box>
+            )}
           </Box>
         </AccordionDetails>
       </Accordion>
