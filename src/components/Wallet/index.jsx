@@ -323,9 +323,14 @@ class CreateWallet extends React.Component {
         setExtendedPublicKeyImporterFinalized(number, true);
       }
     );
-    walletConfiguration.ledgerPolicyHmacs.forEach(
-      updateWalletPolicyRegistrations
-    );
+
+    // config might not have this field at all, so need to account for it
+    // being empty
+    if (walletConfiguration.ledgerPolicyHmacs) {
+      walletConfiguration.ledgerPolicyHmacs.forEach(
+        updateWalletPolicyRegistrations
+      );
+    }
   };
 
   // add client picker if client === 'unknown'
