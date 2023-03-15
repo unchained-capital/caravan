@@ -35,6 +35,24 @@ const WalletRegistrations = () => {
       return null;
     }
   }, [walletConfig]);
+
+  const missingXfps = useMemo(() => {
+    if (!walletConfig?.extendedPublicKeys) return false;
+    return !walletConfig.extendedPublicKeys.every(
+      (xpub) => xpub?.xfp.length === 8
+    );
+  }, [walletConfig]);
+
+  // should setup to be masked in the future like
+  // with bip32 paths
+  if (missingXfps)
+    return (
+      <Typography color="error">
+        Wallet configuration missing root fingerprints (also known as an xfp).
+        Some devices will be unable to sign.
+      </Typography>
+    );
+
   return (
     <Box my={2}>
       <Accordion>

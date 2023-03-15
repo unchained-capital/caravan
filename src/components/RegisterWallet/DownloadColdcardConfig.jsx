@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { COLDCARD, ConfigAdapter } from "unchained-wallets";
@@ -7,29 +7,17 @@ import { setErrorNotification } from "../../actions/errorNotificationActions";
 import { downloadFile } from "../../utils";
 
 const DownloadColdardConfigButton = ({ ...otherProps }) => {
-  const [disabledButton, setButtonDisabled] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const walletConfig = useSelector(getWalletConfig);
   const dispatch = useDispatch();
 
-  const interaction = useMemo(() => {
-    const hasXfps = walletConfig?.extendedPublicKeys?.every(
-      (xpub) => xpub?.xfp.length === 8
-    );
-    if (hasXfps)
-      return new ConfigAdapter({
-        KEYSTORE: COLDCARD,
-        jsonConfig: walletConfig,
-      });
-
-    // can't set the wallet config without xfps
-    // should setup to be masked in the future like
-    // with bip32 paths
-    setButtonDisabled(true);
-    return null;
-  }, [walletConfig]);
+  const interaction = new ConfigAdapter({
+    KEYSTORE: COLDCARD,
+    jsonConfig: walletConfig,
+  });
 
   const downloadWalletDetails = () => {
-    setButtonDisabled(true);
+    setIsActive(true);
     try {
       const { startingAddressIndex } = walletConfig;
       // If this is a config that's been rekeyed, note that in the name.
@@ -51,7 +39,7 @@ const DownloadColdardConfigButton = ({ ...otherProps }) => {
     } catch (e) {
       dispatch(setErrorNotification(e.message || e));
     } finally {
-      setButtonDisabled(false);
+      setIsActive(false);
     }
   };
 
@@ -59,7 +47,7 @@ const DownloadColdardConfigButton = ({ ...otherProps }) => {
     <Button
       variant="outlined"
       onClick={downloadWalletDetails}
-      disabled={disabledButton}
+      disabled={isActive}
       {...otherProps}
     >
       Download Coldcard Config
