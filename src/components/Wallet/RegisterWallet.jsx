@@ -49,7 +49,8 @@ const WalletRegistrations = () => {
     return (
       <Typography color="error">
         Wallet configuration missing root fingerprints (also known as an xfp).
-        Some devices will be unable to sign.
+        Some devices will be unable to sign until all keys are used to rebuild
+        the multisig wallet.
       </Typography>
     );
 
