@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import {
   Box,
@@ -10,22 +10,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import { getHmacsWithName } from "../../selectors/wallet";
 
 const PolicyRegistrationTable = ({ hmacs }) => {
-  const extendedPublicKeyImporters = useSelector(
-    (state) => state.quorum.extendedPublicKeyImporters
-  );
-
-  const hmacsWithName = useMemo(() => {
-    return Object.values(extendedPublicKeyImporters)
-      .map((importer) => {
-        const policyHmac = hmacs.find(
-          (hmac) => hmac.xfp === importer.rootXfp
-        )?.policyHmac;
-        return { policyHmac, name: importer.name };
-      })
-      .filter((registration) => registration.policyHmac);
-  }, [hmacs, extendedPublicKeyImporters]);
+  const hmacsWithName = useSelector(getHmacsWithName);
 
   if (!hmacs) {
     return (

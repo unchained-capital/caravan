@@ -30,11 +30,12 @@ import {
   ConfirmMultisigAddress,
 } from "unchained-wallets";
 
+import { useSelector } from "react-redux";
 import ExtendedPublicKeySelector from "../Wallet/ExtendedPublicKeySelector";
 import InteractionMessages from "../InteractionMessages";
 
 import { slicePropTypes } from "../../proptypes";
-import { walletConfigPropType } from "../../proptypes/wallet";
+import { getWalletConfig } from "../../selectors/wallet";
 
 const TEXT = "text";
 
@@ -88,7 +89,8 @@ const interactionReducer = (state, action) => {
   }
 };
 
-const ConfirmAddress = ({ slice, network, walletConfig }) => {
+const ConfirmAddress = ({ slice, network }) => {
+  const walletConfig = useSelector(getWalletConfig);
   const [state, dispatch] = useReducer(
     interactionReducer,
     initialInteractionState
@@ -315,7 +317,6 @@ const ConfirmAddress = ({ slice, network, walletConfig }) => {
 ConfirmAddress.propTypes = {
   slice: PropTypes.shape(slicePropTypes).isRequired,
   network: PropTypes.string,
-  walletConfig: PropTypes.shape(walletConfigPropType).isRequired,
 };
 
 ConfirmAddress.defaultProps = {

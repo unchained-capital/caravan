@@ -37,16 +37,16 @@ const PolicyInfo = ({ keys }) => {
     (state) => state.quorum.extendedPublicKeyImporters
   );
 
-  const keyOriginsWithName = Object.values(extendedPublicKeyImporters).map(
-    (importer) => {
+  const keyOriginsWithName = useMemo(() => {
+    return Object.values(extendedPublicKeyImporters).map((importer) => {
       const origin = keys.find(
         (key) =>
           key.includes(importer.rootXfp) &&
           key.includes(importer.extendedPublicKey)
       );
       return { origin, name: importer.name };
-    }
-  );
+    });
+  }, [extendedPublicKeyImporters, keys]);
 
   return (
     <>
