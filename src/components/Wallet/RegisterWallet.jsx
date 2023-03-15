@@ -46,12 +46,14 @@ const WalletRegistrations = () => {
         >
           <Box>
             <Typography variant="h5">Wallet Registration</Typography>
-            <Box my={1}>
-              <Alert severity="info">
-                <AlertTitle>Wallet Policy Details</AlertTitle>
-                Policy template: <code>{policy.template}</code>
-              </Alert>
-            </Box>
+            {policy?.template && (
+              <Box my={1}>
+                <Alert severity="info">
+                  <AlertTitle>Wallet Policy Details</AlertTitle>
+                  Policy template: <code>{policy.template}</code>
+                </Alert>
+              </Box>
+            )}
             <Typography variant="caption">
               Some devices allow a multisig wallet to be registered in order to
               verify addresses and transactions
