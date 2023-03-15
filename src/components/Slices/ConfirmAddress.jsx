@@ -146,7 +146,7 @@ const ConfirmAddress = ({ slice, network }) => {
             bip32Path: fullBip32Path,
             multisig,
             walletConfig,
-            policyHmac: state.ledgerPolicyHmac,
+            policyHmac: ledgerPolicyHmac,
           })
         );
         dispatch({ type: "HAS_INTERACTION", value: true });
