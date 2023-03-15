@@ -7,10 +7,12 @@ import {
 } from "react-router-dom";
 
 // Components
-import { Button, Container, createTheme, CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/styles";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 
+import theme from "./theme";
 import Help from "./Help";
 import Wallet from "./Wallet";
 import CreateAddress from "./CreateAddress";
@@ -21,14 +23,12 @@ import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
 import ErrorNotification from "./ErrorNotification";
 
-const theme = createTheme();
-
 const App = () => (
   <ThemeProvider theme={theme}>
     <CssBaseline />
     <div className="App">
       <SnackbarProvider maxSnack={3}>
-        <Container maxWidth="lg">
+        <Container maxWidth={false} sx={{ maxWidth: "1280px" }}>
           <Navbar />
           <ErrorBoundary>
             <Router>

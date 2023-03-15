@@ -64,10 +64,6 @@ const Help = () => (
                     data-cy="setup-address-button"
                     size="large"
                     color="secondary"
-                    style={{
-                      backgroundColor: "#e0e0e0",
-                      color: "rgba(0, 0, 0, 0.87)",
-                    }}
                     href="#/address"
                     startIcon={<SportsVolleyball />}
                   >

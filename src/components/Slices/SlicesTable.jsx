@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Typography, Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -22,6 +22,7 @@ import {
 import Copyable from "../Copyable";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 import SliceDetails from "./SliceDetails";
+import SliceRow from "./SliceRow";
 
 const useStyles = makeStyles((theme) => ({
   panel: {
@@ -114,6 +115,7 @@ const SlicesTable = ({
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
+            <TableCell />
             {columns.length &&
               columns.map((column) => <TableCell>{column.title}</TableCell>)}
           </TableRow>
@@ -121,42 +123,12 @@ const SlicesTable = ({
         <TableBody>
           {slices.length &&
             slices.map((slice) => (
-              <TableRow
-                key={slice.lastUsedTime}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="td" scope="row" colSpan={columns.length}>
-                  <Box p={1} className={classes.panel}>
-                    <SliceDetails
-                      client={client}
-                      slice={slice}
-                      network={network}
-                    />
-                  </Box>
-                </TableCell>
-              </TableRow>
+              <SliceRow key={slice.lastUsedTime} row={slice} />
             ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
-  // return (
-  // <MaterialTable
-  //   options={options}
-  //   columns={columns}
-  //   data={slices}
-  //   detailPanel={[
-  //     {
-  //       tooltip: "Address Details",
-  //       render: (rowData) => (
-  //         <Box p={1} className={classes.panel}>
-  //           <SliceDetails client={client} slice={rowData} network={network} />
-  //         </Box>
-  //       ),
-  //     },
-  //   ]}
-  // />
-  // );
 };
 
 SlicesTable.propTypes = {
