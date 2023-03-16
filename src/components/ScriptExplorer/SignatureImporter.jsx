@@ -144,6 +144,7 @@ class SignatureImporter extends React.Component {
       requiredSigners,
       addressType,
       walletName,
+      ledgerPolicyHmacs,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -171,6 +172,7 @@ class SignatureImporter extends React.Component {
             quorum: { requiredSigners },
             extendedPublicKeys,
             name: walletName,
+            ledgerPolicyHmacs,
           }}
         />
       );
@@ -584,6 +586,8 @@ SignatureImporter.propTypes = {
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
   walletName: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  ledgerPolicyHmacs: PropTypes.array.isRequired,
 };
 
 SignatureImporter.defaultProps = {
@@ -601,6 +605,7 @@ function mapStateToProps(state, ownProps) {
     },
     ...state.spend.transaction,
     requiredSigners: state.settings.requiredSigners,
+    ledgerPolicyHmacs: state.wallet.common.ledgerPolicyHmacs,
     extendedPublicKeys: Object.values(
       state.quorum.extendedPublicKeyImporters
     ).map((key) => ({

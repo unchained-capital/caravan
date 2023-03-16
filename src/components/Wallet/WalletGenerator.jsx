@@ -27,6 +27,7 @@ import {
 } from "../../blockchain";
 import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
+import RegisterWallet from "./RegisterWallet";
 import WalletControl from "./WalletControl";
 import WalletConfigInteractionButtons from "./WalletConfigInteractionButtons";
 import { setFrozen } from "../../actions/settingsActions";
@@ -36,6 +37,7 @@ import {
   resetNodesFetchErrors as resetNodesFetchErrorsAction,
   resetWallet as resetWalletAction,
   initialLoadComplete as initialLoadCompleteAction,
+  updateWalletPolicyRegistrationsAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import { setExtendedPublicKeyImporterVisible } from "../../actions/extendedPublicKeyImporterActions";
@@ -46,8 +48,6 @@ import {
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
-
-// const bitcoin = require('bitcoinjs-lib');
 
 class WalletGenerator extends React.Component {
   constructor(props) {
@@ -372,6 +372,11 @@ class WalletGenerator extends React.Component {
                 {configuring ? "Hide Key Selection" : "Edit Details"}
               </Button>
               <ConfirmWallet />
+              <Grid container>
+                <Grid item>
+                  <RegisterWallet />
+                </Grid>
+              </Grid>
               <p>
                 You have imported all&nbsp;
                 {totalSigners} extended public keys. You will need to save this
@@ -544,6 +549,7 @@ const mapDispatchToProps = {
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
   }),
   initialLoadComplete: initialLoadCompleteAction,
+  updateWalletPolicyRegistrations: updateWalletPolicyRegistrationsAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);
