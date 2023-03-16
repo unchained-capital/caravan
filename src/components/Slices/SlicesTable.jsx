@@ -1,13 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Typography } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import MaterialTable from "material-table";
+import { Box, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
@@ -22,7 +16,6 @@ import {
 import Copyable from "../Copyable";
 import { slicePropTypes, clientPropTypes } from "../../proptypes";
 import SliceDetails from "./SliceDetails";
-import SliceRow from "./SliceRow";
 
 const useStyles = makeStyles((theme) => ({
   panel: {
@@ -111,23 +104,21 @@ const SlicesTable = ({
   // filter out any columns that should be disabled
   columns = columns.filter((column) => !disabled.includes(column.field));
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            {columns.length &&
-              columns.map((column) => <TableCell>{column.title}</TableCell>)}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {slices.length &&
-            slices.map((slice) => (
-              <SliceRow key={slice.lastUsedTime} row={slice} />
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <MaterialTable
+      options={options}
+      columns={columns}
+      data={slices}
+      detailPanel={[
+        {
+          tooltip: "Address Details",
+          render: (rowData) => (
+            <Box p={1} className={classes.panel}>
+              <SliceDetails client={client} slice={rowData} network={network} />
+            </Box>
+          ),
+        },
+      ]}
+    />
   );
 };
 

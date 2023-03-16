@@ -21,7 +21,7 @@ const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
         <Button
           onClick={(e) => handleClearClick(e)}
           variant="contained"
-          color="secondary"
+          color="warning"
         >
           Clear Wallet
         </Button>
