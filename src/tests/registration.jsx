@@ -14,11 +14,6 @@ class RegisterWalletPolicyTest extends Test {
     return `Confirm ${this.params.network} ${this.params.type} multisig wallet policy`;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  postprocess(result) {
-    return result;
-  }
-
   expected() {
     return this.params.policyHmac;
   }

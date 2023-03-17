@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Table,
   TableHead,
@@ -10,57 +10,115 @@ import {
   Box,
 } from "@mui/material";
 import { Alert } from "@mui/lab";
+import { MultisigWalletPolicy } from "unchained-wallets";
+import { getWalletConfig } from "../../selectors/wallet";
 
-class WalletConfirmation extends React.Component {
-  render = () => {
-    const { startingAddressIndex } = this.props;
+const ConfirmationInfo = () => {
+  const extendedPublicKeyImporters = useSelector(
+    (state) => state.quorum.extendedPublicKeyImporters
+  );
+  return (
+    <>
+      {Object.values(extendedPublicKeyImporters).map((importer) => (
+        <TableRow key={importer.extendedPublicKey}>
+          <TableCell>{importer.name}</TableCell>
+          <TableCell>
+            {importer.method === "text" ? "N/A" : importer.bip32Path}
+          </TableCell>
+          <TableCell>{importer.extendedPublicKey}</TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
+};
+
+const PolicyInfo = ({ keys }) => {
+  const extendedPublicKeyImporters = useSelector(
+    (state) => state.quorum.extendedPublicKeyImporters
+  );
+
+  const keyOriginsWithName = useMemo(() => {
+    return Object.values(extendedPublicKeyImporters).map((importer) => {
+      const origin = keys.find(
+        (key) =>
+          key.includes(importer.rootXfp) &&
+          key.includes(importer.extendedPublicKey)
+      );
+      return { origin, name: importer.name };
+    });
+  }, [extendedPublicKeyImporters, keys]);
+
+  return (
+    <>
+      {keyOriginsWithName.map(({ origin, name }) => (
+        <TableRow key={origin}>
+          <TableCell>{name}</TableCell>
+          <TableCell>{origin}</TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
+};
+
+PolicyInfo.propTypes = {
+  keys: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+
+const WalletConfirmation = () => {
+  const startingAddressIndex = useSelector(
+    (state) => state.settings.startingAddressIndex
+  );
+  const walletConfig = useSelector(getWalletConfig);
+
+  const policy = useMemo(() => {
+    // there could be edge cases where not all
+    // info from config matches what we need for a policy
+    try {
+      return MultisigWalletPolicy.FromWalletConfig(walletConfig);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return null;
+    }
+  }, [walletConfig]);
+
+  if (policy)
     return (
       <Box>
-        {startingAddressIndex > 0 && (
-          <Alert severity="info">
-            Starting Address Index set to {startingAddressIndex}
-          </Alert>
-        )}
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>BIP32 Path</TableCell>
-              <TableCell>Extended Public Key</TableCell>
+              <TableCell>Key Origin</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{this.renderConfirmationInfo()}</TableBody>
+          <TableBody>
+            <PolicyInfo keys={policy.keys} />
+          </TableBody>
         </Table>
       </Box>
     );
-  };
-
-  renderConfirmationInfo = () => {
-    const { extendedPublicKeyImporters } = this.props;
-    return Object.values(extendedPublicKeyImporters).map((importer) => (
-      <TableRow key={importer.extendedPublicKey}>
-        <TableCell>{importer.name}</TableCell>
-        <TableCell>
-          {importer.method === "text" ? "N/A" : importer.bip32Path}
-        </TableCell>
-        <TableCell>{importer.extendedPublicKey}</TableCell>
-      </TableRow>
-    ));
-  };
-}
-
-WalletConfirmation.propTypes = {
-  startingAddressIndex: PropTypes.number.isRequired,
-  extendedPublicKeyImporters: PropTypes.shape({}).isRequired,
+  return (
+    <Box>
+      {startingAddressIndex > 0 && (
+        <Alert severity="info">
+          Starting Address Index set to {startingAddressIndex}
+        </Alert>
+      )}
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>BIP32 Path</TableCell>
+            <TableCell>Extended Public Key</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <ConfirmationInfo />
+        </TableBody>
+      </Table>
+    </Box>
+  );
 };
 
-function mapStateToProps(state) {
-  return {
-    startingAddressIndex: state.settings.startingAddressIndex,
-    extendedPublicKeyImporters: state.quorum.extendedPublicKeyImporters,
-  };
-}
-
-const mapDispatchToProps = {};
-
-export default connect(mapStateToProps, mapDispatchToProps)(WalletConfirmation);
+export default WalletConfirmation;

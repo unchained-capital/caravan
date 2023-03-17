@@ -14,6 +14,10 @@ const getTotalSigners = (state) => state.settings.totalSigners;
 const getRequiredSigners = (state) => state.settings.requiredSigners;
 const getStartingAddressIndex = (state) => state.settings.startingAddressIndex;
 const getWalletName = (state) => state.wallet.common.walletName;
+const getExtendedPublicKeyImporters = (state) =>
+  state.quorum.extendedPublicKeyImporters;
+const getWalletLedgerPolicyHmacs = (state) =>
+  state.wallet.common.ledgerPolicyHmacs;
 const getClientDetails = (state) => {
   if (state.client.type === "private") {
     return `{
@@ -228,6 +232,7 @@ export const getWalletDetailsText = createSelector(
     getTotalSigners,
     getExtendedPublicKeysBIP32Paths,
     getStartingAddressIndex,
+    getWalletLedgerPolicyHmacs,
   ],
   (
     walletName,
@@ -237,7 +242,8 @@ export const getWalletDetailsText = createSelector(
     requiredSigners,
     totalSigners,
     extendedPublicKeys,
-    startingAddressIndex
+    startingAddressIndex,
+    ledgerPolicyHmacs = []
   ) => {
     return `{
   "name": "${walletName}",
@@ -251,7 +257,28 @@ export const getWalletDetailsText = createSelector(
   "extendedPublicKeys": [
     ${extendedPublicKeys}
   ],
-  "startingAddressIndex": ${startingAddressIndex}
+  "startingAddressIndex": ${startingAddressIndex},
+  "ledgerPolicyHmacs": [${ledgerPolicyHmacs.map(JSON.stringify).join(", ")}]
 }`;
+  }
+);
+
+export const getWalletConfig = createSelector(
+  [getWalletDetailsText],
+  JSON.parse
+);
+
+export const getHmacsWithName = createSelector(
+  getExtendedPublicKeyImporters,
+  getWalletLedgerPolicyHmacs,
+  (extendedPublicKeys, policyHmacs) => {
+    return Object.values(extendedPublicKeys)
+      .map((importer) => {
+        const policyHmac = policyHmacs.find(
+          (hmac) => hmac.xfp === importer.rootXfp
+        )?.policyHmac;
+        return { policyHmac, name: importer.name };
+      })
+      .filter((registration) => registration.policyHmac);
   }
 );
