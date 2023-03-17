@@ -276,6 +276,12 @@ class WalletGenerator extends React.Component {
     setTimeout(() => this.addNode(isChange, nextBIP32Path, true));
   };
 
+  async handlePasswordEnter(event) {
+    event.preventDefault();
+    this.debouncedTestConnection.cancel();
+    await this.testConnection(this.props, this.generate);
+  }
+
   refreshNodes = async () => {
     const { change, deposits, resetNodesFetchErrors } = this.props;
     const allNodes = Object.values(deposits.nodes).concat(
@@ -326,12 +332,6 @@ class WalletGenerator extends React.Component {
       extendedPublicKey.addBase58String();
       return extendedPublicKey;
     });
-  }
-
-  async handlePasswordEnter(event) {
-    event.preventDefault();
-    this.debouncedTestConnection.cancel();
-    await this.testConnection(this.props, this.generate);
   }
 
   async handlePasswordChange(event) {
