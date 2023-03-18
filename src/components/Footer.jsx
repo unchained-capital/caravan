@@ -7,6 +7,11 @@ import { externalLink } from "../utils";
 // Assets
 import logo from "../images/logo.png";
 
+/* eslint-disable */
+const APP_VERSION = VITE_APP_VERSION;
+const GIT_SHA = VITE_GIT_SHA;
+/* eslint-enable */
+
 const Footer = () => (
   <Box mt={2}>
     <hr />
@@ -32,7 +37,7 @@ const Footer = () => (
       </Grid>
 
       <Grid item sm={2} align="right">
-        <p>{`v${VITE_APP_VERSION} commit: ${VITE_GIT_SHA}`}</p>
+        <p>{`v${APP_VERSION} commit: ${GIT_SHA}`}</p>
       </Grid>
     </Grid>
   </Box>
