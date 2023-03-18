@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import {
+  Alert,
   Table,
   TableHead,
   TableBody,
@@ -9,7 +10,6 @@ import {
   TableCell,
   Box,
 } from "@mui/material";
-import { Alert } from "@mui/lab";
 import { MultisigWalletPolicy } from "unchained-wallets";
 import { getWalletConfig } from "../../selectors/wallet";
 

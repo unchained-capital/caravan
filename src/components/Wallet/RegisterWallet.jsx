@@ -2,16 +2,17 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import {
+  Alert,
+  AlertTitle,
   Box,
   Grid,
   Typography,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  makeStyles,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { ExpandMoreOutlined } from "@mui/icons-material";
-import { Alert, AlertTitle } from "@mui/lab";
 import { MultisigWalletPolicy } from "unchained-wallets/lib/policy";
 
 import { getWalletConfig } from "../../selectors/wallet";
