@@ -49,8 +49,8 @@
     "vite": "^4.1.0"
   },
   "scripts": {
-    "build": "npm run check && REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired build",
-    "build:ci": "npm run ci && REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired build",
+    "build": "npm run check && VITE_GIT_SHA=`git rev-parse --short HEAD` vite build",
+    "build:ci": "npm run ci && VITE_GIT_SHA=`git rev-parse --short HEAD` vite build",
     "check": "npm run lint && npm run test:ci",
     "ci": "npm run lint && npm run commitlint-travis && npm run test:ci",
     "commit": "./node_modules/cz-customizable/standalone.js",
@@ -60,12 +60,11 @@
     "commitlint-travis": "commitlint-travis",
     "predeploy": "npm run build",
     "release": "standard-version",
-    "start": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` HTTPS=true react-app-rewired start",
-    "test": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-app-rewired test",
-    "test:ci": "CI=true react-app-rewired test --coverage",
+    "start": "HTTPS=true npm run preview",
+    "test": "VITE_GIT_SHA=`git rev-parse --short HEAD` mocha src/tests",
+    "test:ci": "CI=true mocha --coverage",
     "dev": "VITE_GIT_SHA=`git rev-parse --short HEAD` vite",
-    "build:vite": "npm run check && VITE_GIT_SHA=`git rev-parse --short HEAD` vite build",
-    "preview": "vite preview"
+    "preview": "VITE_GIT_SHA=`git rev-parse --short HEAD` vite preview"
   },
   "husky": {
     "hooks": {
