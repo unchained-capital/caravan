@@ -10,7 +10,6 @@ export default defineConfig({
     outDir: "build",
   },
   define: {
-    VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
     VITE_GIT_SHA: JSON.stringify(process.env.VITE_GIT_SHA),
   },
   optimizeDeps: {
