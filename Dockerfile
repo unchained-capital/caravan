@@ -9,11 +9,10 @@ RUN apt-get update --yes && \
 
 # Copy over required files for build
 WORKDIR /var/app
-COPY config /var/app/config
 COPY fixtures /var/app/fixtures
 COPY public /var/app/public
 COPY src /var/app/src
-COPY .babelrc .env .eslintignore .eslintrc package-lock.json package.json /var/app/
+COPY babel.config.json .env .eslintignore .eslintrc package-lock.json package.json /var/app/
 
 # Build the app
 RUN npm install
