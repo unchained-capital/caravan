@@ -20,7 +20,7 @@ safekeep the addresses (and redeem scripts & BIP32 paths) you create.
 
 ## Installation
 
-Caravan is a stateless pure HTML & JavaScript web application.  It can
+Caravan is a stateless pure HTML & JavaScript web application. It can
 be run in any web browser from a local or remote installation.
 
 ### Unchained Capital GitHub
@@ -35,18 +35,18 @@ a copy of Caravan hosted on GitHub by
 If you would prefer to host your own copy of Caravan on GitHub, you
 can do so by first forking the
 [Caravan repository](https://github.com/unchained-capital/caravan)
-into your own GitHub organization.  You should see a copy of the
+into your own GitHub organization. You should see a copy of the
 Caravan web application at
 `https://YOUR_GITHUB_USERNAME.github.io/caravan`.
 
 If not, go to the (newly forked) repository's "Settings" page and
-scroll down to the "GitHub Pages" section.  Ensure you see a message
+scroll down to the "GitHub Pages" section. Ensure you see a message
 saying "Your site is published at ...".
 
 ### Host Locally
 
 You can always clone the source code of Caravan to your local machine
-and run it from there.  You will require a recent `npm` installation.
+and run it from there. You will require a recent `npm` installation.
 
 ```bash
 $ git clone https://github.com/unchained-capital/caravan
@@ -54,11 +54,11 @@ $ git clone https://github.com/unchained-capital/caravan
 $ cd caravan
 $ npm install
 ...
-$ npm start
+$ npm run dev
 ...
 ```
 
-Now visit `https://localhost:3000` to interact with your local copy of
+Now visit `https://localhost:5137` to interact with your local copy of
 Caravan.
 
 ### Host Remotely
@@ -73,16 +73,25 @@ $ npm run build
 ...
 ```
 
+You can test the production build locally at `http://localhost:4173/` by running:
+
+```bash
+$ npm start
+...
+```
+
 ### Docker
 
 A basic dockerfile which builds the app and serves it via nginx is included in the repository
 
 To build the docker image:
+
 ```bash
 docker build . -t caravan:latest
 ```
 
 To run the built docker image:
+
 ```bash
 docker run -p 80:8000 caravan:latest
 ```
@@ -95,7 +104,7 @@ If you can access the [Caravan web
 application](https://unchained-capital.github.io/caravan) in your
 browser, you are ready to start using Caravan.
 
-Click the *Create* or *Interact* links in the navbar to get started.
+Click the _Create_ or _Interact_ links in the navbar to get started.
 
 See our [YouTube
 playlist](https://www.youtube.com/playlist?list=PLUM8mrUjWoPRsVGEZ1gTntqPd4xrQZoiH)
@@ -106,11 +115,11 @@ for some tutorial videos.
 Caravan can connect to several different hardware wallets and key
 management software.
 
-* [Trezor One](https://shop.trezor.io/product/trezor-one-white) (installing the Trezor Bridge is required to interact with a Trezor device)
+- [Trezor One](https://shop.trezor.io/product/trezor-one-white) (installing the Trezor Bridge is required to interact with a Trezor device)
 
-* [Ledger Nano S](https://www.ledger.com/products/ledger-nano-s)
+- [Ledger Nano S](https://www.ledger.com/products/ledger-nano-s)
 
-* [Hermit](https://github.com/unchained-capital/hermit)
+- [Hermit](https://github.com/unchained-capital/hermit)
 
 Caravan also accepts public keys and signatures as text so any wallet
 which can export these data can be made to work with Caravan.
@@ -134,7 +143,7 @@ CORS headers are essential to protecting the security of your coins and you will
 need to add the appropriate headers.
 
 To correct this problem, you must add appropriate access control
-headers to your node's HTTP responses.  When running Caravan on your
+headers to your node's HTTP responses. When running Caravan on your
 local machine, for example, you may need to set
 `Access-Control-Allow-Origin: https://localhost:3000`.
 
@@ -243,7 +252,7 @@ curl --user my_uname --data-binary \
 Both tests should result in the same output with the current block height, e.g.
 
 ```json
-{"result":668255,"error":null,"id":"curltest"}
+{ "result": 668255, "error": null, "id": "curltest" }
 ```
 
 If you are running a bitcoind node on the same machine as Caravan,
