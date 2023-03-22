@@ -19,6 +19,9 @@
   "engines": {
     "node": ">=16"
   },
+  "overrides": {
+    "jspdf": "2.5.1"
+  },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
