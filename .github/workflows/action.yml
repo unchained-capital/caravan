@@ -1,0 +1,13 @@
+name: "Deploy caravan to gh-pages"
+
+on:
+  push:
+    branches: [ "refactor-vite-build" ]
+  pull_request:
+    branches: [ "refactor-vite-build" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run deploy
