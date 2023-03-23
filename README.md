@@ -145,7 +145,7 @@ need to add the appropriate headers.
 To correct this problem, you must add appropriate access control
 headers to your node's HTTP responses. When running Caravan on your
 local machine, for example, you may need to set
-`Access-Control-Allow-Origin: https://localhost:3000`.
+`Access-Control-Allow-Origin: https://localhost:5137`.
 
 This can be done using a webserver such as
 [nginx](https://www.nginx.com) or [Apache](https://httpd.apache.org),
