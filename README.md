@@ -135,7 +135,7 @@ node](https://bitcoin.org/en/full-node).
 
 #### Adding CORS Headers
 
-When asking Caravan to use a private bitcoind node you may run into
+When asking Caravan to use a private bitcoind node, you may run into
 [CORS issues](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 This is because [bitcoin-core](https://github.com/bitcoin/bitcoin/pull/12040)
 does not natively support CORS headers. Because of how `caravan` is designed,
