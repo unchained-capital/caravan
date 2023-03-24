@@ -6,7 +6,6 @@ import ReduxPromise from "redux-promise";
 import thunk from "redux-thunk";
 
 import App from "./components/AppContainer";
-import registerServiceWorker from "./registerServiceWorker";
 import reducers from "./reducers";
 
 /* eslint-disable-next-line no-underscore-dangle */
@@ -22,4 +21,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById("app")
 );
-registerServiceWorker();
