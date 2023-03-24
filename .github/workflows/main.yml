@@ -1,11 +1,13 @@
 name: Release Caravan
+
 on:
   push:
     branches:
-      - refactor-vite-build
+      - "refactor-vite-build"
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,15 +19,14 @@ jobs:
         with:
           node-version: "16"
 
+      - name: Install Linux deps
+        run: sudo apt-get update && sudo apt-get install libudev-dev libusb-1.0-0-dev
+
       - name: Install and Build
-        run: |
-          sudo apt-get update
-          sudo apt-get install libudev-dev libusb-1.0-0-dev
-          npm install
-          npm run build
+        run: npm install && npm run build
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@4.4.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages

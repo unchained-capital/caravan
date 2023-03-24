@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/unchained-capital/caravan/issues"
   },
-  "homepage": "https://unchained-capital.github.io/caravan",
+  "homepage": "https://dylanbathurst.github.io/caravan",
   "engineStrict": true,
   "engines": {
     "node": ">=16"
