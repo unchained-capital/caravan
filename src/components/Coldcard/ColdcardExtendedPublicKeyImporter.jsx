@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { COLDCARD } from "unchained-wallets";
-import { FormGroup, FormHelperText } from "@mui/material";
+import { Box, FormGroup, FormHelperText } from "@mui/material";
 import { MAINNET, P2SH } from "unchained-bitcoin";
 import { ColdcardJSONReader } from ".";
 import IndirectExtendedPublicKeyImporter from "../Wallet/IndirectExtendedPublicKeyImporter";
@@ -67,20 +67,22 @@ class ColdcardExtendedPublicKeyImporter extends React.Component {
     } = this.props;
     const { extendedPublicKeyError, COLDCARD_MULTISIG_BIP32_PATH } = this.state;
     return (
-      <FormGroup>
-        <IndirectExtendedPublicKeyImporter
-          extendedPublicKeyImporter={extendedPublicKeyImporter}
-          validateAndSetExtendedPublicKey={validateAndSetExtendedPublicKey}
-          validateAndSetBIP32Path={validateAndSetBIP32Path}
-          validateAndSetRootFingerprint={validateAndSetRootFingerprint}
-          addressType={addressType}
-          network={network}
-          resetBIP32Path={this.resetColdcardBIP32Path}
-          defaultBIP32Path={COLDCARD_MULTISIG_BIP32_PATH}
-          Reader={ColdcardJSONReader}
-        />
-        <FormHelperText error>{extendedPublicKeyError}</FormHelperText>
-      </FormGroup>
+      <Box mt={2}>
+        <FormGroup>
+          <IndirectExtendedPublicKeyImporter
+            extendedPublicKeyImporter={extendedPublicKeyImporter}
+            validateAndSetExtendedPublicKey={validateAndSetExtendedPublicKey}
+            validateAndSetBIP32Path={validateAndSetBIP32Path}
+            validateAndSetRootFingerprint={validateAndSetRootFingerprint}
+            addressType={addressType}
+            network={network}
+            resetBIP32Path={this.resetColdcardBIP32Path}
+            defaultBIP32Path={COLDCARD_MULTISIG_BIP32_PATH}
+            Reader={ColdcardJSONReader}
+          />
+          <FormHelperText error>{extendedPublicKeyError}</FormHelperText>
+        </FormGroup>
+      </Box>
     );
   };
 

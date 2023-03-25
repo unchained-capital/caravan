@@ -14,12 +14,11 @@ import {
   CardHeader,
   CardContent,
   FormControl,
-  Select,
   MenuItem,
-  InputLabel,
   Button,
   FormHelperText,
   Box,
+  TextField,
 } from "@mui/material";
 import { withStyles } from "@mui/styles";
 import Copyable from "../Copyable";
@@ -40,7 +39,6 @@ import ColdcardExtendedPublicKeyImporter from "../Coldcard/ColdcardExtendedPubli
 import HermitExtendedPublicKeyImporter from "../Hermit/HermitExtendedPublicKeyImporter";
 
 const TEXT = "text";
-const UNKNOWN = "unknown";
 
 const useStyles = () => ({
   xpub: {
@@ -72,29 +70,25 @@ class ExtendedPublicKeyImporter extends React.Component {
   renderImport = () => {
     const { extendedPublicKeyImporter, number } = this.props;
     const { disableChangeMethod } = this.state;
-    const labelId = `xpub-${number}-importer-select-label`;
     return (
       <div>
         <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Method</InputLabel>
-
-          <Select
-            labelId={labelId}
+          <TextField
+            label="Select Method"
             id={`public-key-${number}-importer-select`}
             disabled={disableChangeMethod}
+            select
             value={extendedPublicKeyImporter.method}
             onChange={this.handleMethodChange}
           >
-            <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
             <MenuItem value={COLDCARD}>Coldcard</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
             <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
-          </Select>
+          </TextField>
         </FormControl>
-
-        {this.renderImportByMethod()}
+        <FormControl>{this.renderImportByMethod()}</FormControl>
       </div>
     );
   };
