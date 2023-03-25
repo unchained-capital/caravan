@@ -85,7 +85,7 @@ class HermitSignatureImporter extends React.Component {
         </FormHelperText>
 
         <Box mt={2}>
-          <Grid container justify="center">
+          <Grid container justifyContent="center">
             <Grid item>
               <HermitDisplayer width={400} string={interaction.request()} />
             </Grid>

@@ -28,7 +28,7 @@ class HermitReader extends Component {
       return (
         <div>
           <p>{commandMessage.instructions}</p>
-          <Grid container justify="center" className="mb-2">
+          <Grid container justifyContent="center" className="mb-2">
             <Copyable text={commandMessage.command} showText={false}>
               <code>
                 <strong>{commandMessage.mode}&gt;</strong>{" "}

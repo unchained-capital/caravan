@@ -60,7 +60,7 @@ class MultisigDetails extends React.Component {
               </Grid>
             )}
 
-            <Grid item justify="center" container spacing={3}>
+            <Grid item justifyContent="center" container spacing={3}>
               <Grid item>
                 <Chip label="BTC" />
               </Grid>

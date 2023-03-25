@@ -15,7 +15,7 @@ const GIT_SHA = VITE_GIT_SHA;
 const Footer = () => (
   <Box mt={2}>
     <hr />
-    <Grid container justify="space-between" alignItems="center">
+    <Grid container justifyContent="space-between" alignItems="center">
       <Grid item sm={2}>
         {externalLink(
           "https://www.unchained-capital.com",

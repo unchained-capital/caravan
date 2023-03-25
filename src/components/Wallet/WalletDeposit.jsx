@@ -131,7 +131,7 @@ class WalletDeposit extends React.Component {
           <CardContent>
             <Grid
               container
-              justify="center"
+              justifyContent="center"
               direction="column"
               alignItems="center"
             >

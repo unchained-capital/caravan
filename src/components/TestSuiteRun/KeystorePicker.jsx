@@ -70,7 +70,7 @@ class KeystorePickerBase extends React.Component {
     const { type, status, version } = this.props;
     return (
       <Box>
-        <Grid container spacing={2} justify="center">
+        <Grid container spacing={2} justifyContent="center">
           <Grid item md={4}>
             <FormControl fullWidth>
               <InputLabel id="keystore-select-label">Type</InputLabel>

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
@@ -28,10 +28,10 @@ const App = () => (
     <CssBaseline />
     <div className="App">
       <SnackbarProvider maxSnack={3}>
-        <Container maxWidth={false} sx={{ maxWidth: "1280px" }}>
-          <Navbar />
-          <ErrorBoundary>
-            <Router>
+        <Router basename="/caravan">
+          <Container maxWidth={false} sx={{ maxWidth: "1280px" }}>
+            <Navbar />
+            <ErrorBoundary>
               <Switch>
                 <Route path="/test" component={TestSuiteRun} />
                 <Route path="/address" component={CreateAddress} />
@@ -41,11 +41,11 @@ const App = () => (
                 <Route path="/help" component={Help} />
                 <Route path="/" component={Help} />
               </Switch>
-            </Router>
-            <ErrorNotification />
-          </ErrorBoundary>
-          <Footer />
-        </Container>
+              <ErrorNotification />
+            </ErrorBoundary>
+            <Footer />
+          </Container>
+        </Router>
       </SnackbarProvider>
     </div>
   </ThemeProvider>

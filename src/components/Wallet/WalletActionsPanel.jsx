@@ -83,7 +83,7 @@ const WalletActionsPanel = ({
     <Card className={classes.card}>
       <CardHeader title="Wallet Actions" />
       <CardContent className={classes.cardContent}>
-        <Grid container spacing={1} alignItems="center" justify="center">
+        <Grid container spacing={1} alignItems="center" justifyContent="center">
           <Grid item xs={12}>
             <ButtonGroup variant="outlined">
               <ButtonWithTooltip

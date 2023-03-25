@@ -50,7 +50,7 @@ function TabPanel({ children, value, index, ...other }) {
   return (
     <Grid
       container
-      justify="center"
+      justifyContent="center"
       style={{ display: value === index ? "inherit" : "none" }}
       {...other}
     >

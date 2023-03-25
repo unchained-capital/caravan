@@ -175,7 +175,7 @@ class TestSuiteRunBase extends React.Component {
             testRunIndex={testSuiteRun.currentTestRunIndex}
           />
           <Box mt={2}>
-            <Grid container justify="space-between">
+            <Grid container justifyContent="space-between">
               <Grid item>
                 <Button
                   disabled={this.isFirstTest() || this.currentTestIsActive()}

@@ -408,7 +408,7 @@ class OutputsForm extends React.Component {
 
         {!isWallet && (
           <Box mt={actionMt}>
-            <Grid container spacing={3} justify="center">
+            <Grid container spacing={3} justifyContent="center">
               <Grid item>
                 <Button
                   variant="contained"

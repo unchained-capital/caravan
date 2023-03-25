@@ -65,7 +65,7 @@ class PublicKeyImporter extends React.Component {
   title = () => {
     const { number, totalSigners, publicKeyImporter, setName } = this.props;
     return (
-      <Grid container justify="space-between">
+      <Grid container justifyContent="space-between">
         <Grid item>
           <EditableName
             number={number}
@@ -74,7 +74,7 @@ class PublicKeyImporter extends React.Component {
           />
         </Grid>
         <Grid item>
-          <Grid container justify="flex-end">
+          <Grid container justifyContent="flex-end">
             <Button
               type="button"
               variant="contained"
@@ -241,7 +241,7 @@ class PublicKeyImporter extends React.Component {
       return (
         <Box mt={4}>
           <p>The BIP32 path for this public key is:</p>
-          <Grid container justify="center">
+          <Grid container justifyContent="center">
             <Copyable text={publicKeyImporter.bip32Path} code />
           </Grid>
           <Box mt={4}>
@@ -265,7 +265,7 @@ class PublicKeyImporter extends React.Component {
     return (
       <div>
         <p>The following public key was imported:</p>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <Copyable text={publicKeyImporter.publicKey} showIcon code />
         </Grid>
         {this.renderBIP32Path()}

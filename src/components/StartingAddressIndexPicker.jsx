@@ -58,7 +58,7 @@ class StartingAddressIndexPicker extends React.Component {
     } = this.state;
     return (
       <Card>
-        <Grid container justify="space-between">
+        <Grid container justifyContent="space-between">
           <CardHeader title="Starting Address Index" />
         </Grid>
         <CardContent>
