@@ -34,8 +34,6 @@ import {
   setPublicKeyImporterPublicKey,
 } from "../../actions/ownershipActions";
 
-// import "react-table-6/react-table.css";
-
 class ConfirmOwnership extends React.Component {
   titleRef = React.createRef();
 

@@ -35,7 +35,6 @@ import {
   setSignatureImporterFinalized,
   setSignatureImporterComplete,
 } from "../../actions/signatureImporterActions";
-// import "react-table-6/react-table.css";
 import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
 
 const TEXT = "text";

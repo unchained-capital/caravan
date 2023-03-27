@@ -24,7 +24,6 @@ import Copyable from "../Copyable";
 import { setInputs as setInputsAction } from "../../actions/transactionActions";
 
 // Assets
-// import "react-table-6/react-table.css";
 import styles from "./styles.module.scss";
 
 class UTXOSet extends React.Component {
