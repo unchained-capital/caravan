@@ -44,6 +44,7 @@ const PrivateClientSettings = ({
             fullWidth
             label="URL"
             value={client.url}
+            variant="standard"
             onChange={handleUrlChange}
             error={urlError !== ""}
             helperText={urlError}
@@ -56,6 +57,7 @@ const PrivateClientSettings = ({
             fullWidth
             label="Username"
             value={client.username}
+            variant="standard"
             onChange={handleUsernameChange}
             error={usernameError !== ""}
             helperText={usernameError}
@@ -69,6 +71,7 @@ const PrivateClientSettings = ({
             type="password"
             label="Password"
             value={client.password}
+            variant="standard"
             onChange={handlePasswordChange}
             error={passwordError !== ""}
             helperText={passwordError}

@@ -42,6 +42,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
             name="extendedPublicKey"
             label="Extended Public Key"
             value={extendedPublicKey}
+            variant="standard"
             onChange={this.handleExtendedPublicKeyChange}
             error={this.hasExtendedPublicKeyError()}
             helperText={extendedPublicKeyError}
@@ -65,6 +66,7 @@ class ExtendedPublicKeyPublicKeyImporter extends React.Component {
                 label="BIP32 Path (relative to xpub)"
                 type="text"
                 value={bip32Path}
+                variant="standard"
                 onChange={this.handleBIP32PathChange}
                 error={this.hasBIP32PathError()}
                 helperText={bip32PathError}

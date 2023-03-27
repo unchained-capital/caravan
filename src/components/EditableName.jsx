@@ -30,6 +30,7 @@ class EditableName extends React.Component {
               autoFocus
               label="Name"
               value={newName}
+              variant="standard"
               onChange={this.handleChange}
               onFocus={(event) => {
                 setTimeout(event.target.select.bind(event.target), 20);

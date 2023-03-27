@@ -27,6 +27,7 @@ class NoteBase extends React.Component {
         name="notes"
         label="Notes"
         value={note}
+        variant="standard"
         onChange={this.handleChange}
         multiline
         fullWidth

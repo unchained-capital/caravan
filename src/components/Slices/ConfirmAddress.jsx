@@ -6,13 +6,12 @@ import {
   Typography,
   Button,
   FormControl,
-  Select,
   Table,
   TableBody,
   TableRow,
   TableCell,
   MenuItem,
-  InputLabel,
+  TextField,
 } from "@mui/material";
 import {
   ThumbUp as SuccessIcon,
@@ -222,12 +221,13 @@ const ConfirmAddress = ({ slice, network }) => {
       {state.keySelected && (
         <form>
           <FormControl fullWidth>
-            <InputLabel>Select Method</InputLabel>
-
-            <Select
+            <TextField
+              label="Select Method"
               id="confirm-importer-select"
+              select
               value={state.deviceType === "unknown" ? "" : state.deviceType}
               onChange={handleMethodChange}
+              variant="standard"
             >
               <MenuItem value="">{"< Select method >"}</MenuItem>
               <MenuItem value={TREZOR}>Trezor</MenuItem>
@@ -241,7 +241,7 @@ const ConfirmAddress = ({ slice, network }) => {
               <MenuItem value={TEXT} disabled>
                 Enter as text
               </MenuItem>
-            </Select>
+            </TextField>
           </FormControl>
         </form>
       )}

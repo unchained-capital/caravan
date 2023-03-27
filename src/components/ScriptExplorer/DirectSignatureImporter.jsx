@@ -95,6 +95,7 @@ class DirectSignatureImporter extends React.Component {
                   label="BIP32 Path"
                   type="text"
                   value={signatureImporter.bip32Path}
+                  variant="standard"
                   onChange={this.handleBIP32PathChange}
                   disabled={status !== PENDING}
                   error={this.hasBIP32PathError()}

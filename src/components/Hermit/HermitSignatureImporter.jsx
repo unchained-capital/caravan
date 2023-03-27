@@ -58,6 +58,7 @@ class HermitSignatureImporter extends React.Component {
             <TextField
               name="bip32Path"
               value={signatureImporter.bip32Path}
+              variant="standard"
               onChange={this.handleBIP32PathChange}
               disabled={status !== PENDING}
               error={this.hasBIP32PathError()}

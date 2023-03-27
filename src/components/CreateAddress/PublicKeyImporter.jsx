@@ -10,12 +10,11 @@ import {
   CardHeader,
   CardContent,
   FormControl,
-  Select,
   MenuItem,
-  InputLabel,
   Button,
   Grid,
   Box,
+  TextField,
 } from "@mui/material";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
@@ -101,18 +100,18 @@ class PublicKeyImporter extends React.Component {
   renderImport = () => {
     const { publicKeyImporter, number } = this.props;
     const { disableChangeMethod } = this.state;
-    const labelId = `public-key-${number}-importer-select-label`;
+
     return (
       <div>
         <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Method</InputLabel>
-
-          <Select
-            labelId={labelId}
+          <TextField
+            label="Select Method"
             id={`public-key-${number}-importer-select`}
             disabled={disableChangeMethod}
             value={publicKeyImporter.method}
             onChange={this.handleMethodChange}
+            select
+            variant="standard"
           >
             <MenuItem value="">{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
@@ -120,7 +119,7 @@ class PublicKeyImporter extends React.Component {
             <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
-          </Select>
+          </TextField>
         </FormControl>
 
         {this.renderImportByMethod()}

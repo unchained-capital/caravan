@@ -12,9 +12,7 @@ import {
   Card,
   CardHeader,
   CardContent,
-  Select,
   MenuItem,
-  InputLabel,
   FormControl,
   Button,
   Typography,
@@ -22,6 +20,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  TextField,
 } from "@mui/material";
 import HardwareWalletPublicKeyImporter from "../CreateAddress/HardwareWalletPublicKeyImporter";
 import HermitPublicKeyImporter from "../CreateAddress/HermitPublicKeyImporter";
@@ -202,8 +201,6 @@ class ConfirmOwnership extends React.Component {
   render() {
     const { publicKeyImporter } = this.props;
     const { disableChangeMethod } = this.state;
-    const labelId = "public-key-importer-select-label";
-    const selectLabelId = `${labelId}-select`;
 
     return (
       <Card>
@@ -213,20 +210,20 @@ class ConfirmOwnership extends React.Component {
             <p>How will you confirm your ownership of this address?</p>
 
             <FormControl fullWidth>
-              <InputLabel id={labelId}>Select Method</InputLabel>
-
-              <Select
-                labelId={selectLabelId}
+              <TextField
+                label="Select Method"
                 id="public-key-importer-select"
                 disabled={disableChangeMethod}
+                select
                 value={publicKeyImporter.method}
                 onChange={this.handleMethodChange}
+                variant="standard"
               >
                 <MenuItem value="">{"< Select method >"}</MenuItem>
                 <MenuItem value={TREZOR}>Trezor</MenuItem>
                 <MenuItem value={LEDGER}>Ledger</MenuItem>
                 <MenuItem value={HERMIT}>Hermit</MenuItem>
-              </Select>
+              </TextField>
             </FormControl>
 
             {this.renderImportByMethod()}

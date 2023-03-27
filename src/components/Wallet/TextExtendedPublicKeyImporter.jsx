@@ -22,6 +22,7 @@ class TextExtendedPublicKeyImporter extends React.Component {
           name="publicKey"
           label="Extended Public Key"
           value={extendedPublicKeyImporter.extendedPublicKey}
+          variant="standard"
           onChange={this.handleChange}
           error={this.hasError()}
           helperText={error}

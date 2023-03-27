@@ -195,7 +195,7 @@ Derivation: ${test.params.derivation}
               </Button>
             )}
             {this.testComplete() && (
-              <Button color="secondary" onClick={this.reset}>
+              <Button variant="text" color="error" onClick={this.reset}>
                 Reset Test
               </Button>
             )}

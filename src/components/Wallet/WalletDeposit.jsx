@@ -155,6 +155,7 @@ class WalletDeposit extends React.Component {
                     value={amount}
                     error={amountError !== ""}
                     helperText={amountError}
+                    variant="standard"
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">

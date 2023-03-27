@@ -37,6 +37,7 @@ class ColdcardFileReaderBase extends Component {
               <TextField
                 label="BIP32 Path"
                 value={extendedPublicKeyImporter.bip32Path}
+                variant="standard"
                 onChange={handleBIP32PathChange}
                 error={hasError}
                 helperText={errorMessage}

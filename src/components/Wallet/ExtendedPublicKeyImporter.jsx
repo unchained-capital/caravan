@@ -79,6 +79,7 @@ class ExtendedPublicKeyImporter extends React.Component {
             disabled={disableChangeMethod}
             select
             value={extendedPublicKeyImporter.method}
+            variant="standard"
             onChange={this.handleMethodChange}
           >
             <MenuItem value={TREZOR}>Trezor</MenuItem>

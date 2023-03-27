@@ -222,6 +222,7 @@ class OutputEntry extends React.Component {
             disabled={finalizedOutputs}
             onChange={this.handleAddressChange}
             value={address}
+            variant="standard"
             error={this.hasAddressError()}
             helperText={addressError}
             InputProps={this.renderChangeAdornment()}
@@ -237,6 +238,7 @@ class OutputEntry extends React.Component {
             disabled={finalizedOutputs}
             onChange={this.handleAmountChange}
             value={amount}
+            variant="standard"
             error={this.hasAmountError()}
             helperText={amountError}
             InputProps={{

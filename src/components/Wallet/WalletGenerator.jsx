@@ -433,6 +433,7 @@ class WalletGenerator extends React.Component {
                           label="Password"
                           placeholder="Enter bitcoind password"
                           value={client.password}
+                          variant="standard"
                           onChange={(event) => this.handlePasswordChange(event)}
                           error={client.passwordError.length > 0}
                           helperText={client.passwordError}

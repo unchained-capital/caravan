@@ -98,6 +98,7 @@ class StartingAddressIndexPicker extends React.Component {
                 <TextField
                   fullWidth
                   value={startingAddressIndexField}
+                  variant="standard"
                   type="text"
                   name="startingAddressIndex"
                   onChange={this.handleIndexChange}

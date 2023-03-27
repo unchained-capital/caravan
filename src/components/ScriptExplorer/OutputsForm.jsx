@@ -291,6 +291,7 @@ class OutputsForm extends React.Component {
                 <TextField
                   fullWidth
                   value={feeRate}
+                  variant="standard"
                   type="number"
                   minimum={0}
                   step={1}
@@ -337,6 +338,7 @@ class OutputsForm extends React.Component {
                     name="fee_total"
                     disabled={finalizedOutputs}
                     value={feeDisplay}
+                    variant="standard"
                     onChange={this.handleFeeChange}
                     error={this.hasFeeError()}
                     helperText={feeError}
@@ -377,6 +379,7 @@ class OutputsForm extends React.Component {
                   label="Inputs Total"
                   readOnly
                   value={this.inputsTotal().toFixed(8)}
+                  variant="standard"
                   disabled={finalizedOutputs}
                   InputProps={OutputsForm.unitLabel("BTC", { readOnly: true })}
                 />
@@ -392,6 +395,7 @@ class OutputsForm extends React.Component {
                       : ""
                   }
                   value={this.outputsAndFeeTotal()}
+                  variant="standard"
                   error={this.hasBalanceError()}
                   disabled={finalizedOutputs}
                   helperText={balanceError}
