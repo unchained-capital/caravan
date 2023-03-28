@@ -11,7 +11,7 @@ import {
   FormGroup,
   FormLabel,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   getSlicesWithBalance,
   getZeroBalanceSlices,

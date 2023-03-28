@@ -4,13 +4,7 @@ import { connect } from "react-redux";
 
 // Actions
 import { deriveChildPublicKey } from "unchained-bitcoin";
-import {
-  Box,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
-} from "@material-ui/core";
+import { Box, FormControl, MenuItem, TextField } from "@mui/material";
 import {
   setSignatureImporterBIP32Path,
   setSignatureImporterMethod,
@@ -84,7 +78,6 @@ class ExtendedPublicKeySelector extends React.Component {
   renderKeySelectorMenu = () => {
     const { number, signatureImporters, setBIP32Path } = this.props;
     const { selection } = this.state;
-    const labelId = `keySelector${number}`;
 
     const extendedPublicKeyImporter =
       this.getAssociatedExtendedPublicKeyImporter();
@@ -105,17 +98,17 @@ class ExtendedPublicKeySelector extends React.Component {
     return (
       <form>
         <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Key</InputLabel>
-
-          <Select
-            labelId={labelId}
+          <TextField
+            label="Select Key"
             id={`signature-${number}-key-select`}
+            select
             value={selection}
             onChange={this.handleKeyChange}
+            variant="standard"
           >
             <MenuItem value="">{"< Select Extended Public Key >"}</MenuItem>
             {this.renderKeySelectorMenuItems()}
-          </Select>
+          </TextField>
         </FormControl>
       </form>
     );

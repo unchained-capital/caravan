@@ -14,7 +14,7 @@ import {
   FormControlLabel,
   Radio,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 
 // Actions
 import { setNetwork as setNetworkAction } from "../actions/settingsActions";

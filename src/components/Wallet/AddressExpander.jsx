@@ -8,26 +8,29 @@ import {
   Menu,
   MenuItem,
   Button,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Table,
   TableBody,
   TableRow,
   TableCell,
   Typography,
-} from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { ThumbUp as SuccessIcon, Error as ErrorIcon } from "@material-ui/icons";
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import {
+  ThumbUp as SuccessIcon,
+  Error as ErrorIcon,
+} from "@mui/icons-material";
 import {
   blockExplorerAddressURL,
   multisigAddressType,
   NETWORKS,
 } from "unchained-bitcoin";
 import { PENDING, ACTIVE, ConfirmMultisigAddress } from "unchained-wallets";
-import LaunchIcon from "@material-ui/icons/Launch";
+import LaunchIcon from "@mui/icons-material/Launch";
 import UTXOSet from "../ScriptExplorer/UTXOSet";
 import MultisigDetails from "../MultisigDetails";
 import ImportAddressesButton from "../ImportAddressesButton";
@@ -192,18 +195,18 @@ class AddressExpander extends React.Component {
     const { node } = this.props;
     const { bip32Path } = node;
     return (
-      <ExpansionPanel onChange={this.panelExpand}>
-        <ExpansionPanelSummary
+      <Accordion onChange={this.panelExpand}>
+        <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id={`address-header${bip32Path}`}
         >
           {this.addressContent()}
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        </AccordionSummary>
+        <AccordionDetails>
           <Grid container>{this.expandContent()}</Grid>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   };
 

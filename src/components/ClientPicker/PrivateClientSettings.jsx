@@ -2,13 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // Components
-import {
-  Grid,
-  TextField,
-  Button,
-  FormHelperText,
-  Box,
-} from "@material-ui/core";
+import { Grid, TextField, Button, FormHelperText, Box } from "@mui/material";
 
 import { externalLink } from "../../utils";
 
@@ -50,6 +44,7 @@ const PrivateClientSettings = ({
             fullWidth
             label="URL"
             value={client.url}
+            variant="standard"
             onChange={handleUrlChange}
             error={urlError !== ""}
             helperText={urlError}
@@ -62,6 +57,7 @@ const PrivateClientSettings = ({
             fullWidth
             label="Username"
             value={client.username}
+            variant="standard"
             onChange={handleUsernameChange}
             error={usernameError !== ""}
             helperText={usernameError}
@@ -75,6 +71,7 @@ const PrivateClientSettings = ({
             type="password"
             label="Password"
             value={client.password}
+            variant="standard"
             onChange={handlePasswordChange}
             error={passwordError !== ""}
             helperText={passwordError}

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid, IconButton, TextField } from "@material-ui/core";
-import { Check, Clear, Edit } from "@material-ui/icons";
+import { Grid, IconButton, TextField } from "@mui/material";
+import { Check, Clear, Edit } from "@mui/icons-material";
 
 class EditableName extends React.Component {
   constructor(props) {
@@ -30,6 +30,7 @@ class EditableName extends React.Component {
               autoFocus
               label="Name"
               value={newName}
+              variant="standard"
               onChange={this.handleChange}
               onFocus={(event) => {
                 setTimeout(event.target.select.bind(event.target), 20);

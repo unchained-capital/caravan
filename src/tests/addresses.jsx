@@ -6,7 +6,7 @@ import {
   LEDGER,
   braidDetailsToWalletConfig,
 } from "unchained-wallets";
-import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { Box, Table, TableBody, TableRow, TableCell } from "@mui/material";
 import { externalLink } from "../utils";
 
 import Test from "./Test";
@@ -63,7 +63,6 @@ class ConfirmMultisigAddressTest extends Test {
       network: this.params.network,
       bip32Path: this.params.bip32Path,
       multisig: this.params.multisig,
-      addressIndex: this.params.addressIndex,
       // only used with ledgers, version 2.1 and above
       policyHmac: this.params.policyHmac,
       ...braidDetailsToWalletConfig(
@@ -78,12 +77,9 @@ const addressTests = (keystore) =>
     // if ledger only return if policyHmac exists
     .filter((fixture) => (keystore === LEDGER ? fixture.policyHmac : true))
     .map((fixture) => {
-      // todo, this should be explicit, coming from the fixture
-      const addressIndex = fixture?.bip32Path.split("/").slice(-1)[0];
       return new ConfirmMultisigAddressTest({
         ...fixture,
         ...{ keystore },
-        addressIndex,
         expected: fixture.address,
       });
     });

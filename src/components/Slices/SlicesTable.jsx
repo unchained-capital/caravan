@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import MaterialTable from "material-table";
-import { Typography, Box, makeStyles } from "@material-ui/core";
+import { Box, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 
 import {

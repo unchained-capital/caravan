@@ -6,18 +6,16 @@ import {
   CardContent,
   ButtonGroup,
   Grid,
-  makeStyles,
   Tooltip,
-  withStyles,
-} from "@material-ui/core";
-import MuiButton from "@material-ui/core/Button";
-
-import CircularProgress from "@material-ui/core/CircularProgress";
+} from "@mui/material";
+import { makeStyles, withStyles } from "@mui/styles";
+import MuiButton from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   RefreshOutlined,
   ExitToAppOutlined,
   GetAppOutlined,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 
 import { clientPropTypes } from "../../proptypes";
 import { CARAVAN_CONFIG } from "./constants";
@@ -85,7 +83,7 @@ const WalletActionsPanel = ({
     <Card className={classes.card}>
       <CardHeader title="Wallet Actions" />
       <CardContent className={classes.cardContent}>
-        <Grid container spacing={1} alignItems="center" justify="center">
+        <Grid container spacing={1} alignItems="center" justifyContent="center">
           <Grid item xs={12}>
             <ButtonGroup variant="outlined">
               <ButtonWithTooltip

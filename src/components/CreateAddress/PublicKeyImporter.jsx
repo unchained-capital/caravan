@@ -10,14 +10,13 @@ import {
   CardHeader,
   CardContent,
   FormControl,
-  Select,
   MenuItem,
-  InputLabel,
   Button,
   Grid,
   Box,
-} from "@material-ui/core";
-import { ArrowUpward, ArrowDownward } from "@material-ui/icons";
+  TextField,
+} from "@mui/material";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 import Copyable from "../Copyable";
 import TextPublicKeyImporter from "./TextPublicKeyImporter";
@@ -65,7 +64,7 @@ class PublicKeyImporter extends React.Component {
   title = () => {
     const { number, totalSigners, publicKeyImporter, setName } = this.props;
     return (
-      <Grid container justify="space-between">
+      <Grid container justifyContent="space-between">
         <Grid item>
           <EditableName
             number={number}
@@ -74,7 +73,7 @@ class PublicKeyImporter extends React.Component {
           />
         </Grid>
         <Grid item>
-          <Grid container justify="flex-end">
+          <Grid container justifyContent="flex-end">
             <Button
               type="button"
               variant="contained"
@@ -101,18 +100,18 @@ class PublicKeyImporter extends React.Component {
   renderImport = () => {
     const { publicKeyImporter, number } = this.props;
     const { disableChangeMethod } = this.state;
-    const labelId = `public-key-${number}-importer-select-label`;
+
     return (
       <div>
         <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Method</InputLabel>
-
-          <Select
-            labelId={labelId}
+          <TextField
+            label="Select Method"
             id={`public-key-${number}-importer-select`}
             disabled={disableChangeMethod}
             value={publicKeyImporter.method}
             onChange={this.handleMethodChange}
+            select
+            variant="standard"
           >
             <MenuItem value="">{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
@@ -120,7 +119,7 @@ class PublicKeyImporter extends React.Component {
             <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
-          </Select>
+          </TextField>
         </FormControl>
 
         {this.renderImportByMethod()}
@@ -241,7 +240,7 @@ class PublicKeyImporter extends React.Component {
       return (
         <Box mt={4}>
           <p>The BIP32 path for this public key is:</p>
-          <Grid container justify="center">
+          <Grid container justifyContent="center">
             <Copyable text={publicKeyImporter.bip32Path} code />
           </Grid>
           <Box mt={4}>
@@ -265,7 +264,7 @@ class PublicKeyImporter extends React.Component {
     return (
       <div>
         <p>The following public key was imported:</p>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <Copyable text={publicKeyImporter.publicKey} showIcon code />
         </Grid>
         {this.renderBIP32Path()}

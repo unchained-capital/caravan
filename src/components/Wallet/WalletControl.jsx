@@ -7,7 +7,7 @@ import {
   Box,
   LinearProgress,
   CircularProgress,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   setWalletModeAction as setWalletModeActionImport,
   WALLET_MODES,

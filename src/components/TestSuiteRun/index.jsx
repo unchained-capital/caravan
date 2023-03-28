@@ -12,8 +12,8 @@ import {
   CardContent,
   Button,
   LinearProgress,
-} from "@material-ui/core";
-import { ArrowBack, ArrowForward } from "@material-ui/icons";
+} from "@mui/material";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import * as testSuiteRunActions from "../../actions/testSuiteRunActions";
 import KeystorePicker from "./KeystorePicker";
 import TestSuiteRunSummary from "./TestSuiteRunSummary";
@@ -175,7 +175,7 @@ class TestSuiteRunBase extends React.Component {
             testRunIndex={testSuiteRun.currentTestRunIndex}
           />
           <Box mt={2}>
-            <Grid container justify="space-between">
+            <Grid container justifyContent="space-between">
               <Grid item>
                 <Button
                   disabled={this.isFirstTest() || this.currentTestIsActive()}

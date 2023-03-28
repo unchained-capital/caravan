@@ -6,13 +6,7 @@ import {
   UNSUPPORTED,
   SignMultisigTransaction,
 } from "unchained-wallets";
-import {
-  Grid,
-  Box,
-  TextField,
-  Button,
-  FormHelperText,
-} from "@material-ui/core";
+import { Grid, Box, TextField, Button, FormHelperText } from "@mui/material";
 import HermitReader from "./HermitReader";
 import HermitDisplayer from "./HermitDisplayer";
 import InteractionMessages from "../InteractionMessages";
@@ -64,6 +58,7 @@ class HermitSignatureImporter extends React.Component {
             <TextField
               name="bip32Path"
               value={signatureImporter.bip32Path}
+              variant="standard"
               onChange={this.handleBIP32PathChange}
               disabled={status !== PENDING}
               error={this.hasBIP32PathError()}
@@ -91,7 +86,7 @@ class HermitSignatureImporter extends React.Component {
         </FormHelperText>
 
         <Box mt={2}>
-          <Grid container justify="center">
+          <Grid container justifyContent="center">
             <Grid item>
               <HermitDisplayer width={400} string={interaction.request()} />
             </Grid>

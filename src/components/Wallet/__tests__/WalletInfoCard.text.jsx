@@ -1,5 +1,7 @@
 import React from "react";
-import { render } from "test-utils";
+import { ThemeProvider } from "@mui/material/styles";
+import { render } from "../../../utils/test-utils";
+import theme from "../../theme";
 
 import WalletInfoCard from "../WalletInfoCard";
 
@@ -8,7 +10,9 @@ describe("WalletInfoCard", () => {
 
   const renderWalletInfoCard = (passedProps) => {
     const { getByText, getByDataCy } = render(
-      <WalletInfoCard {...passedProps} />
+      <ThemeProvider theme={theme}>
+        <WalletInfoCard {...passedProps} />
+      </ThemeProvider>
     );
     return { getByText, getByDataCy };
   };
@@ -45,7 +49,7 @@ describe("WalletInfoCard", () => {
       expect(balance).toHaveTextContent("0 BTC");
       expect(bitcoinIcon).toHaveAttribute("color", "grey");
       expect(getByText(walletName)).toBeVisible();
-      expect(pendingBalance).toBeEmpty();
+      expect(pendingBalance).toBeEmptyDOMElement();
     });
 
     test("shows a balance", () => {

@@ -1,15 +1,18 @@
 import React from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
 } from "react-router-dom";
 
 // Components
-import { CssBaseline, Container } from "@material-ui/core";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 
+import theme from "./theme";
 import Help from "./Help";
 import Wallet from "./Wallet";
 import CreateAddress from "./CreateAddress";
@@ -21,29 +24,31 @@ import ErrorBoundary from "./ErrorBoundary";
 import ErrorNotification from "./ErrorNotification";
 
 const App = () => (
-  <div className="App">
+  <ThemeProvider theme={theme}>
     <CssBaseline />
-    <SnackbarProvider maxSnack={3}>
-      <Container maxWidth="lg">
-        <Navbar />
-        <ErrorBoundary>
-          <Router>
-            <Switch>
-              <Route path="/test" component={TestSuiteRun} />
-              <Route path="/address" component={CreateAddress} />
-              <Redirect from="/spend" to="/script" />
-              <Route path="/script" component={ScriptExplorer} />
-              <Route path="/wallet" component={Wallet} />
-              <Route path="/help" component={Help} />
-              <Route path="/" component={Help} />
-            </Switch>
-          </Router>
-          <ErrorNotification />
-        </ErrorBoundary>
-        <Footer />
-      </Container>
-    </SnackbarProvider>
-  </div>
+    <div className="App">
+      <SnackbarProvider maxSnack={3}>
+        <Router basename="/caravan">
+          <Container maxWidth={false} sx={{ maxWidth: "1280px" }}>
+            <Navbar />
+            <ErrorBoundary>
+              <Switch>
+                <Route path="/test" component={TestSuiteRun} />
+                <Route path="/address" component={CreateAddress} />
+                <Redirect from="/spend" to="/script" />
+                <Route path="/script" component={ScriptExplorer} />
+                <Route path="/wallet" component={Wallet} />
+                <Route path="/help" component={Help} />
+                <Route path="/" component={Help} />
+              </Switch>
+              <ErrorNotification />
+            </ErrorBoundary>
+            <Footer />
+          </Container>
+        </Router>
+      </SnackbarProvider>
+    </div>
+  </ThemeProvider>
 );
 
 export default App;

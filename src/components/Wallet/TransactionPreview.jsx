@@ -13,7 +13,7 @@ import {
   TableRow,
   TableCell,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import UnsignedTransaction from "../UnsignedTransaction";
 import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../actions/transactionActions";
 

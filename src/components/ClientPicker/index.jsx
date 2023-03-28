@@ -11,7 +11,7 @@ import {
   Radio,
   RadioGroup,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { fetchFeeEstimate } from "../../blockchain";
 
 // Components
@@ -112,7 +112,7 @@ class ClientPicker extends React.Component {
     const { connectSuccess, connectError } = this.state;
     return (
       <Card>
-        <Grid container justify="space-between">
+        <Grid container justifyContent="space-between">
           <CardHeader title="Bitcoin Client" />
         </Grid>
         <CardContent>

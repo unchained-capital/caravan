@@ -27,14 +27,14 @@ import {
   Divider,
   Tooltip,
   CircularProgress,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   ThumbUp as SuccessIcon,
   ThumbDown as FailureIcon,
   Error as ErrorIcon,
   Notes as NoteIcon,
   MoreHoriz as PendingIcon,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import Test from "../../tests/Test";
 
 import { setCurrentTestRun as setCurrentTestRunAction } from "../../actions/testSuiteRunActions";

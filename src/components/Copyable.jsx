@@ -3,9 +3,10 @@ import React, { useState, useEffect } from "react";
 
 // Components
 import CopyToClipboard from "react-copy-to-clipboard";
-import { FileCopy } from "@material-ui/icons";
-import { IconButton, makeStyles } from "@material-ui/core";
-import { useSnackbar } from "notistack";
+import { FileCopy } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { enqueueSnackbar } from "notistack";
 
 const useStyles = makeStyles(() => ({
   copyText: {
@@ -27,7 +28,6 @@ const Copyable = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [timer, setTimer] = useState(null);
-  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (timer) clearTimeout(timer);

@@ -1,17 +1,21 @@
 import React from "react";
-import { Grid, Box } from "@material-ui/core";
+import { Grid, Box } from "@mui/material";
 import { externalLink } from "../utils";
-import { version } from "../../package.json";
+import packageJson from "../../package.json";
 
 // Components
 
 // Assets
-const logo = require("../images/logo.png");
+import logo from "../images/logo.png";
+
+/* eslint-disable */
+const GIT_SHA = VITE_GIT_SHA;
+/* eslint-enable */
 
 const Footer = () => (
   <Box mt={2}>
     <hr />
-    <Grid container justify="space-between" alignItems="center">
+    <Grid container justifyContent="space-between" alignItems="center">
       <Grid item sm={2}>
         {externalLink(
           "https://www.unchained-capital.com",
@@ -33,7 +37,7 @@ const Footer = () => (
       </Grid>
 
       <Grid item sm={2} align="right">
-        <p>{`v${version} commit: ${process.env.REACT_APP_GIT_SHA}`}</p>
+        <p>{`v${packageJson.version} commit: ${GIT_SHA}`}</p>
       </Grid>
     </Grid>
   </Box>

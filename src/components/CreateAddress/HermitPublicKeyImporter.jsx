@@ -4,7 +4,7 @@ import { HERMIT, ExportPublicKey } from "unchained-wallets";
 import { validateBIP32Path } from "unchained-bitcoin";
 
 // Components
-import { FormGroup, FormHelperText } from "@material-ui/core";
+import { FormGroup, FormHelperText } from "@mui/material";
 
 import HermitReader from "../Hermit/HermitReader";
 

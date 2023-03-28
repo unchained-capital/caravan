@@ -4,13 +4,14 @@ import {
   AppBar,
   Toolbar,
   Button,
-  makeStyles,
   Typography,
   Menu,
   MenuItem,
   Box,
-} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,11 +40,11 @@ class NavItem extends React.Component {
   render() {
     const { href, title, classes, handleClose } = this.props;
     return (
-      <a href={href} className={classes.menuLink}>
+      <Link to={href} className={classes.menuLink}>
         <MenuItem className={classes.menuItem} onClick={handleClose}>
           {title}
         </MenuItem>
-      </a>
+      </Link>
     );
   }
 }
@@ -67,11 +68,11 @@ const Navbar = () => {
   };
 
   const menuItems = [
-    { href: "#/wallet", title: "Wallet" },
-    { href: "#/address", title: "Create Address" },
-    { href: "#/script", title: "Script Explorer" },
-    { href: "#/test", title: "Test Suite" },
-    { href: "#/help", title: "Help" },
+    { href: "/wallet", title: "Wallet" },
+    { href: "/address", title: "Create Address" },
+    { href: "/script", title: "Script Explorer" },
+    { href: "/test", title: "Test Suite" },
+    { href: "/help", title: "Help" },
   ];
 
   return (
@@ -79,7 +80,7 @@ const Navbar = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button color="inherit" href="#/">
+            <Button color="inherit" component={Link} to="/">
               Caravan
             </Button>
           </Typography>

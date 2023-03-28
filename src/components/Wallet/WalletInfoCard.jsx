@@ -3,13 +3,8 @@ import PropTypes from "prop-types";
 import { NETWORKS } from "unchained-bitcoin";
 
 // Components
-import {
-  Card,
-  CardContent,
-  Typography,
-  makeStyles,
-  Grid,
-} from "@material-ui/core";
+import { Card, CardContent, Typography, Grid } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import BitcoinIcon from "../BitcoinIcon";
 import EditableName from "../EditableName";
 

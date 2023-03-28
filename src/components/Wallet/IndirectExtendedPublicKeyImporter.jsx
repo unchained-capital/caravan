@@ -6,7 +6,7 @@ import {
   PENDING,
   UNSUPPORTED,
 } from "unchained-wallets";
-import { FormGroup, FormHelperText } from "@material-ui/core";
+import { FormGroup, FormHelperText } from "@mui/material";
 import InteractionMessages from "../InteractionMessages";
 
 class IndirectExtendedPublicKeyImporter extends React.Component {

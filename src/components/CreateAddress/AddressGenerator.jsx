@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardContent,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { externalLink, downloadFile } from "../../utils";
 
 // Actions
@@ -161,7 +161,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
   title = () => {
     const { totalSigners, requiredSigners, addressType } = this.props;
     return (
-      <Grid container justify="space-between">
+      <Grid container justifyContent="space-between">
         <Grid item>
           {requiredSigners}
           -of-
@@ -184,7 +184,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
         <div>
           {this.isInConflict() && <Conflict />}
           {!canonicallySorted && (
-            <Grid container justify="space-between">
+            <Grid container justifyContent="space-between">
               <Grid item md={8}>
                 <FormHelperText error>
                   WARNING: These public keys are not in the standard{" "}

@@ -5,18 +5,13 @@ import {
   RegisterWalletPolicy,
   braidDetailsToWalletConfig,
 } from "unchained-wallets";
-import { Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { Box, Table, TableBody, TableRow, TableCell } from "@mui/material";
 
 import Test from "./Test";
 
 class RegisterWalletPolicyTest extends Test {
   name() {
     return `Confirm ${this.params.network} ${this.params.type} multisig wallet policy`;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  postprocess(result) {
-    return result;
   }
 
   expected() {

@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
-import { Snackbar, IconButton } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import { Snackbar, IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { clearErrorNotification as clearErrorNotificationAction } from "../actions/errorNotificationActions";
 
 const ErrorNotificationBase = (props) => {
