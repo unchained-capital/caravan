@@ -8,7 +8,7 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useSelector } from "react-redux";
 import { getHmacsWithName } from "../../selectors/wallet";
 

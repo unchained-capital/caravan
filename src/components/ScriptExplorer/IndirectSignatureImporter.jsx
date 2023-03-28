@@ -15,7 +15,7 @@ import {
   TableCell,
   TableBody,
   FormGroup,
-} from "@material-ui/core";
+} from "@mui/material";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 import InteractionMessages from "../InteractionMessages";
 

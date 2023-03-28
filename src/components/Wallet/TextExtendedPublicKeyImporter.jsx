@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // Components
-import { TextField, Box } from "@material-ui/core";
+import { TextField, Box } from "@mui/material";
 
 class TextExtendedPublicKeyImporter extends React.Component {
   constructor(props) {
@@ -22,6 +22,7 @@ class TextExtendedPublicKeyImporter extends React.Component {
           name="publicKey"
           label="Extended Public Key"
           value={extendedPublicKeyImporter.extendedPublicKey}
+          variant="standard"
           onChange={this.handleChange}
           error={this.hasError()}
           helperText={error}

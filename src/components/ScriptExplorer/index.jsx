@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 // Components
-import { Grid, Box, Card, CardContent, Typography } from "@material-ui/core";
+import { Grid, Box, Card, CardContent, Typography } from "@mui/material";
 import NetworkPicker from "../NetworkPicker";
 import ClientPicker from "../ClientPicker";
 import AddressTypePicker from "../AddressTypePicker";

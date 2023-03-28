@@ -9,8 +9,8 @@ import {
   Box,
   Tooltip,
   AppBar,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 import UTXOSet from "../ScriptExplorer/UTXOSet";
 import MultisigDetails from "../MultisigDetails";
@@ -50,7 +50,7 @@ function TabPanel({ children, value, index, ...other }) {
   return (
     <Grid
       container
-      justify="center"
+      justifyContent="center"
       style={{ display: value === index ? "inherit" : "none" }}
       {...other}
     >
@@ -137,7 +137,12 @@ const SliceDetails = ({ slice, client, network }) => {
 
   return (
     <Grid container className={classes.root}>
-      <AppBar position="static" color="default" variant="outlined">
+      <AppBar
+        elevation={0}
+        position="static"
+        color="default"
+        variant="outlined"
+      >
         <Tabs
           value={tabIndex}
           onChange={handleChange}

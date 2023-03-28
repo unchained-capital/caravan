@@ -14,7 +14,7 @@ import {
   ListItemText,
   ListItemIcon,
   CardActions,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   Description,
   GitHub,
@@ -23,7 +23,8 @@ import {
   Speed,
   AccountBalanceWallet,
   SportsVolleyball,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
+import { Link } from "react-router-dom";
 import { externalLink } from "../utils";
 import Disclaimer from "./Disclaimer";
 
@@ -45,14 +46,20 @@ const Help = () => (
                   wallet or fully stateless address.
                 </Typography>
               </Box>
-              <Grid container alignItems="center" justify="center" spacing={3}>
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="center"
+                spacing={3}
+              >
                 <Grid item xs={10} md={4}>
                   <Button
+                    component={Link}
+                    to="/wallet"
                     variant="contained"
                     data-cy="setup-wallet-button"
                     size="large"
                     color="primary"
-                    href="#/wallet"
                     startIcon={<AccountBalanceWallet />}
                   >
                     Wallet
@@ -63,8 +70,9 @@ const Help = () => (
                     variant="contained"
                     data-cy="setup-address-button"
                     size="large"
-                    color="default"
-                    href="#/address"
+                    color="secondary"
+                    component={Link}
+                    to="/address"
                     startIcon={<SportsVolleyball />}
                   >
                     Address
@@ -203,7 +211,7 @@ const Help = () => (
           <Card>
             <CardHeader title="Supported Devices" />
             <CardContent>
-              Caravan has been <a href="#/test">tested</a> with the following
+              Caravan has been <Link to="/test">tested</Link> with the following
               hardware wallets:
               <ul>
                 <li>
@@ -255,7 +263,7 @@ const Help = () => (
               <Button href="https://github.com/unchained-capital/caravan/issues">
                 <BugReport /> &nbsp; Report Issue
               </Button>
-              <Button data-cy="run-tests-button" href="#/test">
+              <Button data-cy="run-tests-button" component={Link} to="/test">
                 <Speed /> &nbsp; Run Tests
               </Button>
             </CardActions>

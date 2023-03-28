@@ -6,23 +6,21 @@
     "node": true,
     "jest": true
   },
-  "plugins": [
-    "prettier"
-  ],
+  "plugins": ["prettier"],
   "extends": [
     "airbnb",
     "prettier",
     "prettier/react",
     "plugin:testing-library/recommended",
-    "plugin:jest-dom/recommended",
+    "plugin:jest-dom/recommended"
   ],
   "rules": {
     "prettier/prettier": "error",
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-no-bind": "off",
+    "react/forbid-prop-types": "off"
   },
   "settings": {
-    "import/core-modules": [
-      "test-utils"
-    ]
+    "import/core-modules": ["test-utils"]
   }
 }

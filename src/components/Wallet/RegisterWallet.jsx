@@ -1,18 +1,20 @@
 import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
+
 import {
+  Alert,
+  AlertTitle,
   Box,
   Grid,
   Typography,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  makeStyles,
-} from "@material-ui/core";
-import { useSelector } from "react-redux";
-
-import { ExpandMoreOutlined } from "@material-ui/icons";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { ExpandMoreOutlined } from "@mui/icons-material";
 import { MultisigWalletPolicy } from "unchained-wallets/lib/policy";
-import { Alert, AlertTitle } from "@material-ui/lab";
+
 import { getWalletConfig } from "../../selectors/wallet";
 import PolicyRegistrationTable from "../RegisterWallet/PolicyRegistrationsTable";
 import {

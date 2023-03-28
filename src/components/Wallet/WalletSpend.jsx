@@ -10,7 +10,7 @@ import {
   Switch,
   FormControlLabel,
   Button,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,

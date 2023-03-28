@@ -2,14 +2,14 @@ import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import {
+  Alert,
   Table,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
   Box,
-} from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+} from "@mui/material";
 import { MultisigWalletPolicy } from "unchained-wallets";
 import { getWalletConfig } from "../../selectors/wallet";
 

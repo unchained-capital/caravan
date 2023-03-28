@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "test-utils";
+import { fireEvent, render, screen } from "../../utils/test-utils";
 
 import EditableName from "../EditableName";
 
@@ -62,7 +62,9 @@ describe("EditableName", () => {
     test("name should not be able to be blank", () => {
       fireEvent.change(input, { target: { value: "" } });
       expect(screen.getByText("Name cannot be blank.")).toBeVisible();
-      expect(screen.getByText("Name")).toHaveClass("Mui-error");
+      expect(screen.getByText("Name", { selector: "label" })).toHaveClass(
+        "Mui-error"
+      );
     });
 
     describe("form interaction", () => {

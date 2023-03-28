@@ -17,7 +17,7 @@ import {
   TableCell,
   TablePagination,
   TableSortLabel,
-} from "@material-ui/core";
+} from "@mui/material";
 import Node from "./Node";
 import { WALLET_MODES } from "../../actions/walletActions";
 

@@ -17,8 +17,7 @@ class ExportPublicKeyTest extends Test {
   description() {
     return (
       <p>
-        Export a public key at BIP32 path
-        <code>{this.params.bip32Path}</code>.
+        Export a public key at BIP32 path <code>{this.params.bip32Path}</code>.
       </p>
     );
   }

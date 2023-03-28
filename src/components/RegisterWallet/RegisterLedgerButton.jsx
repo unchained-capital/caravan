@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { LEDGER, RegisterWalletPolicy } from "unchained-wallets";
 import { getWalletConfig } from "../../selectors/wallet";

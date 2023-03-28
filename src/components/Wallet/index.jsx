@@ -7,7 +7,7 @@ import {
   validateBIP32Path,
   validateExtendedPublicKey,
 } from "unchained-bitcoin";
-import { Box, Button, FormHelperText, Grid } from "@material-ui/core";
+import { Box, Button, FormHelperText, Grid } from "@mui/material";
 import { downloadFile } from "../../utils";
 import {
   resetWallet as resetWalletAction,

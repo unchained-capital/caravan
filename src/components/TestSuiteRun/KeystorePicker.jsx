@@ -17,12 +17,10 @@ import {
   Box,
   Grid,
   FormControl,
-  InputLabel,
-  Select,
   MenuItem,
   TextField,
   Button,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as keystoreActions from "../../actions/keystoreActions";
 import { setErrorNotification as setErrorNotificationAction } from "../../actions/errorNotificationActions";
 
@@ -70,22 +68,23 @@ class KeystorePickerBase extends React.Component {
     const { type, status, version } = this.props;
     return (
       <Box>
-        <Grid container spacing={2} justify="center">
+        <Grid container spacing={2} justifyContent="center">
           <Grid item md={4}>
             <FormControl fullWidth>
-              <InputLabel id="keystore-select-label">Type</InputLabel>
-              <Select
-                labelId="keystore-select-label"
+              <TextField
+                label="Type"
                 id="keystore-select"
                 value={type}
                 onChange={this.handleTypeChange}
+                select
+                variant="standard"
               >
                 <MenuItem value="">{"< Select type >"}</MenuItem>
                 <MenuItem value={TREZOR}>Trezor</MenuItem>
                 <MenuItem value={LEDGER}>Ledger</MenuItem>
                 <MenuItem value={COLDCARD}>Coldcard</MenuItem>
                 <MenuItem value={HERMIT}>Hermit</MenuItem>
-              </Select>
+              </TextField>
             </FormControl>
           </Grid>
 
@@ -95,6 +94,7 @@ class KeystorePickerBase extends React.Component {
               fullWidth
               label="Version"
               value={version}
+              variant="standard"
               disabled={type === ""}
               onChange={this.handleVersionChange}
             />

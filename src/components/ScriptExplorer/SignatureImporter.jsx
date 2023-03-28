@@ -14,13 +14,12 @@ import {
   Card,
   CardHeader,
   CardContent,
-  Select,
   MenuItem,
-  InputLabel,
   Button,
   Box,
   FormControl,
-} from "@material-ui/core";
+  TextField,
+} from "@mui/material";
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
 import DirectSignatureImporter from "./DirectSignatureImporter";
@@ -36,7 +35,6 @@ import {
   setSignatureImporterFinalized,
   setSignatureImporterComplete,
 } from "../../actions/signatureImporterActions";
-import "react-table/react-table.css";
 import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
 
 const TEXT = "text";
@@ -91,7 +89,6 @@ class SignatureImporter extends React.Component {
     const currentNumber = this.getCurrent();
     const notMyTurn = number > currentNumber;
     const { disableChangeMethod } = this.state;
-    const labelId = `signature-${number}-importer-select-label`;
     if (notMyTurn) {
       return (
         <p>
@@ -104,13 +101,13 @@ class SignatureImporter extends React.Component {
     return (
       <form>
         <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Method</InputLabel>
-
-          <Select
-            labelId={labelId}
+          <TextField
+            label="Select Method"
             id={`signature-${number}-importer-select`}
-            disabled={disableChangeMethod}
+            select
             value={signatureImporter.method}
+            variant="standard"
+            disabled={disableChangeMethod}
             onChange={this.handleMethodChange}
           >
             <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
@@ -121,7 +118,7 @@ class SignatureImporter extends React.Component {
             </MenuItem>
             <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
-          </Select>
+          </TextField>
         </FormControl>
 
         {this.renderImportByMethod()}

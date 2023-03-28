@@ -12,8 +12,8 @@ import {
   multisigTotalSigners,
   blockExplorerAddressURL,
 } from "unchained-bitcoin";
-import { Typography, Grid, Box, Chip } from "@material-ui/core";
-import { OpenInNew } from "@material-ui/icons";
+import { Typography, Grid, Box, Chip } from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
 import { externalLink } from "../utils";
 
 // Components
@@ -60,7 +60,7 @@ class MultisigDetails extends React.Component {
               </Grid>
             )}
 
-            <Grid item justify="center" container spacing={3}>
+            <Grid item justifyContent="center" container spacing={3}>
               <Grid item>
                 <Chip label="BTC" />
               </Grid>

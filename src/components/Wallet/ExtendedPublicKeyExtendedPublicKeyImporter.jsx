@@ -6,13 +6,7 @@ import {
 } from "unchained-bitcoin";
 
 // Components
-import {
-  Button,
-  TextField,
-  FormHelperText,
-  Box,
-  Grid,
-} from "@material-ui/core";
+import { Button, TextField, FormHelperText, Box, Grid } from "@mui/material";
 
 const DEFAULT_BIP32_PATH = "m/0";
 
@@ -43,6 +37,7 @@ class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
             name="extendedPublicKey"
             label="Extended Public Key"
             value={extendedPublicKey}
+            variant="standard"
             onChange={this.handleExtendedPublicKeyChange}
             error={this.hasExtendedPublicKeyError()}
             helperText={extendedPublicKeyError}
@@ -58,6 +53,7 @@ class ExtendedPublicKeyExtendedPublicKeyImporter extends React.Component {
                 label="BIP32 Path (relative to xpub)"
                 type="text"
                 value={extendedPublicKeyImporter.bip32Path}
+                variant="standard"
                 onChange={this.handleBIP32PathChange}
                 error={this.hasBIP32PathError()}
                 helperText={bip32PathError}
