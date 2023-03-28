@@ -1,9 +1,9 @@
 name: Release Caravan
 
 on:
-  push:
-    branches:
-      - "refactor-vite-build"
+  release:
+    types: [published]
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -13,7 +13,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-          ref: refactor-vite-build
 
       - name: Ensure Node Version
         uses: actions/setup-node@v3
@@ -30,5 +29,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
           folder: build
           clean: true
