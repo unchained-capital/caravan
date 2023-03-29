@@ -14,6 +14,7 @@ const getTotalSigners = (state) => state.settings.totalSigners;
 const getRequiredSigners = (state) => state.settings.requiredSigners;
 const getStartingAddressIndex = (state) => state.settings.startingAddressIndex;
 const getWalletName = (state) => state.wallet.common.walletName;
+const getWalletUuid = (state) => state.wallet.common.walletUuid;
 const getExtendedPublicKeyImporters = (state) =>
   state.quorum.extendedPublicKeyImporters;
 const getWalletLedgerPolicyHmacs = (state) =>
@@ -225,6 +226,7 @@ export const getDepositableSlices = createSelector(getDepositSlices, (slices) =>
 export const getWalletDetailsText = createSelector(
   [
     getWalletName,
+    getWalletUuid,
     getAddressType,
     getNetwork,
     getClientDetails,
@@ -236,6 +238,7 @@ export const getWalletDetailsText = createSelector(
   ],
   (
     walletName,
+    walletUuid,
     addressType,
     network,
     clientDetails,
@@ -247,6 +250,7 @@ export const getWalletDetailsText = createSelector(
   ) => {
     return `{
   "name": "${walletName}",
+  "uuid": "${walletUuid}",
   "addressType": "${addressType}",
   "network": "${network}",
   "client":  ${clientDetails},
