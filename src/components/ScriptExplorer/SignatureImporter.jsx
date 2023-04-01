@@ -583,7 +583,6 @@ SignatureImporter.propTypes = {
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
   walletName: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
   ledgerPolicyHmacs: PropTypes.array.isRequired,
 };
 

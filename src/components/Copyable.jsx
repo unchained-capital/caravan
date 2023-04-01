@@ -64,7 +64,6 @@ const Copyable = ({
   };
 
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
     <span onClick={(e) => e.stopPropagation()} {...otherProps}>
       <CopyToClipboard
         text={text}

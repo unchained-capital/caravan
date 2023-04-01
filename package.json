@@ -32,16 +32,20 @@
     "@commitlint/travis-cli": "^9.0.1",
     "@testing-library/jest-dom": "^5.6.0",
     "@testing-library/react": "^10.0.4",
+    "@typescript-eslint/parser": "^5.57.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.5.0",
     "commander": "^5.0.0",
     "commitlint-config-cz": "^0.13.1",
     "cz-customizable": "^6.2.0",
-    "eslint-config-airbnb": "^18.1.0",
-    "eslint-config-prettier": "^6.10.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.4",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest-dom": "^3.0.1",
-    "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-testing-library": "^3.1.0",
     "gh-pages": "^3.1.0",
     "husky": "^4.3.6",
@@ -51,26 +55,25 @@
     "jest-junit": "^11.0.1",
     "prettier": "^2.0.2",
     "standard-version": "^9.0.0",
-    "vite": "^4.1.0",
-    "vite-plugin-node-polyfills": "^0.7.0"
+    "typescript": "^5.0.2"
   },
   "scripts": {
-    "build": "npm run check && VITE_GIT_SHA=`git rev-parse --short HEAD` vite build",
-    "build:ci": "npm run ci && VITE_GIT_SHA=`git rev-parse --short HEAD` vite build",
+    "build": "npm run check && __GIT_SHA__=`git rev-parse --short HEAD` tsc && vite build",
+    "build:ci": "npm run ci && __GIT_SHA__=`git rev-parse --short HEAD` tsc && vite build",
     "check": "npm run lint && npm run test:ci",
     "ci": "npm run lint && npm run commitlint-travis && npm run test:ci",
     "commit": "./node_modules/cz-customizable/standalone.js",
     "deploy": "gh-pages -d build",
     "gh-pages": "CI=true npm run build && gh-pages -d build",
-    "lint": "eslint --ext .js,.jsx src/",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
     "commitlint-travis": "commitlint-travis",
     "predeploy": "npm run build",
     "release": "standard-version",
     "start": "HTTPS=true npm run preview",
-    "test": "VITE_GIT_SHA=`git rev-parse --short HEAD` jest",
+    "test": "__GIT_SHA__=`git rev-parse --short HEAD` jest",
     "test:ci": "CI=true jest --coverage",
-    "dev": "VITE_GIT_SHA=`git rev-parse --short HEAD` vite",
-    "preview": "VITE_GIT_SHA=`git rev-parse --short HEAD` vite preview"
+    "dev": "__GIT_SHA__=`git rev-parse --short HEAD` vite",
+    "preview": "__GIT_SHA__=`git rev-parse --short HEAD` vite preview"
   },
   "husky": {
     "hooks": {
@@ -131,6 +134,8 @@
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
     "unchained-bitcoin": "^0.3.1",
-    "unchained-wallets": "^0.4.0"
+    "unchained-wallets": "^0.4.1",
+    "vite": "^4.2.1",
+    "vite-plugin-node-polyfills": "^0.7.0"
   }
 }

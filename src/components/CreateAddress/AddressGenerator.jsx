@@ -17,7 +17,8 @@ import {
   CardContent,
   FormHelperText,
 } from "@mui/material";
-import { externalLink, downloadFile } from "../../utils";
+import { downloadFile } from "utils";
+import { externalLink } from "utils/ExternalLink";
 
 // Actions
 import {
@@ -225,8 +226,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
     }
     return (
       <p>
-        {`Once you have imported all ${totalSigners} public keys, `}
-        {"your address details will be displayed here."}
+        {`Once you have imported all ${totalSigners} public keys, your address details will be displayed here.`}
       </p>
     );
   }

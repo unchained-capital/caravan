@@ -37,7 +37,6 @@ class ColdcardExtendedPublicKeyImporter extends React.Component {
       prevProps.network !== network ||
       prevProps.addressType !== addressType
     ) {
-      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ COLDCARD_MULTISIG_BIP32_PATH: coldcardBIP32Path });
       validateAndSetBIP32Path(
         coldcardBIP32Path,

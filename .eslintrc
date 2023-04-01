@@ -1,26 +1,47 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
   "env": {
     "browser": true,
     "jasmine": true,
     "node": true,
     "jest": true
   },
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "import"],
   "extends": [
-    "airbnb",
     "prettier",
-    "prettier/react",
     "plugin:testing-library/recommended",
-    "plugin:jest-dom/recommended"
+    "plugin:jest-dom/recommended",
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
   "rules": {
+    "import/no-unresolved": "error",
     "prettier/prettier": "error",
+    "quotes": "off",
+    "@typescript-eslint/quotes": "off",
+    "@typescript-eslint/comma-dangle": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-no-bind": "off",
     "react/forbid-prop-types": "off"
   },
   "settings": {
-    "import/core-modules": ["test-utils"]
+    "import/core-modules": ["test-utils"],
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      },
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"
+      }
+    }
   }
 }

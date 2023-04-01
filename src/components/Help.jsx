@@ -25,7 +25,8 @@ import {
   SportsVolleyball,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import { externalLink } from "../utils";
+import { externalLink } from "utils/ExternalLink";
+
 import Disclaimer from "./Disclaimer";
 
 const Help = () => (
