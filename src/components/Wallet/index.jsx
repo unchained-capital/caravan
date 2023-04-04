@@ -15,6 +15,7 @@ import {
   updateDepositSliceAction,
   updateWalletNameAction as updateWalletNameActionImport,
   updateWalletPolicyRegistrationsAction,
+  updateWalletUuidAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import walletSelectors from "../../selectors";
@@ -260,6 +261,7 @@ class CreateWallet extends React.Component {
       setExtendedPublicKeyImporterFinalized,
       setExtendedPublicKeyImporterName,
       updateWalletNameAction,
+      updateWalletUuid,
       setClientType,
       setClientUrl,
       setClientUsername,
@@ -276,6 +278,8 @@ class CreateWallet extends React.Component {
       setNetwork(walletConfiguration.network);
     }
     updateWalletNameAction(0, walletConfiguration.name);
+    updateWalletUuid(walletConfiguration.uuid);
+
     // set client to unknown
     if (walletConfiguration.client) {
       setClientType(walletConfiguration.client.type);
@@ -607,6 +611,7 @@ CreateWallet.propTypes = {
   setClientUsername: PropTypes.func.isRequired,
   totalSigners: PropTypes.number.isRequired,
   updateWalletNameAction: PropTypes.func.isRequired,
+  updateWalletUuid: PropTypes.func.isRequired,
   unknownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
   unknownSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   walletName: PropTypes.string.isRequired,
@@ -659,6 +664,7 @@ const mapDispatchToProps = {
   setExtendedPublicKeyImporterVisible:
     setExtendedPublicKeyImporterVisibleAction,
   updateWalletNameAction: updateWalletNameActionImport,
+  updateWalletUuid: updateWalletUuidAction,
   updateWalletPolicyRegistrations: updateWalletPolicyRegistrationsAction,
   ...wrappedActions({
     setClientType: SET_CLIENT_TYPE,

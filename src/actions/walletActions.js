@@ -21,6 +21,7 @@ export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
 export const UPDATE_CHANGE_SLICE = "UPDATE_CHANGE_SLICE";
 export const RESET_NODES_SPEND = "RESET_NODES_SPEND";
 export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
+export const UPDATE_WALLET_UUID = "UPDATE_WALLET_UUID";
 export const UPDATE_WALLET_MODE = "UPDATE_WALLET_MODE";
 export const RESET_WALLET_VIEW = "RESET_WALLET_VIEW";
 export const RESET_WALLET = "RESET_WALLET";
@@ -302,6 +303,13 @@ export function setWalletModeAction(value) {
 export function updateWalletNameAction(number, value) {
   return {
     type: UPDATE_WALLET_NAME,
+    value,
+  };
+}
+
+export function updateWalletUuidAction(value) {
+  return {
+    type: UPDATE_WALLET_UUID,
     value,
   };
 }

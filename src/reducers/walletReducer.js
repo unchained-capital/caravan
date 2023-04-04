@@ -1,5 +1,6 @@
 import {
   UPDATE_WALLET_NAME,
+  UPDATE_WALLET_UUID,
   RESET_WALLET_VIEW,
   WALLET_MODES,
   UPDATE_WALLET_MODE,
@@ -11,6 +12,7 @@ import updateState from "./utils";
 const initialState = {
   walletMode: WALLET_MODES.VIEW,
   walletName: "My Multisig Wallet",
+  walletUuid: "",
   nodesLoaded: false,
   ledgerPolicyHmacs: [],
 };
@@ -27,6 +29,8 @@ export default (state = initialState, action) => {
       return updateState(state, { walletMode: action.value });
     case UPDATE_WALLET_NAME:
       return updateState(state, { walletName: action.value });
+    case UPDATE_WALLET_UUID:
+      return updateState(state, { walletUuid: action.value });
     case RESET_WALLET_VIEW:
       return resetWalletViews(state);
     case UPDATE_POLICY_REGISTRATIONS:

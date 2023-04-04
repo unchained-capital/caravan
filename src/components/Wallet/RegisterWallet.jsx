@@ -71,7 +71,12 @@ const WalletRegistrations = () => {
               <Box my={1}>
                 <Alert severity="info">
                   <AlertTitle>Wallet Policy Details</AlertTitle>
-                  Policy template: <code>{policy.template}</code>
+                  <p>
+                    Policy template: <code>{policy.template}</code>
+                  </p>
+                  <p>
+                    Wallet Uuid: <code>{policy.name}</code>
+                  </p>
                 </Alert>
               </Box>
             )}
