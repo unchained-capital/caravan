@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { ExpandMoreOutlined } from "@mui/icons-material";
-import { MultisigWalletPolicy } from "unchained-wallets/lib/policy";
+import { MultisigWalletPolicy } from "unchained-wallets";
 
 import { getWalletConfig } from "../../selectors/wallet";
 import PolicyRegistrationTable from "../RegisterWallet/PolicyRegistrationsTable";
