@@ -63,10 +63,12 @@ function createInitialState() {
 
 function setConflict(extendedPublicKeyImporter, state) {
   if (state.finalizedNetwork) {
+    const networkConflict = state.finalizedNetwork !== state.network;
+    const addressTypeConflict =
+      state.finalizedAddressType !== state.addressType &&
+      extendedPublicKeyImporter.method !== "text";
     // eslint-disable-next-line no-param-reassign
-    extendedPublicKeyImporter.conflict =
-      state.finalizedNetwork !== state.network ||
-      state.finalizedAddressType !== state.addressType;
+    extendedPublicKeyImporter.conflict = networkConflict || addressTypeConflict;
   }
 }
 
