@@ -15,9 +15,9 @@ import {
   InputAdornment,
   FormHelperText,
   Typography,
-} from "@material-ui/core";
-import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWallet";
-import { Delete, AddCircle, RemoveCircle } from "@material-ui/icons";
+} from "@mui/material";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWallet";
+import { Delete, AddCircle, RemoveCircle } from "@mui/icons-material";
 import {
   setOutputAddress,
   setOutputAmount,
@@ -119,14 +119,8 @@ class OutputEntry extends React.Component {
   //
 
   isNotBalanceable = () => {
-    const {
-      number,
-      outputs,
-      feeError,
-      amountError,
-      amount,
-      inputsTotalSats,
-    } = this.props;
+    const { number, outputs, feeError, amountError, amount, inputsTotalSats } =
+      this.props;
     if (feeError !== "") {
       return true;
     }
@@ -228,6 +222,7 @@ class OutputEntry extends React.Component {
             disabled={finalizedOutputs}
             onChange={this.handleAddressChange}
             value={address}
+            variant="standard"
             error={this.hasAddressError()}
             helperText={addressError}
             InputProps={this.renderChangeAdornment()}
@@ -243,6 +238,7 @@ class OutputEntry extends React.Component {
             disabled={finalizedOutputs}
             onChange={this.handleAmountChange}
             value={amount}
+            variant="standard"
             error={this.hasAmountError()}
             helperText={amountError}
             InputProps={{

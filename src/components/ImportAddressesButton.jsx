@@ -1,3 +1,4 @@
+// eslint-disable react/jsx-no-bind
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
@@ -9,10 +10,10 @@ import {
   Switch,
   FormControlLabel,
   Tooltip,
-  makeStyles,
   Grid,
-} from "@material-ui/core";
-import InfoIcon from "@material-ui/icons/Info";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import InfoIcon from "@mui/icons-material/Info";
 import {
   bitcoindImportMulti,
   bitcoindGetAddressStatus,

@@ -17,7 +17,7 @@ import {
   TableCell,
   TablePagination,
   TableSortLabel,
-} from "@material-ui/core";
+} from "@mui/material";
 import Node from "./Node";
 import { WALLET_MODES } from "../../actions/walletActions";
 
@@ -81,12 +81,8 @@ class NodeSet extends React.Component {
 
   getNodeSet = () => {
     const { changeNodes, depositNodes } = this.props;
-    const {
-      filterIncludeSpent,
-      filterIncludeZeroBalance,
-      orderBy,
-      orderDir,
-    } = this.state;
+    const { filterIncludeSpent, filterIncludeZeroBalance, orderBy, orderDir } =
+      this.state;
     const nodes = Object.values(depositNodes)
       .concat(Object.values(changeNodes))
       .reduce((result, node) => {

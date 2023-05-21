@@ -12,13 +12,7 @@ import {
 import { validateBIP32Path } from "unchained-bitcoin";
 
 // Components
-import {
-  Button,
-  TextField,
-  FormHelperText,
-  Box,
-  Grid,
-} from "@material-ui/core";
+import { Button, TextField, FormHelperText, Box, Grid } from "@mui/material";
 
 import InteractionMessages from "../InteractionMessages";
 
@@ -35,10 +29,11 @@ class HardwareWalletPublicKeyImporter extends React.Component {
 
   interaction = () => {
     const { network, method, defaultBIP32Path } = this.props;
+    const { bip32Path } = this.state;
     return ExportPublicKey({
       network,
       keystore: method,
-      bip32Path: this.state?.bip32Path ?? defaultBIP32Path,
+      bip32Path: bip32Path ?? defaultBIP32Path,
     });
   };
 
@@ -60,6 +55,7 @@ class HardwareWalletPublicKeyImporter extends React.Component {
               fullWidth
               label="BIP32 Path"
               value={bip32Path}
+              variant="standard"
               onChange={this.handleBIP32PathChange}
               disabled={status !== PENDING}
               error={this.hasBIP32PathError()}

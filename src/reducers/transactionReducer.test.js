@@ -292,8 +292,7 @@ describe("Test transactionReducer", () => {
           ...initialState(),
           inputs: [
             {
-              txid:
-                "19e354df0b3d98071ec70b2035aa376727021e7f6befe569c4a648d25215f263",
+              txid: "19e354df0b3d98071ec70b2035aa376727021e7f6befe569c4a648d25215f263",
               index: 0,
               amountSats: BigNumber(112233),
               multisig: {

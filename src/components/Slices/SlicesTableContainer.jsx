@@ -11,7 +11,7 @@ import {
   FormGroup,
   FormLabel,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   getSlicesWithBalance,
   getZeroBalanceSlices,
@@ -61,11 +61,8 @@ class SlicesTableContainer extends React.PureComponent {
   };
 
   render() {
-    const {
-      filterIncludeSpent,
-      filterIncludeZeroBalance,
-      displaySlices,
-    } = this.state;
+    const { filterIncludeSpent, filterIncludeZeroBalance, displaySlices } =
+      this.state;
     const { client, network } = this.props;
 
     return (

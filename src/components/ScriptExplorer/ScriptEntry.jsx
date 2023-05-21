@@ -23,7 +23,7 @@ import {
   Button,
   TextField,
   FormHelperText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { fetchAddressUTXOs } from "../../blockchain";
 
 // Components
@@ -270,11 +270,8 @@ class ScriptEntry extends React.Component {
   //
 
   confirmOwnership = () => {
-    const {
-      chooseConfirmOwnership,
-      setOwnershipMultisig,
-      setFrozen,
-    } = this.props;
+    const { chooseConfirmOwnership, setOwnershipMultisig, setFrozen } =
+      this.props;
     setOwnershipMultisig(this.generateMultisig());
     chooseConfirmOwnership();
     setFrozen(true);

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Box, TextField, Button } from "@material-ui/core";
+import { Box, TextField, Button } from "@mui/material";
 
 class TextSignatureImporter extends React.Component {
   constructor(props) {

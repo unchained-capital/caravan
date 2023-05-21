@@ -11,7 +11,7 @@ import {
   FormControlLabel,
   FormHelperText,
   Button,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   updateDepositSliceAction,
   updateChangeSliceAction,

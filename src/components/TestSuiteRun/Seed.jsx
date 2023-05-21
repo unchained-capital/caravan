@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { TEST_FIXTURES } from "unchained-bitcoin";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { COLDCARD } from "unchained-wallets";
 import PropTypes from "prop-types";
 

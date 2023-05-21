@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid } from "@mui/material";
 import { CARAVAN_CONFIG } from "./constants";
 
 const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
@@ -21,7 +21,7 @@ const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
         <Button
           onClick={(e) => handleClearClick(e)}
           variant="contained"
-          color="secondary"
+          color="warning"
         >
           Clear Wallet
         </Button>

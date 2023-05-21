@@ -6,7 +6,7 @@ import {
   PENDING,
   UNSUPPORTED,
 } from "unchained-wallets";
-import { FormGroup, FormHelperText } from "@material-ui/core";
+import { FormGroup, FormHelperText } from "@mui/material";
 import InteractionMessages from "../InteractionMessages";
 
 class IndirectExtendedPublicKeyImporter extends React.Component {
@@ -124,9 +124,8 @@ class IndirectExtendedPublicKeyImporter extends React.Component {
       enableChangeMethod();
     }
     try {
-      const { xpub, bip32Path, rootFingerprint } = this.interaction().parse(
-        data
-      );
+      const { xpub, bip32Path, rootFingerprint } =
+        this.interaction().parse(data);
       validateAndSetRootFingerprint(rootFingerprint, this.setError);
       validateAndSetBIP32Path(
         bip32Path,

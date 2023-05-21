@@ -1,7 +1,7 @@
 import React from "react";
-import { render, screen } from "test-utils";
-
 import { MAINNET } from "unchained-bitcoin";
+
+import { render, screen } from "../../utils/test-utils";
 import BitcoinIcon from "../BitcoinIcon";
 
 describe("BitcoinIcon", () => {

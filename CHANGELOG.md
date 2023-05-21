@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### Features
+* **wallet** wallet registrations and address verification with ledger ([296](https://github.com/unchained-capital/caravan/pull/296)) ([95e2092](https://github.com/unchained-capital/caravan/commit/95e20924924d52a22dd7b85c4a9626f1c1c4a2fa))
+
+### [0.4.0](https://github.com/unchained-capital/caravan/compare/v0.3.14...v0.4.0) (2023-03-06)
+
+### Features
+* ledger v2 backwards compatible support ([4d22cfc](https://github.com/unchained-capital/caravan/commit/4d22cfcb75606dfabbb2c044777904bb1202ebfb))
+
 ### [0.3.13](https://github.com/unchained-capital/caravan/compare/v0.3.12...v0.3.13) (2021-12-09)
 
 ### [0.3.12](https://github.com/unchained-capital/caravan/compare/v0.3.11...v0.3.12) (2021-12-09)

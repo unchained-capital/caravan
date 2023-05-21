@@ -15,7 +15,7 @@ import {
   TableCell,
   TableBody,
   FormGroup,
-} from "@material-ui/core";
+} from "@mui/material";
 import { satoshisToBitcoins } from "unchained-bitcoin";
 import InteractionMessages from "../InteractionMessages";
 
@@ -92,11 +92,8 @@ class IndirectSignatureImporter extends React.Component {
   };
 
   render = () => {
-    const {
-      disableChangeMethod,
-      extendedPublicKeyImporter,
-      Signer,
-    } = this.props;
+    const { disableChangeMethod, extendedPublicKeyImporter, Signer } =
+      this.props;
     const { signatureError, status } = this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {

@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { PENDING, ACTIVE, BCURDecoder } from "unchained-wallets";
-import QrReader from "react-qr-reader";
+import { QrReader } from "react-qr-reader";
 import {
   Grid,
   Button,
   Box,
   FormHelperText,
   LinearProgress,
-} from "@material-ui/core";
+} from "@mui/material";
 import Copyable from "../Copyable";
 
 const QR_CODE_READER_DELAY = 300; // ms?
@@ -44,7 +44,7 @@ class HermitReader extends Component {
       return (
         <div>
           <p>{commandMessage.instructions}</p>
-          <Grid container justify="center" className="mb-2">
+          <Grid container justifyContent="center" className="mb-2">
             <Copyable text={commandMessage.command} showText={false}>
               <code>
                 <strong>{commandMessage.mode}&gt;</strong>{" "}

@@ -7,13 +7,15 @@ import {
   validateBIP32Path,
   validateExtendedPublicKey,
 } from "unchained-bitcoin";
-import { Box, Button, FormHelperText, Grid } from "@material-ui/core";
+import { Box, Button, FormHelperText, Grid } from "@mui/material";
 import { downloadFile } from "../../utils";
 import {
   resetWallet as resetWalletAction,
   updateChangeSliceAction,
   updateDepositSliceAction,
   updateWalletNameAction as updateWalletNameActionImport,
+  updateWalletPolicyRegistrationsAction,
+  updateWalletUuidAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import walletSelectors from "../../selectors";
@@ -259,9 +261,11 @@ class CreateWallet extends React.Component {
       setExtendedPublicKeyImporterFinalized,
       setExtendedPublicKeyImporterName,
       updateWalletNameAction,
+      updateWalletUuid,
       setClientType,
       setClientUrl,
       setClientUsername,
+      updateWalletPolicyRegistrations,
     } = this.props;
 
     const walletConfiguration = JSON.parse(configJson);
@@ -274,6 +278,8 @@ class CreateWallet extends React.Component {
       setNetwork(walletConfiguration.network);
     }
     updateWalletNameAction(0, walletConfiguration.name);
+    updateWalletUuid(walletConfiguration.uuid);
+
     // set client to unknown
     if (walletConfiguration.client) {
       setClientType(walletConfiguration.client.type);
@@ -321,6 +327,14 @@ class CreateWallet extends React.Component {
         setExtendedPublicKeyImporterFinalized(number, true);
       }
     );
+
+    // config might not have this field at all, so need to account for it
+    // being empty
+    if (walletConfiguration.ledgerPolicyHmacs) {
+      walletConfiguration.ledgerPolicyHmacs.forEach(
+        updateWalletPolicyRegistrations
+      );
+    }
   };
 
   // add client picker if client === 'unknown'
@@ -416,12 +430,8 @@ class CreateWallet extends React.Component {
   };
 
   walletDetailsFilename = () => {
-    const {
-      totalSigners,
-      requiredSigners,
-      addressType,
-      walletName,
-    } = this.props;
+    const { totalSigners, requiredSigners, addressType, walletName } =
+      this.props;
     return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${walletName}.json`;
   };
 
@@ -601,10 +611,12 @@ CreateWallet.propTypes = {
   setClientUsername: PropTypes.func.isRequired,
   totalSigners: PropTypes.number.isRequired,
   updateWalletNameAction: PropTypes.func.isRequired,
+  updateWalletUuid: PropTypes.func.isRequired,
   unknownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
   unknownSlices: PropTypes.arrayOf(PropTypes.shape(slicePropTypes)).isRequired,
   walletName: PropTypes.string.isRequired,
   walletDetailsText: PropTypes.string.isRequired,
+  updateWalletPolicyRegistrations: PropTypes.func.isRequired,
 };
 
 CreateWallet.defaultProps = {
@@ -640,13 +652,20 @@ const mapDispatchToProps = {
   setNetwork: setNetworkAction,
   setStartingAddressIndex: setStartingAddressIndexAction,
   setExtendedPublicKeyImporterMethod: setExtendedPublicKeyImporterMethodAction,
-  setExtendedPublicKeyImporterExtendedPublicKey: setExtendedPublicKeyImporterExtendedPublicKeyAction,
-  setExtendedPublicKeyImporterBIP32Path: setExtendedPublicKeyImporterBIP32PathAction,
-  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint: setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprintAction,
+  setExtendedPublicKeyImporterExtendedPublicKey:
+    setExtendedPublicKeyImporterExtendedPublicKeyAction,
+  setExtendedPublicKeyImporterBIP32Path:
+    setExtendedPublicKeyImporterBIP32PathAction,
+  setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprint:
+    setExtendedPublicKeyImporterExtendedPublicKeyRootFingerprintAction,
   setExtendedPublicKeyImporterName: setExtendedPublicKeyImporterNameAction,
-  setExtendedPublicKeyImporterFinalized: setExtendedPublicKeyImporterFinalizedAction,
-  setExtendedPublicKeyImporterVisible: setExtendedPublicKeyImporterVisibleAction,
+  setExtendedPublicKeyImporterFinalized:
+    setExtendedPublicKeyImporterFinalizedAction,
+  setExtendedPublicKeyImporterVisible:
+    setExtendedPublicKeyImporterVisibleAction,
   updateWalletNameAction: updateWalletNameActionImport,
+  updateWalletUuid: updateWalletUuidAction,
+  updateWalletPolicyRegistrations: updateWalletPolicyRegistrationsAction,
   ...wrappedActions({
     setClientType: SET_CLIENT_TYPE,
     setClientUrl: SET_CLIENT_URL,

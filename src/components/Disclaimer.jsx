@@ -1,7 +1,7 @@
 import React from "react";
 
 // Components
-import { Card, CardHeader, CardContent } from "@material-ui/core";
+import { Card, CardHeader, CardContent } from "@mui/material";
 
 const Disclaimer = () => (
   <Card>

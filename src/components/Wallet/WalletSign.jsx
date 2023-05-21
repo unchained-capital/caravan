@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 // Components
-import { Box, Button } from "@material-ui/core";
+import { Box, Button } from "@mui/material";
 import Transaction from "../ScriptExplorer/Transaction";
 import ExtendedPublicKeySelector from "./ExtendedPublicKeySelector";
 

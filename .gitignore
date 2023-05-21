@@ -19,3 +19,5 @@ build/
 # misc
 .DS_Store
 junit.xml
+.vscode
+.npmrc

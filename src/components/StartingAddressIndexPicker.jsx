@@ -14,7 +14,7 @@ import {
   RadioGroup,
   TextField,
   Tooltip,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import { wrappedActions } from "../actions/utils";
 import { SET_STARTING_ADDRESS_INDEX } from "../actions/settingsActions";
@@ -58,7 +58,7 @@ class StartingAddressIndexPicker extends React.Component {
     } = this.state;
     return (
       <Card>
-        <Grid container justify="space-between">
+        <Grid container justifyContent="space-between">
           <CardHeader title="Starting Address Index" />
         </Grid>
         <CardContent>
@@ -98,6 +98,7 @@ class StartingAddressIndexPicker extends React.Component {
                 <TextField
                   fullWidth
                   value={startingAddressIndexField}
+                  variant="standard"
                   type="text"
                   name="startingAddressIndex"
                   onChange={this.handleIndexChange}

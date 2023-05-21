@@ -7,20 +7,20 @@ import {
   multisigBIP32Path,
   multisigBIP32Root,
   validateBIP32Path,
+  getMaskedDerivation,
 } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
   Card,
   CardHeader,
   CardContent,
-  Select,
   MenuItem,
-  InputLabel,
   Button,
   Box,
   FormControl,
+  TextField,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import Copyable from "../Copyable";
 import TextSignatureImporter from "./TextSignatureImporter";
 import DirectSignatureImporter from "./DirectSignatureImporter";
@@ -36,7 +36,6 @@ import {
   setSignatureImporterFinalized,
   setSignatureImporterComplete,
 } from "../../actions/signatureImporterActions";
-import "react-table/react-table.css";
 import { setSigningKey as setSigningKeyAction } from "../../actions/transactionActions";
 import { downloadFile } from "../../utils";
 
@@ -93,7 +92,6 @@ class SignatureImporter extends React.Component {
     const currentNumber = this.getCurrent();
     const notMyTurn = number > currentNumber;
     const { disableChangeMethod } = this.state;
-    const labelId = `signature-${number}-importer-select-label`;
     if (notMyTurn) {
       return (
         <p>
@@ -106,13 +104,13 @@ class SignatureImporter extends React.Component {
     return (
       <form>
         <FormControl fullWidth>
-          <InputLabel id={labelId}>Select Method</InputLabel>
-
-          <Select
-            labelId={labelId}
+          <TextField
+            label="Select Method"
             id={`signature-${number}-importer-select`}
-            disabled={disableChangeMethod}
+            select
             value={signatureImporter.method}
+            variant="standard"
+            disabled={disableChangeMethod}
             onChange={this.handleMethodChange}
           >
             <MenuItem value={UNKNOWN}>{"< Select method >"}</MenuItem>
@@ -123,7 +121,7 @@ class SignatureImporter extends React.Component {
             </MenuItem>
             <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
-          </Select>
+          </TextField>
         </FormControl>
 
         {this.renderImportByMethod()}
@@ -143,6 +141,11 @@ class SignatureImporter extends React.Component {
       isWallet,
       extendedPublicKeyImporter,
       unsignedPsbt,
+      extendedPublicKeys,
+      requiredSigners,
+      addressType,
+      walletName,
+      ledgerPolicyHmacs,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -164,6 +167,14 @@ class SignatureImporter extends React.Component {
           validateAndSetSignature={this.validateAndSetSignature}
           enableChangeMethod={this.enableChangeMethod}
           disableChangeMethod={this.disableChangeMethod}
+          walletConfig={{
+            addressType,
+            network,
+            quorum: { requiredSigners },
+            extendedPublicKeys,
+            name: walletName,
+            ledgerPolicyHmacs,
+          }}
         />
       );
     }
@@ -558,6 +569,13 @@ SignatureImporter.propTypes = {
   extendedPublicKeyImporter: PropTypes.shape({
     method: PropTypes.string,
   }),
+  extendedPublicKeys: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.string,
+      rootFingerprint: PropTypes.string,
+      base58String: PropTypes.string,
+    })
+  ).isRequired,
   fee: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   inputsTotalSats: PropTypes.shape({}).isRequired,
@@ -565,6 +583,7 @@ SignatureImporter.propTypes = {
   network: PropTypes.string.isRequired,
   number: PropTypes.number.isRequired,
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  requiredSigners: PropTypes.number.isRequired,
   setName: PropTypes.func.isRequired,
   setMethod: PropTypes.func.isRequired,
   setBIP32Path: PropTypes.func.isRequired,
@@ -586,6 +605,9 @@ SignatureImporter.propTypes = {
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
   unsignedPsbt: PropTypes.string,
+  walletName: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  ledgerPolicyHmacs: PropTypes.array.isRequired,
 };
 
 SignatureImporter.defaultProps = {
@@ -600,8 +622,21 @@ function mapStateToProps(state, ownProps) {
       signatureImporter: state.spend.signatureImporters[ownProps.number],
       fee: state.spend.transaction.fee,
       txid: state.spend.transaction.txid,
+      walletName: state.wallet.common.walletName,
     },
     ...state.spend.transaction,
+    requiredSigners: state.settings.requiredSigners,
+    ledgerPolicyHmacs: state.wallet.common.ledgerPolicyHmacs,
+    extendedPublicKeys: Object.values(
+      state.quorum.extendedPublicKeyImporters
+    ).map((key) => ({
+      bip32Path: getMaskedDerivation({
+        xpub: key.extendedPublicKey,
+        bip32Path: key.bip32Path,
+      }),
+      xfp: key.rootXfp,
+      xpub: key.extendedPublicKey,
+    })),
   };
 }
 

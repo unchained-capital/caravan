@@ -14,8 +14,8 @@ import {
   Card,
   CardHeader,
   CardContent,
-} from "@material-ui/core";
-import { OpenInNew } from "@material-ui/icons";
+} from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
 import { broadcastTransaction } from "../../blockchain";
 import Copyable from "../Copyable";
 import { externalLink } from "../../utils";

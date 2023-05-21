@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { HermitExportExtendedPublicKey } from "unchained-wallets";
-import { FormGroup, FormHelperText } from "@material-ui/core";
+import { FormGroup, FormHelperText } from "@mui/material";
 
 import HermitReader from "./HermitReader";
 

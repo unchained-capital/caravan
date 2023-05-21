@@ -14,8 +14,8 @@ import {
   TableCell,
   Typography,
   Checkbox,
-} from "@material-ui/core";
-import { OpenInNew } from "@material-ui/icons";
+} from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
 import BigNumber from "bignumber.js";
 import { externalLink } from "../../utils";
 import Copyable from "../Copyable";
@@ -24,7 +24,6 @@ import Copyable from "../Copyable";
 import { setInputs as setInputsAction } from "../../actions/transactionActions";
 
 // Assets
-import "react-table/react-table.css";
 import styles from "./styles.module.scss";
 
 class UTXOSet extends React.Component {

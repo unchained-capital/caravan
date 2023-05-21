@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PropTypes } from "prop-types";
 
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import { setKeystoreNote } from "../../actions/keystoreActions";
 import { setTestRunNote } from "../../actions/testRunActions";
 
@@ -27,6 +27,7 @@ class NoteBase extends React.Component {
         name="notes"
         label="Notes"
         value={note}
+        variant="standard"
         onChange={this.handleChange}
         multiline
         fullWidth
@@ -62,8 +63,8 @@ const mapStateToTestRunNoteProps = (state) => {
   return {
     mode: TEST_RUN_MODE,
     testRunIndex: state.testSuiteRun.currentTestRunIndex,
-    note:
-      state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex].note,
+    note: state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex]
+      .note,
   };
 };
 

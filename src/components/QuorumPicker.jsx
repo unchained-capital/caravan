@@ -13,8 +13,8 @@ import {
   CardHeader,
   CardContent,
   Box,
-} from "@material-ui/core";
-import { AddCircle, RemoveCircle } from "@material-ui/icons";
+} from "@mui/material";
+import { AddCircle, RemoveCircle } from "@mui/icons-material";
 import {
   setTotalSigners as setTotalSignersAction,
   setRequiredSigners as setRequiredSignersAction,
@@ -113,7 +113,7 @@ class QuorumPicker extends React.Component {
         <CardHeader title="Quorum" />
         <CardContent>
           <Box>
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
               <Grid container item xs={2} direction="column">
                 &nbsp;
               </Grid>
@@ -146,7 +146,7 @@ class QuorumPicker extends React.Component {
                 xs={2}
                 direction="column"
                 alignItems="center"
-                justify="center"
+                justifyContent="center"
               >
                 <Grid item>
                   <Typography variant="h6">of</Typography>

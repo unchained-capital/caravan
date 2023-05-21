@@ -18,8 +18,8 @@ import {
   FormHelperText,
   Typography,
   Box,
-} from "@material-ui/core";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
   fetchAddressUTXOs,
   getAddressStatus,
@@ -27,6 +27,7 @@ import {
 } from "../../blockchain";
 import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
+import RegisterWallet from "./RegisterWallet";
 import WalletControl from "./WalletControl";
 import WalletConfigInteractionButtons from "./WalletConfigInteractionButtons";
 import { setFrozen } from "../../actions/settingsActions";
@@ -36,6 +37,7 @@ import {
   resetNodesFetchErrors as resetNodesFetchErrorsAction,
   resetWallet as resetWalletAction,
   initialLoadComplete as initialLoadCompleteAction,
+  updateWalletPolicyRegistrationsAction,
 } from "../../actions/walletActions";
 import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import { setExtendedPublicKeyImporterVisible } from "../../actions/extendedPublicKeyImporterActions";
@@ -46,8 +48,6 @@ import {
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
 import { MAX_FETCH_UTXOS_ERRORS, MAX_TRAILING_EMPTY_NODES } from "./constants";
-
-// const bitcoin = require('bitcoinjs-lib');
 
 class WalletGenerator extends React.Component {
   constructor(props) {
@@ -104,81 +104,21 @@ class WalletGenerator extends React.Component {
     if (!prevProps.common.nodesLoaded && nodesLoaded) setIsWallet();
   }
 
-  title = () => {
-    const { totalSigners, requiredSigners, addressType } = this.props;
-    return (
-      <span className="justify-content-between d-flex">
-        Your {requiredSigners}
-        -of-
-        {totalSigners} {addressType} Multisig Wallet
-        <small className="text-muted">{` Extended Public Keys: ${this.extendedPublicKeyCount()}/${totalSigners}`}</small>
-      </span>
-    );
-  };
-
-  testConnection = async ({ network, client, setPasswordError }, cb) => {
-    try {
-      await fetchFeeEstimate(network, client);
-      setPasswordError("");
-      this.setState({ connectSuccess: true }, () => {
-        // if testConnection was passed a callback
-        // we call that after a successful test, which
-        // in this case generates the wallet
-        if (cb) setTimeout(cb, 750);
-      });
-    } catch (e) {
-      this.setState({ connectSuccess: false });
-      if (e.response && e.response.status === 401)
-        setPasswordError(
-          "Unauthorized: Incorrect username and password combination"
-        );
-      else setPasswordError(e.message);
-    }
-  };
-
-  extendedPublicKeyCount = () => {
-    const { extendedPublicKeyImporters } = this.props;
-    return Object.values(extendedPublicKeyImporters).filter(
-      (extendedPublicKeyImporter) => extendedPublicKeyImporter.finalized
-    ).length;
-  };
-
-  toggleImporters = (event, clear) => {
+  async handlePasswordEnter(event) {
     event.preventDefault();
-    const {
-      setImportersVisible,
-      configuring,
-      resetWallet,
-      initialLoadComplete,
-      setGenerating,
-    } = this.props;
+    this.debouncedTestConnection.cancel();
+    await this.testConnection(this.props, this.generate);
+  }
 
-    if (!configuring) {
-      setGenerating(false);
-      if (clear) resetWallet();
-      if (!clear) initialLoadComplete();
-    }
-
-    setImportersVisible(!configuring);
-  };
-
-  generate = () => {
-    const {
-      setImportersVisible,
-      freeze,
-      setGenerating,
-      startingAddressIndex,
-    } = this.props;
-    const startingDepositBIP32Suffix = `m/0/${startingAddressIndex}`;
-    const startingChangeBIP32Suffix = `m/1/${startingAddressIndex}`;
-    freeze(true);
-    setImportersVisible(false);
-    setGenerating(true);
+  async handlePasswordChange(event) {
+    event.preventDefault();
+    const { setPassword, setPasswordError } = this.props;
+    const password = event.target.value;
     this.setState({ connectSuccess: false }, () => {
-      this.addNode(false, startingDepositBIP32Suffix, true);
-      this.addNode(true, startingChangeBIP32Suffix, true);
+      setPassword(password);
+      setPasswordError("");
     });
-  };
+  }
 
   updateNode = (isChange, update) => {
     const { updateChangeSlice, updateDepositSlice } = this.props;
@@ -280,6 +220,78 @@ class WalletGenerator extends React.Component {
     setTimeout(() => this.addNode(isChange, nextBIP32Path, true));
   };
 
+  generate = () => {
+    const { setImportersVisible, freeze, setGenerating, startingAddressIndex } =
+      this.props;
+    const startingDepositBIP32Suffix = `m/0/${startingAddressIndex}`;
+    const startingChangeBIP32Suffix = `m/1/${startingAddressIndex}`;
+    freeze(true);
+    setImportersVisible(false);
+    setGenerating(true);
+    this.setState({ connectSuccess: false }, () => {
+      this.addNode(false, startingDepositBIP32Suffix, true);
+      this.addNode(true, startingChangeBIP32Suffix, true);
+    });
+  };
+
+  toggleImporters = (event, clear) => {
+    event.preventDefault();
+    const {
+      setImportersVisible,
+      configuring,
+      resetWallet,
+      initialLoadComplete,
+      setGenerating,
+    } = this.props;
+
+    if (!configuring) {
+      setGenerating(false);
+      if (clear) resetWallet();
+      if (!clear) initialLoadComplete();
+    }
+
+    setImportersVisible(!configuring);
+  };
+
+  extendedPublicKeyCount = () => {
+    const { extendedPublicKeyImporters } = this.props;
+    return Object.values(extendedPublicKeyImporters).filter(
+      (extendedPublicKeyImporter) => extendedPublicKeyImporter.finalized
+    ).length;
+  };
+
+  testConnection = async ({ network, client, setPasswordError }, cb) => {
+    try {
+      await fetchFeeEstimate(network, client);
+      setPasswordError("");
+      this.setState({ connectSuccess: true }, () => {
+        // if testConnection was passed a callback
+        // we call that after a successful test, which
+        // in this case generates the wallet
+        if (cb) setTimeout(cb, 750);
+      });
+    } catch (e) {
+      this.setState({ connectSuccess: false });
+      if (e.response && e.response.status === 401)
+        setPasswordError(
+          "Unauthorized: Incorrect username and password combination"
+        );
+      else setPasswordError(e.message);
+    }
+  };
+
+  title = () => {
+    const { totalSigners, requiredSigners, addressType } = this.props;
+    return (
+      <span className="justify-content-between d-flex">
+        Your {requiredSigners}
+        -of-
+        {totalSigners} {addressType} Multisig Wallet
+        <small className="text-muted">{` Extended Public Keys: ${this.extendedPublicKeyCount()}/${totalSigners}`}</small>
+      </span>
+    );
+  };
+
   refreshNodes = async () => {
     const { change, deposits, resetNodesFetchErrors } = this.props;
     const allNodes = Object.values(deposits.nodes).concat(
@@ -332,22 +344,6 @@ class WalletGenerator extends React.Component {
     });
   }
 
-  async handlePasswordEnter(event) {
-    event.preventDefault();
-    this.debouncedTestConnection.cancel();
-    await this.testConnection(this.props, this.generate);
-  }
-
-  async handlePasswordChange(event) {
-    event.preventDefault();
-    const { setPassword, setPasswordError } = this.props;
-    const password = event.target.value;
-    this.setState({ connectSuccess: false }, () => {
-      setPassword(password);
-      setPasswordError("");
-    });
-  }
-
   body() {
     const {
       totalSigners,
@@ -376,6 +372,11 @@ class WalletGenerator extends React.Component {
                 {configuring ? "Hide Key Selection" : "Edit Details"}
               </Button>
               <ConfirmWallet />
+              <Grid container>
+                <Grid item>
+                  <RegisterWallet />
+                </Grid>
+              </Grid>
               <p>
                 You have imported all&nbsp;
                 {totalSigners} extended public keys. You will need to save this
@@ -432,6 +433,7 @@ class WalletGenerator extends React.Component {
                           label="Password"
                           placeholder="Enter bitcoind password"
                           value={client.password}
+                          variant="standard"
                           onChange={(event) => this.handlePasswordChange(event)}
                           error={client.passwordError.length > 0}
                           helperText={client.passwordError}
@@ -548,6 +550,7 @@ const mapDispatchToProps = {
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,
   }),
   initialLoadComplete: initialLoadCompleteAction,
+  updateWalletPolicyRegistrations: updateWalletPolicyRegistrationsAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletGenerator);

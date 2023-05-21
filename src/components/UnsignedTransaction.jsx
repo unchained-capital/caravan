@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import Copyable from "./Copyable";
 
 class UnsignedTransaction extends React.Component {

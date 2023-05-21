@@ -5,16 +5,14 @@ import { validatePublicKey, validateBIP32Path } from "unchained-bitcoin";
 import { TREZOR, LEDGER } from "unchained-wallets";
 
 // Components
-import CheckIcon from "@material-ui/icons/Check";
-import ClearIcon from "@material-ui/icons/Clear";
-import { styled } from "@material-ui/core/styles";
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
+import { styled } from "@mui/material/styles";
 import {
   Card,
   CardHeader,
   CardContent,
-  Select,
   MenuItem,
-  InputLabel,
   FormControl,
   Button,
   Typography,
@@ -22,7 +20,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from "@material-ui/core";
+  TextField,
+} from "@mui/material";
 import HardwareWalletPublicKeyImporter from "../CreateAddress/HardwareWalletPublicKeyImporter";
 
 // Actions
@@ -33,8 +32,6 @@ import {
   setPublicKeyImporterMethod,
   setPublicKeyImporterPublicKey,
 } from "../../actions/ownershipActions";
-
-import "react-table/react-table.css";
 
 class ConfirmOwnership extends React.Component {
   titleRef = React.createRef();
@@ -188,8 +185,6 @@ class ConfirmOwnership extends React.Component {
   render() {
     const { publicKeyImporter } = this.props;
     const { disableChangeMethod } = this.state;
-    const labelId = "public-key-importer-select-label";
-    const selectLabelId = `${labelId}-select`;
 
     return (
       <Card>
@@ -199,19 +194,19 @@ class ConfirmOwnership extends React.Component {
             <p>How will you confirm your ownership of this address?</p>
 
             <FormControl fullWidth>
-              <InputLabel id={labelId}>Select Method</InputLabel>
-
-              <Select
-                labelId={selectLabelId}
+              <TextField
+                label="Select Method"
                 id="public-key-importer-select"
                 disabled={disableChangeMethod}
+                select
                 value={publicKeyImporter.method}
                 onChange={this.handleMethodChange}
+                variant="standard"
               >
                 <MenuItem value="">{"< Select method >"}</MenuItem>
                 <MenuItem value={TREZOR}>Trezor</MenuItem>
                 <MenuItem value={LEDGER}>Ledger</MenuItem>
-              </Select>
+              </TextField>
             </FormControl>
 
             {this.renderImportByMethod()}

@@ -70,7 +70,7 @@ class Test {
 
   async actual(data) {
     return this.postprocess(
-      data ? this.interaction().parse(data) : this.interaction().run()
+      data ? this.interaction().parse(data) : await this.interaction().run()
     );
   }
 

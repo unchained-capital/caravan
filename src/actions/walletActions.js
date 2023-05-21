@@ -21,12 +21,14 @@ export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
 export const UPDATE_CHANGE_SLICE = "UPDATE_CHANGE_SLICE";
 export const RESET_NODES_SPEND = "RESET_NODES_SPEND";
 export const UPDATE_WALLET_NAME = "UPDATE_WALLET_NAME";
+export const UPDATE_WALLET_UUID = "UPDATE_WALLET_UUID";
 export const UPDATE_WALLET_MODE = "UPDATE_WALLET_MODE";
 export const RESET_WALLET_VIEW = "RESET_WALLET_VIEW";
 export const RESET_WALLET = "RESET_WALLET";
 export const SPEND_SLICES = "SPEND_SLICES";
 export const INITIAL_LOAD_COMPLETE = "INITIAL_LOAD_COMPLETE";
 export const RESET_NODES_FETCH_ERRORS = "RESET_NODES_FETCH_ERRORS";
+export const UPDATE_POLICY_REGISTRATIONS = "UPDATE_POLICY_REGISTRATION";
 
 export const WALLET_MODES = {
   VIEW: 0,
@@ -302,6 +304,23 @@ export function updateWalletNameAction(number, value) {
   return {
     type: UPDATE_WALLET_NAME,
     value,
+  };
+}
+
+export function updateWalletUuidAction(value) {
+  return {
+    type: UPDATE_WALLET_UUID,
+    value,
+  };
+}
+
+export function updateWalletPolicyRegistrationsAction({ xfp, policyHmac }) {
+  return {
+    type: UPDATE_POLICY_REGISTRATIONS,
+    value: {
+      xfp,
+      policyHmac,
+    },
   };
 }
 

@@ -17,8 +17,7 @@ class ExportPublicKeyTest extends Test {
   description() {
     return (
       <p>
-        Export a public key at BIP32 path
-        <code>{this.params.bip32Path}</code>.
+        Export a public key at BIP32 path <code>{this.params.bip32Path}</code>.
       </p>
     );
   }
@@ -33,9 +32,8 @@ class ExportPublicKeyTest extends Test {
   }
 
   expected() {
-    const { pub, rootFingerprint } = TEST_FIXTURES.keys.open_source.nodes[
-      this.params.bip32Path
-    ];
+    const { pub, rootFingerprint } =
+      TEST_FIXTURES.keys.open_source.nodes[this.params.bip32Path];
     if (this.params.keystore === HERMIT) {
       return pub;
     }
