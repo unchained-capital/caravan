@@ -307,9 +307,8 @@ class ScriptEntry extends React.Component {
 
           setUnsignedPSBT(psbt.toBase64());
           if (psbt?.data?.inputs.length > 0) {
-            const redeemScriptHex = psbt.data.inputs[0].redeemScript.toString(
-              "hex"
-            );
+            const redeemScriptHex =
+              psbt.data.inputs[0].redeemScript.toString("hex");
             this.setPSBTToggleAndError(false, "");
 
             this.handleScriptChange(redeemScriptHex);

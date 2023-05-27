@@ -27,13 +27,8 @@ class HermitReader extends Component {
   }
 
   render = () => {
-    const {
-      status,
-      error,
-      percentageReceived,
-      partsReceived,
-      totalParts,
-    } = this.state;
+    const { status, error, percentageReceived, partsReceived, totalParts } =
+      this.state;
     const { interaction, width, startText } = this.props;
 
     if (status === PENDING) {

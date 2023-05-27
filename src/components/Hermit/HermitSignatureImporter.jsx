@@ -150,17 +150,10 @@ class HermitSignatureImporter extends React.Component {
   };
 
   render = () => {
-    const {
-      signatureImporter,
-      disableChangeMethod,
-      resetBIP32Path,
-    } = this.props;
-    const {
-      bip32PathError,
-      signatureError,
-      status,
-      displaySignatureRequest,
-    } = this.state;
+    const { signatureImporter, disableChangeMethod, resetBIP32Path } =
+      this.props;
+    const { bip32PathError, signatureError, status, displaySignatureRequest } =
+      this.state;
     const interaction = this.interaction();
     if (status === UNSUPPORTED) {
       return (

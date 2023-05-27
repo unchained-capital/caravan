@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import QRCode from "qrcode.react";
-import { Grid, Button } from "@material-ui/core";
+import { Grid, Button } from "@mui/material";
 
 export const HermitQRCode = ({
   width = 640, // px

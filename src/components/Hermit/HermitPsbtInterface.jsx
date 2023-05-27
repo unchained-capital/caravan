@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 // Components
-import { Box, Button, FormHelperText, Grid } from "@material-ui/core";
+import { Box, Button, FormHelperText, Grid } from "@mui/material";
 import "../styles.css";
 import {
   autoSelectCoins as autoSelectCoinsAction,
