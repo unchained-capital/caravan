@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 * **wallet** wallet registrations and address verification with ledger ([296](https://github.com/unchained-capital/caravan/pull/296)) ([95e2092](https://github.com/unchained-capital/caravan/commit/95e20924924d52a22dd7b85c4a9626f1c1c4a2fa))
 
+## [0.6.0](https://github.com/unchained-capital/caravan/compare/caravan-v0.5.0...caravan-v0.6.0) (2023-04-17)
+
+
+### Features
+
+* add support for wallet uuid in configs ([#297](https://github.com/unchained-capital/caravan/issues/297)) ([6675db4](https://github.com/unchained-capital/caravan/commit/6675db41bb14331c2e6de7d377bb8003ee824c28))
+
+
+### Bug Fixes
+
+* bad import ([#299](https://github.com/unchained-capital/caravan/issues/299)) ([e646ebb](https://github.com/unchained-capital/caravan/commit/e646ebb0b26f2bf5318a19829c1bbf9cb7c8327d))
+
 ### [0.4.0](https://github.com/unchained-capital/caravan/compare/v0.3.14...v0.4.0) (2023-03-06)
 
 ### Features
