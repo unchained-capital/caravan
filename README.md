@@ -28,7 +28,7 @@ be run in any web browser from a local or remote installation.
 The simplest way to use Caravan is to visit
 [https://unchained-capital.github.io/caravan](https://unchained-capital.github.io/caravan),
 a copy of Caravan hosted on GitHub by
-[Unchained Capital](https://www.unchained-capital.com).
+[Unchained Capital](https://www.unchained.com).
 
 ### Your Own GitHub
 
