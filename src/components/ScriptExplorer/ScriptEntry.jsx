@@ -228,7 +228,7 @@ class ScriptEntry extends React.Component {
     } else {
       this.setState({
         fetchedUTXOs: false,
-        fetchUTXOsError: "Failed to fetch UTXOs.",
+        fetchUTXOsError: "This address has a zero balance.",
       });
     }
   };
