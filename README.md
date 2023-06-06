@@ -116,8 +116,12 @@ Caravan can connect to several different hardware wallets and key
 management software.
 
 - [Trezor One](https://shop.trezor.io/product/trezor-one-white) (installing the Trezor Bridge is required to interact with a Trezor device)
+- [Trezor Model T](https://shop.trezor.io/product/trezor-model-t) (installing the Trezor Bridge is required to interact with a Trezor device)
 
 - [Ledger Nano S](https://www.ledger.com/products/ledger-nano-s)
+- [Ledger Nano X](https://www.ledger.com/products/ledger-nano-x)
+
+- [Coldcard Mk2, Mk3, & Mk4](https://coldcard.com/)
 
 - [Hermit](https://github.com/unchained-capital/hermit)
 
