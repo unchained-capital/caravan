@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Route,
   Switch,
   Redirect,
@@ -28,7 +28,7 @@ const App = () => (
     <CssBaseline />
     <div className="App">
       <SnackbarProvider maxSnack={3}>
-        <Router basename="/caravan">
+        <Router basename="/">
           <Container maxWidth={false} sx={{ maxWidth: "1280px" }}>
             <Navbar />
             <ErrorBoundary>
