@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.1](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.0...caravan-v0.6.1) (2023-07-13)
+
+
+### Bug Fixes
+
+* addressType conflict check not applicable for text xpubs ([185fc01](https://github.com/unchained-capital/caravan/commit/185fc01bcd6c02301fb787229ffcc8f0c4c6cd45))
+* **build:** bring back hash routing ([ed83bf4](https://github.com/unchained-capital/caravan/commit/ed83bf4b6765294180ea96b11898cb1a42adfc42))
+* **scriptexplorer:** change the error message for spending from new wallet ([1923dad](https://github.com/unchained-capital/caravan/commit/1923dad0d5fdc61fe88d729d6e850cee8a22e0f1)), closes [#172](https://github.com/unchained-capital/caravan/issues/172)
+* **scriptexplorer:** show error message trown in fethUTXOs ([158fb61](https://github.com/unchained-capital/caravan/commit/158fb6154856909f4de77a49eaeac24cbd4a42d2)), closes [#172](https://github.com/unchained-capital/caravan/issues/172)
+* **scriptexplorer:** when no error is trown check for 0 balance ([cb96364](https://github.com/unchained-capital/caravan/commit/cb96364922f61e922be30b67fc39eda2fd233dce))
+* **wallet:** add delay to address and utxo calls ([d9774c1](https://github.com/unchained-capital/caravan/commit/d9774c1c7e28021a48efa30666c6ceb9e75cd1da)), closes [#317](https://github.com/unchained-capital/caravan/issues/317)
+
 ### [0.6.1](https://github.com/unchained-capital/caravan/compare/v0.5.0...v0.6.1) (2023-06-29)
 
 
