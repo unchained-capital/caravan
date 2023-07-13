@@ -125,9 +125,11 @@ function setConflict(publicKeyImporterIndex, state) {
     const publicKeyImporters = { ...state.publicKeyImporters };
     const publicKeyImporter = publicKeyImporters[publicKeyImporterIndex];
 
-    publicKeyImporter.conflict =
-      state.finalizedNetwork !== state.network ||
-      state.finalizedAddressType !== state.addressType;
+    const networkConflict = state.finalizedNetwork !== state.network;
+    const addressTypeConflict =
+      state.finalizedAddressType !== state.addressType &&
+      publicKeyImporter.method !== "text";
+    publicKeyImporter.conflict = networkConflict || addressTypeConflict;
 
     return updateState(state, { publicKeyImporters });
   }
