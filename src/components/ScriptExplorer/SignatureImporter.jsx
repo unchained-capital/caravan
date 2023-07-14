@@ -142,6 +142,7 @@ class SignatureImporter extends React.Component {
       addressType,
       walletName,
       ledgerPolicyHmacs,
+      walletUuid,
     } = this.props;
     const { method } = signatureImporter;
 
@@ -168,6 +169,7 @@ class SignatureImporter extends React.Component {
             network,
             quorum: { requiredSigners },
             extendedPublicKeys,
+            uuid: walletUuid,
             name: walletName,
             ledgerPolicyHmacs,
           }}
@@ -583,6 +585,7 @@ SignatureImporter.propTypes = {
   unsignedTransaction: PropTypes.shape({}).isRequired,
   setSigningKey: PropTypes.func.isRequired,
   walletName: PropTypes.string.isRequired,
+  walletUuid: PropTypes.string.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   ledgerPolicyHmacs: PropTypes.array.isRequired,
 };
@@ -599,6 +602,7 @@ function mapStateToProps(state, ownProps) {
       fee: state.spend.transaction.fee,
       txid: state.spend.transaction.txid,
       walletName: state.wallet.common.walletName,
+      walletUuid: state.wallet.common.walletUuid,
     },
     ...state.spend.transaction,
     requiredSigners: state.settings.requiredSigners,
