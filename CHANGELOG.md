@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.2](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.1...caravan-v0.6.2) (2023-07-18)
+
+
+### Bug Fixes
+
+* **sign:** pass wallet uuid for signing ([a748d97](https://github.com/unchained-capital/caravan/commit/a748d97d3bfe796487270ca7a41144b629df17a7))
+
 ## [0.6.1](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.0...caravan-v0.6.1) (2023-07-13)
 
 
