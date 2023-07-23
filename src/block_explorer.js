@@ -2,6 +2,11 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 import { satoshisToBitcoins, blockExplorerAPIURL } from "unchained-bitcoin";
 
+// FIXME: hack
+const delay = () => {
+  return new Promise((resolve) => setTimeout(resolve, 500));
+};
+
 /**
  * Fetch information for signing transactions from block explorer API
  * @param {string} address - The address from which to obtain the information
@@ -17,6 +22,9 @@ export async function blockExplorerGetAddresesUTXOs(address, network) {
     return await Promise.all(
       utxos.map(async (utxo) => {
         // FIXME: inefficient, need to cache here by utxo.txid
+        // FIXME: delay hack to prevent throttling
+        await delay();
+
         const transactionResult = await axios.get(
           blockExplorerAPIURL(`/tx/${utxo.txid}/hex`, network)
         );
@@ -40,6 +48,9 @@ export async function blockExplorerGetAddresesUTXOs(address, network) {
 
 export async function blockExplorerGetAddressStatus(address, network) {
   try {
+    // FIXME: delay hack to prevent throttling
+    await delay();
+
     const addressesult = await axios.get(
       blockExplorerAPIURL(`/address/${address}`, network)
     );
