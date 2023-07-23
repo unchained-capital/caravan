@@ -399,10 +399,17 @@ export function importHermitPSBT(psbtText) {
 
     dispatch(resetOutputs());
     dispatch(setUnsignedPSBT(psbt.toBase64()));
-    // now do sigs
+    // To extend this support beyond the bare bones here, it will be necessary to handle
+    // any included signatures if this PSBT is already partially signed. However, for now
+    // we just skip over that, treating every PSBT as if it is unsigned whether it has
+    // any signatures included or not.
   };
 }
 
+
+// There are two implicit constraints on legacyPSBT support as written
+//    1. All UTXOs being spent are from the same redeem script (e.g. single address spend)
+//    2. There is no change - we are sweeping all funds to a single address. e.g. len(psbt.txOutputs) == 1
 export function importLegacyPSBT(psbtText) {
   return (dispatch, getState) => {
     const state = getState();
@@ -411,11 +418,6 @@ export function importLegacyPSBT(psbtText) {
     if (!psbt) {
       throw new Error("Could not parse PSBT.");
     }
-
-    // FIXME make sure all redeem scripts are the same -- can only support this kind of spend
-
-    // FIXME fail if len(psbt.txOutputs) > 1
-
     return psbt;
   };
 }

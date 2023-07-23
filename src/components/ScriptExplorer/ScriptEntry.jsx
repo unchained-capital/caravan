@@ -285,7 +285,7 @@ class ScriptEntry extends React.Component {
   };
 
   handleImportPSBT = ({ target }) => {
-    const { importLegacyPSBT, setNetwork, setUnsignedPSBT } = this.props;
+    const { importLegacyPSBT, setNetwork, setUnsignedPSBT, network } = this.props;
 
     this.setPSBTToggleAndError(true, "");
 
@@ -317,8 +317,6 @@ class ScriptEntry extends React.Component {
               psbt.data.globalMap.unknownKeyVals[0].value
             );
             this.handleScriptChange(redeemScriptHex);
-            // future nice to have on the path, but ultimately only need to get the redeem script
-            // setPathToSign("asdf");
           }
 
           // set network type
@@ -327,19 +325,6 @@ class ScriptEntry extends React.Component {
           // set outputs
           this.renderDetails();
           this.performSpend();
-          //   .then(() => {
-          //   const output = psbt.txOutputs[0];
-          //   const outputsTotalSats = new BigNumber(output.value);
-          //   // setNetwork(psbt.opts.network); -- BUGFIX needed on buidl psbt builder
-          //   // setAddress(1, output.address);
-          //   setAmount(1, satoshisToBitcoins(output.value).toFixed(8));
-          // setAddress(1, "2MuAeixpNw4xWMKqvhz8YEVEodWXRxCYsXG");
-          //   const inputsTotalSats = new BigNumber(10000000);
-          //   const feeSats = inputsTotalSats - outputsTotalSats;
-          //   const fee = satoshisToBitcoins(feeSats).toFixed(8).toString();
-          //   setFee(fee);
-          //   finalizeOutputs(true);
-          // });
         } catch (e) {
           this.setPSBTToggleAndError(false, e.message);
         }

@@ -64,10 +64,11 @@ class HermitSignatureImporter extends React.Component {
       unsignedPsbtFromState,
     } = this.props;
     let psbtToSign;
+
     // We need to be flexible here because this signature importer is used in multiple places
     // And the user *could* have uploaded their own PSBT, and that uploaded PSBT *could* also
     // be a scaffolded PSBT without any inputs.
-    //
+
     if (unsignedPsbtFromState === "" && inputs.length > 0) {
       psbtToSign = unsignedMultisigPSBT(
         network,
