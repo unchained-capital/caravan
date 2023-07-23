@@ -217,7 +217,7 @@ class ScriptEntry extends React.Component {
     } = this.props;
     const multisig = this.generateMultisig();
     const fetchUTXOsResult = await this.fetchUTXOs(multisig);
-    if (fetchUTXOsResult) {
+    if (fetchUTXOsResult && fetchUTXOsResult.utxos) {
       const { utxos, balanceSats } = fetchUTXOsResult;
       let fetchUTXOsError = "";
       if (balanceSats.isLessThanOrEqualTo(0)) {
@@ -243,7 +243,7 @@ class ScriptEntry extends React.Component {
     } else {
       this.setState({
         fetchedUTXOs: false,
-        fetchUTXOsError: "Failed to fetch UTXOs.",
+        fetchUTXOsError: fetchUTXOsResult.fetchUTXOsError,
       });
     }
   };
@@ -256,10 +256,7 @@ class ScriptEntry extends React.Component {
       client
     );
 
-    if (addressData && addressData.utxos && addressData.utxos.length)
-      return addressData;
-
-    return false;
+    return addressData;
   };
 
   //
