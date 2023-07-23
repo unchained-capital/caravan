@@ -282,7 +282,8 @@ class ScriptEntry extends React.Component {
   };
 
   handleImportPSBT = ({ target }) => {
-    const { importLegacyPSBT, setNetwork, setUnsignedPSBT, network } = this.props;
+    const { importLegacyPSBT, setNetwork, setUnsignedPSBT, network } =
+      this.props;
 
     this.setPSBTToggleAndError(true, "");
 

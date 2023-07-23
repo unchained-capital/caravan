@@ -406,7 +406,6 @@ export function importHermitPSBT(psbtText) {
   };
 }
 
-
 // There are two implicit constraints on legacyPSBT support as written
 //    1. All UTXOs being spent are from the same redeem script (e.g. single address spend)
 //    2. There is no change - we are sweeping all funds to a single address. e.g. len(psbt.txOutputs) == 1
