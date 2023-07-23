@@ -9,9 +9,6 @@ import {
   validateHex,
   multisigRequiredSigners,
   multisigTotalSigners,
-  // eslint-disable-next-line no-unused-vars
-  MAINNET,
-  TESTNET,
   toHexString,
 } from "unchained-bitcoin";
 import {
@@ -319,10 +316,7 @@ class ScriptEntry extends React.Component {
             this.handleScriptChange(redeemScriptHex);
           }
 
-          // set network type
-          setNetwork(TESTNET);
-          // set inputs (?)
-          // set outputs
+          setNetwork(network);
           this.renderDetails();
           this.performSpend();
         } catch (e) {
