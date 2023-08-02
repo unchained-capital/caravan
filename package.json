@@ -1,7 +1,7 @@
 {
   "name": "caravan",
   "version": "0.6.2",
-  "description": "Unchained Capital's Bitcoin Multisig Application",
+  "description": "Unchained's Bitcoin Multisig Application",
   "main": "index.jsx",
   "publicPrivate": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/unchained-capital/caravan"
   },
-  "author": "Unchained Capital",
+  "author": "Unchained",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/unchained-capital/caravan/issues"
