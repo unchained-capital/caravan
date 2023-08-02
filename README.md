@@ -23,12 +23,12 @@ safekeep the addresses (and redeem scripts & BIP32 paths) you create.
 Caravan is a stateless pure HTML & JavaScript web application. It can
 be run in any web browser from a local or remote installation.
 
-### Unchained Capital GitHub
+### Unchained GitHub
 
 The simplest way to use Caravan is to visit
 [https://unchained-capital.github.io/caravan](https://unchained-capital.github.io/caravan),
 a copy of Caravan hosted on GitHub by
-[Unchained Capital](https://www.unchained.com).
+[Unchained](https://www.unchained.com).
 
 ### Your Own GitHub
 
