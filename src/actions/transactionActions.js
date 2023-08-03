@@ -377,7 +377,10 @@ export function importPSBT(psbtText) {
 
     dispatch(finalizeOutputs(true));
 
-    // now do sigs
+    // In the future, if we want to support loading in signatures
+    // (or sets of signatures) included in a PSBT, we likely need to do
+    // that work here. Initial implementation just ignores any signatures
+    // included with the uploaded PSBT.
   };
 }
 
