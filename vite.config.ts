@@ -19,14 +19,7 @@ export default defineConfig({
   ],
   build: {
     outDir: "build",
-    // rollupOptions: {
-    //   external: ["@trezor/transport/lib/types/messages"],
-    // },
   },
-  optimizeDeps: {
-    exclude: ["@trezor/transport/lib/types/messages"],
-  },
-
   define: {
     __GIT_SHA__: JSON.stringify(process.env.__GIT_SHA__),
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
