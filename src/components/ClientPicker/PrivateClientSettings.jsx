@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 // Components
 import { Grid, TextField, Button, FormHelperText, Box } from "@mui/material";
 
-import { externalLink } from "../../utils";
+// import { externalLink } from "utils/ExternalLink";
+import { externalLink } from "utils/ExternalLink";
 
 const PrivateClientSettings = ({
   handleUrlChange,

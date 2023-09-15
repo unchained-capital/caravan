@@ -130,7 +130,6 @@ class Spend extends React.Component {
 
   confirmOwnership = (value) => {
     // TODO can this entire function be removed? The states aren't being used.
-    // eslint-disable-next-line react/no-unused-state
     this.setState({ addressFinalized: true, confirmOwnership: value });
   };
 }

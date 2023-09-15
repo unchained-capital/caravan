@@ -12,7 +12,7 @@ WORKDIR /var/app
 COPY fixtures /var/app/fixtures
 COPY public /var/app/public
 COPY src /var/app/src
-COPY babel.config.json jest.config.json vite.config.js .env .eslintignore .eslintrc package-lock.json index.html package.json /var/app/
+COPY babel.config.json jest.config.json vite.config.ts tsconfig.json tsconfig.node.json .env vite-env.d.ts .eslintignore .eslintrc package-lock.json index.html package.json /var/app/
 
 # Build the app
 RUN npm install

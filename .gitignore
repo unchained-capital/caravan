@@ -21,3 +21,4 @@ build/
 junit.xml
 .vscode
 .npmrc
+.nvmrc

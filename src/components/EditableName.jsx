@@ -75,7 +75,6 @@ class EditableName extends React.Component {
           <Edit />
         </IconButton>
         &nbsp;
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
         <span
           data-cy="editable-name-value"
           style={{ cursor: "pointer" }}

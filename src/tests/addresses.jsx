@@ -7,7 +7,7 @@ import {
   braidDetailsToWalletConfig,
 } from "unchained-wallets";
 import { Box, Table, TableBody, TableRow, TableCell } from "@mui/material";
-import { externalLink } from "../utils";
+import { externalLink } from "utils/ExternalLink";
 
 import Test from "./Test";
 
