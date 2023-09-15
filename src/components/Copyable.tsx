@@ -1,5 +1,4 @@
-import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 
 // Components
 import CopyToClipboard from "react-copy-to-clipboard";
@@ -17,17 +16,26 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+interface CopyableProps {
+  newline?: boolean;
+  text: string;
+  children?: ReactNode;
+  showIcon?: boolean;
+  showText?: boolean;
+  code?: boolean;
+}
+
 const Copyable = ({
-  newline,
+  newline = false,
   text,
-  children,
-  showIcon,
-  showText,
-  code,
+  children = React.createElement("span"),
+  showIcon = false,
+  showText = true,
+  code = false,
   ...otherProps
-}) => {
-  const [copied, setCopied] = useState(false);
-  const [timer, setTimer] = useState(null);
+}: CopyableProps) => {
+  const [copied, setCopied] = useState<boolean>(false);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (timer) clearTimeout(timer);
@@ -64,7 +72,10 @@ const Copyable = ({
   };
 
   return (
-    <span onClick={(e) => e.stopPropagation()} {...otherProps}>
+    <span
+      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+      {...otherProps}
+    >
       <CopyToClipboard
         text={text}
         onCopy={onCopy}
@@ -94,22 +105,4 @@ const Copyable = ({
   );
 };
 
-Copyable.propTypes = {
-  // defaults
-  newline: PropTypes.bool,
-  // parent
-  text: PropTypes.string.isRequired,
-  children: PropTypes.node,
-  showIcon: PropTypes.bool,
-  showText: PropTypes.bool,
-  code: PropTypes.bool,
-};
-
-Copyable.defaultProps = {
-  newline: false,
-  showIcon: false,
-  children: React.createElement("span"),
-  showText: true,
-  code: false,
-};
 export default Copyable;

@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "types": ["vite/client"],
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": true,
@@ -19,7 +18,9 @@
     "baseUrl": "src",
     "paths": {
       "utils/*": ["utils/*"]
-    }
+    },
+    "useUnknownInCatchVariables": false,
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
   "include": ["src/**/*", "vite-env.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]

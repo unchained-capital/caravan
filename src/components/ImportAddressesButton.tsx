@@ -19,18 +19,32 @@ import {
   bitcoindGetAddressStatus,
   bitcoindParams,
 } from "../bitcoind";
-import { clientPropTypes } from "../proptypes";
+import { ClientType } from "./types/client";
 
 const useStyles = makeStyles(() => ({
   tooltip: {
     fontSize: ".8rem",
   },
+  container: {
+    marginTop: "1rem",
+  },
 }));
+
+interface ImportAddressesButtonProps {
+  addresses?: string[];
+  client: ClientType;
+  importCallback?: (successes: any[], rescan: boolean) => void;
+}
+
 /**
  * @description A button for importing a set of given addresses. Includes a switch
  * to optionally choose to rescan the blockchain for balances.
  */
-function ImportAddressesButton({ addresses = [], client, importCallback }) {
+function ImportAddressesButton({
+  addresses = [],
+  client,
+  importCallback = () => {},
+}: ImportAddressesButtonProps) {
   const [imported, setImported] = useState(false);
   const [importError, setImportError] = useState("");
   const [rescan, setRescanPreference] = useState(false);
@@ -51,7 +65,8 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
       const address = addresses[addresses.length - 1]; // TODO: loop, or maybe just check one
       if (!address) return;
       try {
-        const status = await bitcoindGetAddressStatus({
+        // TODO: remove any after converting bitcoind
+        const status: any = await bitcoindGetAddressStatus({
           // TODO: use this to warn if spent
           ...bitcoindParams(client),
           address,
@@ -103,12 +118,13 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
     const label = ""; // TODO: do we want to allow to set? or set to "caravan"?
 
     try {
-      const response = await bitcoindImportMulti({
+      // TODO: remove any after converting bitcoind
+      const response: any = await bitcoindImportMulti({
         ...bitcoindParams(client),
         ...{ addresses, label, rescan },
       });
 
-      const responseError = response.result.reduce((e, c) => {
+      const responseError = response.result.reduce((e: any, c: any) => {
         return (c.error && c.error.message) || e;
       }, "");
 
@@ -116,8 +132,8 @@ function ImportAddressesButton({ addresses = [], client, importCallback }) {
       setImported(!responseError.length);
 
       if (importCallback) {
-        // provide succesfully imported addreses to callback
-        const successes = response.result.filter((addr) => addr.success);
+        // provide successfully imported addresses to callback
+        const successes = response.result.filter((addr: any) => addr.success);
         await importCallback(successes, rescan);
       }
     } catch (e) {
@@ -178,16 +194,5 @@ however to know if an address has been used prior to import, a rescan needs to t
     </Grid>
   );
 }
-
-ImportAddressesButton.propTypes = {
-  addresses: PropTypes.arrayOf(PropTypes.string),
-  importCallback: PropTypes.func,
-  client: PropTypes.shape(clientPropTypes).isRequired,
-};
-
-ImportAddressesButton.defaultProps = {
-  addresses: [],
-  importCallback() {},
-};
 
 export default ImportAddressesButton;

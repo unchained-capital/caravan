@@ -1,9 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { SvgIcon } from "@mui/material";
-import { MAINNET } from "unchained-bitcoin";
+import { MAINNET, TESTNET, REGTEST, SIGNET } from "unchained-bitcoin";
 
-const BitcoinIcon = ({ network }) => (
+interface BitcoinIconProps {
+  network: typeof MAINNET | typeof TESTNET | typeof REGTEST | typeof SIGNET;
+}
+
+const BitcoinIcon = ({ network = MAINNET }: BitcoinIconProps) => (
   <SvgIcon
     data-cy="bitcoin-icon"
     htmlColor={network === MAINNET ? "orange" : "grey"}
@@ -25,13 +28,5 @@ const BitcoinIcon = ({ network }) => (
     </svg>
   </SvgIcon>
 );
-
-BitcoinIcon.propTypes = {
-  network: PropTypes.string,
-};
-
-BitcoinIcon.defaultProps = {
-  network: MAINNET,
-};
 
 export default BitcoinIcon;

@@ -22,9 +22,6 @@
   "overrides": {
     "jspdf": "2.5.1"
   },
-  "resolutions": {
-    "@trezor/transport": "1.1.13"
-  },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
@@ -35,6 +32,12 @@
     "@commitlint/travis-cli": "^9.0.1",
     "@testing-library/jest-dom": "^5.6.0",
     "@testing-library/react": "^10.0.4",
+    "@types/history": "^5.0.0",
+    "@types/react": "^18.2.21",
+    "@types/react-copy-to-clipboard": "^5.0.4",
+    "@types/react-dom": "^18.2.7",
+    "@types/react-redux": "^7.1.26",
+    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/parser": "^6.0.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.5.0",
@@ -79,8 +82,7 @@
     "test": "__GIT_SHA__=`git rev-parse --short HEAD` jest",
     "test:ci": "CI=true jest --coverage",
     "dev": "__GIT_SHA__=`git rev-parse --short HEAD` vite",
-    "preview": "__GIT_SHA__=`git rev-parse --short HEAD` vite preview",
-    "preinstall": "npx npm-force-resolutions"
+    "preview": "__GIT_SHA__=`git rev-parse --short HEAD` vite preview"
   },
   "husky": {
     "hooks": {
@@ -141,7 +143,7 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
-    "unchained-bitcoin": "^0.6.0",
-    "unchained-wallets": "^0.6.0"
+    "unchained-bitcoin": "^0.4.1",
+    "unchained-wallets": "^0.5.1"
   }
 }

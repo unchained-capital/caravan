@@ -6,9 +6,17 @@ import { Snackbar, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { clearErrorNotification as clearErrorNotificationAction } from "../actions/errorNotificationActions";
 
-const ErrorNotificationBase = (props) => {
-  const { open, message, clearErrorNotification } = props;
+interface ErrorNotificationBaseProps {
+  open?: boolean;
+  message?: string;
+  clearErrorNotification?: () => void;
+}
 
+const ErrorNotificationBase = ({
+  open,
+  message,
+  clearErrorNotification,
+}: ErrorNotificationBaseProps) => {
   return (
     <Snackbar
       anchorOrigin={{
@@ -36,13 +44,7 @@ const ErrorNotificationBase = (props) => {
   );
 };
 
-ErrorNotificationBase.propTypes = {
-  open: PropTypes.bool.isRequired,
-  message: PropTypes.string.isRequired,
-  clearErrorNotification: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
   return state.errorNotification;
 };
 

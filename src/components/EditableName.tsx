@@ -1,10 +1,24 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Grid, IconButton, TextField } from "@mui/material";
 import { Check, Clear, Edit } from "@mui/icons-material";
 
-class EditableName extends React.Component {
-  constructor(props) {
+interface EditableNameProps {
+  number: number;
+  name: string;
+  setName: (number: number, name: string) => void;
+}
+
+interface EditableNameState {
+  editing: boolean;
+  newName: string;
+  error: string;
+}
+
+class EditableName extends React.Component<
+  EditableNameProps,
+  EditableNameState
+> {
+  constructor(props: EditableNameProps) {
     super(props);
     this.state = {
       editing: false,
@@ -91,16 +105,18 @@ class EditableName extends React.Component {
     return error !== "";
   };
 
-  startEditing = (event) => {
+  startEditing = (
+    event: React.MouseEvent<HTMLSpanElement | HTMLButtonElement>
+  ) => {
     const { name } = this.props;
     event.preventDefault();
     this.setState({ editing: true, newName: name });
   };
 
-  handleChange = (event) => {
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
     let error = "";
-    if (newName === null || newName === undefined || newName === "") {
+    if (!newName) {
       error = "Name cannot be blank.";
     }
     this.setState({ newName, error });
@@ -118,11 +134,5 @@ class EditableName extends React.Component {
     this.setState({ error: "", newName: name, editing: false });
   };
 }
-
-EditableName.propTypes = {
-  number: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  setName: PropTypes.func.isRequired,
-};
 
 export default EditableName;
