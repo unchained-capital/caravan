@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Grid } from "@mui/material";
 import { CARAVAN_CONFIG } from "./constants";
+import { DownloadDescriptors } from "./DownloadDescriptors";
 
 const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
   const handleClearClick = (e) => {
@@ -25,6 +26,9 @@ const WalletConfigInteractionButtons = ({ onClearFn, onDownloadFn }) => {
         >
           Clear Wallet
         </Button>
+      </Grid>
+      <Grid item>
+        <DownloadDescriptors />
       </Grid>
     </Grid>
   );

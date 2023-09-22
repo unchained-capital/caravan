@@ -18,7 +18,8 @@
     "prettier/prettier": "error",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-no-bind": "off",
-    "react/forbid-prop-types": "off"
+    "react/forbid-prop-types": "off",
+    "import/prefer-default-export": "off"
   },
   "settings": {
     "import/core-modules": ["test-utils"]
