@@ -58,6 +58,7 @@ import {
   SET_CLIENT_USERNAME,
 } from "../../actions/clientActions";
 import { clientPropTypes, slicePropTypes } from "../../proptypes";
+import { WalletDescriptorImporter } from "./WalletDescriptorImporter";
 
 class CreateWallet extends React.Component {
   static validateProperties(config, properties, key) {
@@ -356,12 +357,7 @@ class CreateWallet extends React.Component {
               type="file"
             />
 
-            <Button
-              color="primary"
-              variant="contained"
-              component="span"
-              style={{ marginTop: "20px" }}
-            >
+            <Button color="primary" variant="contained" component="span">
               Import Wallet Configuration
             </Button>
           </label>
@@ -544,7 +540,12 @@ class CreateWallet extends React.Component {
         <Box>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              {this.renderWalletImporter()}
+              <Grid container style={{ marginTop: "10px" }} spacing={3}>
+                <Grid item>{this.renderWalletImporter()}</Grid>
+                <Grid item>
+                  <WalletDescriptorImporter />
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item md={configuring ? 8 : 12}>
               {this.renderExtendedPublicKeyImporters()}
