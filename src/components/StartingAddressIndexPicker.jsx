@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { validateBIP32Index } from "unchained-bitcoin";
@@ -19,18 +19,17 @@ import {
 import { wrappedActions } from "../actions/utils";
 import { SET_STARTING_ADDRESS_INDEX } from "../actions/settingsActions";
 
-class StartingAddressIndexPicker extends React.Component {
-  constructor(props) {
-    super(props);
+const StartingAddressIndexPicker = ({
+  startingAddressIndex,
+  setStartingAddressIndex,
+}) => {
+  const [customIndex, setCustomIndex] = useState(startingAddressIndex !== 0);
+  const [startingAddressIndexField, setStartingAddressIndexField] =
+    useState(startingAddressIndex);
+  const [startingAddressIndexError, setStartingAddressIndexError] =
+    useState("");
 
-    this.state = {
-      customIndex: props.startingAddressIndex !== 0,
-      startingAddressIndexField: props.startingAddressIndex,
-    };
-  }
-
-  handleIndexChange = (event) => {
-    const { setStartingAddressIndex } = this.props;
+  const handleIndexChange = (event) => {
     const index = event.target.value;
     const error = validateBIP32Index(index, { mode: "unhardened" }).replace(
       "BIP32",
@@ -39,80 +38,70 @@ class StartingAddressIndexPicker extends React.Component {
     if (!error && index) {
       setStartingAddressIndex(parseInt(index, 10));
     }
-    this.setState({
-      startingAddressIndexField: index,
-      startingAddressIndexError: error,
-    });
+    setStartingAddressIndexField(index);
+    setStartingAddressIndexError(error);
   };
 
-  handleCustomIndexChange = (event) => {
-    const customIndex = event.target.value === "true";
-    this.setState({ customIndex });
+  const handleCustomIndexChange = (event) => {
+    setCustomIndex(event.target.value === "true");
   };
 
-  render() {
-    const {
-      customIndex,
-      startingAddressIndexField,
-      startingAddressIndexError,
-    } = this.state;
-    return (
-      <Card>
-        <Grid container justifyContent="space-between">
-          <CardHeader title="Starting Address Index" />
-        </Grid>
-        <CardContent>
-          <Grid item>
-            <FormControl component="fieldset">
-              <RadioGroup>
-                <FormControlLabel
-                  id="default"
-                  control={<Radio color="primary" />}
-                  name="customIndex"
-                  value="false"
-                  label={<strong>Default (0)</strong>}
-                  onChange={this.handleCustomIndexChange}
-                  checked={!customIndex}
-                />
-                <Tooltip
-                  title="The starting address index allows you to skip
+  return (
+    <Card>
+      <Grid container justifyContent="space-between">
+        <CardHeader title="Starting Address Index" />
+      </Grid>
+      <CardContent>
+        <Grid item>
+          <FormControl component="fieldset">
+            <RadioGroup>
+              <FormControlLabel
+                id="default"
+                control={<Radio color="primary" />}
+                name="customIndex"
+                value="false"
+                label={<strong>Default (0)</strong>}
+                onChange={handleCustomIndexChange}
+                checked={!customIndex}
+              />
+              <Tooltip
+                title="The starting address index allows you to skip
                     forward in a wallet. Addresses with indices less than the
                     starting address are ignored."
-                >
-                  <FormControlLabel
-                    id="custom"
-                    control={<Radio color="primary" />}
-                    name="customIndex"
-                    value="true"
-                    label="Custom"
-                    onChange={this.handleCustomIndexChange}
-                    checked={customIndex}
-                  />
-                </Tooltip>
-                <FormHelperText>
-                  Use the default value if you do not understand how to use
-                  starting address index.
-                </FormHelperText>
-              </RadioGroup>
-              {customIndex && (
-                <TextField
-                  fullWidth
-                  value={startingAddressIndexField}
-                  variant="standard"
-                  type="text"
-                  name="startingAddressIndex"
-                  onChange={this.handleIndexChange}
-                  error={Boolean(startingAddressIndexError)}
-                  helperText={startingAddressIndexError}
+              >
+                <FormControlLabel
+                  id="custom"
+                  control={<Radio color="primary" />}
+                  name="customIndex"
+                  value="true"
+                  label="Custom"
+                  onChange={handleCustomIndexChange}
+                  checked={customIndex}
                 />
-              )}
-            </FormControl>
-          </Grid>
-        </CardContent>
-      </Card>
-    );
-  }
-}
+              </Tooltip>
+              <FormHelperText>
+                Use the default value if you do not understand how to use
+                starting address index.
+              </FormHelperText>
+            </RadioGroup>
+            {customIndex && (
+              <TextField
+                fullWidth
+                value={startingAddressIndexField}
+                variant="standard"
+                type="text"
+                name="startingAddressIndex"
+                onChange={handleIndexChange}
+                error={Boolean(startingAddressIndexError)}
+                helperText={startingAddressIndexError}
+              />
+            )}
+          </FormControl>
+        </Grid>
+      </CardContent>
+    </Card>
+  );
+};
 
 StartingAddressIndexPicker.propTypes = {
   startingAddressIndex: PropTypes.number.isRequired,

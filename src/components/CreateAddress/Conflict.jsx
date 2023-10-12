@@ -11,9 +11,7 @@ import {
 } from "@mui/material";
 import { Warning } from "@mui/icons-material";
 
-const Conflict = (props) => {
-  const { message } = props;
-
+const Conflict = ({ message }) => {
   return (
     <small>
       <List>

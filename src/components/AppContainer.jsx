@@ -1,31 +1,28 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { createBrowserHistory } from "history";
 import { connect } from "react-redux";
 
 import App from "./App";
 
-class AppContainer extends Component {
-  history = createBrowserHistory();
+const AppContainer = ({ resetApp }) => {
+  const history = createBrowserHistory();
 
-  componentDidMount() {
-    const { resetApp } = this.props;
+  useEffect(() => {
     // Listen for changes to the current location
     // and reset the redux store which is needed
     // to avoid conflicts in the state between views/pages
-    this.unlisten = this.history.listen(() => {
+    const unlisten = history.listen(() => {
       resetApp();
     });
-  }
 
-  componentWillUnmount() {
-    this.unlisten();
-  }
+    return () => {
+      unlisten();
+    };
+  }, []);
 
-  render() {
-    return <App />;
-  }
-}
+  return <App />;
+};
 
 AppContainer.propTypes = {
   resetApp: PropTypes.func.isRequired,

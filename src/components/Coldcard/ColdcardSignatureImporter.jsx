@@ -3,17 +3,16 @@ import PropTypes from "prop-types";
 import IndirectSignatureImporter from "../ScriptExplorer/IndirectSignatureImporter";
 import ColdcardSigner from "./ColdcardSigner";
 
-const ColdcardSignatureImporter = (props) => {
-  const {
-    signatureImporter,
-    extendedPublicKeyImporter,
-    inputs,
-    outputs,
-    inputsTotalSats,
-    fee,
-    validateAndSetSignature,
-    network,
-  } = props;
+const ColdcardSignatureImporter = ({
+  signatureImporter,
+  extendedPublicKeyImporter,
+  inputs,
+  outputs,
+  inputsTotalSats,
+  fee,
+  validateAndSetSignature,
+  network,
+}) => {
   return (
     <IndirectSignatureImporter
       network={network}

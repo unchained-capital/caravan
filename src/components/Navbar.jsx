@@ -36,18 +36,15 @@ const useStyles = makeStyles((theme) => ({
 
 // This needs to be a class component because it uses a ref
 // eslint-disable-next-line react/prefer-stateless-function
-class NavItem extends React.Component {
-  render() {
-    const { href, title, classes, handleClose } = this.props;
-    return (
-      <Link to={href} className={classes.menuLink}>
-        <MenuItem className={classes.menuItem} onClick={handleClose}>
-          {title}
-        </MenuItem>
-      </Link>
-    );
-  }
-}
+const NavItem = ({ href, title, classes, handleClose }) => {
+  return (
+    <Link to={href} className={classes.menuLink}>
+      <MenuItem className={classes.menuItem} onClick={handleClose}>
+        {title}
+      </MenuItem>
+    </Link>
+  );
+};
 
 NavItem.propTypes = {
   href: PropTypes.string.isRequired,

@@ -15,59 +15,8 @@ import ImportAddressesButton from "../ImportAddressesButton";
 import { clientPropTypes } from "../../proptypes";
 import "../styles.css";
 
-class CreateAddress extends React.Component {
-  render = () => {
-    const { address, client } = this.props;
-    return (
-      <Box mt={2}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <h1>Address Generator</h1>
-          </Grid>
-          <Grid item md={8}>
-            {this.renderPublicKeyImporters()}
-            <Box mt={2}>
-              <AddressGenerator />
-            </Box>
-          </Grid>
-          <Grid item md={4}>
-            <Box>
-              <QuorumPicker />
-            </Box>
-            <Box mt={2}>
-              <AddressTypePicker />
-            </Box>
-            <Box mt={2}>
-              <NetworkPicker />
-            </Box>
-            <Box mt={2}>
-              <ClientPicker
-                publicNotes={
-                  <span>
-                    If you plan to use this address with your own bitcoind node
-                    you can import the address created here by switching for
-                    &quot;Public&quot; to &quot;Private&quot;. Otherwise no
-                    action is needed here.
-                  </span>
-                }
-                privateNotes={
-                  <div>
-                    <ImportAddressesButton
-                      addresses={[address]}
-                      client={client}
-                    />
-                  </div>
-                }
-              />
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-    );
-  };
-
-  renderPublicKeyImporters = () => {
-    const { totalSigners } = this.props;
+const CreateAddress = ({ address, client, totalSigners }) => {
+  const renderPublicKeyImporters = () => {
     const publicKeyImporters = [];
     for (
       let publicKeyImporterNum = 1;
@@ -82,7 +31,53 @@ class CreateAddress extends React.Component {
     }
     return publicKeyImporters;
   };
-}
+  return (
+    <Box mt={2}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <h1>Address Generator</h1>
+        </Grid>
+        <Grid item md={8}>
+          {renderPublicKeyImporters()}
+          <Box mt={2}>
+            <AddressGenerator />
+          </Box>
+        </Grid>
+        <Grid item md={4}>
+          <Box>
+            <QuorumPicker />
+          </Box>
+          <Box mt={2}>
+            <AddressTypePicker />
+          </Box>
+          <Box mt={2}>
+            <NetworkPicker />
+          </Box>
+          <Box mt={2}>
+            <ClientPicker
+              publicNotes={
+                <span>
+                  If you plan to use this address with your own bitcoind node
+                  you can import the address created here by switching for
+                  &quot;Public&quot; to &quot;Private&quot;. Otherwise no action
+                  is needed here.
+                </span>
+              }
+              privateNotes={
+                <div>
+                  <ImportAddressesButton
+                    addresses={[address]}
+                    client={client}
+                  />
+                </div>
+              }
+            />
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
 
 function mapStateToProps(state) {
   return {

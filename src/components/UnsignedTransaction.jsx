@@ -1,27 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import { Button } from "@mui/material";
 import Copyable from "./Copyable";
 
-class UnsignedTransaction extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showUnsignedTransaction: false,
-    };
-  }
+const UnsignedTransaction = ({ unsignedTransaction }) => {
+  const [showUnsignedTransaction, setShowUnsignedTransaction] = useState(false);
 
-  render = () => {
-    const { showUnsignedTransaction } = this.state;
-    const { unsignedTransaction } = this.props;
+  const handleShowUnsignedTransaction = () => {
+    setShowUnsignedTransaction(true);
+  };
+
+  const handleHideUnsignedTransaction = () => {
+    setShowUnsignedTransaction(false);
+  };
+
+  const renderUnsignedTransaction = () => {
     if (showUnsignedTransaction) {
       const hex = unsignedTransaction.toHex();
       return (
         <div>
           <small>
-            <Button size="small" onClick={this.handleHideUnsignedTransaction}>
+            <Button size="small" onClick={handleHideUnsignedTransaction}>
               Hide Unsigned Transaction
             </Button>
           </small>
@@ -33,21 +34,14 @@ class UnsignedTransaction extends React.Component {
     }
     return (
       <small>
-        <Button size="small" onClick={this.handleShowUnsignedTransaction}>
+        <Button size="small" onClick={handleShowUnsignedTransaction}>
           Show Unsigned Transaction
         </Button>
       </small>
     );
   };
-
-  handleShowUnsignedTransaction = () => {
-    this.setState({ showUnsignedTransaction: true });
-  };
-
-  handleHideUnsignedTransaction = () => {
-    this.setState({ showUnsignedTransaction: false });
-  };
-}
+  return renderUnsignedTransaction();
+};
 
 UnsignedTransaction.propTypes = {
   unsignedTransaction: PropTypes.shape({

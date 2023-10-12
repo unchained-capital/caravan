@@ -1,77 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 // Components
 import { Button, TextField, Box } from "@mui/material";
 
-class TextPublicKeyImporter extends React.Component {
-  constructor(props) {
-    super(props);
+const TextPublicKeyImporter = ({ validatePublicKey, onImport }) => {
+  const [error, setError] = useState("");
+  const [publicKey, setPublicKey] = useState("");
 
-    this.state = {
-      error: "",
-      publicKey: "",
-    };
-  }
+  const importData = () => {
+    const newError = validatePublicKey(publicKey);
 
-  render = () => {
-    const { error, publicKey } = this.state;
-    return (
-      <Box mt={2}>
-        <TextField
-          fullWidth
-          name="publicKey"
-          label="Public Key"
-          value={publicKey}
-          variant="standard"
-          onChange={this.handleChange}
-          error={this.hasError()}
-          helperText={error}
-        />
-
-        <Box mt={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={this.import}
-            disabled={publicKey === "" || this.hasError()}
-          >
-            Add Public Key
-          </Button>
-        </Box>
-      </Box>
-    );
-  };
-
-  import = () => {
-    const { validatePublicKey, onImport } = this.props;
-    const { publicKey } = this.state;
-    const error = validatePublicKey(publicKey);
-
-    if (error) {
-      this.setError(error);
+    if (newError) {
+      setError(newError);
     } else {
       onImport({ publicKey });
     }
   };
 
-  hasError = () => {
-    const { error } = this.state;
+  const hasError = () => {
     return error !== "";
   };
 
-  setError = (value) => {
-    this.setState({ error: value });
+  const handleChange = (event) => {
+    setPublicKey(event.target.value);
+    setError(validatePublicKey(publicKey));
   };
 
-  handleChange = (event) => {
-    const publicKey = event.target.value;
-    const { validatePublicKey } = this.props;
-    const error = validatePublicKey(publicKey);
-    this.setState({ publicKey, error });
-  };
-}
+  return (
+    <Box mt={2}>
+      <TextField
+        fullWidth
+        name="publicKey"
+        label="Public Key"
+        value={publicKey}
+        variant="standard"
+        onChange={handleChange}
+        error={hasError()}
+        helperText={error}
+      />
+
+      <Box mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={importData}
+          disabled={publicKey === "" || hasError()}
+        >
+          Add Public Key
+        </Button>
+      </Box>
+    </Box>
+  );
+};
 
 TextPublicKeyImporter.propTypes = {
   validatePublicKey: PropTypes.func.isRequired,

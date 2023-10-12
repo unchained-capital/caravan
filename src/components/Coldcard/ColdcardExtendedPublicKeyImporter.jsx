@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { COLDCARD } from "unchained-wallets";
 import { Box, FormGroup, FormHelperText } from "@mui/material";
@@ -6,96 +6,78 @@ import { MAINNET, P2SH } from "unchained-bitcoin";
 import { ColdcardJSONReader } from ".";
 import IndirectExtendedPublicKeyImporter from "../Wallet/IndirectExtendedPublicKeyImporter";
 
-class ColdcardExtendedPublicKeyImporter extends React.Component {
-  constructor(props) {
-    super(props);
-    const coldcardBIP32Path = this.getColdcardBip32Path();
-    this.state = {
-      COLDCARD_MULTISIG_BIP32_PATH: coldcardBIP32Path,
-    };
-  }
-
-  componentDidMount = () => {
-    const { extendedPublicKeyImporter, validateAndSetBIP32Path } = this.props;
-    const { COLDCARD_MULTISIG_BIP32_PATH } = this.state;
-    if (extendedPublicKeyImporter.method === COLDCARD) {
-      validateAndSetBIP32Path(
-        COLDCARD_MULTISIG_BIP32_PATH,
-        () => {},
-        () => {},
-        {}
-      );
-    }
-  };
-
-  componentDidUpdate(prevProps) {
-    const { validateAndSetBIP32Path, network, addressType } = this.props;
-    const coldcardBIP32Path = this.getColdcardBip32Path();
-
-    // Any updates to the network/addressType we should set the BIP32Path
-    if (
-      prevProps.network !== network ||
-      prevProps.addressType !== addressType
-    ) {
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ COLDCARD_MULTISIG_BIP32_PATH: coldcardBIP32Path });
-      validateAndSetBIP32Path(
-        coldcardBIP32Path,
-        () => {},
-        () => {}
-      );
-    }
-  }
-
+const ColdcardExtendedPublicKeyImporter = ({
+  extendedPublicKeyImporter,
+  validateAndSetExtendedPublicKey,
+  validateAndSetBIP32Path,
+  validateAndSetRootFingerprint,
+  addressType,
+  network,
+  defaultBIP32Path,
+}) => {
   // Unfortunately not possible to use our Multisig P2SH ROOT on a Coldcard atm
   // because they do not allow us to export m/45'/{0-1}'/0' yet.
-  getColdcardBip32Path = () => {
-    const { network, addressType, defaultBIP32Path } = this.props;
+  const getColdcardBip32Path = () => {
     const coinPath = network === MAINNET ? "0" : "1";
     const coldcardP2SHPath = `m/45'/${coinPath}/0`;
     return addressType === P2SH ? coldcardP2SHPath : defaultBIP32Path;
   };
 
-  render = () => {
-    const {
-      extendedPublicKeyImporter,
-      validateAndSetExtendedPublicKey,
-      validateAndSetBIP32Path,
-      validateAndSetRootFingerprint,
-      addressType,
-      network,
-    } = this.props;
-    const { extendedPublicKeyError, COLDCARD_MULTISIG_BIP32_PATH } = this.state;
-    return (
-      <Box mt={2}>
-        <FormGroup>
-          <IndirectExtendedPublicKeyImporter
-            extendedPublicKeyImporter={extendedPublicKeyImporter}
-            validateAndSetExtendedPublicKey={validateAndSetExtendedPublicKey}
-            validateAndSetBIP32Path={validateAndSetBIP32Path}
-            validateAndSetRootFingerprint={validateAndSetRootFingerprint}
-            addressType={addressType}
-            network={network}
-            resetBIP32Path={this.resetColdcardBIP32Path}
-            defaultBIP32Path={COLDCARD_MULTISIG_BIP32_PATH}
-            Reader={ColdcardJSONReader}
-          />
-          <FormHelperText error>{extendedPublicKeyError}</FormHelperText>
-        </FormGroup>
-      </Box>
-    );
-  };
+  const [coldcardMultisigBIP32Path, setColdcardMultisigBIP32Path] = useState(
+    getColdcardBip32Path()
+  );
+  const [extendedPublicKeyError, setExtendedPublicKeyError] = useState("");
 
-  resetColdcardBIP32Path = () => {
-    const { validateAndSetBIP32Path } = this.props;
-    const { COLDCARD_MULTISIG_BIP32_PATH } = this.state;
+  const resetColdcardBIP32Path = () => {
     validateAndSetBIP32Path(
-      COLDCARD_MULTISIG_BIP32_PATH,
+      coldcardMultisigBIP32Path,
       () => {},
       () => {}
     );
   };
-}
+
+  useEffect(() => {
+    if (extendedPublicKeyImporter.method === COLDCARD) {
+      validateAndSetBIP32Path(
+        coldcardMultisigBIP32Path,
+        () => {},
+        () => {},
+        {}
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    const newColdcardBIP32Path = getColdcardBip32Path();
+    // eslint-disable-next-line react/no-did-update-set-state
+    setColdcardMultisigBIP32Path(newColdcardBIP32Path);
+    validateAndSetBIP32Path(
+      newColdcardBIP32Path,
+      () => {},
+      () => {}
+    );
+    // Any updates to the network/addressType we should set the BIP32Path
+  }, [network, addressType]);
+
+  return (
+    <Box mt={2}>
+      <FormGroup>
+        <IndirectExtendedPublicKeyImporter
+          extendedPublicKeyImporter={extendedPublicKeyImporter}
+          validateAndSetExtendedPublicKey={validateAndSetExtendedPublicKey}
+          validateAndSetBIP32Path={validateAndSetBIP32Path}
+          validateAndSetRootFingerprint={validateAndSetRootFingerprint}
+          addressType={addressType}
+          network={network}
+          resetBIP32Path={resetColdcardBIP32Path}
+          defaultBIP32Path={coldcardMultisigBIP32Path}
+          Reader={ColdcardJSONReader}
+        />
+        <FormHelperText error>{extendedPublicKeyError}</FormHelperText>
+      </FormGroup>
+    </Box>
+  );
+};
 
 ColdcardExtendedPublicKeyImporter.propTypes = {
   extendedPublicKeyImporter: PropTypes.shape({
