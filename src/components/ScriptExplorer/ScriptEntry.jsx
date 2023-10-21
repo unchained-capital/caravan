@@ -9,6 +9,7 @@ import {
   validateHex,
   multisigRequiredSigners,
   multisigTotalSigners,
+  toHexString,
 } from "unchained-bitcoin";
 import {
   Box,
@@ -27,12 +28,21 @@ import MultisigDetails from "../MultisigDetails";
 import ImportAddressesButton from "../ImportAddressesButton";
 
 // Actions
-import { setFrozen as setFrozenAction } from "../../actions/settingsActions";
+import {
+  setFrozen as setFrozenAction,
+  setNetwork as setNetworkAction,
+} from "../../actions/settingsActions";
 import {
   choosePerformSpend as chosePerformSpendAction,
   setRequiredSigners as setRequiredSignersAction,
   setTotalSigners as setTotalSignersAction,
   setInputs as setInputsAction,
+  importLegacyPSBT as importPSBTAction,
+  setOutputAddress as setOutputAddressAction,
+  setOutputAmount as setOutputAmountAction,
+  setFee as setFeeAction,
+  finalizeOutputs as finalizeOutputsAction,
+  setUnsignedPSBT as setUnsignedPSBTAction,
 } from "../../actions/transactionActions";
 import {
   chooseConfirmOwnership as chooseConfirmOwnershipAction,
@@ -47,6 +57,8 @@ class ScriptEntry extends React.Component {
       scriptError: "",
       fetchUTXOsError: "",
       fetchedUTXOs: false,
+      importPSBTDisabled: false,
+      importPSBTError: "",
     };
   }
 
@@ -88,20 +100,23 @@ class ScriptEntry extends React.Component {
   };
 
   handleScriptChange = (event) => {
-    const scriptHex = event.target.value;
+    let scriptHex = event;
     let scriptError = "";
+    if (event.target) {
+      scriptHex = event.target.value;
 
-    if (scriptHex === "") {
-      scriptError = `${this.scriptTitle()} script cannot be blank.`;
-    }
+      if (scriptHex === "") {
+        scriptError = `${this.scriptTitle()} script cannot be blank.`;
+      }
 
-    if (
-      scriptError === "" &&
-      (scriptHex.includes("\n") ||
-        scriptHex.includes("\t") ||
-        scriptHex.includes(" "))
-    ) {
-      scriptError = `${this.scriptTitle()} script should not contain spaces, tabs, or newlines.`;
+      if (
+        scriptError === "" &&
+        (scriptHex.includes("\n") ||
+          scriptHex.includes("\t") ||
+          scriptHex.includes(" "))
+      ) {
+        scriptError = `${this.scriptTitle()} script should not contain spaces, tabs, or newlines.`;
+      }
     }
 
     if (scriptError === "") {
@@ -256,11 +271,73 @@ class ScriptEntry extends React.Component {
     setFrozen(true);
   };
 
+  setPSBTToggleAndError = (importPSBTDisabled, errorMessage) => {
+    this.setState({
+      importPSBTDisabled,
+      importPSBTError: errorMessage,
+    });
+  };
+
+  handleImportPSBT = ({ target }) => {
+    const { importLegacyPSBT, setNetwork, setUnsignedPSBT, network } =
+      this.props;
+
+    this.setPSBTToggleAndError(true, "");
+
+    try {
+      if (target.files.length === 0) {
+        this.setPSBTToggleAndError(false, "No PSBT provided.");
+        return;
+      }
+      if (target.files.length > 1) {
+        this.setPSBTToggleAndError(false, "Multiple PSBTs provided.");
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.onload = (event) => {
+        try {
+          const psbtText = event.target.result;
+          const psbt = importLegacyPSBT(psbtText);
+
+          setUnsignedPSBT(psbt.toBase64());
+          if (psbt?.data?.inputs.length > 0) {
+            const redeemScriptHex =
+              psbt.data.inputs[0].redeemScript.toString("hex");
+            this.setPSBTToggleAndError(false, "");
+
+            this.handleScriptChange(redeemScriptHex);
+          } else {
+            const redeemScriptHex = toHexString(
+              psbt.data.globalMap.unknownKeyVals[0].value
+            );
+            this.handleScriptChange(redeemScriptHex);
+          }
+
+          setNetwork(network);
+          this.renderDetails();
+          this.performSpend();
+        } catch (e) {
+          this.setPSBTToggleAndError(false, e.message);
+        }
+      };
+      fileReader.readAsText(target.files[0]);
+    } catch (e) {
+      this.setPSBTToggleAndError(false, e.message);
+    }
+  };
+
   //
   // Render
   //
   render() {
-    const { scriptHex, scriptError, fetchedUTXOs } = this.state;
+    const {
+      scriptHex,
+      scriptError,
+      fetchedUTXOs,
+      importPSBTDisabled,
+      importPSBTError,
+    } = this.state;
 
     return (
       <Card>
@@ -281,6 +358,30 @@ class ScriptEntry extends React.Component {
               error={scriptError !== ""}
             />
           </form>
+
+          <Box mt={2}>
+            <label htmlFor="import-psbt">
+              <input
+                style={{ display: "none" }}
+                id="import-psbt"
+                name="import-psbt"
+                accept="application/base64"
+                onChange={this.handleImportPSBT}
+                type="file"
+              />
+
+              <Button
+                color="primary"
+                variant="contained"
+                component="span"
+                disabled={importPSBTDisabled}
+                style={{ marginTop: "2em" }}
+              >
+                Import PSBT
+              </Button>
+              <FormHelperText error>{importPSBTError}</FormHelperText>
+            </label>
+          </Box>
 
           {scriptHex !== "" && !this.hasScriptError() ? (
             this.renderDetails()
@@ -307,10 +408,13 @@ ScriptEntry.propTypes = {
   }).isRequired,
   network: PropTypes.string.isRequired,
   setFrozen: PropTypes.func.isRequired,
+  setNetwork: PropTypes.func.isRequired,
   setInputs: PropTypes.func.isRequired,
   setOwnershipMultisig: PropTypes.func.isRequired,
   setRequiredSigners: PropTypes.func.isRequired,
   setTotalSigners: PropTypes.func.isRequired,
+  importLegacyPSBT: PropTypes.func.isRequired,
+  setUnsignedPSBT: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -332,6 +436,13 @@ const mapDispatchToProps = {
   chooseConfirmOwnership: chooseConfirmOwnershipAction,
   setOwnershipMultisig: setOwnershipMultisigAction,
   setFrozen: setFrozenAction,
+  importLegacyPSBT: importPSBTAction,
+  setNetwork: setNetworkAction,
+  setAddress: setOutputAddressAction,
+  setAmount: setOutputAmountAction,
+  setFee: setFeeAction,
+  setUnsignedPSBT: setUnsignedPSBTAction,
+  finalizeOutputs: finalizeOutputsAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEntry);

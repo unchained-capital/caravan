@@ -9,6 +9,7 @@ import {
   Grid,
   Switch,
   FormControlLabel,
+  FormHelperText,
   Button,
 } from "@mui/material";
 import {
@@ -30,6 +31,7 @@ import {
   SPEND_STEP_SIGN,
   setSpendStep as setSpendStepAction,
   deleteChangeOutput as deleteChangeOutputAction,
+  importPSBT as importPSBTAction,
 } from "../../actions/transactionActions";
 import { naiveCoinSelection } from "../../utils";
 import NodeSet from "./NodeSet";
@@ -44,6 +46,14 @@ class WalletSpend extends React.Component {
   coinSelection = naiveCoinSelection;
 
   feeAmount = new BigNumber(0);
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      importPSBTDisabled: false,
+      importPSBTError: "",
+    };
+  }
 
   componentDidUpdate = (prevProps) => {
     const { finalizedOutputs } = this.props;
@@ -126,6 +136,44 @@ class WalletSpend extends React.Component {
     deleteChangeOutput();
   };
 
+  setPSBTToggleAndError = (importPSBTDisabled, errorMessage) => {
+    this.setState({
+      importPSBTDisabled,
+      importPSBTError: errorMessage,
+    });
+  };
+
+  handleImportPSBT = ({ target }) => {
+    const { importPSBT } = this.props;
+
+    this.setPSBTToggleAndError(true, "");
+
+    try {
+      if (target.files.length === 0) {
+        this.setPSBTToggleAndError(false, "No PSBT provided.");
+        return;
+      }
+      if (target.files.length > 1) {
+        this.setPSBTToggleAndError(false, "Multiple PSBTs provided.");
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.onload = (event) => {
+        try {
+          const psbtText = event.target.result;
+          importPSBT(psbtText);
+          this.setPSBTToggleAndError(false, "");
+        } catch (e) {
+          this.setPSBTToggleAndError(false, e.message);
+        }
+      };
+      fileReader.readAsText(target.files[0]);
+    } catch (e) {
+      this.setPSBTToggleAndError(false, e.message);
+    }
+  };
+
   render() {
     const {
       autoSpend,
@@ -140,6 +188,7 @@ class WalletSpend extends React.Component {
       inputsTotalSats,
       outputs,
     } = this.props;
+    const { importPSBTDisabled, importPSBTError } = this.state;
 
     return (
       <Card>
@@ -182,6 +231,29 @@ class WalletSpend extends React.Component {
                   >
                     Preview Transaction
                   </Button>
+                </Box>
+                <Box mt={2}>
+                  <label htmlFor="import-psbt">
+                    <input
+                      style={{ display: "none" }}
+                      id="import-psbt"
+                      name="import-psbt"
+                      accept="application/base64"
+                      onChange={this.handleImportPSBT}
+                      type="file"
+                    />
+
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      component="span"
+                      disabled={importPSBTDisabled}
+                      style={{ marginTop: "20px" }}
+                    >
+                      Import PSBT
+                    </Button>
+                    <FormHelperText error>{importPSBTError}</FormHelperText>
+                  </label>
                 </Box>
               </Grid>
             )}
@@ -244,6 +316,7 @@ WalletSpend.propTypes = {
   spendingStep: PropTypes.number,
   updateAutoSpend: PropTypes.func.isRequired,
   updateNode: PropTypes.func.isRequired,
+  importPSBT: PropTypes.func.isRequired,
 };
 
 WalletSpend.defaultProps = {
@@ -281,6 +354,7 @@ const mapDispatchToProps = {
   finalizeOutputs: finalizeOutputsAction,
   setChangeAddress: setChangeAddressAction,
   setSpendStep: setSpendStepAction,
+  importPSBT: importPSBTAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSpend);

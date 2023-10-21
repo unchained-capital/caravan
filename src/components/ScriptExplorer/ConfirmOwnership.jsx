@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { validatePublicKey, validateBIP32Path } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
+import { TREZOR, LEDGER } from "unchained-wallets";
 
 // Components
 import CheckIcon from "@mui/icons-material/Check";
@@ -23,7 +23,6 @@ import {
   TextField,
 } from "@mui/material";
 import HardwareWalletPublicKeyImporter from "../CreateAddress/HardwareWalletPublicKeyImporter";
-import HermitPublicKeyImporter from "../CreateAddress/HermitPublicKeyImporter";
 
 // Actions
 import {
@@ -163,19 +162,6 @@ class ConfirmOwnership extends React.Component {
 
   renderImportByMethod = () => {
     const { network, publicKeyImporter, defaultBIP32Path } = this.props;
-    if (publicKeyImporter.method === HERMIT) {
-      return (
-        <HermitPublicKeyImporter
-          publicKeyImporter={publicKeyImporter}
-          validateAndSetBIP32Path={this.validateAndSetBIP32Path}
-          validateAndSetPublicKey={this.validateAndSetPublicKey}
-          resetBIP32Path={this.resetBIP32Path}
-          enableChangeMethod={this.enableChangeMethod}
-          disableChangeMethod={this.disableChangeMethod}
-          reset={this.reset}
-        />
-      );
-    }
     if (
       publicKeyImporter.method === TREZOR ||
       publicKeyImporter.method === LEDGER
@@ -220,7 +206,6 @@ class ConfirmOwnership extends React.Component {
                 <MenuItem value="">{"< Select method >"}</MenuItem>
                 <MenuItem value={TREZOR}>Trezor</MenuItem>
                 <MenuItem value={LEDGER}>Ledger</MenuItem>
-                <MenuItem value={HERMIT}>Hermit</MenuItem>
               </TextField>
             </FormControl>
 
