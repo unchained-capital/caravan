@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.3...caravan-v0.7.0) (2023-10-23)
+
+
+### Features
+
+* **hermit:** hermit PSBT signing for pre-product key recovery ([#308](https://github.com/unchained-capital/caravan/issues/308)) ([04ca0ce](https://github.com/unchained-capital/caravan/commit/04ca0ce3ffa2589a00104ecd18cf11768212f470))
+
 ## [0.6.3](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.2...caravan-v0.6.3) (2023-10-18)
 
 
