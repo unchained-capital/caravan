@@ -17,7 +17,7 @@
   "homepage": "https://unchained-capital.github.io/caravan",
   "engineStrict": true,
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "overrides": {
     "jspdf": "2.5.1"
