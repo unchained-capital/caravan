@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // This needs to be a class component because it uses a ref
-// eslint-disable-next-line react/prefer-stateless-function
 class NavItem extends React.Component {
   render() {
     const { href, title, classes, handleClose } = this.props;

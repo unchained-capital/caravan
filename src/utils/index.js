@@ -3,7 +3,6 @@ import { estimateMultisigTransactionFee } from "unchained-bitcoin/lib/fees";
 
 import { DUST_IN_SATOSHIS } from "./constants";
 
-export { default as externalLink } from "./ExternalLink";
 export { default as wrapText } from "./WrapText";
 
 export function validatePositiveInteger(numberString) {

@@ -25,7 +25,6 @@ class IndirectExtendedPublicKeyImporter extends React.Component {
   componentDidUpdate() {
     const { status } = this.state;
     if (status !== PENDING && this.interaction().isSupported()) {
-      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ status: PENDING });
     }
   }

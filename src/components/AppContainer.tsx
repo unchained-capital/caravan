@@ -1,12 +1,18 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { createBrowserHistory } from "history";
 import { connect } from "react-redux";
+// eslint-disable-next-line
+import { Dispatch } from "redux";
 
 import App from "./App";
 
-class AppContainer extends Component {
+interface AppContainerProps {
+  resetApp: () => void;
+}
+
+class AppContainer extends Component<AppContainerProps> {
   history = createBrowserHistory();
+  unlisten!: () => void;
 
   componentDidMount() {
     const { resetApp } = this.props;
@@ -27,11 +33,7 @@ class AppContainer extends Component {
   }
 }
 
-AppContainer.propTypes = {
-  resetApp: PropTypes.func.isRequired,
-};
-
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     resetApp: () => dispatch({ type: "RESET_APP_STATE" }),
   };

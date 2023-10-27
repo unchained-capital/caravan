@@ -85,11 +85,10 @@ class WalletGenerator extends React.Component {
     } = this.props;
     const { unknownClient } = this.state;
     if (client.type === "unknown" && prevProps.client.type === "public") {
-      this.setState({ unknownClient: true }); // eslint-disable-line react/no-did-update-set-state
+      this.setState({ unknownClient: true });
     } else if (configuring && client.type !== "unknown" && unknownClient) {
       // re-initializes the state if we're in the configuring stage.
       // catches situation where wallet is cleared and new one is added
-      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ unknownClient: false });
     }
     // if the password was updated

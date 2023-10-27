@@ -1,16 +1,9 @@
+/* eslint-disable no-undef */
 import React from "react";
 import { Grid, Box } from "@mui/material";
-import { externalLink } from "../utils";
-import packageJson from "../../package.json";
+import { externalLink } from "utils/ExternalLink";
 
-// Components
-
-// Assets
 import logo from "../images/logo.png";
-
-/* eslint-disable */
-const GIT_SHA = VITE_GIT_SHA;
-/* eslint-enable */
 
 const Footer = () => (
   <Box mt={2}>
@@ -36,8 +29,8 @@ const Footer = () => (
         </p>
       </Grid>
 
-      <Grid item sm={2} align="right">
-        <p>{`v${packageJson.version} commit: ${GIT_SHA}`}</p>
+      <Grid item sm={2}>
+        <p>{`v${__APP_VERSION__} commit: ${__GIT_SHA__}`}</p>
       </Grid>
     </Grid>
   </Box>
