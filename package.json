@@ -143,6 +143,6 @@
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
     "unchained-bitcoin": "^0.4.1",
-    "unchained-wallets": "^0.5.1"
+    "unchained-wallets": "^0.6.2"
   }
 }
