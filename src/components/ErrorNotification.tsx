@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 
 import { Snackbar, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
@@ -44,7 +43,9 @@ const ErrorNotificationBase = ({
   );
 };
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: {
+  errorNotification: ErrorNotificationBaseProps;
+}): ErrorNotificationBaseProps => {
   return state.errorNotification;
 };
 

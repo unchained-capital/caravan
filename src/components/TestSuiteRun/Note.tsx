@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { PropTypes } from "prop-types";
 
 import { TextField } from "@mui/material";
 import { setKeystoreNote } from "../../actions/keystoreActions";
@@ -56,12 +55,18 @@ const mapDispatchToKeystoreNoteProps = {
   setNote: setKeystoreNote,
 };
 
-const mapStateToTestRunNoteProps = (state: { keystore: NoteBaseProps }) => {
+const mapStateToTestRunNoteProps = (state: {
+  testSuiteRun: {
+    testRuns: any[];
+    currentTestRunIndex: number;
+  };
+  keystore: NoteBaseProps;
+}) => {
   return {
     mode: TEST_RUN_MODE,
     testRunIndex: state.testSuiteRun.currentTestRunIndex,
-    note:
-      state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex].note,
+    note: state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex]
+      .note,
   };
 };
 

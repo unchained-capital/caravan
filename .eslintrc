@@ -9,15 +9,13 @@
     "node": true,
     "jest": true
   },
-  "plugins": ["prettier", "import", "react"],
+  "plugins": ["prettier", "import", "react", "@typescript-eslint"],
   "extends": [
     "prettier",
     "plugin:testing-library/recommended",
     "plugin:jest-dom/recommended",
     "eslint:recommended",
     "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended"
   ],
@@ -27,6 +25,7 @@
     "quotes": "off",
     "@typescript-eslint/quotes": "off",
     "@typescript-eslint/comma-dangle": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-no-bind": "off",
     "react/forbid-prop-types": "off"
