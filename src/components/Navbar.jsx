@@ -66,6 +66,7 @@ const Navbar = () => {
     { href: "/wallet", title: "Wallet" },
     { href: "/address", title: "Create Address" },
     { href: "/script", title: "Script Explorer" },
+    { href: "/hermit-psbt", title: "Hermit PSBT Interface" },
     { href: "/test", title: "Test Suite" },
     { href: "/help", title: "Help" },
   ];

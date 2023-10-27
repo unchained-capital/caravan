@@ -163,12 +163,12 @@ Derivation: ${test.params.derivation}
                 </Box>
               )}
             {keystore.type === HERMIT &&
-              test.interaction().displayer &&
+              test.interaction().workflow[0] === "request" &&
               status === PENDING && (
                 <Box align="center">
                   <HermitDisplayer
                     width={400}
-                    string={test.interaction().request()}
+                    parts={test.interaction().request()}
                   />
                 </Box>
               )}
@@ -178,7 +178,7 @@ Derivation: ${test.params.derivation}
                   onStart={this.start}
                   onSuccess={this.resolve}
                   onClear={this.reset}
-                  startText="Scan Hermit Response"
+                  startText="Scan QR Codes From Hermit"
                   interaction={test.interaction()}
                 />
               </Box>

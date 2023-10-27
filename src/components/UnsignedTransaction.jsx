@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Button } from "@mui/material";
 import Copyable from "./Copyable";
 
-const UnsignedTransaction = ({ unsignedTransaction }) => {
+const UnsignedTransaction = ({ unsignedTransaction, unsignedPSBT }) => {
   const [showUnsignedTransaction, setShowUnsignedTransaction] = useState(false);
 
   const handleShowUnsignedTransaction = () => {
@@ -29,6 +29,13 @@ const UnsignedTransaction = ({ unsignedTransaction }) => {
           <p>
             <Copyable text={hex} showIcon />
           </p>
+          {unsignedPSBT && (
+            <p>
+              <Copyable text={unsignedPSBT} showText={false} showIcon>
+                Unsigned PSBT
+              </Copyable>
+            </p>
+          )}
         </div>
       );
     }
@@ -47,11 +54,13 @@ UnsignedTransaction.propTypes = {
   unsignedTransaction: PropTypes.shape({
     toHex: PropTypes.func,
   }).isRequired,
+  unsignedPSBT: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     unsignedTransaction: state.spend.transaction.unsignedTransaction,
+    unsignedPSBT: state.spend.transaction.unsignedPSBT,
   };
 }
 

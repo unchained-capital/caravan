@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { validatePublicKey as baseValidatePublicKey } from "unchained-bitcoin";
-import { TREZOR, LEDGER, HERMIT } from "unchained-wallets";
+import { TREZOR, LEDGER } from "unchained-wallets";
 
 // Components
 import {
@@ -21,7 +21,6 @@ import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import Copyable from "../Copyable";
 import TextPublicKeyImporter from "./TextPublicKeyImporter";
 import ExtendedPublicKeyPublicKeyImporter from "./ExtendedPublicKeyPublicKeyImporter";
-import HermitPublicKeyImporter from "./HermitPublicKeyImporter";
 import HardwareWalletPublicKeyImporter from "./HardwareWalletPublicKeyImporter";
 import EditableName from "../EditableName";
 import Conflict from "./Conflict";
@@ -53,7 +52,6 @@ const PublicKeyImporter = ({
   defaultBIP32Path,
   setMethod,
   setPublicKey,
-  resetBIP32Path,
   moveUp,
   moveDown,
   setBIP32Path,
@@ -77,12 +75,9 @@ const PublicKeyImporter = ({
     setFinalized(number, true);
   };
 
-  const reset = (shouldResetBIP32Path) => {
+  const reset = () => {
     setPublicKey(number, "");
     setFinalized(number, false);
-    if (shouldResetBIP32Path) {
-      resetBIP32Path(number);
-    }
   };
 
   //
@@ -141,7 +136,7 @@ const PublicKeyImporter = ({
             color="secondary"
             size="small"
             onClick={() => {
-              reset(publicKeyImporter.method === HERMIT);
+              reset();
             }}
           >
             Remove Public Key
@@ -234,18 +229,6 @@ const PublicKeyImporter = ({
         />
       );
     }
-    if (publicKeyImporter.method === HERMIT) {
-      return (
-        <HermitPublicKeyImporter
-          network={network}
-          defaultBIP32Path={defaultBIP32Path}
-          validatePublicKey={validatePublicKey}
-          enableChangeMethod={() => setDisableChangeMethod(false)}
-          disableChangeMethod={() => setDisableChangeMethod(true)}
-          onImport={handleImport}
-        />
-      );
-    }
     if (publicKeyImporter.method === XPUB) {
       return (
         <ExtendedPublicKeyPublicKeyImporter
@@ -281,7 +264,6 @@ const PublicKeyImporter = ({
             <MenuItem value="">{"< Select method >"}</MenuItem>
             <MenuItem value={TREZOR}>Trezor</MenuItem>
             <MenuItem value={LEDGER}>Ledger</MenuItem>
-            <MenuItem value={HERMIT}>Hermit</MenuItem>
             <MenuItem value={XPUB}>Derive from extended public key</MenuItem>
             <MenuItem value={TEXT}>Enter as text</MenuItem>
           </TextField>
@@ -331,7 +313,6 @@ PublicKeyImporter.propTypes = {
   }).isRequired,
   publicKeyImporters: PropTypes.shape({}).isRequired,
   defaultBIP32Path: PropTypes.string.isRequired,
-  resetBIP32Path: PropTypes.func.isRequired,
   addressType: PropTypes.string.isRequired,
   setName: PropTypes.func.isRequired,
   setBIP32Path: PropTypes.func.isRequired,
@@ -353,7 +334,6 @@ function mapStateToProps(state, ownProps) {
 const mapDispatchToProps = {
   setName: setPublicKeyImporterName,
   setBIP32Path: setPublicKeyImporterBIP32Path,
-  resetBIP32Path: resetPublicKeyImporterBIP32Path,
   setMethod: setPublicKeyImporterMethod,
   setPublicKey: setPublicKeyImporterPublicKey,
   setFinalized: setPublicKeyImporterFinalized,

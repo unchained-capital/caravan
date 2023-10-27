@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.3...caravan-v0.7.0) (2023-10-23)
+
+
+### Features
+
+* **hermit:** hermit PSBT signing for pre-product key recovery ([#308](https://github.com/unchained-capital/caravan/issues/308)) ([04ca0ce](https://github.com/unchained-capital/caravan/commit/04ca0ce3ffa2589a00104ecd18cf11768212f470))
+
+## [0.6.3](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.2...caravan-v0.6.3) (2023-10-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @babel/traverse from 7.21.3 to 7.23.2 ([#344](https://github.com/unchained-capital/caravan/issues/344)) ([5f231e0](https://github.com/unchained-capital/caravan/commit/5f231e03042006ecc1f72043f42bb6c7266dbecd))
+
 ## [0.6.2](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.1...caravan-v0.6.2) (2023-07-18)
 
 
