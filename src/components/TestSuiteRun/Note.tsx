@@ -9,46 +9,43 @@ import { setTestRunNote } from "../../actions/testRunActions";
 const KEYSTORE_MODE = "keystore";
 const TEST_RUN_MODE = "testRun";
 
-class NoteBase extends React.Component {
-  handleChange = (event) => {
-    const { setNote, mode, testRunIndex } = this.props;
+interface NoteBaseProps {
+  note: string;
+  mode: string;
+  setNote: (note: string) => void;
+  testRunIndex: number;
+  testSuiteRun: {
+    currentTestRunIndex: number;
+    started: boolean;
+    testRuns: any[];
+  };
+}
+
+const NoteBase = ({ note, mode, setNote, testRunIndex = 0 }: NoteBaseProps) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newNote = event.target.value;
     if (mode === TEST_RUN_MODE) {
-      setNote(testRunIndex, newNote);
+      setNote(String(testRunIndex));
     } else {
       setNote(newNote);
     }
   };
 
-  render() {
-    const { note } = this.props;
-    return (
-      <TextField
-        name="notes"
-        label="Notes"
-        value={note}
-        variant="standard"
-        onChange={this.handleChange}
-        multiline
-        fullWidth
-        rows={3}
-      />
-    );
-  }
-}
-
-NoteBase.propTypes = {
-  note: PropTypes.string.isRequired,
-  mode: PropTypes.string.isRequired,
-  setNote: PropTypes.func.isRequired,
-  testRunIndex: PropTypes.number,
+  return (
+    <TextField
+      name="notes"
+      label="Notes"
+      value={note}
+      variant="standard"
+      onChange={handleChange}
+      multiline
+      fullWidth
+      rows={3}
+    />
+  );
 };
 
-NoteBase.defaultProps = {
-  testRunIndex: 0,
-};
-
-const mapStateToKeystoreNoteProps = (state) => {
+const mapStateToKeystoreNoteProps = (state: { keystore: NoteBaseProps }) => {
   return {
     note: state.keystore.note,
     mode: KEYSTORE_MODE,
@@ -59,12 +56,12 @@ const mapDispatchToKeystoreNoteProps = {
   setNote: setKeystoreNote,
 };
 
-const mapStateToTestRunNoteProps = (state) => {
+const mapStateToTestRunNoteProps = (state: { keystore: NoteBaseProps }) => {
   return {
     mode: TEST_RUN_MODE,
     testRunIndex: state.testSuiteRun.currentTestRunIndex,
-    note: state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex]
-      .note,
+    note:
+      state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex].note,
   };
 };
 

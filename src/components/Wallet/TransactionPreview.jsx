@@ -14,6 +14,7 @@ import {
   TableCell,
   Grid,
 } from "@mui/material";
+import { downloadFile } from "../../utils";
 import UnsignedTransaction from "../UnsignedTransaction";
 import { setChangeOutputMultisig as setChangeOutputMultisigAction } from "../../actions/transactionActions";
 
@@ -152,6 +153,10 @@ class TransactionPreview extends React.Component {
     ).toString();
   };
 
+  handleDownloadPSBT = (psbtBase64) => {
+    downloadFile(psbtBase64, "transaction.psbt");
+  };
+
   render = () => {
     const {
       feeRate,
@@ -159,6 +164,7 @@ class TransactionPreview extends React.Component {
       inputsTotalSats,
       editTransaction,
       handleSignTransaction,
+      unsignedPSBT,
     } = this.props;
 
     return (
@@ -208,6 +214,17 @@ class TransactionPreview extends React.Component {
                 Sign Transaction
               </Button>
             </Grid>
+            {unsignedPSBT && (
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => this.handleDownloadPSBT(unsignedPSBT)}
+                >
+                  Download Unsigned PSBT
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Box>
       </Box>
@@ -229,11 +246,16 @@ TransactionPreview.propTypes = {
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSignTransaction: PropTypes.func.isRequired,
   setChangeOutputMultisig: PropTypes.func.isRequired,
+  unsignedPSBT: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     changeOutputIndex: state.spend.transaction.changeOutputIndex,
+    network: state.settings.network,
+    inputs: state.spend.transaction.inputs,
+    outputs: state.spend.transaction.outputs,
+    unsignedPSBT: state.spend.transaction.unsignedPSBT,
   };
 }
 

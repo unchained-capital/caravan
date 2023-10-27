@@ -13,6 +13,7 @@ import {
   setRequiredSigners as setRequiredSignersAction,
   resetTransaction as resetTransactionAction,
   setSpendStep as setSpendStepAction,
+  resetPSBT as resetPSBTAction,
   SPEND_STEP_CREATE,
 } from "../../actions/transactionActions";
 import {
@@ -78,9 +79,10 @@ class WalletSign extends React.Component {
   };
 
   handleReturn = () => {
-    const { resetTransaction, resetWalletView } = this.props;
+    const { resetTransaction, resetWalletView, resetPSBT } = this.props;
     resetTransaction();
     resetWalletView();
+    resetPSBT();
   };
 
   handleCancel = (event) => {
@@ -153,6 +155,7 @@ WalletSign.propTypes = {
   requiredSigners: PropTypes.number.isRequired,
   resetTransaction: PropTypes.func.isRequired,
   resetWalletView: PropTypes.func.isRequired,
+  resetPSBT: PropTypes.func.isRequired,
   setRequiredSigners: PropTypes.func.isRequired,
   setSpendStep: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
@@ -178,6 +181,7 @@ const mapDispatchToProps = {
   updateTxSlices: updateTxSlicesAction,
   resetTransaction: resetTransactionAction,
   resetWalletView: resetWalletViewAction,
+  resetPSBT: resetPSBTAction,
   setSpendStep: setSpendStepAction,
 };
 
