@@ -12,8 +12,8 @@ interface NoteBaseProps {
   note: string;
   mode: string;
   setNote: (note: string) => void;
-  testRunIndex: number;
-  testSuiteRun: {
+  testRunIndex?: number;
+  testSuiteRun?: {
     currentTestRunIndex: number;
     started: boolean;
     testRuns: any[];

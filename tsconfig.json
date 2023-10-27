@@ -22,6 +22,6 @@
     "useUnknownInCatchVariables": false,
     "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["src/**/*", "vite-env.d.ts"],
+  "include": ["src/**/*", "vite-env.d.ts", "declarations.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
