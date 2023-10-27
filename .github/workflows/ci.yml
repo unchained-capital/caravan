@@ -4,12 +4,11 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['14.x', '16.x', '18.x']
- 
+        node-version: ["14.x", "16.x", "18.x", "20.x"]
+
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -18,4 +17,3 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run build:ci
-
