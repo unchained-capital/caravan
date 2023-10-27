@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { COLDCARD } from "unchained-wallets";
-import { Box, FormGroup, FormHelperText } from "@mui/material";
+import { Box, FormGroup } from "@mui/material";
 import { MAINNET, P2SH } from "unchained-bitcoin";
 import { ColdcardJSONReader } from ".";
 import IndirectExtendedPublicKeyImporter from "../Wallet/IndirectExtendedPublicKeyImporter";
@@ -26,7 +26,6 @@ const ColdcardExtendedPublicKeyImporter = ({
   const [coldcardMultisigBIP32Path, setColdcardMultisigBIP32Path] = useState(
     getColdcardBip32Path()
   );
-  const [extendedPublicKeyError, setExtendedPublicKeyError] = useState("");
 
   const resetColdcardBIP32Path = () => {
     validateAndSetBIP32Path(
@@ -73,7 +72,6 @@ const ColdcardExtendedPublicKeyImporter = ({
           defaultBIP32Path={coldcardMultisigBIP32Path}
           Reader={ColdcardJSONReader}
         />
-        <FormHelperText error>{extendedPublicKeyError}</FormHelperText>
       </FormGroup>
     </Box>
   );

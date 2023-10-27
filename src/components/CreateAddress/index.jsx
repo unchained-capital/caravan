@@ -16,21 +16,6 @@ import { clientPropTypes } from "../../proptypes";
 import "../styles.css";
 
 const CreateAddress = ({ address, client, totalSigners }) => {
-  const renderPublicKeyImporters = () => {
-    const publicKeyImporters = [];
-    for (
-      let publicKeyImporterNum = 1;
-      publicKeyImporterNum <= totalSigners;
-      publicKeyImporterNum += 1
-    ) {
-      publicKeyImporters.push(
-        <Box key={publicKeyImporterNum} mt={publicKeyImporterNum === 1 ? 0 : 2}>
-          <PublicKeyImporter number={publicKeyImporterNum} />
-        </Box>
-      );
-    }
-    return publicKeyImporters;
-  };
   return (
     <Box mt={2}>
       <Grid container spacing={3}>
@@ -38,7 +23,7 @@ const CreateAddress = ({ address, client, totalSigners }) => {
           <h1>Address Generator</h1>
         </Grid>
         <Grid item md={8}>
-          {renderPublicKeyImporters()}
+          <PublicKeyImporters totalSigners={totalSigners} />
           <Box mt={2}>
             <AddressGenerator />
           </Box>
@@ -77,6 +62,22 @@ const CreateAddress = ({ address, client, totalSigners }) => {
       </Grid>
     </Box>
   );
+};
+
+const PublicKeyImporters = ({ totalSigners }) => {
+  const publicKeyImporters = [];
+  for (
+    let publicKeyImporterNum = 1;
+    publicKeyImporterNum <= totalSigners;
+    publicKeyImporterNum += 1
+  ) {
+    publicKeyImporters.push(
+      <Box key={publicKeyImporterNum} mt={publicKeyImporterNum === 1 ? 0 : 2}>
+        <PublicKeyImporter number={publicKeyImporterNum} />
+      </Box>
+    );
+  }
+  return publicKeyImporters;
 };
 
 function mapStateToProps(state) {

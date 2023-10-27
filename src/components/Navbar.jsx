@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// This needs to be a class component because it uses a ref
-// eslint-disable-next-line react/prefer-stateless-function
 const NavItem = ({ href, title, classes, handleClose }) => {
   return (
     <Link to={href} className={classes.menuLink}>

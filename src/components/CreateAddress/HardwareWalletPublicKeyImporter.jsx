@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import {
   UNSUPPORTED,
@@ -29,16 +29,16 @@ const HardwareWalletPublicKeyImporter = ({
   const [bip32PathError, setBip32PathError] = useState("");
   const [publicKeyError, setPublicKeyError] = useState("");
 
-  const interaction = () => {
+  const interaction = useCallback(() => {
     return ExportPublicKey({
       network,
       keystore: method,
       bip32Path: bip32Path ?? defaultBIP32Path,
     });
-  };
+  }, [network, method, bip32Path]);
 
   const [status, setStatus] = useState(
-    this.interaction().isSupported() ? PENDING : UNSUPPORTED
+    interaction().isSupported() ? PENDING : UNSUPPORTED
   );
 
   const importData = async () => {

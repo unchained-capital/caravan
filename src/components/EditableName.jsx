@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Grid, IconButton, TextField } from "@mui/material";
 import { Check, Clear, Edit } from "@mui/icons-material";
 
 const EditableName = ({ name, setName, number }) => {
   const [editing, setEditing] = useState(false);
-  const [newName, setNewName] = useState("");
+  const [newName, setNewName] = useState(name);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    setNewName(name);
-  }, []);
 
   const hasError = () => {
     return error !== "";
@@ -43,7 +39,6 @@ const EditableName = ({ name, setName, number }) => {
 
   const renderEditableName = () => {
     if (editing) {
-      // <Form onSubmit={this.submit} inline>
       return (
         <Grid container alignItems="center">
           <Grid item>
