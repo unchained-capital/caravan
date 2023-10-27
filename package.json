@@ -37,6 +37,7 @@
     "commander": "^5.0.0",
     "commitlint-config-cz": "^0.13.1",
     "cz-customizable": "^6.2.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-jest-dom": "^3.0.1",
