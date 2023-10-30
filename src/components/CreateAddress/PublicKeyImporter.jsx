@@ -29,7 +29,6 @@ import Conflict from "./Conflict";
 import {
   setPublicKeyImporterName,
   setPublicKeyImporterBIP32Path,
-  resetPublicKeyImporterBIP32Path,
   setPublicKeyImporterMethod,
   setPublicKeyImporterPublicKey,
   setPublicKeyImporterFinalized,
