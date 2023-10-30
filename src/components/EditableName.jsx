@@ -19,11 +19,16 @@ const EditableName = ({ name, setName, number }) => {
   };
 
   const handleChange = (event) => {
-    setNewName(event.target.value);
+    const updatedName = event.target.value;
 
-    if (newName === null || newName === undefined || newName === "") {
+    if (
+      updatedName === null ||
+      updatedName === undefined ||
+      updatedName === ""
+    ) {
       setError("Name cannot be blank.");
     }
+    setNewName(updatedName);
   };
 
   const submit = () => {
