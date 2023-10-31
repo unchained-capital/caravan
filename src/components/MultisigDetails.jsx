@@ -19,8 +19,8 @@ import { externalLink } from "../utils";
 // Components
 import Copyable from "./Copyable";
 
-class MultisigDetails extends React.Component {
-  renderScript = (name, script) => {
+const MultisigDetails = ({ network, multisig, showAddress }) => {
+  const renderScript = (name, script) => {
     const hex = scriptToHex(script);
     const ops = scriptToOps(script);
     return (
@@ -38,59 +38,56 @@ class MultisigDetails extends React.Component {
     );
   };
 
-  render() {
-    const { network, multisig, showAddress } = this.props;
-    const { address } = multisig;
-    const redeemScript = multisigRedeemScript(multisig);
-    const witnessScript = multisigWitnessScript(multisig);
-    return (
-      <Box mt={2} style={{ maxWidth: "1080px" }}>
-        {showAddress && <Typography variant="h6">Address</Typography>}
+  const { address } = multisig;
+  const redeemScript = multisigRedeemScript(multisig);
+  const witnessScript = multisigWitnessScript(multisig);
+  return (
+    <Box mt={2} style={{ maxWidth: "1080px" }}>
+      {showAddress && <Typography variant="h6">Address</Typography>}
 
-        <Typography align="center" variant="h5">
-          <Grid container direction="column" spacing={2}>
-            {showAddress && (
-              <Grid item>
-                <Copyable text={address} showIcon code />
-                &nbsp;
-                {externalLink(
-                  blockExplorerAddressURL(address, network),
-                  <OpenInNew />
-                )}
-              </Grid>
-            )}
+      <Typography align="center" variant="h5">
+        <Grid container direction="column" spacing={2}>
+          {showAddress && (
+            <Grid item>
+              <Copyable text={address} showIcon code />
+              &nbsp;
+              {externalLink(
+                blockExplorerAddressURL(address, network),
+                <OpenInNew />
+              )}
+            </Grid>
+          )}
 
-            <Grid item justifyContent="center" container spacing={3}>
-              <Grid item>
-                <Chip label="BTC" />
-              </Grid>
+          <Grid item justifyContent="center" container spacing={3}>
+            <Grid item>
+              <Chip label="BTC" />
+            </Grid>
 
-              <Grid item>
-                <Chip label={networkLabel(network)} />
-              </Grid>
+            <Grid item>
+              <Chip label={networkLabel(network)} />
+            </Grid>
 
-              <Grid item>
-                <Chip
-                  label={`${multisigRequiredSigners(
-                    multisig
-                  )}-of-${multisigTotalSigners(multisig)}`}
-                />
-              </Grid>
+            <Grid item>
+              <Chip
+                label={`${multisigRequiredSigners(
+                  multisig
+                )}-of-${multisigTotalSigners(multisig)}`}
+              />
+            </Grid>
 
-              <Grid item>
-                <Chip label={multisigAddressType(multisig)} />
-              </Grid>
+            <Grid item>
+              <Chip label={multisigAddressType(multisig)} />
             </Grid>
           </Grid>
-        </Typography>
+        </Grid>
+      </Typography>
 
-        {this.renderScript("Script", multisig)}
-        {redeemScript && this.renderScript("Redeem Script", redeemScript)}
-        {witnessScript && this.renderScript("Witness Script", witnessScript)}
-      </Box>
-    );
-  }
-}
+      {renderScript("Script", multisig)}
+      {redeemScript && renderScript("Redeem Script", redeemScript)}
+      {witnessScript && renderScript("Witness Script", witnessScript)}
+    </Box>
+  );
+};
 
 MultisigDetails.propTypes = {
   multisig: PropTypes.shape({

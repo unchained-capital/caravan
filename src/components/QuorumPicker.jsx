@@ -23,14 +23,39 @@ import "./styles.css";
 
 const MAX_TOTAL_SIGNERS = 7;
 
-class QuorumPicker extends React.Component {
-  renderIncrementRequiredSigners = () => {
-    const { requiredSigners, totalSigners, frozen } = this.props;
+const QuorumPicker = ({
+  frozen,
+  requiredSigners,
+  setRequiredSigners,
+  totalSigners,
+  setTotalSigners,
+}) => {
+  const handleIncrementRequiredSigners = (event) => {
+    setRequiredSigners(requiredSigners + 1);
+    event.preventDefault();
+  };
+
+  const handleDecrementRequiredSigners = (event) => {
+    setRequiredSigners(requiredSigners - 1);
+    event.preventDefault();
+  };
+
+  const handleIncrementTotalSigners = (event) => {
+    setTotalSigners(totalSigners + 1);
+    event.preventDefault();
+  };
+
+  const handleDecrementTotalSigners = (event) => {
+    setTotalSigners(totalSigners - 1);
+    event.preventDefault();
+  };
+
+  const renderIncrementRequiredSigners = () => {
     const disabled = requiredSigners === totalSigners || frozen;
     return (
       <IconButton
         color="primary"
-        onClick={this.handleIncrementRequiredSigners}
+        onClick={handleIncrementRequiredSigners}
         disabled={disabled}
       >
         <AddCircle />
@@ -38,13 +63,12 @@ class QuorumPicker extends React.Component {
     );
   };
 
-  renderDecrementRequiredSigners = () => {
-    const { requiredSigners, frozen } = this.props;
+  const renderDecrementRequiredSigners = () => {
     const disabled = requiredSigners === 1 || frozen;
     return (
       <IconButton
         color="secondary"
-        onClick={this.handleDecrementRequiredSigners}
+        onClick={handleDecrementRequiredSigners}
         disabled={disabled}
       >
         <RemoveCircle />
@@ -52,13 +76,12 @@ class QuorumPicker extends React.Component {
     );
   };
 
-  renderIncrementTotalSigners = () => {
-    const { totalSigners, frozen } = this.props;
+  const renderIncrementTotalSigners = () => {
     const disabled = totalSigners === MAX_TOTAL_SIGNERS || frozen;
     return (
       <IconButton
         color="primary"
-        onClick={this.handleIncrementTotalSigners}
+        onClick={handleIncrementTotalSigners}
         disabled={disabled}
       >
         <AddCircle />
@@ -66,14 +89,13 @@ class QuorumPicker extends React.Component {
     );
   };
 
-  renderDecrementTotalSigners = () => {
-    const { requiredSigners, totalSigners, frozen } = this.props;
+  const renderDecrementTotalSigners = () => {
     const disabled =
       totalSigners === requiredSigners || totalSigners === 2 || frozen;
     return (
       <IconButton
         color="secondary"
-        onClick={this.handleDecrementTotalSigners}
+        onClick={handleDecrementTotalSigners}
         disabled={disabled}
       >
         <RemoveCircle />
@@ -81,109 +103,69 @@ class QuorumPicker extends React.Component {
     );
   };
 
-  handleIncrementRequiredSigners = (event) => {
-    const { requiredSigners, setRequiredSigners } = this.props;
-    setRequiredSigners(requiredSigners + 1);
-    event.preventDefault();
-  };
+  return (
+    <Card>
+      <CardHeader title="Quorum" />
+      <CardContent>
+        <Box>
+          <Grid container justifyContent="center">
+            <Grid container item xs={2} direction="column">
+              &nbsp;
+            </Grid>
 
-  handleDecrementRequiredSigners = (event) => {
-    const { requiredSigners, setRequiredSigners } = this.props;
-    setRequiredSigners(requiredSigners - 1);
-    event.preventDefault();
-  };
+            <Grid container item xs={3} direction="column" alignItems="center">
+              <Grid item>{renderIncrementRequiredSigners()}</Grid>
 
-  handleIncrementTotalSigners = (event) => {
-    const { totalSigners, setTotalSigners } = this.props;
-    setTotalSigners(totalSigners + 1);
-    event.preventDefault();
-  };
-
-  handleDecrementTotalSigners = (event) => {
-    const { totalSigners, setTotalSigners } = this.props;
-    setTotalSigners(totalSigners - 1);
-    event.preventDefault();
-  };
-
-  render() {
-    const { requiredSigners, totalSigners } = this.props;
-
-    return (
-      <Card>
-        <CardHeader title="Quorum" />
-        <CardContent>
-          <Box>
-            <Grid container justifyContent="center">
-              <Grid container item xs={2} direction="column">
-                &nbsp;
+              <Grid item>
+                <Typography variant="h2">{requiredSigners}</Typography>
               </Grid>
 
-              <Grid
-                container
-                item
-                xs={3}
-                direction="column"
-                alignItems="center"
-              >
-                <Grid item>{this.renderIncrementRequiredSigners()}</Grid>
-
-                <Grid item>
-                  <Typography variant="h2">{requiredSigners}</Typography>
-                </Grid>
-
-                <Grid item>
-                  <small>
-                    <p>Required</p>
-                  </small>
-                </Grid>
-
-                <Grid item>{this.renderDecrementRequiredSigners()}</Grid>
+              <Grid item>
+                <small>
+                  <p>Required</p>
+                </small>
               </Grid>
 
-              <Grid
-                container
-                item
-                xs={2}
-                direction="column"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Grid item>
-                  <Typography variant="h6">of</Typography>
-                </Grid>
-              </Grid>
+              <Grid item>{renderDecrementRequiredSigners()}</Grid>
+            </Grid>
 
-              <Grid
-                item
-                container
-                xs={3}
-                direction="column"
-                alignItems="center"
-              >
-                <Grid item>{this.renderIncrementTotalSigners()}</Grid>
-
-                <Grid item>
-                  <Typography variant="h2">{totalSigners}</Typography>
-                </Grid>
-
-                <Grid item>
-                  <small>
-                    <p>Total</p>
-                  </small>
-                </Grid>
-
-                <Grid item>{this.renderDecrementTotalSigners()}</Grid>
-              </Grid>
-              <Grid container item xs={2} direction="column">
-                &nbsp;
+            <Grid
+              container
+              item
+              xs={2}
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Grid item>
+                <Typography variant="h6">of</Typography>
               </Grid>
             </Grid>
-          </Box>
-        </CardContent>
-      </Card>
-    );
-  }
-}
+
+            <Grid item container xs={3} direction="column" alignItems="center">
+              <Grid item>{renderIncrementTotalSigners()}</Grid>
+
+              <Grid item>
+                <Typography variant="h2">{totalSigners}</Typography>
+              </Grid>
+
+              <Grid item>
+                <small>
+                  <p>Total</p>
+                </small>
+              </Grid>
+
+              <Grid item>{renderDecrementTotalSigners()}</Grid>
+            </Grid>
+            <Grid container item xs={2} direction="column">
+              &nbsp;
+            </Grid>
+          </Grid>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
 
 QuorumPicker.propTypes = {
   totalSigners: PropTypes.number.isRequired,

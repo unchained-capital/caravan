@@ -6,9 +6,7 @@ import { Snackbar, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { clearErrorNotification as clearErrorNotificationAction } from "../actions/errorNotificationActions";
 
-const ErrorNotificationBase = (props) => {
-  const { open, message, clearErrorNotification } = props;
-
+const ErrorNotificationBase = ({ open, message, clearErrorNotification }) => {
   return (
     <Snackbar
       anchorOrigin={{
