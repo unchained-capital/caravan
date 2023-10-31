@@ -136,7 +136,7 @@ ColdcardFileReaderBase.defaultProps = {
   resetBIP32Path: null,
   bip32PathIsDefault: null,
   errorMessage: "",
-  hasError: PropTypes.bool,
+  hasError: false,
   maxFileSize: 1048576, // 1MB
   fileType: "JSON",
   validFileFormats: ".json",
