@@ -2,8 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button } from "@mui/material";
 
-const ColdcardSigningButtons = (props) => {
-  const { handlePSBTDownloadClick, handleWalletConfigDownloadClick } = props;
+const ColdcardSigningButtons = ({
+  handlePSBTDownloadClick,
+  handleWalletConfigDownloadClick,
+}) => {
   return (
     <>
       <Button

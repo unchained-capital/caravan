@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
@@ -30,149 +30,142 @@ import {
 
 import PrivateClientSettings from "./PrivateClientSettings";
 
-class ClientPicker extends React.Component {
-  static validatePassword() {
-    return "";
-  }
+const ClientPicker = ({
+  setType,
+  network,
+  setUrl,
+  setUrlError,
+  setUsername,
+  setUsernameError,
+  setPassword,
+  setPasswordError,
+  client,
+  onSuccess,
+  urlError,
+  usernameError,
+  passwordError,
+  privateNotes,
+}) => {
+  const [urlEdited, setUrlEdited] = useState(false);
+  const [connectError, setConnectError] = useState("");
+  const [connectSuccess, setConnectSuccess] = useState(false);
 
-  static validateUsername() {
+  const validatePassword = () => {
     return "";
-  }
+  };
 
-  static validateUrl(host) {
+  const validateUsername = () => {
+    return "";
+  };
+
+  const validateUrl = (host) => {
     const validhost = /^http(s)?:\/\/[^\s]+$/.exec(host);
     if (!validhost) return "Must be a valid URL.";
     return "";
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      urlEdited: false,
-      connectError: "",
-      connectSuccess: false,
-    };
-  }
-
-  handleTypeChange = (event) => {
-    const { setType, network, setUrl } = this.props;
-    const { urlEdited } = this.state;
-
-    const type = event.target.value;
-    if (type === "private" && !urlEdited) {
-      setUrl(`http://localhost:${network === "mainnet" ? 8332 : 18332}`);
-    }
-    setType(type);
   };
 
-  handleUrlChange = (event) => {
-    const { setUrl, setUrlError } = this.props;
-    const { urlEdited } = this.state;
+  const handleTypeChange = (event) => {
+    const clientType = event.target.value;
+    if (clientType === "private" && !urlEdited) {
+      setUrl(`http://localhost:${network === "mainnet" ? 8332 : 18332}`);
+    }
+    setType(clientType);
+  };
+
+  const handleUrlChange = (event) => {
     const url = event.target.value;
-    const error = ClientPicker.validateUrl(url);
-    if (!urlEdited && !error) this.setState({ urlEdited: true });
+    const error = validateUrl(url);
+    if (!urlEdited && !error) setUrlEdited(true);
     setUrl(url);
     setUrlError(error);
   };
 
-  handleUsernameChange = (event) => {
-    const { setUsername, setUsernameError } = this.props;
+  const handleUsernameChange = (event) => {
     const username = event.target.value;
-    const error = ClientPicker.validateUsername(username);
+    const error = validateUsername(username);
     setUsername(username);
     setUsernameError(error);
   };
 
-  handlePasswordChange = (event) => {
-    const { setPassword, setPasswordError } = this.props;
+  const handlePasswordChange = (event) => {
     const password = event.target.value;
-    const error = ClientPicker.validatePassword(password);
+    const error = validatePassword(password);
     setPassword(password);
     setPasswordError(error);
   };
 
-  testConnection = async () => {
-    const { network, client, onSuccess } = this.props;
-    this.setState({ connectError: "", connectSuccess: false });
+  const testConnection = async () => {
+    setConnectError("");
+    setConnectSuccess(false);
     try {
       await fetchFeeEstimate(network, client);
       if (onSuccess) {
         onSuccess();
       }
-      this.setState({ connectSuccess: true });
+      setConnectSuccess(true);
     } catch (e) {
-      this.setState({ connectError: e.message });
+      setConnectError(e.message);
     }
   };
 
-  render() {
-    const { client, urlError, usernameError, passwordError, privateNotes } =
-      this.props;
-    const { connectSuccess, connectError } = this.state;
-    return (
-      <Card>
-        <Grid container justifyContent="space-between">
-          <CardHeader title="Bitcoin Client" />
+  return (
+    <Card>
+      <Grid container justifyContent="space-between">
+        <CardHeader title="Bitcoin Client" />
+      </Grid>
+      <CardContent>
+        <Grid item>
+          <FormControl component="fieldset">
+            <RadioGroup>
+              <FormControlLabel
+                id="public"
+                control={<Radio color="primary" />}
+                name="clientType"
+                value="public"
+                label={<strong>Public</strong>}
+                onChange={handleTypeChange}
+                checked={client.type === "public"}
+              />
+              <FormControlLabel
+                id="private"
+                control={<Radio color="primary" />}
+                name="clientType"
+                value="private"
+                label="Private"
+                onChange={handleTypeChange}
+                checked={client.type === "private"}
+              />
+            </RadioGroup>
+            {client.type === "public" && (
+              <FormHelperText>
+                {"'Public' uses the "}
+                <code>blockstream.info</code>
+                {" API. Switch to private to use a "}
+                <code>bitcoind</code>
+                {" node."}
+              </FormHelperText>
+            )}
+            {client.type === "private" && (
+              <PrivateClientSettings
+                handleUrlChange={(event) => handleUrlChange(event)}
+                handleUsernameChange={(event) => handleUsernameChange(event)}
+                handlePasswordChange={(event) => handlePasswordChange(event)}
+                client={client}
+                urlError={urlError}
+                usernameError={usernameError}
+                passwordError={passwordError}
+                privateNotes={privateNotes}
+                connectSuccess={connectSuccess}
+                connectError={connectError}
+                testConnection={() => testConnection()}
+              />
+            )}
+          </FormControl>
         </Grid>
-        <CardContent>
-          <Grid item>
-            <FormControl component="fieldset">
-              <RadioGroup>
-                <FormControlLabel
-                  id="public"
-                  control={<Radio color="primary" />}
-                  name="clientType"
-                  value="public"
-                  label={<strong>Public</strong>}
-                  onChange={this.handleTypeChange}
-                  checked={client.type === "public"}
-                />
-                <FormControlLabel
-                  id="private"
-                  control={<Radio color="primary" />}
-                  name="clientType"
-                  value="private"
-                  label="Private"
-                  onChange={this.handleTypeChange}
-                  checked={client.type === "private"}
-                />
-              </RadioGroup>
-              {client.type === "public" && (
-                <FormHelperText>
-                  {"'Public' uses the "}
-                  <code>blockstream.info</code>
-                  {" API. Switch to private to use a "}
-                  <code>bitcoind</code>
-                  {" node."}
-                </FormHelperText>
-              )}
-              {client.type === "private" && (
-                <PrivateClientSettings
-                  handleUrlChange={(event) => this.handleUrlChange(event)}
-                  handleUsernameChange={(event) =>
-                    this.handleUsernameChange(event)
-                  }
-                  handlePasswordChange={(event) =>
-                    this.handlePasswordChange(event)
-                  }
-                  client={client}
-                  urlError={urlError}
-                  usernameError={usernameError}
-                  passwordError={passwordError}
-                  privateNotes={privateNotes}
-                  connectSuccess={connectSuccess}
-                  connectError={connectError}
-                  testConnection={() => this.testConnection()}
-                />
-              )}
-            </FormControl>
-          </Grid>
-        </CardContent>
-      </Card>
-    );
-  }
-}
+      </CardContent>
+    </Card>
+  );
+};
 
 ClientPicker.propTypes = {
   client: PropTypes.shape({

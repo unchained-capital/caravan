@@ -78,7 +78,7 @@ class OutputsForm extends React.Component {
     const { outputs, changeOutputIndex, autoSpend } = this.props;
     return map(outputs).map((output, i) => (
       <Box
-        key={i}
+        key={i} // eslint-disable-line react/no-array-index-key
         display={autoSpend && changeOutputIndex === i + 1 ? "none" : "block"}
       >
         <Grid container>

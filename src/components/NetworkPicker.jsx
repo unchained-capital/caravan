@@ -19,53 +19,49 @@ import {
 // Actions
 import { setNetwork as setNetworkAction } from "../actions/settingsActions";
 
-class NetworkPicker extends React.Component {
-  handleNetworkChange = (event) => {
-    const { setNetwork } = this.props;
+const NetworkPicker = ({ setNetwork, network, frozen }) => {
+  const handleNetworkChange = (event) => {
     setNetwork(event.target.value);
   };
 
-  render() {
-    const { network, frozen } = this.props;
-    return (
-      <Card>
-        <CardHeader title="Network" />
-        <CardContent>
-          <FormControl component="fieldset">
-            <RadioGroup>
-              <FormControlLabel
-                id="mainnet"
-                control={<Radio color="primary" />}
-                name="network"
-                value="mainnet"
-                label={<strong>Mainnet</strong>}
-                onChange={this.handleNetworkChange}
-                checked={network === MAINNET}
-                disabled={frozen}
-              />
-              <FormControlLabel
-                id="testnet"
-                control={<Radio color="primary" />}
-                name="network"
-                value="testnet"
-                label="Testnet"
-                onChange={this.handleNetworkChange}
-                checked={network === TESTNET}
-                disabled={frozen}
-              />
-            </RadioGroup>
-            <FormHelperText>
-              <small>
-                Choose &apos;Mainnet&apos; if you don&apos;t understand the
-                difference.
-              </small>
-            </FormHelperText>
-          </FormControl>
-        </CardContent>
-      </Card>
-    );
-  }
-}
+  return (
+    <Card>
+      <CardHeader title="Network" />
+      <CardContent>
+        <FormControl component="fieldset">
+          <RadioGroup>
+            <FormControlLabel
+              id="mainnet"
+              control={<Radio color="primary" />}
+              name="network"
+              value="mainnet"
+              label={<strong>Mainnet</strong>}
+              onChange={handleNetworkChange}
+              checked={network === MAINNET}
+              disabled={frozen}
+            />
+            <FormControlLabel
+              id="testnet"
+              control={<Radio color="primary" />}
+              name="network"
+              value="testnet"
+              label="Testnet"
+              onChange={handleNetworkChange}
+              checked={network === TESTNET}
+              disabled={frozen}
+            />
+          </RadioGroup>
+          <FormHelperText>
+            <small>
+              Choose &apos;Mainnet&apos; if you don&apos;t understand the
+              difference.
+            </small>
+          </FormHelperText>
+        </FormControl>
+      </CardContent>
+    </Card>
+  );
+};
 
 NetworkPicker.propTypes = {
   network: PropTypes.string.isRequired,

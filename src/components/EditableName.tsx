@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, IconButton, TextField } from "@mui/material";
 import { Check, Clear, Edit } from "@mui/icons-material";
 
@@ -14,29 +14,49 @@ interface EditableNameState {
   error: string;
 }
 
-class EditableName extends React.Component<
-  EditableNameProps,
-  EditableNameState
-> {
-  constructor(props: EditableNameProps) {
-    super(props);
-    this.state = {
-      editing: false,
-      newName: "",
-      error: "",
-    };
-  }
+const EditableName = ({ name, setName, number }: EditableNameProps) => {
+  const [editing, setEditing] = useState(false);
+  const [newName, setNewName] = useState(name);
+  const [error, setError] = useState("");
 
-  componentDidMount = () => {
-    const { name } = this.props;
-    this.setState({ newName: name });
+  const hasError = () => {
+    return error !== "";
   };
 
-  render = () => {
-    const { name } = this.props;
-    const { editing, newName, error } = this.state;
+  const startEditing = (
+    event: React.MouseEvent<HTMLSpanElement | HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+    setEditing(true);
+    setNewName(name);
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedName = event.target.value;
+
+    if (
+      updatedName === null ||
+      updatedName === undefined ||
+      updatedName === ""
+    ) {
+      setError("Name cannot be blank.");
+    }
+    setNewName(updatedName);
+  };
+
+  const submit = () => {
+    setName(number, newName);
+    setEditing(false);
+  };
+
+  const cancel = () => {
+    setEditing(false);
+    setNewName(name);
+    setError("");
+  };
+
+  const renderEditableName = () => {
     if (editing) {
-      // <Form onSubmit={this.submit} inline>
       return (
         <Grid container alignItems="center">
           <Grid item>
@@ -45,12 +65,12 @@ class EditableName extends React.Component<
               label="Name"
               value={newName}
               variant="standard"
-              onChange={this.handleChange}
+              onChange={handleChange}
               onFocus={(event) => {
                 setTimeout(event.target.select.bind(event.target), 20);
               }}
-              onKeyDown={(e) => (e.key === "Enter" ? this.submit() : null)}
-              error={this.hasError()}
+              onKeyDown={(e) => (e.key === "Enter" ? submit() : null)}
+              error={hasError()}
               helperText={error}
             />
           </Grid>
@@ -59,8 +79,8 @@ class EditableName extends React.Component<
             <IconButton
               data-cy="save-button"
               size="small"
-              onClick={this.submit}
-              disabled={this.hasError()}
+              onClick={submit}
+              disabled={hasError()}
             >
               <Check />
             </IconButton>
@@ -71,7 +91,7 @@ class EditableName extends React.Component<
               data-cy="cancel-button"
               color="secondary"
               size="small"
-              onClick={this.cancel}
+              onClick={cancel}
             >
               <Clear />
             </IconButton>
@@ -81,58 +101,21 @@ class EditableName extends React.Component<
     }
     return (
       <span>
-        <IconButton
-          data-cy="edit-button"
-          size="small"
-          onClick={this.startEditing}
-        >
+        <IconButton data-cy="edit-button" size="small" onClick={startEditing}>
           <Edit />
         </IconButton>
         &nbsp;
         <span
           data-cy="editable-name-value"
           style={{ cursor: "pointer" }}
-          onClick={this.startEditing}
+          onClick={startEditing}
         >
           {name}
         </span>
       </span>
     );
   };
-
-  hasError = () => {
-    const { error } = this.state;
-    return error !== "";
-  };
-
-  startEditing = (
-    event: React.MouseEvent<HTMLSpanElement | HTMLButtonElement>
-  ) => {
-    const { name } = this.props;
-    event.preventDefault();
-    this.setState({ editing: true, newName: name });
-  };
-
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = event.target.value;
-    let error = "";
-    if (!newName) {
-      error = "Name cannot be blank.";
-    }
-    this.setState({ newName, error });
-  };
-
-  submit = () => {
-    const { setName, number } = this.props;
-    const { newName } = this.state;
-    setName(number, newName);
-    this.setState({ editing: false });
-  };
-
-  cancel = () => {
-    const { name } = this.props;
-    this.setState({ error: "", newName: name, editing: false });
-  };
-}
+  return renderEditableName();
+};
 
 export default EditableName;

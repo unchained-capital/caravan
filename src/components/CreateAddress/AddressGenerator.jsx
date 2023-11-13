@@ -30,16 +30,22 @@ import {
 import MultisigDetails from "../MultisigDetails";
 import Conflict from "./Conflict";
 
-class AddressGenerator extends React.Component {
-  isInConflict = () => {
-    const { publicKeyImporters } = this.props;
+const AddressGenerator = ({
+  publicKeyImporters,
+  addressType,
+  sortPublicKeyImporters,
+  network,
+  totalSigners,
+  requiredSigners,
+  setMultisigAddress,
+}) => {
+  const isInConflict = () => {
     return Object.values(publicKeyImporters).some(
       (importer) => importer.conflict
     );
   };
 
-  publicKeyCount = () => {
-    const { publicKeyImporters, addressType } = this.props;
+  const publicKeyCount = () => {
     return Object.values(publicKeyImporters).filter(
       ({ publicKey, finalized }) => {
         return finalized && !validatePublicKey(publicKey, addressType);
@@ -47,8 +53,7 @@ class AddressGenerator extends React.Component {
     ).length;
   };
 
-  publicKeysAreCanonicallySorted = () => {
-    const { publicKeyImporters } = this.props;
+  const publicKeysAreCanonicallySorted = () => {
     const publicKeys = Object.values(publicKeyImporters)
       .map((publicKeyImporter) => publicKeyImporter.publicKey)
       .filter((publicKey) => publicKey !== "");
@@ -63,20 +68,11 @@ class AddressGenerator extends React.Component {
     return sorted;
   };
 
-  canonicallySortPublicKeys = () => {
-    const { sortPublicKeyImporters } = this.props;
+  const canonicallySortPublicKeys = () => {
     sortPublicKeyImporters();
   };
 
-  generateMultisig = () => {
-    const {
-      network,
-      publicKeyImporters,
-      totalSigners,
-      requiredSigners,
-      addressType,
-      setMultisigAddress,
-    } = this.props;
+  const generateMultisig = () => {
     const publicKeys = [];
     for (
       let publicKeyImporterNum = 1;
@@ -85,6 +81,7 @@ class AddressGenerator extends React.Component {
     ) {
       publicKeys.push(publicKeyImporters[publicKeyImporterNum].publicKey);
     }
+
     const multisig = generateMultisigFromPublicKeys(
       network,
       addressType,
@@ -95,21 +92,34 @@ class AddressGenerator extends React.Component {
     return multisig;
   };
 
-  downloadAddressDetails = (event) => {
-    event.preventDefault();
-    const multisig = this.generateMultisig();
-    const body = this.addressDetailsText(multisig);
-    const filename = this.addressDetailsFilename(multisig);
-    downloadFile(body, filename);
-  };
-
-  addressDetailsFilename = (multisig) => {
-    const { totalSigners, requiredSigners, addressType } = this.props;
+  const addressDetailsFilename = (multisig) => {
     return `bitcoin-${requiredSigners}-of-${totalSigners}-${addressType}-${multisig.address}.txt`;
   };
 
-  addressDetailsText = (multisig) => {
-    const { addressType, network, totalSigners, requiredSigners } = this.props;
+  const publicKeyImporterBIP32Path = (number) => {
+    const publicKeyImporter = publicKeyImporters[number];
+    const bip32Path =
+      publicKeyImporter.method === "text"
+        ? "Unknown (make sure you have written this down previously!)"
+        : publicKeyImporter.bip32Path;
+    return `  * ${publicKeyImporter.name}: ${bip32Path}: ${publicKeyImporter.publicKey}`;
+  };
+
+  const publicKeyImporterBIP32Paths = () => {
+    const formattedReturnArray = [];
+    for (
+      let publicKeyImporterNum = 1;
+      publicKeyImporterNum <= totalSigners;
+      publicKeyImporterNum += 1
+    ) {
+      formattedReturnArray.push(
+        publicKeyImporterBIP32Path(publicKeyImporterNum)
+      );
+    }
+    return formattedReturnArray.join("\n");
+  };
+
+  const addressDetailsText = (multisig) => {
     const redeemScript = multisigRedeemScript(multisig);
     const witnessScript = multisigWitnessScript(multisig);
     const redeemScriptLine = redeemScript
@@ -128,39 +138,21 @@ Network: ${network}
 Quorum: ${requiredSigners}-of-${totalSigners}
 
 BIP32 Paths:
-${this.publicKeyImporterBIP32Paths()}
+${publicKeyImporterBIP32Paths()}
 
 ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
 `;
   };
 
-  publicKeyImporterBIP32Paths = () => {
-    const { totalSigners } = this.props;
-    const publicKeyImporterBIP32Paths = [];
-    for (
-      let publicKeyImporterNum = 1;
-      publicKeyImporterNum <= totalSigners;
-      publicKeyImporterNum += 1
-    ) {
-      publicKeyImporterBIP32Paths.push(
-        this.publicKeyImporterBIP32Path(publicKeyImporterNum)
-      );
-    }
-    return publicKeyImporterBIP32Paths.join("\n");
+  const downloadAddressDetails = (event) => {
+    event.preventDefault();
+    const multisig = generateMultisig();
+    const body = addressDetailsText(multisig);
+    const filename = addressDetailsFilename(multisig);
+    downloadFile(body, filename);
   };
 
-  publicKeyImporterBIP32Path = (number) => {
-    const { publicKeyImporters } = this.props;
-    const publicKeyImporter = publicKeyImporters[number];
-    const bip32Path =
-      publicKeyImporter.method === "text"
-        ? "Unknown (make sure you have written this down previously!)"
-        : publicKeyImporter.bip32Path;
-    return `  * ${publicKeyImporter.name}: ${bip32Path}: ${publicKeyImporter.publicKey}`;
-  };
-
-  title = () => {
-    const { totalSigners, requiredSigners, addressType } = this.props;
+  const title = () => {
     return (
       <Grid container justifyContent="space-between">
         <Grid item>
@@ -169,21 +161,20 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
           {totalSigners} Multisig {addressType}{" "}
         </Grid>
         <Grid item>
-          <small>{`Public Keys: ${this.publicKeyCount()}/${totalSigners}`}</small>
+          <small>{`Public Keys: ${publicKeyCount()}/${totalSigners}`}</small>
         </Grid>
       </Grid>
     );
   };
 
-  body() {
-    const { totalSigners } = this.props;
-    if (this.publicKeyCount() === totalSigners) {
-      const multisig = this.generateMultisig();
+  const body = () => {
+    if (publicKeyCount() === totalSigners) {
+      const multisig = generateMultisig();
 
-      const canonicallySorted = this.publicKeysAreCanonicallySorted();
+      const canonicallySorted = publicKeysAreCanonicallySorted();
       return (
         <div>
-          {this.isInConflict() && <Conflict />}
+          {isInConflict() && <Conflict />}
           {!canonicallySorted && (
             <Grid container justifyContent="space-between">
               <Grid item md={8}>
@@ -200,7 +191,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={this.canonicallySortPublicKeys}
+                  onClick={canonicallySortPublicKeys}
                 >
                   Sort Public Keys
                 </Button>
@@ -216,7 +207,7 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
             <Button
               variant="contained"
               color="primary"
-              onClick={this.downloadAddressDetails}
+              onClick={downloadAddressDetails}
             >
               Download Address Details
             </Button>
@@ -229,17 +220,15 @@ ${redeemScriptLine}${scriptsSpacer}${witnessScriptLine}
         {`Once you have imported all ${totalSigners} public keys, your address details will be displayed here.`}
       </p>
     );
-  }
+  };
 
-  render() {
-    return (
-      <Card>
-        <CardHeader title={this.title()} />
-        <CardContent>{this.body()}</CardContent>
-      </Card>
-    );
-  }
-}
+  return (
+    <Card>
+      <CardHeader title={title()} />
+      <CardContent>{body()}</CardContent>
+    </Card>
+  );
+};
 
 AddressGenerator.propTypes = {
   network: PropTypes.string.isRequired,
