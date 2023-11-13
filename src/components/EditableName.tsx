@@ -8,12 +8,6 @@ interface EditableNameProps {
   setName: (number: number, name: string) => void;
 }
 
-interface EditableNameState {
-  editing: boolean;
-  newName: string;
-  error: string;
-}
-
 const EditableName = ({ name, setName, number }: EditableNameProps) => {
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState(name);
