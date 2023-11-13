@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { createBrowserHistory } from "history";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -9,28 +9,24 @@ interface AppContainerProps {
   resetApp: () => void;
 }
 
-class AppContainer extends Component<AppContainerProps> {
-  history = createBrowserHistory();
-  unlisten!: () => void;
+const AppContainer = ({ resetApp }: AppContainerProps) => {
+  const history = createBrowserHistory();
 
-  componentDidMount() {
-    const { resetApp } = this.props;
+  useEffect(() => {
     // Listen for changes to the current location
     // and reset the redux store which is needed
     // to avoid conflicts in the state between views/pages
-    this.unlisten = this.history.listen(() => {
+    const unlisten = history.listen(() => {
       resetApp();
     });
-  }
 
-  componentWillUnmount() {
-    this.unlisten();
-  }
+    return () => {
+      unlisten();
+    };
+  }, []);
 
-  render() {
-    return <App />;
-  }
-}
+  return <App />;
+};
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
