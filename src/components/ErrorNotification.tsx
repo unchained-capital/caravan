@@ -1,12 +1,21 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 
 import { Snackbar, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { clearErrorNotification as clearErrorNotificationAction } from "../actions/errorNotificationActions";
 
-const ErrorNotificationBase = ({ open, message, clearErrorNotification }) => {
+interface ErrorNotificationBaseProps {
+  open?: boolean;
+  message?: string;
+  clearErrorNotification?: () => void;
+}
+
+const ErrorNotificationBase = ({
+  open,
+  message,
+  clearErrorNotification,
+}: ErrorNotificationBaseProps) => {
   return (
     <Snackbar
       anchorOrigin={{
@@ -34,13 +43,9 @@ const ErrorNotificationBase = ({ open, message, clearErrorNotification }) => {
   );
 };
 
-ErrorNotificationBase.propTypes = {
-  open: PropTypes.bool.isRequired,
-  message: PropTypes.string.isRequired,
-  clearErrorNotification: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: {
+  errorNotification: ErrorNotificationBaseProps;
+}): ErrorNotificationBaseProps => {
   return state.errorNotification;
 };
 

@@ -40,7 +40,7 @@ import ExtendedPublicKeySelector from "./ExtendedPublicKeySelector";
 
 import styles from "../ScriptExplorer/styles.module.scss";
 
-import { externalLink } from "../../utils";
+import { externalLink } from "utils/ExternalLink";
 
 const MODE_UTXO = 0;
 const MODE_REDEEM = 1;

@@ -9,8 +9,9 @@ const customRender = (ui, options) =>
   render(ui, { queries: { ...queries, ...customQueries }, ...options });
 
 // re-export everything
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/export
 export * from "@testing-library/react";
 
 // override render method
+// eslint-disable-next-line import/export
 export { customRender as render };

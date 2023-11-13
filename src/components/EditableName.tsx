@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { Grid, IconButton, TextField } from "@mui/material";
 import { Check, Clear, Edit } from "@mui/icons-material";
 
-const EditableName = ({ name, setName, number }) => {
+interface EditableNameProps {
+  number: number;
+  name: string;
+  setName: (number: number, name: string) => void;
+}
+
+const EditableName = ({ name, setName, number }: EditableNameProps) => {
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState(name);
   const [error, setError] = useState("");
@@ -12,13 +17,15 @@ const EditableName = ({ name, setName, number }) => {
     return error !== "";
   };
 
-  const startEditing = (event) => {
+  const startEditing = (
+    event: React.MouseEvent<HTMLSpanElement | HTMLButtonElement>
+  ) => {
     event.preventDefault();
     setEditing(true);
     setNewName(name);
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedName = event.target.value;
 
     if (
@@ -92,7 +99,6 @@ const EditableName = ({ name, setName, number }) => {
           <Edit />
         </IconButton>
         &nbsp;
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
         <span
           data-cy="editable-name-value"
           style={{ cursor: "pointer" }}
@@ -104,12 +110,6 @@ const EditableName = ({ name, setName, number }) => {
     );
   };
   return renderEditableName();
-};
-
-EditableName.propTypes = {
-  number: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  setName: PropTypes.func.isRequired,
 };
 
 export default EditableName;

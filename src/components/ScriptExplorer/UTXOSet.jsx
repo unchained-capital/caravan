@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
 import BigNumber from "bignumber.js";
-import { externalLink } from "../../utils";
+import { externalLink } from "utils/ExternalLink";
 import Copyable from "../Copyable";
 
 // Actions

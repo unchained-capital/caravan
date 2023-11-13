@@ -14,7 +14,7 @@ import {
 } from "unchained-bitcoin";
 import { Typography, Grid, Box, Chip } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
-import { externalLink } from "../utils";
+import { externalLink } from "utils/ExternalLink";
 
 // Components
 import Copyable from "./Copyable";

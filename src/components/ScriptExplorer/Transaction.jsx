@@ -18,7 +18,7 @@ import {
 import { OpenInNew } from "@mui/icons-material";
 import { broadcastTransaction } from "../../blockchain";
 import Copyable from "../Copyable";
-import { externalLink } from "../../utils";
+import { externalLink } from "utils/ExternalLink";
 import { setTXID } from "../../actions/transactionActions";
 
 class Transaction extends React.Component {

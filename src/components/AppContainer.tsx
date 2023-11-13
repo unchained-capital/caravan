@@ -1,11 +1,16 @@
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 import { createBrowserHistory } from "history";
 import { connect } from "react-redux";
+// eslint-disable-next-line
+import { Dispatch } from "redux";
 
 import App from "./App";
 
-const AppContainer = ({ resetApp }) => {
+interface AppContainerProps {
+  resetApp: () => void;
+}
+
+const AppContainer = ({ resetApp }: AppContainerProps) => {
   const history = createBrowserHistory();
 
   useEffect(() => {
@@ -24,11 +29,7 @@ const AppContainer = ({ resetApp }) => {
   return <App />;
 };
 
-AppContainer.propTypes = {
-  resetApp: PropTypes.func.isRequired,
-};
-
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     resetApp: () => dispatch({ type: "RESET_APP_STATE" }),
   };
