@@ -438,9 +438,7 @@ class CreateWallet extends React.Component {
   totalBalance = () => {
     const { deposits, change } = this.props;
     if (!Object.keys(deposits.nodes).length) return "";
-    return satoshisToBitcoins(
-      deposits.balanceSats.plus(change.balanceSats)
-    ).toFixed();
+    return satoshisToBitcoins(deposits.balanceSats.plus(change.balanceSats));
   };
 
   clearConfig = (e) => {
@@ -506,8 +504,8 @@ class CreateWallet extends React.Component {
                 }
                 walletName={walletName}
                 setName={setName}
-                balance={+satoshisToBitcoins(confirmedBalance).toFixed()}
-                pendingBalance={+satoshisToBitcoins(pendingBalance).toFixed()}
+                balance={+satoshisToBitcoins(confirmedBalance)}
+                pendingBalance={+satoshisToBitcoins(pendingBalance)}
                 network={network}
               />
             </Grid>

@@ -34,7 +34,7 @@ export async function blockExplorerGetAddresesUTXOs(address, network) {
           confirmed: utxo.status.confirmed,
           txid: utxo.txid,
           index: utxo.vout,
-          amount: satoshisToBitcoins(amount).toFixed(8),
+          amount: satoshisToBitcoins(amount),
           amountSats: amount,
           transactionHex,
           time: utxo.status.block_time,

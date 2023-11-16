@@ -83,9 +83,7 @@ class Node extends React.Component {
         </TableCell>
         <TableCell>{utxos.length}</TableCell>
         <TableCell>
-          {fetchedUTXOs && addressKnown
-            ? satoshisToBitcoins(balanceSats).toFixed()
-            : ""}
+          {fetchedUTXOs && addressKnown ? satoshisToBitcoins(balanceSats) : ""}
         </TableCell>
         <TableCell>{this.maxUtxoDate()}</TableCell>
 

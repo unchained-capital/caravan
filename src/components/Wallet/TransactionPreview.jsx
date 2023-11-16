@@ -109,9 +109,7 @@ class TransactionPreview extends React.Component {
         <TableFooter>
           <TableRow>
             <TableCell colSpan={2}>TOTAL:</TableCell>
-            <TableCell>
-              {satoshisToBitcoins(inputsTotalSats).toString()}
-            </TableCell>
+            <TableCell>{satoshisToBitcoins(inputsTotalSats)}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
@@ -150,7 +148,7 @@ class TransactionPreview extends React.Component {
         (total, output) => total.plus(BigNumber(output.amountSats || 0)),
         BigNumber(0)
       )
-    ).toString();
+    );
   };
 
   handleDownloadPSBT = (psbtBase64) => {
@@ -186,10 +184,7 @@ class TransactionPreview extends React.Component {
           </Grid>
           <Grid item xs={4}>
             <h3>Total</h3>
-            <div>
-              {satoshisToBitcoins(BigNumber(inputsTotalSats || 0)).toFixed(8)}{" "}
-              BTC
-            </div>
+            <div>{satoshisToBitcoins(BigNumber(inputsTotalSats || 0))} BTC</div>
           </Grid>
         </Grid>
         <Box mt={2}>

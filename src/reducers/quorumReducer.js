@@ -1,4 +1,4 @@
-import { MAINNET, P2SH, multisigBIP32Root } from "unchained-bitcoin";
+import { Network, P2SH, multisigBIP32Root } from "unchained-bitcoin";
 import updateState from "./utils";
 import {
   SET_EXTENDED_PUBLIC_KEY_IMPORTER_NAME,
@@ -28,7 +28,7 @@ function fingerprint(state) {
 
 const initialExtendedPublicKeyImporterState = (name = "") => ({
   name,
-  bip32Path: multisigBIP32Root(P2SH, MAINNET),
+  bip32Path: multisigBIP32Root(P2SH, Network.MAINNET),
   bip32PathModified: false,
   method: "",
   extendedPublicKey: "",
@@ -51,8 +51,8 @@ function createInitialState() {
 
   return {
     extendedPublicKeyImporters,
-    defaultBIP32Path: multisigBIP32Root(P2SH, MAINNET),
-    network: MAINNET,
+    defaultBIP32Path: multisigBIP32Root(P2SH, Network.MAINNET),
+    network: Network.MAINNET,
     addressType: P2SH,
     fingerprint: "",
     finalizedNetwork: "",

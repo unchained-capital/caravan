@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import {
-  MAINNET,
+  Network,
   P2SH,
   estimateMultisigTransactionFee,
   validateFeeRate,
@@ -74,7 +74,7 @@ const initialOutputsState = () => [initialOutputState()];
 
 export const initialState = () => ({
   chosen: false,
-  network: MAINNET,
+  network: Network.MAINNET,
   inputs: [],
   inputsTotalSats: new BigNumber(0),
   outputs: initialOutputsState(),
@@ -128,9 +128,7 @@ function setFeeForRate(state, feeRateString, nout) {
       n: state.totalSigners,
       feesPerByteInSatoshis: feeRateString,
     })
-  )
-    .toFixed(8)
-    .toString();
+  );
 }
 
 function deleteOutput(state, action) {
@@ -354,7 +352,7 @@ function validateTransaction(state) {
       const action = diff.isLessThan(0) ? "Increase" : "Decrease";
       balanceError = `${action} by ${satoshisToBitcoins(
         diff.absoluteValue()
-      ).toFixed(8)}.`;
+      )}.`;
     }
     return {
       ...newState,

@@ -69,9 +69,7 @@ const SlicesTable = ({
       title: "Balance",
       field: "balanceSats",
       render: (rowData) => (
-        <Typography>
-          {satoshisToBitcoins(rowData.balanceSats).toString()}
-        </Typography>
+        <Typography>{satoshisToBitcoins(rowData.balanceSats)}</Typography>
       ),
       customSort: compareSlicesByBalance,
     },

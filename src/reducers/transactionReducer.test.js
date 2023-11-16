@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import {
   P2WSH,
-  TESTNET,
+  Network,
   satoshisToBitcoins,
   estimateMultisigP2WSHTransactionVSize,
 } from "unchained-bitcoin";
@@ -149,7 +149,7 @@ describe("Test transactionReducer", () => {
         {
           inputs: [],
           outputs: [{ address }, initialOutputState()],
-          network: TESTNET,
+          network: Network.TESTNET,
         },
         {
           type: SET_OUTPUT_ADDRESS,
@@ -169,7 +169,7 @@ describe("Test transactionReducer", () => {
         {
           inputs: [input],
           outputs: [initialOutputState()],
-          network: TESTNET,
+          network: Network.TESTNET,
         },
         {
           type: SET_OUTPUT_ADDRESS,
@@ -197,7 +197,7 @@ describe("Test transactionReducer", () => {
           number: 1,
         }
       );
-      expect(r.outputs[0].amountSats).toMatchObject(BigNumber(1234));
+      expect(r.outputs[0].amountSats).toEqual("1234");
     });
   });
 
@@ -251,9 +251,7 @@ describe("Test transactionReducer", () => {
 
       // test txid for reference:
       // e5d35e77a9177e52eb2e908d133faa3c8f9dc0d5a947f25568a55f711f0ee87b
-      const expectedRate = satoshisToBitcoins(
-        estimatedSize * r.feeRate
-      ).toString();
+      const expectedRate = satoshisToBitcoins(estimatedSize * r.feeRate);
 
       expect(r.fee).toEqual(expectedRate);
     });

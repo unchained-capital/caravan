@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { COLDCARD } from "unchained-wallets";
 import { Box, FormGroup } from "@mui/material";
-import { MAINNET, P2SH } from "unchained-bitcoin";
+import { Network, P2SH } from "unchained-bitcoin";
 import { ColdcardJSONReader } from ".";
 import IndirectExtendedPublicKeyImporter from "../Wallet/IndirectExtendedPublicKeyImporter";
 
@@ -18,7 +18,7 @@ const ColdcardExtendedPublicKeyImporter = ({
   // Unfortunately not possible to use our Multisig P2SH ROOT on a Coldcard atm
   // because they do not allow us to export m/45'/{0-1}'/0' yet.
   const getColdcardBip32Path = () => {
-    const coinPath = network === MAINNET ? "0" : "1";
+    const coinPath = network === Network.MAINNET ? "0" : "1";
     const coldcardP2SHPath = `m/45'/${coinPath}/0`;
     return addressType === P2SH ? coldcardP2SHPath : defaultBIP32Path;
   };

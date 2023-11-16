@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { TESTNET, MAINNET } from "unchained-bitcoin";
+import { Network } from "unchained-bitcoin";
 
 // Components
 
@@ -37,7 +37,7 @@ const NetworkPicker = ({ setNetwork, network, frozen }) => {
               value="mainnet"
               label={<strong>Mainnet</strong>}
               onChange={handleNetworkChange}
-              checked={network === MAINNET}
+              checked={network === Network.MAINNET}
               disabled={frozen}
             />
             <FormControlLabel
@@ -47,7 +47,7 @@ const NetworkPicker = ({ setNetwork, network, frozen }) => {
               value="testnet"
               label="Testnet"
               onChange={handleNetworkChange}
-              checked={network === TESTNET}
+              checked={network === Network.TESTNET}
               disabled={frozen}
             />
           </RadioGroup>
