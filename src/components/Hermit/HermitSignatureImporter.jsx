@@ -126,7 +126,7 @@ class HermitSignatureImporter extends React.Component {
       psbt.addOutputs(
         Object.values(outputs).map((o) => ({
           address: o.address,
-          value: o.amountSats.toNumber(),
+          value: Number(o.amountSats),
         }))
       );
 

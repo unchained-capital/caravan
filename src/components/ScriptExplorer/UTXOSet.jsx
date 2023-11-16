@@ -201,7 +201,7 @@ class UTXOSet extends React.Component {
             <Copyable text={input.index.toString()} />
           </TableCell>
           <TableCell>
-            <Copyable text={satoshisToBitcoins(input.amountSats).toString()} />
+            <Copyable text={satoshisToBitcoins(input.amountSats)} />
           </TableCell>
           <TableCell>
             {externalLink(
@@ -256,8 +256,8 @@ class UTXOSet extends React.Component {
               <TableCell colSpan={3}>TOTAL:</TableCell>
               <TableCell colSpan={2}>
                 {inputsSatsSelected
-                  ? satoshisToBitcoins(inputsSatsSelected).toString()
-                  : satoshisToBitcoins(inputsTotalSats).toString()}
+                  ? satoshisToBitcoins(inputsSatsSelected)
+                  : satoshisToBitcoins(inputsTotalSats)}
               </TableCell>
             </TableRow>
           </TableFooter>

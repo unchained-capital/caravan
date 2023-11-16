@@ -260,8 +260,8 @@ class NodeSet extends React.Component {
               nextIconButtonProps={{
                 "aria-label": "next page",
               }}
-              onChangePage={this.handlePageChange}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              onPageChange={this.handlePageChange}
+              onRowsPerPageChange={this.handleChangeRowsPerPage}
             />
           </Grid>
         </Grid>

@@ -141,7 +141,7 @@ export function autoSelectCoins() {
       dispatch(
         setChangeOutput({
           address: changeAddress,
-          value: satoshisToBitcoins(changeAmount).toFixed(),
+          value: satoshisToBitcoins(changeAmount),
         })
       );
     } else {
@@ -151,7 +151,7 @@ export function autoSelectCoins() {
       });
     }
 
-    dispatch(setFee(satoshisToBitcoins(fee).toFixed()));
+    dispatch(setFee(satoshisToBitcoins(fee)));
     // set chosen selectedUtxos in the transaction store
     dispatch(setInputs(selectedUtxos));
     dispatch(finalizeOutputs(true));

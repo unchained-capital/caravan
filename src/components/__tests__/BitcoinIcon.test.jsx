@@ -1,5 +1,5 @@
 import React from "react";
-import { MAINNET } from "unchained-bitcoin";
+import { Network } from "unchained-bitcoin";
 
 import { render, screen } from "../../utils/test-utils";
 import BitcoinIcon from "../BitcoinIcon";
@@ -21,7 +21,7 @@ describe("BitcoinIcon", () => {
   }
 
   test("shows an orange bitcoin icon if the network is mainnet", () => {
-    bitcoinIcon = renderIcon(MAINNET);
+    bitcoinIcon = renderIcon(Network.MAINNET);
     expect(bitcoinIcon).toBeInTheDocument();
     expect(bitcoinIcon).toHaveAttribute("color", "orange");
   });

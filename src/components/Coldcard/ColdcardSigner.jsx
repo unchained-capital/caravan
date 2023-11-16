@@ -42,7 +42,7 @@ const ColdcardSigner = ({
     downloadFile(body, filename);
   };
   const handlePSBTDownloadClick = () => {
-    const body = interaction.request().toBase64();
+    const body = interaction.request().data.toBase64();
     const timestamp = moment().format("HHmm");
     const filename = `${timestamp}-${walletName}.psbt`;
     downloadFile(body, filename);

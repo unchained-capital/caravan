@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { NETWORKS } from "unchained-bitcoin";
+import { Network } from "unchained-bitcoin";
 
 // Components
 import { Card, CardContent, Typography, Grid } from "@mui/material";
@@ -106,7 +106,7 @@ WalletInfoCard.propTypes = {
 };
 
 WalletInfoCard.defaultProps = {
-  network: NETWORKS.TESTNET,
+  network: Network.TESTNET,
   balance: 0,
   pendingBalance: 0,
 };

@@ -27,7 +27,7 @@ import {
 import {
   blockExplorerAddressURL,
   multisigAddressType,
-  NETWORKS,
+  Network,
 } from "unchained-bitcoin";
 import { PENDING, ACTIVE, ConfirmMultisigAddress } from "unchained-wallets";
 import LaunchIcon from "@mui/icons-material/Launch";
@@ -434,7 +434,7 @@ AddressExpander.propTypes = {
 };
 
 AddressExpander.defaultProps = {
-  network: NETWORKS.TESTNET,
+  network: Network.TESTNET,
   setSpendCheckbox: () => {},
 };
 

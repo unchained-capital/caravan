@@ -6,7 +6,7 @@ import {
   validateRootFingerprint,
   convertExtendedPublicKey,
   validateExtendedPublicKey,
-  NETWORKS,
+  Network,
 } from "unchained-bitcoin";
 import { TREZOR, LEDGER, HERMIT, COLDCARD } from "unchained-wallets";
 import {
@@ -250,8 +250,7 @@ class ExtendedPublicKeyImporter extends React.Component {
     const { extendedPublicKeyImporter, network, classes } = this.props;
     const { conversionMessage } = this.state;
     const conversionAppend =
-      extendedPublicKeyImporter.method === HERMIT &&
-      network === NETWORKS.TESTNET
+      extendedPublicKeyImporter.method === HERMIT && network === Network.TESTNET
         ? "this should not be an issue as hermit signing is not affected by the conversion."
         : "this may indicate an invalid network setting, if so correct setting, remove key and try again.";
     return (

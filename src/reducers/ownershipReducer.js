@@ -1,6 +1,6 @@
 import {
   P2SH,
-  MAINNET,
+  Network,
   multisigAddressType,
   multisigBIP32Path,
   multisigPublicKeys,
@@ -26,11 +26,11 @@ const initialPublicKeyImporterState = {
 const initialState = {
   chosen: false,
   publicKeyImporter: { ...initialPublicKeyImporterState },
-  network: MAINNET,
+  network: Network.MAINNET,
   addressType: P2SH,
   publicKeys: [],
   address: "",
-  defaultBIP32Path: multisigBIP32Path(P2SH, MAINNET),
+  defaultBIP32Path: multisigBIP32Path(P2SH, Network.MAINNET),
 };
 
 function updatePublicKeyImporterState(state, action, field) {
