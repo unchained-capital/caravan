@@ -131,7 +131,7 @@ which can export these data can be made to work with Caravan.
 ### Consensus
 
 By default, Caravan uses a free API provided by
-[blockstream.info](https://blockstream.info) whenever it needs
+[mempool.space](https://mempool.space) whenever it needs
 information about the bitcoin blockchain or to broadcast transactions.
 
 You can ask Caravan to use your own private [bitcoind full

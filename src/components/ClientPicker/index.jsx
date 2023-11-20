@@ -139,7 +139,7 @@ const ClientPicker = ({
             {client.type === "public" && (
               <FormHelperText>
                 {"'Public' uses the "}
-                <code>blockstream.info</code>
+                <code>mempool.space</code>
                 {" API. Switch to private to use a "}
                 <code>bitcoind</code>
                 {" node."}
