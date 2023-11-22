@@ -276,10 +276,12 @@ export function setMaxSpendOnOutput(outputIndex) {
       new BigNumber(0)
     );
 
-    const spendAllAmount = satoshisToBitcoins(
-      new BigNumber(confirmedBalance)
-        .minus(outputs.length > 1 ? totalOutputValue : 0)
-        .minus(estimatedFee)
+    const spendAllAmount = new BigNumber(
+      satoshisToBitcoins(
+        new BigNumber(confirmedBalance)
+          .minus(outputs.length > 1 ? totalOutputValue : 0)
+          .minus(estimatedFee)
+      )
     );
 
     if (
@@ -292,7 +294,7 @@ export function setMaxSpendOnOutput(outputIndex) {
           "Not enough available funds for max spend. Clear other outputs or wait for incoming deposits to confirm."
         )
       );
-    return dispatch(setOutputAmount(outputIndex, spendAllAmount));
+    return dispatch(setOutputAmount(outputIndex, spendAllAmount.toString()));
   };
 }
 
