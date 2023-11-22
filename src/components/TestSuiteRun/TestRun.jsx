@@ -72,7 +72,7 @@ class TestRunBase extends React.Component {
     const { test } = this.props;
     const interaction = test.interaction();
     const nameBits = test.name().split(" ");
-    const body = interaction.request().data.toBase64();
+    const body = interaction.request();
     const timestamp = moment().format("HHmm");
     const filename = `${timestamp}-${nameBits[2]}-${nameBits[1][0]}.psbt`;
     downloadFile(body, filename);
