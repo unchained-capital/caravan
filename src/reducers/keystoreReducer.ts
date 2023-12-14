@@ -4,16 +4,24 @@ import {
   SET_KEYSTORE,
   SET_KEYSTORE_NOTE,
   SET_KEYSTORE_STATUS,
+  KeystoreActionTypes,
 } from "../actions/keystoreActions";
 
-const initialState = {
+export interface KeystoreState {
+  type: string;
+  version: string;
+  note: string;
+  status: string;
+}
+
+const initialState: KeystoreState = {
   type: "",
   version: "",
   note: "",
   status: PENDING,
 };
 
-export default (state = initialState, action) => {
+export default (state = initialState, action: KeystoreActionTypes) => {
   switch (action.type) {
     case SET_KEYSTORE:
       return {

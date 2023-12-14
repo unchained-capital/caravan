@@ -1,7 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import moment from "moment";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Bowser from "bowser";
 import {
   TREZOR,
@@ -38,68 +37,18 @@ import {
 import Test from "../../tests/Test";
 
 import { setCurrentTestRun as setCurrentTestRunAction } from "../../actions/testSuiteRunActions";
+import { TestRunState } from "../../reducers/testSuiteRunReducer";
+import { getKeystore } from "../../selectors/keystore";
+import { getTestSuiteRun } from "../../selectors/testSuiteRun";
 
 import "./TestSuiteRunSummary.css";
 
-class TestSuiteRunSummaryBase extends React.Component {
-  render = () => {
-    const { testSuiteRun, keystore } = this.props;
-    const environment = Bowser.getParser(window.navigator.userAgent);
-    return (
-      <Grid container direction="column" spacing={3}>
-        <Grid item>
-          <Card>
-            <CardHeader title="Summary" />
-            <CardContent>
-              <dl>
-                <dt>OS:</dt>
-                <dd>
-                  {environment.getOSName()} {environment.getOSVersion()}
-                </dd>
-                <dt>Browser:</dt>
-                <dd>
-                  {environment.getBrowserName()}{" "}
-                  {environment.getBrowserVersion()}
-                </dd>
-                <dt>unchained-wallets:</dt>
-                <dd>
-                  v.
-                  {UNCHAINED_WALLETS_VERSION}
-                </dd>
-                {keystore.type && (
-                  <Box>
-                    <dt>Keystore:</dt>
-                    <dd>
-                      {this.keystoreName(keystore.type)} {keystore.version}
-                    </dd>
-                  </Box>
-                )}
-                {keystore.note && (
-                  <Box>
-                    <dt>Notes:</dt>
-                    <dd>{keystore.note}</dd>
-                  </Box>
-                )}
-              </dl>
-            </CardContent>
-          </Card>
-        </Grid>
+const TestSuiteRunSummaryBase = () => {
+  const keystore = useSelector(getKeystore);
+  const testSuiteRun = useSelector(getTestSuiteRun);
+  const dispatch = useDispatch();
 
-        <Grid item>
-          <Card>
-            <CardHeader
-              title="Tests"
-              subheader={`${testSuiteRun.testRuns.length} Total`}
-            />
-            <CardContent>{this.renderTests()}</CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    );
-  };
-
-  renderTests = () => {
-    const { testSuiteRun, keystore } = this.props;
+  const renderTests = () => {
     if (keystore.type === "") {
       return <p>Choose a keystore type to generate a test suite...</p>;
     }
@@ -141,30 +90,33 @@ class TestSuiteRunSummaryBase extends React.Component {
           dense
           component="nav"
         >
-          {testSuiteRun.testRuns.map(this.renderTestRun)}
+          {testSuiteRun.testRuns.map(renderTestRun)}
         </List>
       </Box>
     );
   };
 
-  renderTestRun = (testRun, i) => {
-    const { testSuiteRun } = this.props;
+  const renderTestRun = (testRun: TestRunState, i: number) => {
     return (
       <ListItem
         selected={testSuiteRun.currentTestRunIndex === i}
         button
         key={i}
-        onClick={this.testRunChooser(i)}
+        onClick={testRunChooser(i)}
         disabled={!testSuiteRun.started}
       >
-        {this.renderTestRunResult(testRun)}
+        {renderTestRunResult(testRun)}
         <ListItemText>
           {testRun.test.name()}
           {testRun.status !== PENDING && testRun.status !== ACTIVE && (
             <small>
               &nbsp; (
               {moment
-                .duration(testRun.endedAt.diff(testRun.startedAt))
+                .duration(
+                  testRun.endedAt
+                    ? testRun.endedAt.diff(testRun.startedAt)
+                    : null
+                )
                 .asSeconds()}
               s)
             </small>
@@ -181,7 +133,7 @@ class TestSuiteRunSummaryBase extends React.Component {
     );
   };
 
-  renderTestRunResult = (testRun) => {
+  const renderTestRunResult = (testRun: TestRunState) => {
     switch (testRun.status) {
       case PENDING:
         return (
@@ -218,14 +170,13 @@ class TestSuiteRunSummaryBase extends React.Component {
     }
   };
 
-  testRunChooser = (testRunIndex) => {
-    const { setCurrentTestRun } = this.props;
+  const testRunChooser = (testRunIndex: number) => {
     return () => {
-      setCurrentTestRun(testRunIndex);
+      dispatch(setCurrentTestRunAction(testRunIndex));
     };
   };
 
-  keystoreName = (type) => {
+  const keystoreName = (type: string) => {
     switch (type) {
       case TREZOR:
         return "Trezor";
@@ -239,36 +190,58 @@ class TestSuiteRunSummaryBase extends React.Component {
         return "";
     }
   };
-}
+  const environment = Bowser.getParser(window.navigator.userAgent);
 
-TestSuiteRunSummaryBase.propTypes = {
-  keystore: PropTypes.shape({
-    note: PropTypes.string,
-    type: PropTypes.string,
-    version: PropTypes.string,
-  }).isRequired,
-  testSuiteRun: PropTypes.shape({
-    currentTestRunIndex: PropTypes.number,
-    started: PropTypes.bool,
-    testRuns: PropTypes.arrayOf(PropTypes.shape({})),
-  }).isRequired,
-  setCurrentTestRun: PropTypes.func.isRequired,
+  return (
+    <Grid container direction="column" spacing={3}>
+      <Grid item>
+        <Card>
+          <CardHeader title="Summary" />
+          <CardContent>
+            <dl>
+              <dt>OS:</dt>
+              <dd>
+                {environment.getOSName()} {environment.getOSVersion()}
+              </dd>
+              <dt>Browser:</dt>
+              <dd>
+                {environment.getBrowserName()} {environment.getBrowserVersion()}
+              </dd>
+              <dt>unchained-wallets:</dt>
+              <dd>
+                v.
+                {UNCHAINED_WALLETS_VERSION}
+              </dd>
+              {keystore.type && (
+                <Box>
+                  <dt>Keystore:</dt>
+                  <dd>
+                    {keystoreName(keystore.type)} {keystore.version}
+                  </dd>
+                </Box>
+              )}
+              {keystore.note && (
+                <Box>
+                  <dt>Notes:</dt>
+                  <dd>{keystore.note}</dd>
+                </Box>
+              )}
+            </dl>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid item>
+        <Card>
+          <CardHeader
+            title="Tests"
+            subheader={`${testSuiteRun.testRuns.length} Total`}
+          />
+          <CardContent>{renderTests()}</CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+  );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    keystore: state.keystore,
-    testSuiteRun: state.testSuiteRun,
-  };
-};
-
-const mapDispatchToProps = {
-  setCurrentTestRun: setCurrentTestRunAction,
-};
-
-const TestSuiteRunSummary = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TestSuiteRunSummaryBase);
-
-export default TestSuiteRunSummary;
+export default TestSuiteRunSummaryBase;
