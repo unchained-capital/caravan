@@ -65,7 +65,7 @@ class SignMultisigTransactionTest extends Test {
             <TableRow>
               <TableCell>Output Amount:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.outputAmountSats()).toString()} BTC
+                {satoshisToBitcoins(this.outputAmountSats())} BTC
               </TableCell>
             </TableRow>
 
@@ -79,16 +79,13 @@ class SignMultisigTransactionTest extends Test {
             <TableRow>
               <TableCell>Change Output Amount:</TableCell>
               <TableCell>
-                {satoshisToBitcoins(this.changeOutputAmountSats()).toString()}{" "}
-                BTC
+                {satoshisToBitcoins(this.changeOutputAmountSats())} BTC
               </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell>Fees:</TableCell>
-              <TableCell>
-                {satoshisToBitcoins(this.feeSats()).toString()} BTC
-              </TableCell>
+              <TableCell>{satoshisToBitcoins(this.feeSats())} BTC</TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -98,7 +95,7 @@ class SignMultisigTransactionTest extends Test {
 
   inputsTotalSats() {
     return this.params.inputs.reduce((total, input) => {
-      return total + input.amountSats.toNumber();
+      return total + Number(input.amountSats);
     }, 0);
   }
 
@@ -107,7 +104,7 @@ class SignMultisigTransactionTest extends Test {
   }
 
   outputAmountSats() {
-    return this.params.outputs[0].amountSats.toNumber();
+    return Number(this.params.outputs[0].amountSats);
   }
 
   changeOutputAddress() {
@@ -115,7 +112,7 @@ class SignMultisigTransactionTest extends Test {
   }
 
   changeOutputAmountSats() {
-    return this.params.outputs[1].amountSats.toNumber();
+    return Number(this.params.outputs[1].amountSats);
   }
 
   feeSats() {

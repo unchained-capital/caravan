@@ -48,7 +48,7 @@ describe("utils", () => {
     it("should correctly identify a spend all tx", () => {
       TEST_FIXTURES.multisigs.forEach((fixture) => {
         const config = getConfig(fixture, feesPerByteInSatoshis);
-        const fees = estimateMultisigTransactionFee(config).toNumber();
+        const fees = Number(estimateMultisigTransactionFee(config));
 
         // for a spendAll tx, the diff between wallet balance minus fees and output amount
         // should be less than dust limit
@@ -88,7 +88,7 @@ describe("utils", () => {
     it("should throw if walletBalance is not enough to cover outputs and fees", () => {
       TEST_FIXTURES.multisigs.forEach((fixture) => {
         const config = getConfig(fixture, feesPerByteInSatoshis);
-        const fees = estimateMultisigTransactionFee(config).toNumber();
+        const fees = Number(estimateMultisigTransactionFee(config));
         const walletBalance = config.outputTotal.minus(fees);
         const test = () => isSpendAll({ ...config, walletBalance });
         expect(test).toThrow();

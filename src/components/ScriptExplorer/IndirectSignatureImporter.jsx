@@ -67,9 +67,7 @@ class IndirectSignatureImporter extends React.Component {
             </TableRow>
             <TableRow hover>
               <TableCell>Total</TableCell>
-              <TableCell>
-                {satoshisToBitcoins(inputsTotalSats).toString()}
-              </TableCell>
+              <TableCell>{satoshisToBitcoins(inputsTotalSats)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -58,7 +58,7 @@ export function isSpendAll(options) {
     ...options,
     numOutputs: options.outputs.length,
   };
-  const estimatedFees = estimateMultisigTransactionFee(config).toNumber();
+  const estimatedFees = Number(estimateMultisigTransactionFee(config));
   const outputTotal = config.outputs.reduce((balance, output) => {
     return balance.plus(output.amountSats);
   }, new BigNumber(0));

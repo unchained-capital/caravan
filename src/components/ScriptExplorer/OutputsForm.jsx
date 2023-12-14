@@ -226,7 +226,7 @@ class OutputsForm extends React.Component {
     const outputAmount = satoshisToBitcoins(inputsTotalSats.minus(feeSats));
     // only initialize once so we don't lose state
     if (inputs.length && outputs[0].amount === "")
-      setOutputAmount(1, outputAmount.toFixed(8));
+      setOutputAmount(1, outputAmount);
   }
 
   render() {
@@ -378,7 +378,7 @@ class OutputsForm extends React.Component {
                   fullWidth
                   label="Inputs Total"
                   readOnly
-                  value={this.inputsTotal().toFixed(8)}
+                  value={this.inputsTotal()}
                   variant="standard"
                   disabled={finalizedOutputs}
                   InputProps={OutputsForm.unitLabel("BTC", { readOnly: true })}

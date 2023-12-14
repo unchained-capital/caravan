@@ -51,9 +51,9 @@
     "eslint-import-resolver-typescript": "^3.5.4",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest-dom": "^3.0.1",
-    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-testing-library": "^3.1.0",
     "gh-pages": "^3.1.0",
     "husky": "^4.3.6",
@@ -144,7 +144,7 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "sass": "^1.56.2",
-    "unchained-bitcoin": "^0.4.1",
-    "unchained-wallets": "^0.6.2"
+    "unchained-bitcoin": "^1.0.1",
+    "unchained-wallets": "^1.0.3"
   }
 }

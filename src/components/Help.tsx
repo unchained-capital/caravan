@@ -155,7 +155,7 @@ const Help = () => (
               <p>
                 If you don&apos;t want to or cannot run your own full node,
                 Caravan defaults to using the freely available API at
-                <code> blockstream.info</code>.
+                <code> mempool.space</code>.
               </p>
             </CardContent>
           </Card>

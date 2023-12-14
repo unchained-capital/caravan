@@ -1,5 +1,5 @@
 import React from "react";
-import { MAINNET, TESTNET, TEST_FIXTURES } from "unchained-bitcoin";
+import { Network, TEST_FIXTURES } from "unchained-bitcoin";
 import { COLDCARD, ExportPublicKey, HERMIT } from "unchained-wallets";
 
 import Test from "./Test";
@@ -47,22 +47,22 @@ const publicKeyTests = (keystore) => {
       return [
         new ExportPublicKeyTest({
           keystore,
-          network: TESTNET,
+          network: Network.TESTNET,
           bip32Path: "m/48'/1'/0'/1'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: TESTNET,
+          network: Network.TESTNET,
           bip32Path: "m/48'/1'/0'/2'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: MAINNET,
+          network: Network.MAINNET,
           bip32Path: "m/48'/0'/0'/1'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: MAINNET,
+          network: Network.MAINNET,
           bip32Path: "m/48'/0'/0'/2'/0/0",
         }),
       ];
@@ -70,32 +70,32 @@ const publicKeyTests = (keystore) => {
       return [
         new ExportPublicKeyTest({
           keystore,
-          network: TESTNET,
+          network: Network.TESTNET,
           bip32Path: "m/45'/1'/0'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: TESTNET,
+          network: Network.TESTNET,
           bip32Path: "m/48'/1'/0'/1'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: TESTNET,
+          network: Network.TESTNET,
           bip32Path: "m/48'/1'/0'/2'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: MAINNET,
+          network: Network.MAINNET,
           bip32Path: "m/45'/0'/0'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: MAINNET,
+          network: Network.MAINNET,
           bip32Path: "m/48'/0'/0'/1'/0/0",
         }),
         new ExportPublicKeyTest({
           keystore,
-          network: MAINNET,
+          network: Network.MAINNET,
           bip32Path: "m/48'/0'/0'/2'/0/0",
         }),
       ];

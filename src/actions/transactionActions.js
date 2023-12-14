@@ -292,7 +292,7 @@ export function setMaxSpendOnOutput(outputIndex) {
           "Not enough available funds for max spend. Clear other outputs or wait for incoming deposits to confirm."
         )
       );
-    return dispatch(setOutputAmount(outputIndex, spendAllAmount.toFixed()));
+    return dispatch(setOutputAmount(outputIndex, spendAllAmount));
   };
 }
 
@@ -364,15 +364,13 @@ export function importPSBT(psbtText) {
         dispatch(setChangeAddressAction(output.address));
       }
       dispatch(setOutputAddress(number, output.address));
-      dispatch(
-        setOutputAmount(number, satoshisToBitcoins(output.value).toFixed(8))
-      );
+      dispatch(setOutputAmount(number, satoshisToBitcoins(output.value)));
     });
 
     state = getState();
     const inputsTotalSats = BigNumber(state.spend.transaction.inputsTotalSats);
     const feeSats = inputsTotalSats - outputsTotalSats;
-    const fee = satoshisToBitcoins(feeSats).toFixed(8);
+    const fee = satoshisToBitcoins(feeSats);
     dispatch(setFee(fee));
 
     dispatch(finalizeOutputs(true));
