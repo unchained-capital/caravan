@@ -281,6 +281,7 @@ export function setMaxSpendOnOutput(outputIndex) {
         new BigNumber(confirmedBalance)
           .minus(outputs.length > 1 ? totalOutputValue : 0)
           .minus(estimatedFee)
+          .toFixed(8)
       )
     );
 

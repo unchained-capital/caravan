@@ -631,16 +631,16 @@ function mapStateToProps(state, ownProps) {
     ...state.spend.transaction,
     requiredSigners: state.settings.requiredSigners,
     ledgerPolicyHmacs: state.wallet.common.ledgerPolicyHmacs,
-    extendedPublicKeys: Object.values(
-      state.quorum.extendedPublicKeyImporters
-    ).map((key) => ({
-      bip32Path: getMaskedDerivation({
+    extendedPublicKeys: Object.values(state.quorum.extendedPublicKeyImporters)
+      .filter((key) => key.extendedPublicKey)
+      .map((key) => ({
+        bip32Path: getMaskedDerivation({
+          xpub: key.extendedPublicKey,
+          bip32Path: key.bip32Path,
+        }),
+        xfp: key.rootXfp,
         xpub: key.extendedPublicKey,
-        bip32Path: key.bip32Path,
-      }),
-      xfp: key.rootXfp,
-      xpub: key.extendedPublicKey,
-    })),
+      })),
   };
 }
 
