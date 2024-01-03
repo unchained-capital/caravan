@@ -20,7 +20,11 @@
     "node": ">=20"
   },
   "overrides": {
-    "jspdf": "2.5.1"
+    "jspdf": "2.5.1",
+    "@ledgerhq/hw-transport-webusb": {
+      "@ledgerhq/hw-transport": "6.28.1",
+      "@ledgerhq/devices": "8.0.0"
+    }
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.21.0",
