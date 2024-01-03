@@ -19,6 +19,9 @@ class RegisterWalletPolicyTest extends Test {
   }
 
   description() {
+    const keyOrigins = this.params.braidDetails.extendedPublicKeys.sort(
+      (a, b) => a.base58String.localeCompare(b.base58String)
+    );
     return (
       <Box>
         <p>
@@ -47,7 +50,7 @@ class RegisterWalletPolicyTest extends Test {
                 Registering Quorum
               </TableCell>
             </TableRow>
-            {this.params.braidDetails.extendedPublicKeys.map((key, index) => (
+            {keyOrigins.map((key, index) => (
               <React.Fragment key={key.rootFingerprint}>
                 <TableRow>
                   <TableCell colSpan={6} style={{ textAlign: "center" }}>
