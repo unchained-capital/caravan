@@ -24,4 +24,14 @@ export default defineConfig({
     __GIT_SHA__: JSON.stringify(process.env.__GIT_SHA__),
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   },
+  optimizeDeps: {
+    include: [
+      /*
+        Add packages you want to develop locally with caravan here
+        for example, uncomment the ones below if working on either package
+      */
+      // "unchained-bitcoin",
+      // "unchained-wallets",
+    ],
+  },
 });
