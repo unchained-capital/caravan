@@ -20,7 +20,7 @@ type ResetTestRunAction = {
   testRunIndex: number;
 };
 
-type SetTestRunNoteAction = {
+export type SetTestRunNoteAction = {
   type: typeof SET_TEST_RUN_NOTE;
   testRunIndex: number;
   note: string;
@@ -60,12 +60,12 @@ export function resetTestRun(testRunIndex: number): ResetTestRunAction {
 }
 
 export function setTestRunNote(
-  testRunIndex: number,
-  text: string
+  text: string,
+  testRunIndex?: number
 ): SetTestRunNoteAction {
   return {
     type: SET_TEST_RUN_NOTE,
-    testRunIndex,
+    testRunIndex: testRunIndex || 0,
     note: text,
   };
 }

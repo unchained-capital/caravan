@@ -1,7 +1,7 @@
 export const SET_ERROR_NOTIFICATION = "SET_ERROR_NOTIFICATION";
 export const CLEAR_ERROR_NOTIFICATION = "CLEAR_ERROR_NOTIFICATION";
 
-export function setErrorNotification(message) {
+export function setErrorNotification(message: string) {
   return {
     type: SET_ERROR_NOTIFICATION,
     value: message,

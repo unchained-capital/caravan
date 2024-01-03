@@ -16,7 +16,7 @@ export type SetKeystoreAction = {
   version: string;
 };
 
-type SetKeystoreNoteAction = {
+export type SetKeystoreNoteAction = {
   type: typeof SET_KEYSTORE_NOTE;
   value: string;
 };

@@ -1,33 +1,20 @@
 import React from "react";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { TextField } from "@mui/material";
-import { setKeystoreNote } from "../../actions/keystoreActions";
-import { setTestRunNote } from "../../actions/testRunActions";
+import { setKeystoreNote as setKeystoreNoteAction } from "../../actions/keystoreActions";
+import { setTestRunNote as setTestRunNoteAction } from "../../actions/testRunActions";
 
-const KEYSTORE_MODE = "keystore";
-const TEST_RUN_MODE = "testRun";
+import { getKeystore } from "../../selectors/keystore";
+import { getTestSuiteRun } from "../../selectors/testSuiteRun";
 
-interface NoteBaseProps {
-  note: string;
-  mode: string;
-  setNote: (note: string) => void;
-  testRunIndex?: number;
-  testSuiteRun?: {
-    currentTestRunIndex: number;
-    started: boolean;
-    testRuns: any[];
-  };
-}
-
-const NoteBase = ({ note, mode, setNote, testRunIndex = 0 }: NoteBaseProps) => {
+export const KeystoreNote = () => {
+  const note = useSelector(getKeystore).note;
+  const dispatch = useDispatch();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newNote = event.target.value;
-    if (mode === TEST_RUN_MODE) {
-      setNote(String(testRunIndex));
-    } else {
-      setNote(newNote);
-    }
+
+    dispatch(setKeystoreNoteAction(newNote));
   };
 
   return (
@@ -44,43 +31,24 @@ const NoteBase = ({ note, mode, setNote, testRunIndex = 0 }: NoteBaseProps) => {
   );
 };
 
-const mapStateToKeystoreNoteProps = (state: { keystore: NoteBaseProps }) => {
-  return {
-    note: state.keystore.note,
-    mode: KEYSTORE_MODE,
+export const TestRunNote = () => {
+  const testRunIndex = useSelector(getTestSuiteRun).currentTestRunIndex | 0;
+  const note = useSelector(getTestSuiteRun).testRuns[testRunIndex].note;
+  const dispatch = useDispatch();
+  const handleChange = () => {
+    dispatch(setTestRunNoteAction(String(testRunIndex)));
   };
+
+  return (
+    <TextField
+      name="notes"
+      label="Notes"
+      value={note}
+      variant="standard"
+      onChange={handleChange}
+      multiline
+      fullWidth
+      rows={3}
+    />
+  );
 };
-
-const mapDispatchToKeystoreNoteProps = {
-  setNote: setKeystoreNote,
-};
-
-const mapStateToTestRunNoteProps = (state: {
-  testSuiteRun: {
-    testRuns: any[];
-    currentTestRunIndex: number;
-  };
-  keystore: NoteBaseProps;
-}) => {
-  return {
-    mode: TEST_RUN_MODE,
-    testRunIndex: state.testSuiteRun.currentTestRunIndex,
-    note: state.testSuiteRun.testRuns[state.testSuiteRun.currentTestRunIndex]
-      .note,
-  };
-};
-
-const mapDispatchToTestRunNoteProps = {
-  setNote: setTestRunNote,
-};
-
-const KeystoreNote = connect(
-  mapStateToKeystoreNoteProps,
-  mapDispatchToKeystoreNoteProps
-)(NoteBase);
-const TestRunNote = connect(
-  mapStateToTestRunNoteProps,
-  mapDispatchToTestRunNoteProps
-)(NoteBase);
-
-export { KeystoreNote, TestRunNote };
