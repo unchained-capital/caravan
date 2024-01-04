@@ -319,6 +319,10 @@ class OutputsForm extends React.Component {
                   }}
                 />
               </Box>
+              <Typography variant="caption" className={styles.outputsFormLabel}>
+                Refer to mempool monitoring websites to ensure your selected fee
+                rate is appropriate.
+              </Typography>
             </Grid>
 
             <Grid item xs={4}>

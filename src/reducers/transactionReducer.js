@@ -3,7 +3,6 @@ import {
   Network,
   P2SH,
   estimateMultisigTransactionFee,
-  validateFeeRate,
   validateFee,
   validateOutputAmount,
   satoshisToBitcoins,
@@ -12,6 +11,9 @@ import {
   unsignedMultisigTransaction,
   unsignedMultisigPSBT,
   unsignedTransactionObjectFromPSBT,
+  checkFeeRateError,
+  getFeeErrorMessage,
+  FeeValidationError,
 } from "unchained-bitcoin";
 import updateState from "./utils";
 import { SET_NETWORK, SET_ADDRESS_TYPE } from "../actions/settingsActions";
@@ -154,15 +156,27 @@ function deleteOutput(state, action) {
 
 function updateFeeRate(state, action) {
   const feeRateString = action.value;
-  const feeRateError = validateFeeRate(feeRateString);
+
+  // Gets the error type. Useful for conditionally displaying errors.
+  const feeRateError = checkFeeRateError(feeRateString);
+
+  // Get the fee. Ignore rate-too-high errors because this value creates
+  // problems when trying to author a CPFP.
   const fee =
-    feeRateError === ""
+    feeRateError === null &&
+    feeRateError !== FeeValidationError.FEE_RATE_TOO_HIGH
       ? setFeeForRate(state, feeRateString, state.outputs.length)
+      : "";
+
+  // Get the error message for the error type if error is not rate-too-high.
+  const feeRateErrorMessage =
+    feeRateError !== FeeValidationError.FEE_RATE_TOO_HIGH
+      ? getFeeErrorMessage(feeRateError)
       : "";
 
   return updateState(state, {
     feeRate: feeRateString,
-    feeRateError,
+    feeRateError: feeRateErrorMessage,
     fee,
     feeError: "",
   });
