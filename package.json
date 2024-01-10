@@ -72,8 +72,8 @@
     "vite-plugin-node-polyfills": "^0.7.0"
   },
   "scripts": {
-    "build": "npm run check && __GIT_SHA__=`git rev-parse --short HEAD` tsc && vite build",
-    "build:ci": "npm run ci && __GIT_SHA__=`git rev-parse --short HEAD` tsc && vite build",
+    "build": "npm run check && tsc && __GIT_SHA__=`git rev-parse --short HEAD` vite build",
+    "build:ci": "npm run ci && tsc && __GIT_SHA__=`git rev-parse --short HEAD` vite build",
     "check": "npm run lint && npm run test:ci",
     "ci": "npm run lint && npm run test:ci",
     "commit": "./node_modules/cz-customizable/standalone.js",
