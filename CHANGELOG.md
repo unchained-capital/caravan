@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/unchained-capital/caravan/compare/caravan-v0.7.0...caravan-v1.0.0) (2024-01-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* adds typescript and node v20 support ([#350](https://github.com/unchained-capital/caravan/issues/350))
+
+### Features
+
+* adds typescript and node v20 support ([#350](https://github.com/unchained-capital/caravan/issues/350)) ([f5c3e90](https://github.com/unchained-capital/caravan/commit/f5c3e90d839f8ac2cc9378b5ddbadc6cb0f41ddc))
+* unblock fee rate limit ([ba5de57](https://github.com/unchained-capital/caravan/commit/ba5de57894bf2db87875235d20fbc18091ef78af))
+
+
+### Bug Fixes
+
+* **deps:** upgrade uc-bitcoin dep for fixture fix ([67077c2](https://github.com/unchained-capital/caravan/commit/67077c2136bdbb7c6dd3366ab5acdc5f3428e706))
+* incorrect fee error check conditional operator ([2b417c6](https://github.com/unchained-capital/caravan/commit/2b417c623990f1de5ef41f7910f81c1fb17a056e))
+* max spend button ([0884745](https://github.com/unchained-capital/caravan/commit/0884745b1252c762d5f1f15b071a2189fd0ae240))
+* more dependency cleanup ([593c48d](https://github.com/unchained-capital/caravan/commit/593c48d30fc5d4e017cf34a7414bae4ec3938c9f))
+* psbt download in coldcard test suite ([cd88354](https://github.com/unchained-capital/caravan/commit/cd883540084764feb378f44adbdbabf32cb84051))
+* **test-suite:** key origins sorted by base58 xpub ([444e083](https://github.com/unchained-capital/caravan/commit/444e0838ef723db00974b2f57f2a205b62ac3668))
+* upgrade uc-bitcoin and pin broken ledger deps ([64b9613](https://github.com/unchained-capital/caravan/commit/64b961335a4d5c0bc565163dc6e87f1ab750f6e7))
+* utility accepts string instead of BN ([607d9b8](https://github.com/unchained-capital/caravan/commit/607d9b8c6461d4762f0f5873c5a7045eba9a9e9f))
+
 ## [0.7.0](https://github.com/unchained-capital/caravan/compare/caravan-v0.6.3...caravan-v0.7.0) (2023-10-23)
 
 
