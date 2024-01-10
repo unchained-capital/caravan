@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.1](https://github.com/unchained-capital/caravan/compare/caravan-v1.0.0...caravan-v1.0.1) (2024-01-10)
+
+
+### Bug Fixes
+
+* **build:** pass git sha to build properly ([a93d65b](https://github.com/unchained-capital/caravan/commit/a93d65bcab59855ed1049e776374931c5c0f5c1c))
+
 ## [1.0.0](https://github.com/unchained-capital/caravan/compare/caravan-v0.7.0...caravan-v1.0.0) (2024-01-10)
 
 
