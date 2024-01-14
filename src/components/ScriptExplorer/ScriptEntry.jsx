@@ -21,7 +21,7 @@ import {
   TextField,
   FormHelperText,
 } from "@mui/material";
-import { fetchAddressUTXOs } from "../../blockchain";
+import { fetchAddressUTXOs } from "../../clients/blockchain";
 
 // Components
 import MultisigDetails from "../MultisigDetails";

@@ -16,7 +16,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
-import { broadcastTransaction } from "../../blockchain";
+import { broadcastTransaction } from "../../clients/blockchain";
 import Copyable from "../Copyable";
 import { externalLink } from "utils/ExternalLink";
 import { setTXID } from "../../actions/transactionActions";

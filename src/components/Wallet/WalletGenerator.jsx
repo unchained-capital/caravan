@@ -24,7 +24,7 @@ import {
   fetchAddressUTXOs,
   getAddressStatus,
   fetchFeeEstimate,
-} from "../../blockchain";
+} from "../../clients/blockchain";
 import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
 import RegisterWallet from "./RegisterWallet";

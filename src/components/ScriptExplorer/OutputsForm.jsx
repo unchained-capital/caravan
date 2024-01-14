@@ -25,7 +25,7 @@ import {
   finalizeOutputs as finalizeOutputsAction,
   resetOutputs as resetOutputsAction,
 } from "../../actions/transactionActions";
-import { fetchFeeEstimate } from "../../blockchain";
+import { fetchFeeEstimate } from "../../clients/blockchain";
 import { MIN_SATS_PER_BYTE_FEE } from "../Wallet/constants";
 import OutputEntry from "./OutputEntry";
 import styles from "./styles.module.scss";

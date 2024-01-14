@@ -12,7 +12,7 @@ import {
   RadioGroup,
   FormHelperText,
 } from "@mui/material";
-import { fetchFeeEstimate } from "../../blockchain";
+import { fetchFeeEstimate } from "../../clients/blockchain";
 
 // Components
 

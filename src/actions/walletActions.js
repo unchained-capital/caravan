@@ -4,7 +4,7 @@ import {
 } from "unchained-bitcoin";
 
 import BigNumber from "bignumber.js";
-import { fetchAddressUTXOs } from "../blockchain";
+import { fetchAddressUTXOs } from "../clients/blockchain";
 import { isChange } from "../utils/slices";
 import { naiveCoinSelection } from "../utils";
 import {

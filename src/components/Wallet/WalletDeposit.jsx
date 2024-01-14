@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 
-import { fetchAddressUTXOs } from "../../blockchain";
+import { fetchAddressUTXOs } from "../../clients/blockchain";
 import {
   updateDepositSliceAction,
   resetWalletView as resetWalletViewAction,

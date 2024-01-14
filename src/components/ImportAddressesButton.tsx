@@ -17,7 +17,7 @@ import {
   bitcoindImportMulti,
   bitcoindGetAddressStatus,
   bitcoindParams,
-} from "../bitcoind";
+} from "../clients/bitcoind";
 import { ClientType } from "./types/client";
 
 const useStyles = makeStyles(() => ({

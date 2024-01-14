@@ -2,7 +2,7 @@ import {
   updateDepositSliceAction,
   updateChangeSliceAction,
 } from "./walletActions";
-import { fetchAddressUTXOs, getAddressStatus } from "../blockchain";
+import { fetchAddressUTXOs, getAddressStatus } from "../clients/blockchain";
 import { setErrorNotification } from "./errorNotificationActions";
 
 export const UPDATE_BRAID_SLICE = "UPDATE_BRAID_SLICE";
