@@ -108,7 +108,6 @@
     "@mui/material": "^5.5.0",
     "@mui/styles": "^5.5.0",
     "@trezor/transport": "^1.1.15",
-    "@types/redux": "^3.6.0",
     "@vitejs/plugin-react": "^3.1.0",
     "axios": "^0.21.2",
     "base58check": "^2.0.0",
