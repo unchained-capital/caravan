@@ -4,7 +4,6 @@ import {
 } from "unchained-bitcoin";
 
 import BigNumber from "bignumber.js";
-import { fetchAddressUTXOs } from "../clients/blockchain";
 import { isChange } from "../utils/slices";
 import { naiveCoinSelection } from "../utils";
 import {
@@ -16,6 +15,7 @@ import {
 } from "./transactionActions";
 import { setErrorNotification } from "./errorNotificationActions";
 import { getSpendableSlices } from "../selectors/wallet";
+import { getBlockchainClientFromStore } from "./clientActions";
 
 export const UPDATE_DEPOSIT_SLICE = "UPDATE_DEPOSIT_SLICE";
 export const UPDATE_CHANGE_SLICE = "UPDATE_CHANGE_SLICE";
@@ -173,8 +173,6 @@ export function updateTxSlices(
   // eslint-disable-next-line consistent-return
   return async (dispatch, getState) => {
     const {
-      settings: { network },
-      client,
       spend: {
         transaction: { changeAddress, inputs, txid },
       },
@@ -183,11 +181,11 @@ export function updateTxSlices(
         change: { nodes: changeSlices },
       },
     } = getState();
-
+    const client = await dispatch(getBlockchainClientFromStore());
     // utility function for getting utxo set of an address
     // and formatting the result in a way we can use
     const fetchSliceStatus = async (address, bip32Path) => {
-      const utxos = await fetchAddressUTXOs(address, network, client);
+      const utxos = await client.fetchAddressUtxos(address);
       return {
         addressUsed: true,
         change: isChange(bip32Path),

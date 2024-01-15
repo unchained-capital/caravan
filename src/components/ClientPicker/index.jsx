@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import {
   Grid,
   Card,
@@ -12,7 +12,6 @@ import {
   RadioGroup,
   FormHelperText,
 } from "@mui/material";
-import { fetchFeeEstimate } from "../../clients/blockchain";
 
 // Components
 
@@ -26,6 +25,7 @@ import {
   SET_CLIENT_URL_ERROR,
   SET_CLIENT_USERNAME_ERROR,
   SET_CLIENT_PASSWORD_ERROR,
+  getBlockchainClientFromStore,
 } from "../../actions/clientActions";
 
 import PrivateClientSettings from "./PrivateClientSettings";
@@ -49,6 +49,8 @@ const ClientPicker = ({
   const [urlEdited, setUrlEdited] = useState(false);
   const [connectError, setConnectError] = useState("");
   const [connectSuccess, setConnectSuccess] = useState(false);
+  const dispatch = useDispatch();
+  const [blockchainClient, setClient] = useState();
 
   const validatePassword = () => {
     return "";
@@ -64,41 +66,49 @@ const ClientPicker = ({
     return "";
   };
 
-  const handleTypeChange = (event) => {
+  const updateBlockchainClient = async () => {
+    setClient(await dispatch(getBlockchainClientFromStore()));
+  };
+
+  const handleTypeChange = async (event) => {
     const clientType = event.target.value;
     if (clientType === "private" && !urlEdited) {
       setUrl(`http://localhost:${network === "mainnet" ? 8332 : 18332}`);
     }
     setType(clientType);
+    await updateBlockchainClient();
   };
 
-  const handleUrlChange = (event) => {
+  const handleUrlChange = async (event) => {
     const url = event.target.value;
     const error = validateUrl(url);
     if (!urlEdited && !error) setUrlEdited(true);
     setUrl(url);
     setUrlError(error);
+    await updateBlockchainClient();
   };
 
-  const handleUsernameChange = (event) => {
+  const handleUsernameChange = async (event) => {
     const username = event.target.value;
     const error = validateUsername(username);
     setUsername(username);
     setUsernameError(error);
+    await updateBlockchainClient();
   };
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = async (event) => {
     const password = event.target.value;
     const error = validatePassword(password);
     setPassword(password);
     setPasswordError(error);
+    await updateBlockchainClient();
   };
 
   const testConnection = async () => {
     setConnectError("");
     setConnectSuccess(false);
     try {
-      await fetchFeeEstimate(network, client);
+      await blockchainClient.getFeeEstimate();
       if (onSuccess) {
         onSuccess();
       }
@@ -139,7 +149,7 @@ const ClientPicker = ({
             {client.type === "public" && (
               <FormHelperText>
                 {"'Public' uses the "}
-                <code>mempool.space</code>
+                <code>{blockchainClient?.type}</code>
                 {" API. Switch to private to use a "}
                 <code>bitcoind</code>
                 {" node."}

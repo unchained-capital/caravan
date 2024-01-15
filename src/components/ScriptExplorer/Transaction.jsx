@@ -16,10 +16,10 @@ import {
   CardContent,
 } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
-import { broadcastTransaction } from "../../clients/blockchain";
 import Copyable from "../Copyable";
 import { externalLink } from "utils/ExternalLink";
 import { setTXID } from "../../actions/transactionActions";
+import { getBlockchainClientFromStore } from "../../actions/clientActions";
 
 class Transaction extends React.Component {
   constructor(props) {
@@ -44,17 +44,14 @@ class Transaction extends React.Component {
   };
 
   handleBroadcast = async () => {
-    const { client, network, setTxid } = this.props;
+    const { getBlockchainClient, setTxid } = this.props;
+    const client = await getBlockchainClient();
     const signedTransaction = this.buildSignedTransaction();
     let error = "";
     let txid = "";
     this.setState({ broadcasting: true });
     try {
-      txid = await broadcastTransaction(
-        signedTransaction.toHex(),
-        network,
-        client
-      );
+      txid = await client.broadcastTransaction(signedTransaction.toHex());
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
@@ -127,6 +124,7 @@ Transaction.propTypes = {
   outputs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setTxid: PropTypes.func.isRequired,
   signatureImporters: PropTypes.shape({}).isRequired,
+  getBlockchainClient: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -142,6 +140,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setTxid: setTXID,
+  getBlockchainClient: getBlockchainClientFromStore,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

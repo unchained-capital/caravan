@@ -20,11 +20,6 @@ import {
   Box,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import {
-  fetchAddressUTXOs,
-  getAddressStatus,
-  fetchFeeEstimate,
-} from "../../clients/blockchain";
 import ClientPicker from "../ClientPicker";
 import ConfirmWallet from "./ConfirmWallet";
 import RegisterWallet from "./RegisterWallet";
@@ -39,11 +34,11 @@ import {
   initialLoadComplete as initialLoadCompleteAction,
   updateWalletPolicyRegistrationsAction,
 } from "../../actions/walletActions";
-import { fetchSliceData as fetchSliceDataAction } from "../../actions/braidActions";
 import { setExtendedPublicKeyImporterVisible } from "../../actions/extendedPublicKeyImporterActions";
 import { setIsWallet as setIsWalletAction } from "../../actions/transactionActions";
 import { wrappedActions } from "../../actions/utils";
 import {
+  getBlockchainClientFromStore,
   SET_CLIENT_PASSWORD,
   SET_CLIENT_PASSWORD_ERROR,
 } from "../../actions/clientActions";
@@ -77,7 +72,6 @@ class WalletGenerator extends React.Component {
     const prevPassword = prevProps.client.password;
     const {
       setPasswordError,
-      network,
       client,
       common: { nodesLoaded },
       setIsWallet,
@@ -95,7 +89,7 @@ class WalletGenerator extends React.Component {
     if (prevPassword !== client.password && client.password.length) {
       // test the connection using the set password
       // but only if the password field hasn't been changed for 500ms
-      this.debouncedTestConnection({ network, client, setPasswordError });
+      this.debouncedTestConnection({ setPasswordError });
     }
 
     // make sure the spend view knows it's a wallet view once nodes
@@ -169,14 +163,16 @@ class WalletGenerator extends React.Component {
   };
 
   fetchUTXOs = async (isChange, multisig, attemptToKeepGenerating) => {
-    const { network, client } = this.props;
+    const { getBlockchainClient } = this.props;
     let addressStatus;
-    let updates = await fetchAddressUTXOs(multisig.address, network, client);
+
+    const client = await getBlockchainClient();
+    let updates = await client.fetchAddressUtxos(multisig.address);
 
     // only check for address status if there weren't any errors
     // fetching the utxos for the address
     if (updates && !updates.fetchUTXOsError.length)
-      addressStatus = await getAddressStatus(multisig.address, network, client);
+      addressStatus = await client.getAddressStatus(multisig.address);
 
     if (addressStatus) {
       updates = { ...updates, addressUsed: addressStatus.used };
@@ -259,9 +255,11 @@ class WalletGenerator extends React.Component {
     ).length;
   };
 
-  testConnection = async ({ network, client, setPasswordError }, cb) => {
+  testConnection = async ({ setPasswordError }, cb) => {
     try {
-      await fetchFeeEstimate(network, client);
+      const { getBlockchainClient } = this.props;
+      const client = await getBlockchainClient();
+      await client.getFeeEstimate();
       setPasswordError("");
       this.setState({ connectSuccess: true }, () => {
         // if testConnection was passed a callback
@@ -523,6 +521,7 @@ WalletGenerator.propTypes = {
   totalSigners: PropTypes.number.isRequired,
   updateChangeSlice: PropTypes.func.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
+  getBlockchainClient: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -539,11 +538,11 @@ const mapDispatchToProps = {
   freeze: setFrozen,
   updateDepositSlice: updateDepositSliceAction,
   updateChangeSlice: updateChangeSliceAction,
-  fetchSliceData: fetchSliceDataAction,
   setImportersVisible: setExtendedPublicKeyImporterVisible,
   setIsWallet: setIsWalletAction,
   resetWallet: resetWalletAction,
   resetNodesFetchErrors: resetNodesFetchErrorsAction,
+  getBlockchainClient: getBlockchainClientFromStore,
   ...wrappedActions({
     setPassword: SET_CLIENT_PASSWORD,
     setPasswordError: SET_CLIENT_PASSWORD_ERROR,

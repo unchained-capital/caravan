@@ -21,7 +21,6 @@ import {
   TextField,
   FormHelperText,
 } from "@mui/material";
-import { fetchAddressUTXOs } from "../../clients/blockchain";
 
 // Components
 import MultisigDetails from "../MultisigDetails";
@@ -48,6 +47,7 @@ import {
   chooseConfirmOwnership as chooseConfirmOwnershipAction,
   setOwnershipMultisig as setOwnershipMultisigAction,
 } from "../../actions/ownershipActions";
+import { getBlockchainClientFromStore } from "../../actions/clientActions";
 
 class ScriptEntry extends React.Component {
   constructor(props) {
@@ -249,12 +249,9 @@ class ScriptEntry extends React.Component {
   };
 
   fetchUTXOs = async (multisig) => {
-    const { network, client } = this.props;
-    const addressData = await fetchAddressUTXOs(
-      multisig.address,
-      network,
-      client
-    );
+    const { getBlockchainClient } = this.props;
+    const client = await getBlockchainClient();
+    const addressData = await client.fetchAddressUtxos(multisig.address);
 
     return addressData;
   };
@@ -415,6 +412,7 @@ ScriptEntry.propTypes = {
   setTotalSigners: PropTypes.func.isRequired,
   importLegacyPSBT: PropTypes.func.isRequired,
   setUnsignedPSBT: PropTypes.func.isRequired,
+  getBlockchainClient: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -443,6 +441,7 @@ const mapDispatchToProps = {
   setFee: setFeeAction,
   setUnsignedPSBT: setUnsignedPSBTAction,
   finalizeOutputs: finalizeOutputsAction,
+  getBlockchainClient: getBlockchainClientFromStore,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEntry);

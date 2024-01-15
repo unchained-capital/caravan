@@ -2,8 +2,8 @@ import {
   updateDepositSliceAction,
   updateChangeSliceAction,
 } from "./walletActions";
-import { fetchAddressUTXOs, getAddressStatus } from "../clients/blockchain";
 import { setErrorNotification } from "./errorNotificationActions";
+import { getBlockchainClientFromStore } from "./clientActions";
 
 export const UPDATE_BRAID_SLICE = "UPDATE_BRAID_SLICE";
 
@@ -15,10 +15,9 @@ export const UPDATE_BRAID_SLICE = "UPDATE_BRAID_SLICE";
  * @param {array<object>} slices - array of slices from one or more braids
  */
 export const fetchSliceData = async (slices) => {
-  return async (dispatch, getState) => {
-    const { network } = getState().settings;
-    const { client } = getState();
-
+  return async (dispatch) => {
+    const blockchainClient = await dispatch(getBlockchainClientFromStore());
+    if (!blockchainClient) return;
     try {
       // Create a list of the async calls for updating the slice data.
       // This lets us run these requests in parallel with a Promise.all
@@ -27,8 +26,8 @@ export const fetchSliceData = async (slices) => {
         // creating a tuple of async calls that will need to be resolved
         // for each slice we're querying for
         return Promise.all([
-          fetchAddressUTXOs(address, network, client),
-          getAddressStatus(address, network, client),
+          blockchainClient.fetchAddressUTXOs(address),
+          blockchainClient.getAddressStatus(address),
         ]);
       });
 

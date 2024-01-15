@@ -15,11 +15,11 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 
-import { fetchAddressUTXOs } from "../../clients/blockchain";
 import {
   updateDepositSliceAction,
   resetWalletView as resetWalletViewAction,
 } from "../../actions/walletActions";
+import { getBlockchainClientFromStore } from "../../actions/clientActions";
 import { getDepositableSlices } from "../../selectors/wallet";
 import { slicePropTypes } from "../../proptypes";
 
@@ -27,7 +27,6 @@ import { slicePropTypes } from "../../proptypes";
 import Copyable from "../Copyable";
 import BitcoinIcon from "../BitcoinIcon";
 import SlicesTable from "../Slices/SlicesTable";
-
 let depositTimer;
 
 class WalletDeposit extends React.Component {
@@ -58,7 +57,7 @@ class WalletDeposit extends React.Component {
   };
 
   getDepositAddress = () => {
-    const { network, client, updateDepositSlice, depositableSlices } =
+    const { getBlockchainClient, updateDepositSlice, depositableSlices } =
       this.props;
     const { depositIndex } = this.state;
 
@@ -73,7 +72,8 @@ class WalletDeposit extends React.Component {
       let updates;
       try {
         const { address, slice } = this.state;
-        updates = await fetchAddressUTXOs(address, network, client);
+        const client = await getBlockchainClient();
+        updates = await client.fetchAddressUtxos(address);
         if (updates && updates.utxos && updates.utxos.length) {
           clearInterval(depositTimer);
           updateDepositSlice({ ...updates, bip32Path: slice.bip32Path });
@@ -200,6 +200,7 @@ WalletDeposit.propTypes = {
     .isRequired,
   network: PropTypes.string.isRequired,
   updateDepositSlice: PropTypes.func.isRequired,
+  getBlockchainClient: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -213,6 +214,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   updateDepositSlice: updateDepositSliceAction,
   resetWalletView: resetWalletViewAction,
+  getBlockchainClient: getBlockchainClientFromStore,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletDeposit);
