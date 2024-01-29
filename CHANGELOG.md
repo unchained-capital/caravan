@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.2](https://github.com/unchained-capital/caravan/compare/caravan-v1.0.1...caravan-v1.0.2) (2024-01-29)
+
+
+### Bug Fixes
+
+* **dependencies:** bump uc-wallets for trezor fix ([139e8fd](https://github.com/unchained-capital/caravan/commit/139e8fd1c45ec95570acb66e0258a253f3904b0a))
+
 ## [1.0.1](https://github.com/unchained-capital/caravan/compare/caravan-v1.0.0...caravan-v1.0.1) (2024-01-10)
 
 
