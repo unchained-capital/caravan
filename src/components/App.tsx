@@ -23,6 +23,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
 import ErrorNotification from "./ErrorNotification";
+import { Alert, Box } from "@mui/material";
 
 const App = () => (
   <ThemeProvider theme={theme}>
@@ -32,6 +33,15 @@ const App = () => (
         <Router basename="/">
           <Container maxWidth={false} sx={{ maxWidth: "1280px" }}>
             <Navbar />
+            <Box mt={2}>
+              <Alert variant="filled" severity="warning">
+                This version of Caravan is being deprecated. The project has
+                been moved to{" "}
+                <a href="https://github.com/caravan-bitcoin/caravan">
+                  @caravan/coordinator
+                </a>
+              </Alert>
+            </Box>
             <ErrorBoundary>
               <Switch>
                 <Route path="/test" component={TestSuiteRun} />

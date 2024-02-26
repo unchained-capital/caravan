@@ -1,3 +1,7 @@
+> [!CAUTION]
+ ⛔️ DEPRECATED⛔️ <br/>
+ This repository has been deprecated and moved to a new location. Active maintenance on caravan code is now hosted at https://github.com/caravan-bitcoin/caravan
+
 # Caravan - Stateless Multisig Coordinator
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
