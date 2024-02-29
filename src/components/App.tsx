@@ -23,7 +23,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ErrorBoundary from "./ErrorBoundary";
 import ErrorNotification from "./ErrorNotification";
-import { Alert, Box } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 
 const App = () => (
   <ThemeProvider theme={theme}>
@@ -35,11 +35,14 @@ const App = () => (
             <Navbar />
             <Box mt={2}>
               <Alert variant="filled" severity="warning">
-                This version of Caravan is being deprecated. The project has
-                been moved to{" "}
-                <a href="https://github.com/caravan-bitcoin/caravan">
-                  @caravan/coordinator
-                </a>
+                <Typography variant="h6">
+                  This version of Caravan is being deprecated. The project has
+                  been moved to{" "}
+                  <a href="https://github.com/caravan-bitcoin/caravan">
+                    @caravan/coordinator
+                  </a>
+                  .
+                </Typography>
               </Alert>
             </Box>
             <ErrorBoundary>
