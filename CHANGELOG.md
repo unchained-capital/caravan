@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.3](https://github.com/unchained-capital/caravan/compare/caravan-v1.0.2...caravan-v1.0.3) (2024-02-29)
+
+
+### Bug Fixes
+
+* typography tweak to deprecation banner ([b00a6bf](https://github.com/unchained-capital/caravan/commit/b00a6bf8ca8d76073ab1ac9370ab1bdc6efa423c))
+
 ## [1.0.2](https://github.com/unchained-capital/caravan/compare/caravan-v1.0.1...caravan-v1.0.2) (2024-01-29)
 
 
